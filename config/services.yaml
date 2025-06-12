@@ -1,0 +1,31 @@
+parameters:
+
+services:
+    _defaults:
+        autowire: true      
+        autoconfigure: true 
+
+    # Configuración para Vertical Slice Architecture
+    # Controladores por contexto
+    App\Context\Account\Infrastructure\Http\Controller\:
+        resource: '../src/Context/Account/Infrastructure/Http/Controller/'
+        tags: ['controller.service_arguments']
+    
+    App\Context\User\Infrastructure\Http\Controller\:
+        resource: '../src/Context/User/Infrastructure/Http/Controller/'
+        tags: ['controller.service_arguments']
+
+     # Servicios de dominio y aplicación por contexto
+    App\Context\:
+        resource: '../src/Context/'
+        exclude:
+            - '../src/Context/*/Domain/Entity/'
+            - '../src/Context/*/Infrastructure/Persistence/Entity/'
+
+    # Servicios compartidos
+    App\Shared\:
+        resource: '../src/Shared/'
+        exclude:
+            - '../src/Shared/Domain/Entity/'
+            - '../src/Shared/Infrastructure/Persistence/Entity/'
+

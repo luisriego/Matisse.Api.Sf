@@ -1,0 +1,14 @@
+# Rutas por contexto (Vertical Slice)
+user_routes:
+    resource:
+        path: ../src/Context/User/Infrastructure/Http/Controller/
+        namespace: App\Context\User\Infrastructure\Http\Controller
+    type: attribute
+    prefix: /api/users
+
+account_routes:
+    resource:
+        path: ../src/Context/Account/Infrastructure/Http/Controller/
+        namespace: App\Context\Account\Infrastructure\Http\Controller
+    type: attribute
+    prefix: /api/accounts

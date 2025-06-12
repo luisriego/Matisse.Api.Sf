@@ -1,10 +1,185 @@
-# Symfony Base Repository
+# Symfony API with Vertical Slice + Hexagonal Architecture
 
-This repository contains the basic configuration to run Symfony applications with MySQL database
+This repository contains a Symfony 6.4 API configured with Vertical Slice Architecture and Hexagonal Architecture patterns, using SQLite as database.
+
+## Architecture
+- **Vertical Slice Architecture**: Each business context is isolated
+- **Hexagonal Architecture**: Clean separation between Domain, Application, and Infrastructure
+- **SQLite Database**: Lightweight database for development and testing
+
+## Development Setup
+
+### Quick Start
+```bash
+# Build and start containers
+make build && make start
+
+# SSH into container
+make ssh
+
+# Install dependencies
+make prepare
+```
+
+### Useful Aliases (available inside container)
+```bash
+sf                    # bin/console
+test                  # bin/phpunit --colors=always
+utest                 # bin/phpunit --colors=always --filter Unit  
+ftest                 # bin/phpunit --colors=always --filter Functional
+tf <filter>           # bin/phpunit --colors=always --filter <filter>
+tc                    # bin/phpunit --coverage-html coverage/
+fix                   # composer fix:standards
+analyze               # composer analyze:standards
+```
+
+### Project Structure
+```
+
+### Project Structure
+```
+src/
+├── Context/                          # Vertical Slices
+│   ├── User/
+│   │   ├── Domain/                   # Business Logic (FLAT - No subcarpetas)
+│   │   │   ├── User.php              # Entity (Aggregate Root)
+│   │   │   ├── UserEmail.php         # Value Object
+│   │   │   ├── UserId.php            # Value Object
+│   │   │   ├── UserRepository.php    # Repository Interface
+│   │   │   ├── UserCreatedEvent.php  # Domain Event
+│   │   │   ├── UserService.php       # Domain Service
+│   │   │   ├── UserSpecification.php # Business Rules
+│   │   │   └── UserNotFoundException.php # Domain Exception
+│   │   ├── Application/              # Use Cases & Handlers
+│   │   │   ├── UseCase/
+│   │   │   │   ├── CreateUser/
+│   │   │   │   │   ├── CreateUserCommand.php      # Input DTO
+│   │   │   │   │   ├── CreateUserCommandHandler.php # Use Case Handler
+│   │   │   │   │   └── CreateUserResponse.php     # Output DTO
+│   │   │   │   ├── UpdateUser/
+│   │   │   │   │   ├── UpdateUserCommand.php
+│   │   │   │   │   ├── UpdateUserCommandHandler.php
+│   │   │   │   │   └── UpdateUserResponse.php
+│   │   │   │   └── DeleteUser/
+│   │   │   │       ├── DeleteUserCommand.php
+│   │   │   │       ├── DeleteUserCommandHandler.php
+│   │   │   │       └── DeleteUserResponse.php
+│   │   │   ├── Query/
+│   │   │   │   ├── FindUser/
+│   │   │   │   │   ├── FindUserQuery.php           # Input DTO
+│   │   │   │   │   ├── FindUserQueryHandler.php    # Query Handler
+│   │   │   │   │   └── FindUserResponse.php        # Output DTO
+│   │   │   │   └── ListUsers/
+│   │   │   │       ├── ListUsersQuery.php
+│   │   │   │       ├── ListUsersQueryHandler.php
+│   │   │   │       └── ListUsersResponse.php
+│   │   └── Infrastructure/           # External Adapters
+│   │       ├── Http/
+│   │       │   ├── Controller/
+│   │       │   │   ├── CreateUserController.php
+│   │       │   │   ├── GetUserController.php
+│   │       │   │   └── HealthCheckController.php
+│   │       │   └── Routes/
+│   │       │       └── UserRoutes.php
+│   │       └── Persistence/
+│   │           └── Repository/
+│   │               └── DoctrineUserRepository.php
+│   └── Account/
+│       ├── Domain/                   # Business Logic (FLAT)
+│       │   ├── Account.php           # Entity (Aggregate Root)
+│       │   ├── AccountId.php         # Value Object
+│       │   ├── AccountStatus.php     # Value Object/Enum
+│       │   ├── AccountRepository.php # Repository Interface
+│       │   ├── AccountService.php    # Domain Service
+│       │   └── AccountNotFoundException.php # Domain Exception
+│       ├── Application/              # Use Cases & Handlers
+│       │   ├── UseCase/
+│       │   ├── Query/
+│       │   └── Command/
+│       └── Infrastructure/           # External Adapters
+│           ├── Http/
+│           │   ├── Controller/
+│           │   └── Routes/
+│           └── Persistence/
+│               └── Repository/
+└── Shared/                           # Cross-cutting Concerns
+    ├── Domain/                       # Shared Business Logic (FLAT)
+    │   ├── AggregateRoot.php         # Base Aggregate
+    │   ├── DomainEvent.php           # Base Event
+    │   ├── ValueObject.php           # Base Value Object
+    │   └── DomainException.php       # Base Exception
+    └── Infrastructure/               # Shared Technical Concerns
+        ├── Bus/
+        │   ├── CommandBus.php
+        │   └── QueryBus.php
+        ├── Persistence/
+        │   └── Doctrine/
+        └── Http/
+            └── Controller/
+                └── HealthController.php
+```
+        
+```
+
+### Available Commands
+```bash
+# Quality tools
+composer analyze:standards     # Check code standards
+composer fix:standards        # Fix code standards  
+composer analyze:phpstan      # Static analysis
+
+# Testing
+composer test                 # Run all tests
+composer test:unit           # Run unit tests only
+composer test:integration    # Run integration tests only
+composer test:coverage       # Generate coverage report
+
+# Database
+sf doctrine:database:create              # Create database
+sf doctrine:migrations:migrate          # Run migrations
+sf doctrine:migrations:migrate --env=test  # Run migrations for testing
+
+# Development
+sf cache:clear               # Clear cache
+sf debug:router             # Show all routes
+sf debug:container          # Show services
+```
+
+### Development Workflow
+1. `make ssh` - Enter container
+2. Create your feature in appropriate Context
+3. `test` - Run tests
+4. `fix` - Fix code standards
+5. `analyze` - Check static analysis
+6. Commit and push
+
+## Architecture Guidelines
+
+### Context Structure (Vertical Slice)
+Each context should be self-contained:
+- **Domain**: Entities, Value Objects, Domain Services
+- **Application**: Use Cases, Commands, Queries  
+- **Infrastructure**: Controllers, Repositories, External Services
+
+### Dependencies (Hexagonal)
+- Domain → No dependencies
+- Application → Domain only
+- Infrastructure → Domain + Application
+
+### Example Implementation
+```php
+// Domain Entity
+src/Context/User/Domain/Entity/User.php
+
+// Application Use Case  
+src/Context/User/Application/UseCase/CreateUser/CreateUserHandler.php
+
+// Infrastructure Controller
+src/Context/User/Infrastructure/Http/Controller/CreateUserController.php
+```
 
 ## Content
-- PHP-APACHE container running version 8.2
-- MySQL container running version 8.2.0
+- PHP-APACHE container running version 8.3
 
 ## Instructions
 - `make build` to build the containers
