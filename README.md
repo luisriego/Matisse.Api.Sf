@@ -1,5 +1,9 @@
 # Symfony API with Vertical Slice + Hexagonal Architecture
 
+![Symfony 6.4](https://img.shields.io/badge/Symfony-6.4-blue.svg)
+![SQLite](https://img.shields.io/badge/Database-SQLite-green.svg)
+![PHP](https://img.shields.io/badge/PHP-8.3-blue.svg)
+
 This repository contains a Symfony 6.4 API configured with Vertical Slice Architecture and Hexagonal Architecture patterns, using SQLite as database.
 
 ## Architecture

@@ -1,0 +1,21 @@
+<?php
+
+namespace App\Shared\Domain;
+
+abstract class AggregateRoot
+{
+    private array $domainEvents = [];
+
+    final public function pullDomainEvents(): array
+    {
+        $recordedDomainEvents = $this->domainEvents;
+        $this->domainEvents = [];
+
+        return $recordedDomainEvents;
+    }
+
+    final protected function record(DomainEvent $domainEvent): void
+    {
+        $this->domainEvents[] = $domainEvent;
+    }
+}

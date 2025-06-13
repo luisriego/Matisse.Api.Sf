@@ -17,20 +17,20 @@ doctrine:
         auto_mapping: false
         mappings:
             # Mapeo por contexto (Vertical Slice)
+            Account:
+                is_bundle: false
+                type: attribute
+                dir: '%kernel.project_dir%/src/Context/Account/Domain'
+                prefix: 'App\Context\Account\Domain'
+                alias: Account
+
             User:
                 is_bundle: false
                 type: attribute
-                dir: '%kernel.project_dir%/src/Context/User/Domain/Entity'
-                prefix: 'App\Context\User\Domain\Entity'
+                dir: '%kernel.project_dir%/src/Context/User/Domain'
+                prefix: 'App\Context\User\Domain'
                 alias: User
-            
-            Product:
-                is_bundle: false
-                type: attribute
-                dir: '%kernel.project_dir%/src/Context/Account/Domain/Entity'
-                prefix: 'App\Context\Account\Domain\Entity'
-                alias: Account
-            
+
             # Entidades compartidas (si las tienes)
             Shared:
                 is_bundle: false
