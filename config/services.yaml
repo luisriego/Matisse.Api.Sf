@@ -8,19 +8,22 @@ services:
     # Configuración para Vertical Slice Architecture
     # Controladores por contexto
     App\Context\Account\Infrastructure\Http\Controller\:
+        public: true
         resource: '../src/Context/Account/Infrastructure/Http/Controller/'
         tags: ['controller.service_arguments']
-    
+
     App\Context\User\Infrastructure\Http\Controller\:
+        public: true
         resource: '../src/Context/User/Infrastructure/Http/Controller/'
         tags: ['controller.service_arguments']
 
-     # Servicios de dominio y aplicación por contexto
+    # Servicios de dominio y aplicación por contexto
     App\Context\:
         resource: '../src/Context/'
         exclude:
             - '../src/Context/*/Domain/Entity/'
             - '../src/Context/*/Infrastructure/Persistence/Entity/'
+            - '../src/Context/*/Infrastructure/Http/Controller/'
 
     # Servicios compartidos
     App\Shared\:

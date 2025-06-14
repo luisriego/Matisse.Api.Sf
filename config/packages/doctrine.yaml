@@ -35,8 +35,8 @@ doctrine:
             Shared:
                 is_bundle: false
                 type: attribute
-                dir: '%kernel.project_dir%/src/Shared/Domain/Entity'
-                prefix: 'App\Shared\Domain\Entity'
+                dir: '%kernel.project_dir%/src/Shared/Domain'
+                prefix: 'App\Shared\Domain'
                 alias: Shared
 
 when@test:

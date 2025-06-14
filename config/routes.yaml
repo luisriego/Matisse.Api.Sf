@@ -4,11 +4,11 @@ user_routes:
         path: ../src/Context/User/Infrastructure/Http/Controller/
         namespace: App\Context\User\Infrastructure\Http\Controller
     type: attribute
-    prefix: /api/users
+    prefix: /api/v1/users
 
 account_routes:
     resource:
         path: ../src/Context/Account/Infrastructure/Http/Controller/
         namespace: App\Context\Account\Infrastructure\Http\Controller
     type: attribute
-    prefix: /api/accounts
+    prefix: /api/v1/accounts

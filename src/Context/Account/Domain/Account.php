@@ -4,11 +4,12 @@ declare(strict_types=1);
 
 namespace App\Context\Account\Domain;
 
+use App\Shared\Domain\AggregateRoot;
 use Doctrine\ORM\Mapping as ORM;
 
 #[ORM\Entity(repositoryClass: AccountRepository::class)]
 #[ORM\HasLifecycleCallbacks]
-class Account
+class Account extends AggregateRoot
 {
     #[ORM\Id]
     #[ORM\Column(type: 'string', length: 36, options: ['fixed' => true])]
@@ -35,7 +36,7 @@ class Account
 //    #[ORM\OneToMany(targetEntity: Expense::class, mappedBy: 'account')]
 //    private Collection $expenses;
 
-    private function __construct(string $id, string $code, string $name)
+    public function __construct(string $id, string $code, string $name)
     {
         $this->id = $id;
         $this->code = $code;
