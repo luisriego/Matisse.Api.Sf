@@ -2,6 +2,7 @@
 
 namespace App\Context\Account\Infrastructure\Http\Controller;
 
+use App\Context\Account\Application\UseCase\CreateAccount\CreateAccountCommand;
 use App\Context\Account\Application\UseCase\CreateAccount\CreateAccountCommandHandler;
 use App\Context\Account\Application\UseCase\CreateAccount\CreateAccountRequestDto;
 use Symfony\Component\HttpFoundation\Response;
@@ -10,7 +11,7 @@ use Symfony\Component\Routing\Attribute\Route;
 final readonly class AccountCreatorPutController
 {
     public function __construct(
-        private CreateAccountCommand $accountCommand,
+        private CreateAccountCommandHandler $commandHandler,
     ) {
     }
 
@@ -23,7 +24,7 @@ final readonly class AccountCreatorPutController
             $requestDto->name,
         );
 
-        $accountCommand->
+        $this->commandHandler->__invoke($command);
 
         return new Response('', Response::HTTP_CREATED);
     }

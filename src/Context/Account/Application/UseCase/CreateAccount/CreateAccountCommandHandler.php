@@ -9,9 +9,7 @@ use App\Shared\Application\CommandHandler;
 
 class CreateAccountCommandHandler implements CommandHandler
 {
-    public function __construct()
-    {
-    }
+    public function __construct(private readonly AccountCreator $creator) {}
 
     public function __invoke(CreateAccountCommand $command): void
     {
@@ -19,6 +17,6 @@ class CreateAccountCommandHandler implements CommandHandler
         $code = new AccountCode($command->code());
         $name = new AccountName($command->name());
 
-
+        $this->creator->__invoke($id, $code, $name);
     }
 }

@@ -1,0 +1,44 @@
+<?php
+
+declare(strict_types=1);
+
+namespace App\Shared\Infrastructure;
+
+use App\Shared\Domain\AccessDeniedException;
+use App\Shared\Domain\InvalidArgumentException;
+use App\Shared\Domain\ResourceNotFoundException;
+use JsonException;
+use Symfony\Component\HttpKernel\Event\ExceptionEvent;
+use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\HttpFoundation\JsonResponse;
+
+
+class JsonTransformerExceptionListener
+{
+    public function onKernelException(ExceptionEvent $event): void
+    {
+        $e = $event->getThrowable();
+
+        $data = [
+            'class' => $e::class,
+            'code' => Response::HTTP_INTERNAL_SERVER_ERROR,
+            'message' => $e->getMessage(),
+        ];
+
+        if ($e instanceof ResourceNotFoundException) {
+            $data['code'] = Response::HTTP_NOT_FOUND;
+        }
+
+        if ($e instanceof InvalidArgumentException || $e instanceof JsonException) {
+            $data['code'] = Response::HTTP_BAD_REQUEST;
+        }
+
+        if ($e instanceof AccessDeniedException) {
+            $data['code'] = Response::HTTP_FORBIDDEN;
+        }
+
+        $response = new JsonResponse($data, $data['code']);
+
+        $event->setResponse($response);
+    }
+}

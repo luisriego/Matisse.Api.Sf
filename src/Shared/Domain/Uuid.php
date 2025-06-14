@@ -41,7 +41,7 @@ readonly class Uuid implements Stringable
 
     protected function ensureIsValidUuid(string $id): void
     {
-        if (SfUuid::isValid($id)) {
+        if (!SfUuid::isValid($id)) {
             throw new InvalidArgumentException(sprintf('<%s> does not allow the value <%s>.', static::class, $id));
         }
     }

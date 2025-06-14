@@ -1,9 +1,14 @@
 parameters:
+    
+imports:
+    - { resource: '../src/Context/Account/account.yaml' }
+    # - { resource: '../src/Context/User/user.yaml' }
 
 services:
     _defaults:
         autowire: true      
         autoconfigure: true 
+
 
     # Configuración para Vertical Slice Architecture
     # Controladores por contexto
@@ -31,4 +36,13 @@ services:
         exclude:
             - '../src/Shared/Domain/Entity/'
             - '../src/Shared/Infrastructure/Persistence/Entity/'
+
+    # Event Listeners used to transform the exception into a JSON response
+    App\Shared\Infrastructure\JsonTransformerExceptionListener:
+        tags:
+            - { name: kernel.event_listener, event: kernel.exception, method: onKernelException, priority: 100 }
+
+    App\Shared\Infrastructure\RequestArgumentResolver:
+        tags:
+            - { name: controller.argument_value_resolver, priority: 50 }
 
