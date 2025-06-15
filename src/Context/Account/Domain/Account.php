@@ -86,7 +86,7 @@ class Account extends AggregateRoot
         return $this->updatedAt;
     }
 
-    public function updateCode(AccountCode $code): void
+    public function  updateCode(AccountCode $code): void
     {
         $this->code = $code->value();
     }
