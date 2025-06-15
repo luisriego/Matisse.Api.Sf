@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace App\Context\Account\Application\UseCase\CreateAccount;
+namespace App\Context\Account\Infrastructure\Http\Dto;
 
 use App\Shared\Infrastructure\RequestDto;
 use Symfony\Component\HttpFoundation\Request;

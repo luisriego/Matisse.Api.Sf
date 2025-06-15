@@ -5,7 +5,9 @@ declare(strict_types=1);
 namespace App\Tests\Context\Account;
 
 use App\Context\Account\Domain\Account;
+use App\Context\Account\Domain\AccountId;
 use App\Context\Account\Domain\AccountRepository;
+use App\Tests\Shared\Infrastructure\UnitTestCase;
 use Mockery\MockInterface;
 
 abstract class AccountModuleUnitTestCase extends UnitTestCase

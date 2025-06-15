@@ -1,7 +1,7 @@
 # Symfony API with Vertical Slice + Hexagonal Architecture
 
 ![Symfony 6.4](https://img.shields.io/badge/Symfony-6.4-blue.svg)
-![SQLite](https://img.shields.io/badge/Database-SQLite-green.svg)
+![PostgreSQL](https://img.shields.io/badge/Database-PostgreSQL-green.svg)
 ![PHP](https://img.shields.io/badge/PHP-8.3-blue.svg)
 
 This repository contains a Symfony 6.4 API configured with Vertical Slice Architecture and Hexagonal Architecture patterns, using SQLite as database.
@@ -9,7 +9,14 @@ This repository contains a Symfony 6.4 API configured with Vertical Slice Archit
 ## Architecture
 - **Vertical Slice Architecture**: Each business context is isolated
 - **Hexagonal Architecture**: Clean separation between Domain, Application, and Infrastructure
-- **SQLite Database**: Lightweight database for development and testing
+- **PostgreSQL Database**: Robust, reliable relational database for development and production
+
+## Test Data Creation
+- **Object Mother Pattern**:
+    - Create test data factories for domain objects
+    - Place in `tests/ObjectMother/{Context}` directory
+    - Use for consistent test data across unit and functional tests
+    - Example: `UserMother::random()`, `UserMother::withEmail()`
 
 ## Development Setup
 

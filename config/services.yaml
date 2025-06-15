@@ -9,13 +9,18 @@ services:
         autowire: true      
         autoconfigure: true 
 
+    _instanceof:
+        App\Shared\Application\QueryHandler:
+            tags:
+                - { name: 'messenger.message_handler', bus: 'query.bus' }
 
-    # Configuración para Vertical Slice Architecture
-    # Controladores por contexto
-    App\Context\Account\Infrastructure\Http\Controller\:
-        public: true
-        resource: '../src/Context/Account/Infrastructure/Http/Controller/'
-        tags: ['controller.service_arguments']
+#
+#    # Configuración para Vertical Slice Architecture
+#    # Controladores por contexto
+#    App\Context\Account\Infrastructure\Http\Controller\:
+#        public: true
+#        resource: '../src/Context/Account/Infrastructure/Http/Controller/'
+#        tags: ['controller.service_arguments']
 
     App\Context\User\Infrastructure\Http\Controller\:
         public: true

@@ -6,6 +6,9 @@ namespace App\Shared\Domain;
 
 use InvalidArgumentException as NativeInvalidArgumentException;
 
+use function implode;
+use function sprintf;
+
 class InvalidArgumentException extends NativeInvalidArgumentException
 {
     public static function createFromMessage(string $message): self

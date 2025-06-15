@@ -8,10 +8,9 @@ use App\Shared\Domain\AccessDeniedException;
 use App\Shared\Domain\InvalidArgumentException;
 use App\Shared\Domain\ResourceNotFoundException;
 use JsonException;
-use Symfony\Component\HttpKernel\Event\ExceptionEvent;
-use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpFoundation\JsonResponse;
-
+use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\HttpKernel\Event\ExceptionEvent;
 
 class JsonTransformerExceptionListener
 {

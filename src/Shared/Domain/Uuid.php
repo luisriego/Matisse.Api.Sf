@@ -1,9 +1,11 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Shared\Domain;
 
-use Symfony\Component\Uid\Uuid as SfUuid;
 use Stringable;
+use Symfony\Component\Uid\Uuid as SfUuid;
 
 use function sprintf;
 

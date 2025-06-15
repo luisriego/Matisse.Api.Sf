@@ -2,15 +2,19 @@ framework:
     messenger:
         default_bus: command.bus
         buses:
-            command.bus:
-                middleware:
-                    - validation
-                    - doctrine_transaction
-
+            command.bus: ~
             query.bus: ~
-
             event.bus:
                 default_middleware: allow_no_handlers
+
+        # This part is important - make sure queries are handled synchronously
+        transports:
+            sync: 'sync://'
+
+        # Either remove routing section completely for default synchronous handling
+        # or add specific routing for your Query interface
+        routing:
+            'App\Shared\Application\Query': sync
 
 # when@test:
 #    framework:

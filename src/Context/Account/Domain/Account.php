@@ -4,7 +4,11 @@ declare(strict_types=1);
 
 namespace App\Context\Account\Domain;
 
+use App\Context\Account\Domain\Bus\AccountWasDisabled;
+use App\Context\Account\Domain\Bus\AccountWasEnabled;
 use App\Shared\Domain\AggregateRoot;
+use DateTime;
+use DateTimeImmutable;
 use Doctrine\ORM\Mapping as ORM;
 
 #[ORM\Entity(repositoryClass: AccountRepository::class)]
@@ -28,13 +32,13 @@ class Account extends AggregateRoot
     private ?bool $isActive = false;
 
     #[ORM\Column(type: 'datetime_immutable')]
-    private ?\DateTimeImmutable $createdAt = null;
+    private ?DateTimeImmutable $createdAt = null;
 
     #[ORM\Column(type: 'datetime', nullable: true)]
-    private ?\DateTime $updatedAt = null;
+    private ?DateTime $updatedAt = null;
 
-//    #[ORM\OneToMany(targetEntity: Expense::class, mappedBy: 'account')]
-//    private Collection $expenses;
+    //    #[ORM\OneToMany(targetEntity: Expense::class, mappedBy: 'account')]
+    //    private Collection $expenses;
 
     public function __construct(string $id, string $code, string $name)
     {
@@ -42,8 +46,8 @@ class Account extends AggregateRoot
         $this->code = $code;
         $this->name = $name;
         $this->isActive = false;
-        $this->createdAt = new \DateTimeImmutable();
-//        $this->expenses = new ArrayCollection();
+        $this->createdAt = new DateTimeImmutable();
+        //        $this->expenses = new ArrayCollection();
     }
 
     public static function create(AccountId $id, AccountCode $code, AccountName $name): self
@@ -76,15 +80,47 @@ class Account extends AggregateRoot
         return $this->isActive;
     }
 
-    public function createdAt(): ?\DateTimeImmutable
+    public function createdAt(): ?DateTimeImmutable
     {
         return $this->createdAt;
     }
 
-    public function updatedAt(): ?\DateTime
+    public function updatedAt(): ?DateTime
     {
         return $this->updatedAt;
     }
 
+    public function updateCode(AccountCode $code): void
+    {
+        $this->code = $code->value();
+    }
 
+    public function updateName(AccountName $name): void
+    {
+        $this->name = $name->value();
+    }
+
+    public function enable(): void
+    {
+        $this->isActive = true;
+
+        $this->record(new AccountWasEnabled($this->id()));
+    }
+
+    public function disable(): void
+    {
+        $this->isActive = false;
+
+        $this->record(new AccountWasDisabled($this->id()));
+    }
+
+    public function toArray(): array
+    {
+        return [
+            'id' => $this->id,
+            'code' => $this->code,
+            'name' => $this->name,
+            'isActive' => $this->isActive,
+        ];
+    }
 }
