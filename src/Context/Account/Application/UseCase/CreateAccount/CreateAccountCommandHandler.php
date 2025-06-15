@@ -7,9 +7,9 @@ use App\Context\Account\Domain\AccountId;
 use App\Context\Account\Domain\AccountName;
 use App\Shared\Application\CommandHandler;
 
-class CreateAccountCommandHandler implements CommandHandler
+readonly class CreateAccountCommandHandler implements CommandHandler
 {
-    public function __construct(private readonly AccountCreator $creator) {}
+    public function __construct(private AccountCreator $creator) {}
 
     public function __invoke(CreateAccountCommand $command): void
     {

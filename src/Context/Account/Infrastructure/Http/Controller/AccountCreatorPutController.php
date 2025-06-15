@@ -4,7 +4,7 @@ namespace App\Context\Account\Infrastructure\Http\Controller;
 
 use App\Context\Account\Application\UseCase\CreateAccount\CreateAccountCommand;
 use App\Context\Account\Application\UseCase\CreateAccount\CreateAccountCommandHandler;
-use App\Context\Account\Application\UseCase\CreateAccount\CreateAccountRequestDto;
+use App\Context\Account\Infrastructure\Http\Dto\CreateAccountRequestDto;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
 
