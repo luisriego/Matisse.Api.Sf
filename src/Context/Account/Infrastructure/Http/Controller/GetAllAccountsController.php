@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Context\Account\Infrastructure\Http\Controller;
 
 use App\Context\Account\Application\UseCase\FindAllAccounts\FindAllAccountsQuery;
@@ -9,12 +11,13 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Messenger\MessageBusInterface;
 use Symfony\Component\Messenger\Stamp\HandledStamp;
 use Symfony\Component\Routing\Attribute\Route;
+use Throwable;
 
 final readonly class GetAllAccountsController
 {
     public function __construct(
         #[Autowire(service: 'query.bus')]
-        private MessageBusInterface $queryBus
+        private MessageBusInterface $queryBus,
     ) {}
 
     #[Route('', name: 'get_all_accounts', methods: ['GET'])]
@@ -26,7 +29,7 @@ final readonly class GetAllAccountsController
             $accountsData = $envelope->last(HandledStamp::class)->getResult();
 
             return new JsonResponse($accountsData, Response::HTTP_OK);
-        } catch (\Throwable $e) {
+        } catch (Throwable $e) {
             return new JsonResponse(['error' => $e->getMessage()], Response::HTTP_INTERNAL_SERVER_ERROR);
         }
     }

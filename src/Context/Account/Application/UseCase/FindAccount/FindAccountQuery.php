@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Context\Account\Application\UseCase\FindAccount;
 
 use App\Shared\Application\Query;
