@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Context\Account\Application\UpdateAccount;
+namespace App\Context\Account\Application\UseCase\UpdateAccount;
 
 use App\Context\Account\Domain\AccountCode;
 use App\Context\Account\Domain\AccountId;

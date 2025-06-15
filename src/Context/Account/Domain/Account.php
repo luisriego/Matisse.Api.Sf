@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace App\Context\Account\Domain;
 
+use App\Context\Account\Domain\Bus\AccountWasDisabled;
+use App\Context\Account\Domain\Bus\AccountWasEnabled;
 use App\Shared\Domain\AggregateRoot;
 use Doctrine\ORM\Mapping as ORM;
 
@@ -94,5 +96,19 @@ class Account extends AggregateRoot
     public function  updateName(AccountName $name): void
     {
         $this->name = $name->value();
+    }
+
+    public function enable(): void
+    {
+        $this->isActive = true;
+
+        $this->record(new AccountWasEnabled($this->id()));
+    }
+
+    public function disable(): void
+    {
+        $this->isActive = false;
+
+        $this->record(new AccountWasDisabled($this->id()));
     }
 }

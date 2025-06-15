@@ -1,8 +1,7 @@
 <?php
 
-namespace App\Context\Account\Application\UpdateAccount;
+namespace App\Context\Account\Application\UseCase\UpdateAccount;
 
-use App\Context\Account\Application\UseCase\CreateAccount\CreateAccountCommandHandler;
 use App\Context\Account\Domain\AccountCode;
 use App\Context\Account\Domain\AccountId;
 use App\Context\Account\Domain\AccountName;
