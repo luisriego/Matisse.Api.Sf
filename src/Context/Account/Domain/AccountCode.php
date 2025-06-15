@@ -1,14 +1,22 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Context\Account\Domain;
 
 use App\Shared\Domain\StringValueObject;
+use InvalidArgumentException;
+
+use function mb_strlen;
+use function mb_strtoupper;
+use function preg_match;
+use function sprintf;
 
 final class AccountCode extends StringValueObject
 {
     public function __construct(string $value)
     {
-        $upperValue = strtoupper($value);
+        $upperValue = mb_strtoupper($value);
         $this->ensureIsValidCode($upperValue);
         parent::__construct($upperValue);
     }
@@ -16,30 +24,30 @@ final class AccountCode extends StringValueObject
     private function ensureIsValidCode(string $value): void
     {
         // Rule 1: Maximum 10 characters
-        if (strlen($value) > 10) {
-            throw new \InvalidArgumentException(
-                sprintf('The account code <%s> must not exceed 10 characters', $value)
+        if (mb_strlen($value) > 10) {
+            throw new InvalidArgumentException(
+                sprintf('The account code <%s> must not exceed 10 characters', $value),
             );
         }
 
         // Rule 2: First 3 characters must be letters
         if (!preg_match('/^[A-Z]{3}/', $value)) {
-            throw new \InvalidArgumentException(
-                sprintf('The account code <%s> must start with 3 letters', $value)
+            throw new InvalidArgumentException(
+                sprintf('The account code <%s> must start with 3 letters', $value),
             );
         }
 
         // Rule 3: Next 2 characters must be numbers
         if (!preg_match('/^[A-Z]{3}[0-9]{2}/', $value)) {
-            throw new \InvalidArgumentException(
-                sprintf('The account code <%s> must have 2 numbers after the first 3 letters', $value)
+            throw new InvalidArgumentException(
+                sprintf('The account code <%s> must have 2 numbers after the first 3 letters', $value),
             );
         }
 
         // Rule 4: Remaining characters must be letters or numbers
         if (!preg_match('/^[A-Z]{3}[0-9]{2}[A-Z0-9]*$/', $value)) {
-            throw new \InvalidArgumentException(
-                sprintf('The account code <%s> can only contain letters and numbers after the first 5 characters', $value)
+            throw new InvalidArgumentException(
+                sprintf('The account code <%s> can only contain letters and numbers after the first 5 characters', $value),
             );
         }
     }

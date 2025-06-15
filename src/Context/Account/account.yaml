@@ -27,6 +27,15 @@ services:
         arguments:
             - '@event.bus'
 
+    App\Context\Account\Application\UseCase\FindAccount\FindAccountQueryHandler:
+        tags:
+            - { name: 'messenger.message_handler', bus: 'query.bus' }
+
+
+
+
+
+
     # Comentado porque los directorios no existen todavía
     # Command handlers específicos de Account
     # command_handlers:

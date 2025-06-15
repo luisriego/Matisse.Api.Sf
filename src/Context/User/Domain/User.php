@@ -6,6 +6,11 @@ namespace App\Context\User\Domain;
 
 use Doctrine\ORM\Mapping as ORM;
 
+use function array_unique;
+use function in_array;
+use function sha1;
+use function uniqid;
+
 #[ORM\Entity(repositoryClass: UserRepository::class)]
 #[ORM\HasLifecycleCallbacks]
 class User extends AggregateRoot implements UserInterface, PasswordAuthenticatedUserInterface
@@ -75,7 +80,8 @@ class User extends AggregateRoot implements UserInterface, PasswordAuthenticated
                 $user->getPassword(),
                 Uuid::random()->value(),
                 (new DateTimeImmutable())->format(DateTimeInterface::ATOM),
-            ));
+            ),
+        );
 
         return $user;
     }

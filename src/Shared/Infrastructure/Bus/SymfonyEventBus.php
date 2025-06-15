@@ -10,9 +10,7 @@ use Symfony\Component\Messenger\MessageBusInterface;
 
 final readonly class SymfonyEventBus implements EventBus
 {
-    public function __construct(private MessageBusInterface $eventBus)
-    {
-    }
+    public function __construct(private MessageBusInterface $eventBus) {}
 
     public function publish(DomainEvent ...$events): void
     {

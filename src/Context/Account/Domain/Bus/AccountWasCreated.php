@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Context\Account\Domain\Bus;
 
 use App\Shared\Domain\DomainEvent;
@@ -7,11 +9,10 @@ use App\Shared\Domain\DomainEvent;
 final readonly class AccountWasCreated extends DomainEvent
 {
     public function __construct(
-        string  $id,
+        string $id,
         ?string $eventId = '',
-        ?string $occurredOn = ''
-    )
-    {
+        ?string $occurredOn = '',
+    ) {
         parent::__construct($id, $eventId, $occurredOn);
     }
 
@@ -27,11 +28,10 @@ final readonly class AccountWasCreated extends DomainEvent
 
     public static function fromPrimitives(
         string $aggregateId,
-        array  $body,
+        array $body,
         string $eventId,
-        string $occurredOn
-    ): DomainEvent
-    {
+        string $occurredOn,
+    ): DomainEvent {
         return new self($aggregateId, $eventId, $occurredOn);
     }
 }

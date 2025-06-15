@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Context\Account\Application\UseCase\DisableAccount;
 
 use App\Context\Account\Domain\AccountRepository;

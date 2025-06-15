@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Context\Account\Infrastructure\Http\Controller;
 
 use App\Context\Account\Application\UseCase\CreateAccount\CreateAccountCommand;
@@ -12,8 +14,7 @@ final readonly class AccountCreatorPutController
 {
     public function __construct(
         private CreateAccountCommandHandler $commandHandler,
-    ) {
-    }
+    ) {}
 
     #[Route('/create', name: 'account_create', methods: ['PUT'])]
     public function __invoke(CreateAccountRequestDto $requestDto): Response

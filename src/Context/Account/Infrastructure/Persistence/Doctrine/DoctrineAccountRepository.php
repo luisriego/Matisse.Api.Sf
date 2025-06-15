@@ -19,7 +19,6 @@ final class DoctrineAccountRepository extends ServiceEntityRepository implements
         parent::__construct($registry, Account::class);
     }
 
-
     public function save(Account $account, bool $flush = true): void
     {
         $this->getEntityManager()->persist($account);
