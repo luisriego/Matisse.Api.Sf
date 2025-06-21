@@ -39,6 +39,20 @@ doctrine:
                 prefix: 'App\Shared\Domain'
                 alias: Shared
 
+            EventStore:
+                is_bundle: false
+                type: xml
+                dir: '%kernel.project_dir%/src/Context/EventStore/Infrastructure/Persistence/Doctrine'
+                prefix: 'App\Context\EventStore\Domain'
+                alias: EventStore
+
+            ResidentUnit:
+                is_bundle: false
+                type: xml
+                dir: '%kernel.project_dir%/src/Context/ResidentUnit/Infrastructure/Persistence/Doctrine'
+                prefix: 'App\Context\ResidentUnit\Domain'
+                alias: ResidentUnit
+
 when@test:
     doctrine:
         dbal:

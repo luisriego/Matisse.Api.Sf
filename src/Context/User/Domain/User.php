@@ -7,6 +7,7 @@ namespace App\Context\User\Domain;
 use App\Shared\Domain\AggregateRoot;
 use App\Shared\Domain\InvalidArgumentException;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\PasswordHasher\PasswordHasherInterface;
 use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
 use Symfony\Component\Security\Core\User\UserInterface;
 
@@ -25,6 +26,10 @@ class User extends AggregateRoot implements UserInterface, PasswordAuthenticated
     public const MIN_PASSWORD_LENGTH = 6;
     public const MAX_PASSWORD_LENGTH = 55;
     public const ID_LENGTH = 36;
+
+    #[ORM\Id]
+    #[ORM\Column(type: 'string', length: 36, options: ['fixed' => true])]
+    private string $id;
 
     #[ORM\Column(type: 'string', length: 80)]
     private ?string $name;
@@ -46,9 +51,18 @@ class User extends AggregateRoot implements UserInterface, PasswordAuthenticated
     #[ORM\Column(type: 'smallint')]
     private ?int $age;
 
-    #[ORM\ManyToOne(targetEntity: Company::class, inversedBy: 'users')]
-    #[ORM\JoinColumn(nullable: true)]
-    private ?Company $company = null;
+    #[ORM\Column(type: 'boolean')]
+    private ?bool $isActive = false;
+
+    #[ORM\Column(type: 'datetime_immutable')]
+    private ?DateTimeImmutable $createdAt = null;
+
+    #[ORM\Column(type: 'datetime', nullable: true)]
+    private ?DateTime $updatedAt = null;
+
+//    #[ORM\ManyToOne(targetEntity: Company::class, inversedBy: 'users')]
+//    #[ORM\JoinColumn(nullable: true)]
+//    private ?Company $company = null;
 
     public function __construct(
         string $id,

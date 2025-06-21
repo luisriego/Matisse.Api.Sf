@@ -1,0 +1,9 @@
+resident_unit_health_check:
+    path: /api/v1/resident-unit/health-check
+    controller: App\Context\ResidentUnit\Infrastructure\Http\Controller\HealthCheckController
+    methods: ['GET']
+
+resident_unit_create:
+    path: /api/v1/resident-unit/create
+    controller: App\Context\ResidentUnit\Infrastructure\Http\Controller\ResidentUnitCreateController
+    methods: ['PUT']

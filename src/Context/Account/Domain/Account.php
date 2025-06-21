@@ -47,12 +47,26 @@ class Account extends AggregateRoot
         $this->name = $name;
         $this->isActive = false;
         $this->createdAt = new DateTimeImmutable();
+
         //        $this->expenses = new ArrayCollection();
     }
 
     public static function create(AccountId $id, AccountCode $code, AccountName $name): self
     {
         return new self($id->value(), $code->value(), $name->value());
+    }
+
+    public static function createWithDescription(
+        AccountId $id,
+        AccountCode $code,
+        AccountName $name,
+        AccountDescription $description
+    ): self
+    {
+        $account =  new self($id->value(), $code->value(), $name->value());
+        $account->updateDescription($description);
+
+        return $account;
     }
 
     public function id(): string
@@ -93,25 +107,38 @@ class Account extends AggregateRoot
     public function updateCode(AccountCode $code): void
     {
         $this->code = $code->value();
+        $this->markAsUpdated();
     }
 
     public function updateName(AccountName $name): void
     {
         $this->name = $name->value();
+        $this->markAsUpdated();
+    }
+
+    public function updateDescription(AccountDescription $description): void
+    {
+        $this->description = $description->value();
+        $this->markAsUpdated();
     }
 
     public function enable(): void
     {
         $this->isActive = true;
-
+        $this->markAsUpdated();
         $this->record(new AccountWasEnabled($this->id()));
     }
 
     public function disable(): void
     {
         $this->isActive = false;
-
+        $this->markAsUpdated();
         $this->record(new AccountWasDisabled($this->id()));
+    }
+
+    public function markAsUpdated(): void
+    {
+        $this->updatedAt = new DateTime();
     }
 
     public function toArray(): array

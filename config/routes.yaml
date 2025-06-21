@@ -12,3 +12,6 @@ account_routes:
         namespace: App\Context\Account\Infrastructure\Http\Controller
     type: attribute
     prefix: /api/v1/accounts
+
+resident_unit_routes:
+    resource: '../src/Context/ResidentUnit/Infrastructure/Http/routes.yaml'

@@ -11,10 +11,13 @@ final readonly class UpdateAccountRequestDto implements RequestDto
 {
     public string $code;
     public string $name;
+    public string $description;
+
 
     public function __construct(Request $request)
     {
         $this->code = $request->get('code');
         $this->name = $request->get('name');
+        $this->description = $request->get('description');
     }
 }
