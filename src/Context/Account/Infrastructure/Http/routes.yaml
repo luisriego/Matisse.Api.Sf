@@ -1,0 +1,9 @@
+account_health_check:
+    path: /api/v1/accounts/health-check
+    controller: App\Context\Account\Infrastructure\Http\Controller\HealthCheckController
+    methods: ['GET']
+
+account_create:
+    path: /api/v1/accounts/create
+    controller: App\Context\Account\Infrastructure\Http\Controller\AccountCreatorPutController
+    methods: ['PUT']

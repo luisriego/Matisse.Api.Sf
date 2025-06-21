@@ -17,13 +17,6 @@ doctrine:
         auto_mapping: false
         mappings:
             # Mapeo por contexto (Vertical Slice)
-            Account:
-                is_bundle: false
-                type: attribute
-                dir: '%kernel.project_dir%/src/Context/Account/Domain'
-                prefix: 'App\Context\Account\Domain'
-                alias: Account
-
             User:
                 is_bundle: false
                 type: attribute
@@ -31,13 +24,19 @@ doctrine:
                 prefix: 'App\Context\User\Domain'
                 alias: User
 
-            # Entidades compartidas (si las tienes)
             Shared:
                 is_bundle: false
                 type: attribute
                 dir: '%kernel.project_dir%/src/Shared/Domain'
                 prefix: 'App\Shared\Domain'
                 alias: Shared
+
+            Account:
+                is_bundle: false
+                type: xml
+                dir: '%kernel.project_dir%/src/Context/Account/Infrastructure/Persistence/Doctrine'
+                prefix: 'App\Context\Account\Domain'
+                alias: Account
 
             EventStore:
                 is_bundle: false
@@ -52,6 +51,13 @@ doctrine:
                 dir: '%kernel.project_dir%/src/Context/ResidentUnit/Infrastructure/Persistence/Doctrine'
                 prefix: 'App\Context\ResidentUnit\Domain'
                 alias: ResidentUnit
+
+            Expense:
+                is_bundle: false
+                type: xml
+                dir: '%kernel.project_dir%/src/Context/Expense/Infrastructure/Persistence/Doctrine'
+                prefix: 'App\Context\Expense\Domain'
+                alias: Expense
 
 when@test:
     doctrine:

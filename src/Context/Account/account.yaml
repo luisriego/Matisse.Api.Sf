@@ -9,7 +9,6 @@ services:
         resource: './Infrastructure/Http/Controller/'
         tags: ['controller.service_arguments']
 
-    # Servicios específicos de Account
     App\Context\Account\:
         resource: './'
         exclude:

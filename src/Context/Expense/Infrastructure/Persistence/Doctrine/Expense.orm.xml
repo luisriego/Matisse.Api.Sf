@@ -4,19 +4,19 @@
                   xsi:schemaLocation="http://doctrine-project.org/schemas/orm/doctrine-mapping
                   https://www.doctrine-project.org/schemas/orm/doctrine-mapping.xsd">
 
-    <entity name="App\Context\Account\Domain\Account" table="account" repository-class="App\Context\Account\Domain\AccountRepository">
+    <entity name="App\Context\Expense\Domain\Expense" table="expense" repository-class="App\Context\Expense\Infrastructure\Persistence\Doctrine\DoctrineExpenseRepository">
         <id name="id" type="string" column="id" length="36">
             <generator strategy="NONE"/>
         </id>
 
-        <field name="code" column="code" type="string" length="16" unique="true" />
-        <field name="name" column="name" type="string" length="100" />
+        <field name="amount" column="amount" type="integer" />
         <field name="description" column="description" type="text" nullable="true" />
-        <field name="isActive" column="is_active" type="boolean" />
+        <field name="dueDate" column="due_date" type="datetime" />
+        <field name="paidAt" column="paid_at" type="datetime_immutable" />
         <field name="createdAt" column="created_at" type="datetime_immutable" />
-        <field name="updatedAt" column="updated_at" type="datetime" nullable="true" />
 
-        <one-to-many field="expenses" target-entity="App\Context\Expense\Domain\Expense" mapped-by="account" />
+        <many-to-one field="account" target-entity="App\Context\Account\Domain\Account" inversed-by="expenses">
+            <join-column name="account_id" referenced-column-name="id" nullable="false" />
+        </many-to-one>
     </entity>
-
 </doctrine-mapping>

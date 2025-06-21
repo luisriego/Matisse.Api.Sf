@@ -6,12 +6,17 @@ user_routes:
     type: attribute
     prefix: /api/v1/users
 
-account_routes:
-    resource:
-        path: ../src/Context/Account/Infrastructure/Http/Controller/
-        namespace: App\Context\Account\Infrastructure\Http\Controller
-    type: attribute
-    prefix: /api/v1/accounts
+#account_routes:
+#    resource:
+#        path: ../src/Context/Account/Infrastructure/Http/Controller/
+#        namespace: App\Context\Account\Infrastructure\Http\Controller
+#    type: attribute
+#    prefix: /api/v1/accounts
+account-routes:
+    resource: '../src/Context/Account/Infrastructure/Http/routes.yaml'
 
 resident_unit_routes:
     resource: '../src/Context/ResidentUnit/Infrastructure/Http/routes.yaml'
+
+expense_routes:
+    resource: '../src/Context/Expense/Infrastructure/Http/routes.yaml'

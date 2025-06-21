@@ -1,0 +1,9 @@
+expense_health_check:
+    path: /api/v1/expenses/health-check
+    controller: App\Context\Expense\Infrastructure\Http\Controller\HealthCheckController
+    methods: ['GET']
+
+expense_create:
+    path: /api/v1/expenses/create
+    controller: App\Context\Expense\Infrastructure\Http\Controller\ExpenseCreatorPutController
+    methods: ['PUT']
