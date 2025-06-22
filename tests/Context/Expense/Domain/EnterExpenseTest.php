@@ -31,14 +31,6 @@ final class EnterExpenseTest extends TestCase
         $this->assertSame($account, $expense->account());
         $this->assertEquals($dueDate, $expense->dueDate());
         $this->assertNull($expense->paidAt());
-
-        // Domain events would be tested if the Expense aggregate records them
-        // Uncomment if Expense publishes domain events on creation
-        /*
-        $events = $expense->pullDomainEvents();
-        $this->assertCount(1, $events);
-        $this->assertInstanceOf(ExpenseWasEntered::class, $events[0]);
-        */
     }
 
     /** @test */
