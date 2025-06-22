@@ -49,7 +49,7 @@ class Expense extends AggregateRoot
         ?Account $account,
         ExpenseDueDate $dueDate,
     ): self {
-        return new self($id->value(), $amount->value(), $account, $dueDate->value());
+        return new self($id->value(), $amount->value(), $account, $dueDate->toDateTime());
     }
 
     public function id(): string
@@ -72,7 +72,7 @@ class Expense extends AggregateRoot
         return $this->dueDate;
     }
 
-    public function paidAt(): DateTimeImmutable
+    public function paidAt(): ?DateTimeImmutable
     {
         return $this->paidAt;
     }
@@ -90,6 +90,30 @@ class Expense extends AggregateRoot
     public function setAccount(Account $account): void
     {
         $this->account = $account;
+    }
+
+    public function markAsPaid(): void
+    {
+        $this->paidAt = new DateTimeImmutable();
+    }
+
+    public function updateAmount(int $amount): void
+    {
+        if (!$this->paidAt()) {
+            $this->amount = $amount;
+        }
+    }
+
+    public function updateDueDate(DateTime $dueDate): void
+    {
+        if (!$this->paidAt()) {
+            $this->dueDate = $dueDate;
+        }
+    }
+
+    public function updateDescription(string $description): void
+    {
+        $this->description = $description;
     }
 
     public function toArray(): array

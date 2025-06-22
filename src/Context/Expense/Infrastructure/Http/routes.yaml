@@ -7,3 +7,8 @@ expense_enter:
     path: /api/v1/expenses/enter
     controller: App\Context\Expense\Infrastructure\Http\Controller\ExpenseEnterPutController
     methods: ['PUT']
+
+expense_update:
+    path: /api/v1/expenses/update/{id}
+    controller: App\Context\Expense\Infrastructure\Http\Controller\UpdateExpensePatchController
+    methods: ['PATCH']

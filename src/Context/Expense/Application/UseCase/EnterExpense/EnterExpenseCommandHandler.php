@@ -2,10 +2,9 @@
 
 declare(strict_types=1);
 
-namespace App\Context\Expense\Infrastructure\Http\Controller;
+namespace App\Context\Expense\Application\UseCase\EnterExpense;
 
 use App\Context\Account\Domain\AccountRepository;
-use App\Context\Expense\Application\UseCase\EnterExpense\EnterExpenseCommand;
 use App\Context\Expense\Domain\Expense;
 use App\Context\Expense\Domain\ExpenseAmount;
 use App\Context\Expense\Domain\ExpenseDueDate;

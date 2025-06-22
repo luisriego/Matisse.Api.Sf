@@ -27,7 +27,7 @@ final readonly class AccountUpdater
         $account->updateName($accountName);
         $account->updateDescription($accountDescription);
 
-        $this->accountRepository->save($account);
+        $this->accountRepository->save($account, true);
         $this->bus->publish(...$account->pullDomainEvents());
     }
 }

@@ -14,4 +14,9 @@ class DateTimeValueObject
     {
         return $this->value->format('Y-m-d');
     }
+
+    public function toDateTime(): DateTime
+    {
+        return $this->value;
+    }
 }

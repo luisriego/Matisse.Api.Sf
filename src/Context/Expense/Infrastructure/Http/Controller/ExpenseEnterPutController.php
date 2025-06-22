@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Context\Expense\Infrastructure\Http\Controller;
 
 use App\Context\Expense\Application\UseCase\EnterExpense\EnterExpenseCommand;
+use App\Context\Expense\Application\UseCase\EnterExpense\EnterExpenseCommandHandler;
 use App\Context\Expense\Infrastructure\Http\Dto\EnterExpenseRequestDto;
 use Symfony\Component\HttpFoundation\Response;
 

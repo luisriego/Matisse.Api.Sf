@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace App\Tests\Context\Expense\Application\UseCase\EnterExpense;
 
 use App\Context\Expense\Application\UseCase\EnterExpense\EnterExpenseCommand;
-use App\Context\Expense\Infrastructure\Http\Controller\EnterExpenseCommandHandler;
+use App\Context\Expense\Application\UseCase\EnterExpense\EnterExpenseCommandHandler;
 use App\Tests\Context\Account\Domain\AccountMother;
 use App\Tests\Context\Expense\Domain\ExpenseAmountMother;
 use App\Tests\Context\Expense\Domain\ExpenseDueDateMother;
