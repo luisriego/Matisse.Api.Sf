@@ -12,3 +12,8 @@ expense_update:
     path: /api/v1/expenses/update/{id}
     controller: App\Context\Expense\Infrastructure\Http\Controller\UpdateExpensePatchController
     methods: ['PATCH']
+
+expense_payed:
+    path: /api/v1/expenses/payed/{id}
+    controller: App\Context\Expense\Infrastructure\Http\Controller\ExpensePayedPatchController
+    methods: ['PATCH']
