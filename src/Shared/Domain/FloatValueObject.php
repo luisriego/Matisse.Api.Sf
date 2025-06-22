@@ -10,6 +10,6 @@ class FloatValueObject
 
     final public function value(): float
     {
-        return  $this->value;
+        return $this->value;
     }
 }

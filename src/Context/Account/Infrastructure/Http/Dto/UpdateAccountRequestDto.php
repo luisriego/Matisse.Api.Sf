@@ -13,7 +13,6 @@ final readonly class UpdateAccountRequestDto implements RequestDto
     public string $name;
     public string $description;
 
-
     public function __construct(Request $request)
     {
         $this->code = $request->get('code');

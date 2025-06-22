@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Shared\Domain;
 
 class IntegerValueObject
@@ -8,6 +10,6 @@ class IntegerValueObject
 
     final public function value(): int
     {
-        return  $this->value;
+        return $this->value;
     }
 }

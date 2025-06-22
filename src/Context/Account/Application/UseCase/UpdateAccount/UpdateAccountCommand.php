@@ -12,7 +12,7 @@ final readonly class UpdateAccountCommand implements Command
         private string $id,
         private string $code,
         private string $name,
-        private string $description
+        private string $description,
     ) {}
 
     public function id(): string

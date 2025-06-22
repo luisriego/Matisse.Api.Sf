@@ -3,7 +3,7 @@ expense_health_check:
     controller: App\Context\Expense\Infrastructure\Http\Controller\HealthCheckController
     methods: ['GET']
 
-expense_create:
-    path: /api/v1/expenses/create
-    controller: App\Context\Expense\Infrastructure\Http\Controller\ExpenseCreatorPutController
+expense_enter:
+    path: /api/v1/expenses/enter
+    controller: App\Context\Expense\Infrastructure\Http\Controller\ExpenseEnterPutController
     methods: ['PUT']

@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Context\ResidentUnit\Infrastructure\Http\Controller;
 
 use App\Context\ResidentUnit\Application\UseCase\CreateUnit\CreateResidentUnitCommand;

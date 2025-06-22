@@ -21,7 +21,6 @@ final readonly class UpdateAccountCommandHandler implements CommandHandler
         $name = new AccountName($command->name());
         $description = new AccountDescription($command->description());
 
-
         $this->updater->__invoke($id, $code, $name, $description);
     }
 }

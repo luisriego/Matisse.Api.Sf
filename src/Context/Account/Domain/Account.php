@@ -43,9 +43,8 @@ class Account extends AggregateRoot
         AccountId $id,
         AccountCode $code,
         AccountName $name,
-        AccountDescription $description
-    ): self
-    {
+        AccountDescription $description,
+    ): self {
         $account =  new self($id->value(), $code->value(), $name->value());
         $account->updateDescription($description);
 
@@ -141,7 +140,6 @@ class Account extends AggregateRoot
             }
         }
     }
-
 
     public function markAsUpdated(): void
     {

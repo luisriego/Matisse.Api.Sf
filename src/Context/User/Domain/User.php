@@ -60,9 +60,9 @@ class User extends AggregateRoot implements UserInterface, PasswordAuthenticated
     #[ORM\Column(type: 'datetime', nullable: true)]
     private ?DateTime $updatedAt = null;
 
-//    #[ORM\ManyToOne(targetEntity: Company::class, inversedBy: 'users')]
-//    #[ORM\JoinColumn(nullable: true)]
-//    private ?Company $company = null;
+    //    #[ORM\ManyToOne(targetEntity: Company::class, inversedBy: 'users')]
+    //    #[ORM\JoinColumn(nullable: true)]
+    //    private ?Company $company = null;
 
     public function __construct(
         string $id,

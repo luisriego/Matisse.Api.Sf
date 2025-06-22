@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Context\ResidentUnit\Infrastructure\Persistence\Doctrine;
 
 use App\Context\ResidentUnit\Domain\ResidentUnit;
@@ -18,7 +20,10 @@ class DoctrineResidentUnitRepository extends ServiceEntityRepository implements 
     public function save(ResidentUnit $residentUnit, bool $flush = true): void
     {
         $this->getEntityManager()->persist($residentUnit);
-        $this->getEntityManager()->flush();
+
+        if ($flush) {
+            $this->getEntityManager()->flush();
+        }
     }
 
     public function findOneByIdOrFail(string $id): ResidentUnit
@@ -27,7 +32,7 @@ class DoctrineResidentUnitRepository extends ServiceEntityRepository implements 
             throw ResourceNotFoundException::createFromClassAndId(ResidentUnit::class, $id);
         }
 
-        return  $residentUnit;
+        return $residentUnit;
     }
 
     public function calculateTotalIdealFraction(): float

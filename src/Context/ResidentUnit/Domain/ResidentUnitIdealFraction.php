@@ -1,8 +1,9 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Context\ResidentUnit\Domain;
 
-use App\Shared\Domain\FloatValueObject;
 use App\Shared\Domain\InvalidArgumentException;
 
 final class ResidentUnitIdealFraction

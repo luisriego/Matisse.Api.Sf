@@ -1,9 +1,14 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Context\Account\Domain;
 
 use App\Shared\Domain\InvalidArgumentException;
 use App\Shared\Domain\StringValueObject;
+
+use function mb_strlen;
+use function sprintf;
 
 class AccountDescription extends StringValueObject
 {

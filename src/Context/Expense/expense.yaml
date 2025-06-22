@@ -1,0 +1,24 @@
+services:
+    _defaults:
+        autowire: true
+        autoconfigure: true
+
+    App\Context\Expense\Infrastructure\Http\Controller\:
+        public: true
+        resource: './Infrastructure/Http/Controller/'
+        tags: ['controller.service_arguments']
+
+    App\Context\Expense\:
+        resource: './'
+        exclude:
+            - './Domain/Entity/'
+            - './Infrastructure/Persistence/Entity/'
+            - './Infrastructure/Http/Controller/'
+            - './expense.yaml'
+
+    App\Shared\Application\EventBus:
+        alias: App\Shared\Infrastructure\Bus\SymfonyEventBus
+
+    App\Shared\Infrastructure\Bus\SymfonyEventBus:
+        arguments:
+            - '@event.bus'

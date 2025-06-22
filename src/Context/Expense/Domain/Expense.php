@@ -1,49 +1,54 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Context\Expense\Domain;
 
 use App\Context\Account\Domain\Account;
+use App\Shared\Domain\AggregateRoot;
+use DateTime;
+use DateTimeImmutable;
 
-class Expense
+class Expense extends AggregateRoot
 {
     private string $id;
     private int $amount;
-    private ?string $description = "";
-    private \DateTime $dueDate;
-    private \DateTimeImmutable $paidAt;
-    private \DateTimeImmutable $createdAt;
+    private ?string $description = '';
+    private DateTime $dueDate;
+    private ?DateTimeImmutable $paidAt = null;
+    private DateTimeImmutable $createdAt;
 
     private Account $account;
 
-//    #[ORM\ManyToOne(inversedBy: 'expenses')]
-//    private ?ExpenseType $type = null;
+    //    #[ORM\ManyToOne(inversedBy: 'expenses')]
+    //    private ?ExpenseType $type = null;
 
-//    #[ORM\ManyToOne(targetEntity: RecurringExpense::class, inversedBy: 'expenses')]
-//    #[ORM\JoinColumn(name: "recurring_id", referencedColumnName: "id", nullable: true, onDelete: "SET NULL")]
-//    private ?RecurringExpense $recurringExpense = null;
+    //    #[ORM\ManyToOne(targetEntity: RecurringExpense::class, inversedBy: 'expenses')]
+    //    #[ORM\JoinColumn(name: "recurring_id", referencedColumnName: "id", nullable: true, onDelete: "SET NULL")]
+    //    private ?RecurringExpense $recurringExpense = null;
 
     public function __construct(
         string $id,
         int $amount,
-//        ExpenseType $type,
+        //        ExpenseType $type,
         ?Account $account,
-        \DateTime $dueDate)
-    {
+        DateTime $dueDate,
+    ) {
         $this->id = $id;
         $this->amount = $amount;
         $this->dueDate = $dueDate;
-//        $this->type = $type;
+        //        $this->type = $type;
         $this->account = $account;
-        $this->createdAt = new \DateTimeImmutable();
+        $this->createdAt = new DateTimeImmutable();
     }
 
     public static function create(
         ExpenseId $id,
         ExpenseAmount $amount,
-//        ExpenseType $type,
+        //        ExpenseType $type,
         ?Account $account,
-        ExpenseDueDate $dueDate): self
-    {
+        ExpenseDueDate $dueDate,
+    ): self {
         return new self($id->value(), $amount->value(), $account, $dueDate->value());
     }
 
@@ -62,17 +67,17 @@ class Expense
         return $this->description;
     }
 
-    public function dueDate(): \DateTime
+    public function dueDate(): DateTime
     {
         return $this->dueDate;
     }
 
-    public function paidAt(): \DateTimeImmutable
+    public function paidAt(): DateTimeImmutable
     {
         return $this->paidAt;
     }
 
-    public function createdAt(): \DateTimeImmutable
+    public function createdAt(): DateTimeImmutable
     {
         return $this->createdAt;
     }

@@ -21,7 +21,7 @@ final readonly class AccountUpdaterPatchController
             $id,
             $requestDto->code,
             $requestDto->name,
-            $requestDto->description
+            $requestDto->description,
         );
 
         $this->commandHandler->__invoke($command);

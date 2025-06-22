@@ -19,9 +19,8 @@ final readonly class AccountUpdater
         AccountId $accountId,
         AccountCode $accountCode,
         AccountName $accountName,
-        AccountDescription $accountDescription
-    ): void
-    {
+        AccountDescription $accountDescription,
+    ): void {
         $account = $this->accountRepository->findOneByIdOrFail($accountId->value());
 
         $account->updateCode($accountCode);

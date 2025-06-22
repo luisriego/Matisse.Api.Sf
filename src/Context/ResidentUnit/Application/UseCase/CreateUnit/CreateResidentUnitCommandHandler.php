@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Context\ResidentUnit\Application\UseCase\CreateUnit;
 
 use App\Context\ResidentUnit\Domain\ResidentUnit;
@@ -13,7 +15,7 @@ use App\Shared\Domain\InvalidArgumentException;
 
 final readonly class CreateResidentUnitCommandHandler implements CommandHandler
 {
-    public function __construct(private ResidentUnitRepository $repository, private  EventBus $bus) {}
+    public function __construct(private ResidentUnitRepository $repository, private EventBus $bus) {}
 
     /**
      * @throws InvalidArgumentException

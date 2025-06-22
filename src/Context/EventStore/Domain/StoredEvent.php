@@ -20,7 +20,7 @@ final class StoredEvent
         string $aggregateId,
         string $eventType,
         array $payload,
-        DateTimeImmutable $occurredAt
+        DateTimeImmutable $occurredAt,
     ) {
         $this->id = $id;
         $this->aggregateId = $aggregateId;
@@ -32,14 +32,14 @@ final class StoredEvent
     public static function create(
         string $aggregateId,
         string $eventType,
-        array $payload
+        array $payload,
     ): self {
         return new self(
             Uuid::random(),
             $aggregateId,
             $eventType,
             $payload,
-            new DateTimeImmutable()
+            new DateTimeImmutable(),
         );
     }
 

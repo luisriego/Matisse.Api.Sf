@@ -3,7 +3,6 @@ services:
         autowire: true
         autoconfigure: true
 
-    # Controladores de Account
     App\Context\Account\Infrastructure\Http\Controller\:
         public: true
         resource: './Infrastructure/Http/Controller/'

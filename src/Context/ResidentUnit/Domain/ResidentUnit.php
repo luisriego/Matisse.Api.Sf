@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Context\ResidentUnit\Domain;
 
 use App\Shared\Domain\AggregateRoot;
@@ -20,9 +22,9 @@ class ResidentUnit extends AggregateRoot
 
     private float $idealFraction = 0.0;
 
-//    private Collection $users;
-//
-//    private Collection $incomes;
+    //    private Collection $users;
+    //
+    //    private Collection $incomes;
 
     public function __construct(string $id, string $unit, float $idealFraction)
     {
@@ -36,8 +38,8 @@ class ResidentUnit extends AggregateRoot
     public static function create(
         ResidentUnitId $id,
         ResidentUnitVO $unit,
-        ResidentUnitIdealFraction $idealFraction
-    ):self {
+        ResidentUnitIdealFraction $idealFraction,
+    ): self {
         return new self($id->value(), $unit->value(), $idealFraction->value());
     }
 

@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Context\EventStore\Infrastructure\Persistence\Doctrine;
 
 use App\Context\EventStore\Domain\StoredEvent;

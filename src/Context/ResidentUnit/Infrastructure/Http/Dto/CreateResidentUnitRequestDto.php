@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Context\ResidentUnit\Infrastructure\Http\Dto;
 
 use App\Shared\Infrastructure\RequestDto;
@@ -8,7 +10,7 @@ use Symfony\Component\HttpFoundation\Request;
 class CreateResidentUnitRequestDto implements RequestDto
 {
     public string $id;
-    public  string $unit;
+    public string $unit;
     public float $idealFraction;
 
     public function __construct(Request $request)

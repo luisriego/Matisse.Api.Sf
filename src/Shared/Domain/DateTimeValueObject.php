@@ -1,13 +1,17 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Shared\Domain;
+
+use DateTime;
 
 class DateTimeValueObject
 {
-    public function __construct(protected \DateTime $value) {}
+    public function __construct(protected DateTime $value) {}
 
-    final public function value(): \DateTime
+    public function value(): string
     {
-        return  $this->value;
+        return $this->value->format('Y-m-d');
     }
 }

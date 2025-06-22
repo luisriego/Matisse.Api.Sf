@@ -3,6 +3,7 @@ parameters:
 imports:
     - { resource: '../src/Context/Account/account.yaml' }
     - { resource: '../src/Context/ResidentUnit/resident_unit.yaml'}
+    - { resource: '../src/Context/Expense/expense.yaml'}
     # - { resource: '../src/Context/User/user.yaml' }
 
 services:
