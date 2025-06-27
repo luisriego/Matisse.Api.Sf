@@ -4,23 +4,23 @@ declare(strict_types=1);
 
 namespace App\Context\EventStore\Domain;
 
-use App\Shared\Domain\Uuid;
+use App\Shared\Domain\ValueObject\Uuid;
 use DateTimeImmutable;
 
 final class StoredEvent
 {
-    private Uuid $id;
+    private String $id;
     private string $aggregateId;
     private string $eventType;
     private array $payload;
     private DateTimeImmutable $occurredAt;
 
     private function __construct(
-        Uuid $id,
-        string $aggregateId,
-        string $eventType,
-        array $payload,
-        DateTimeImmutable $occurredAt,
+        string $id,
+        string                              $aggregateId,
+        string                              $eventType,
+        array                               $payload,
+        DateTimeImmutable                   $occurredAt,
     ) {
         $this->id = $id;
         $this->aggregateId = $aggregateId;
@@ -35,7 +35,7 @@ final class StoredEvent
         array $payload,
     ): self {
         return new self(
-            Uuid::random(),
+            Uuid::random()->value(),
             $aggregateId,
             $eventType,
             $payload,
@@ -43,7 +43,7 @@ final class StoredEvent
         );
     }
 
-    public function id(): Uuid
+    public function id(): string
     {
         return $this->id;
     }

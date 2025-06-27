@@ -36,7 +36,7 @@ final class EnterExpenseTest extends TestCase
     /** @test */
     public function test_it_should_not_allow_negative_amount(): void
     {
-        $this->expectException('App\Shared\Domain\InvalidArgumentException');
+        $this->expectException('App\Shared\Domain\Exception\InvalidArgumentException');
 
         new ExpenseAmount(-100); // This should throw the exception
     }

@@ -2,11 +2,11 @@
 
 declare(strict_types=1);
 
-namespace App\Shared\Domain;
+namespace App\Shared\Domain\ValueObject;
 
+use App\Shared\Domain\Exception\InvalidArgumentException;
 use Stringable;
 use Symfony\Component\Uid\Uuid as SfUuid;
-
 use function sprintf;
 
 readonly class Uuid implements Stringable
@@ -46,5 +46,9 @@ readonly class Uuid implements Stringable
         if (!SfUuid::isValid($id)) {
             throw new InvalidArgumentException(sprintf('<%s> does not allow the value <%s>.', static::class, $id));
         }
+    }
+
+    public function toRfc4122()
+    {
     }
 }

@@ -2,14 +2,14 @@
 
 declare(strict_types=1);
 
-namespace App\Shared\Domain;
+namespace App\Shared\Domain\Event;
 
 abstract readonly class DomainEvent
 {
     public function __construct(
-        private string $aggregateId,
-        private string $eventId,
-        private string $occurredOn,
+        private readonly string $aggregateId,
+        private readonly string $eventId,
+        private readonly string $occurredOn,
     ) {}
 
     abstract public static function fromPrimitives(

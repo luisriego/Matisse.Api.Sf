@@ -1,0 +1,16 @@
+services:
+    _defaults:
+        autowire: true
+        autoconfigure: true
+        public: true
+
+    App\Shared\Application\EventStore:
+        class: App\Context\Expense\Infrastructure\Persistence\Doctrine\DoctrineEventStore
+
+    App\Context\EventStore\Infrastructure\Persistence\EventStoreSubscriber:
+        arguments:
+            - '@doctrine.dbal.default_connection'
+        tags:
+            - { name: 'messenger.message_handler', bus: 'event.bus' }
+
+

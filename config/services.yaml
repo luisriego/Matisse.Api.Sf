@@ -4,25 +4,13 @@ imports:
     - { resource: '../src/Context/Account/account.yaml' }
     - { resource: '../src/Context/ResidentUnit/resident_unit.yaml'}
     - { resource: '../src/Context/Expense/expense.yaml'}
+    - { resource: '../src/Context/EventStore/event.yaml'}
     # - { resource: '../src/Context/User/user.yaml' }
 
 services:
     _defaults:
         autowire: true      
-        autoconfigure: true 
-
-    _instanceof:
-        App\Shared\Application\QueryHandler:
-            tags:
-                - { name: 'messenger.message_handler', bus: 'query.bus' }
-
-#
-#    # Configuración para Vertical Slice Architecture
-#    # Controladores por contexto
-#    App\Context\Account\Infrastructure\Http\Controller\:
-#        public: true
-#        resource: '../src/Context/Account/Infrastructure/Http/Controller/'
-#        tags: ['controller.service_arguments']
+        autoconfigure: true
 
     App\Context\User\Infrastructure\Http\Controller\:
         public: true
@@ -52,4 +40,15 @@ services:
     App\Shared\Infrastructure\RequestArgumentResolver:
         tags:
             - { name: controller.argument_value_resolver, priority: 50 }
+
+    _instanceof:
+        App\Shared\Domain\Event\EventSubscriber:
+            tags: [ 'app.event_subscriber' ]
+
+    App\Shared\Domain\Event\EventBus:
+        alias: App\Shared\Infrastructure\InMemorySymfonyEventBus
+
+    App\Shared\Infrastructure\InMemorySymfonyEventBus:
+        arguments:
+            $subscribers: !tagged_iterator app.event_subscriber
 

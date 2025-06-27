@@ -5,6 +5,8 @@ declare(strict_types=1);
 namespace App\Context\Expense\Domain;
 
 use App\Context\Account\Domain\Account;
+use App\Context\Expense\Domain\Bus\ExpenseWasEntered;
+use App\Context\Expense\Domain\Event\ExpenseWasCreated;
 use App\Shared\Domain\AggregateRoot;
 use DateTime;
 use DateTimeImmutable;
@@ -49,7 +51,17 @@ class Expense extends AggregateRoot
         ?Account $account,
         ExpenseDueDate $dueDate,
     ): self {
-        return new self($id->value(), $amount->value(), $account, $dueDate->toDateTime());
+        $expense = new self($id->value(), $amount->value(), $account, $dueDate->toDateTime());
+
+        $expense->record(new ExpenseWasEntered(
+            $id->value(),
+            $amount->value(),
+            $account->id(),
+            $dueDate->value()
+
+        ));
+
+        return $expense;
     }
 
     public function id(): string

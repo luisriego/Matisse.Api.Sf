@@ -4,9 +4,10 @@ declare(strict_types=1);
 
 namespace App\Shared\Infrastructure;
 
-use App\Shared\Domain\AccessDeniedException;
-use App\Shared\Domain\InvalidArgumentException;
-use App\Shared\Domain\ResourceNotFoundException;
+use App\Shared\Domain\Exception\AccessDeniedException;
+use App\Shared\Domain\Exception\InvalidArgumentException;
+use App\Shared\Domain\Exception\ResourceAlreadyExistException;
+use App\Shared\Domain\Exception\ResourceNotFoundException;
 use JsonException;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Response;
@@ -23,6 +24,10 @@ class JsonTransformerExceptionListener
             'code' => Response::HTTP_INTERNAL_SERVER_ERROR,
             'message' => $e->getMessage(),
         ];
+
+        if ($e instanceof ResourceAlreadyExistException) {
+            $data['code'] = Response::HTTP_BAD_REQUEST;
+        }
 
         if ($e instanceof ResourceNotFoundException) {
             $data['code'] = Response::HTTP_NOT_FOUND;

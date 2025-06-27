@@ -13,6 +13,9 @@ final readonly class ExpenseEnterPutController
 {
     public function __construct(private EnterExpenseCommandHandler $commandHandler) {}
 
+    /**
+     * @throws \DateMalformedStringException
+     */
     public function __invoke(EnterExpenseRequestDto $request): Response
     {
         $command = new EnterExpenseCommand(

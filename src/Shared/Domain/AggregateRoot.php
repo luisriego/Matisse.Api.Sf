@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace App\Shared\Domain;
 
+use App\Shared\Domain\Event\DomainEvent;
+
 abstract class AggregateRoot
 {
     private array $domainEvents = [];

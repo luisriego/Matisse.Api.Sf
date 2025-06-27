@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace App\Context\Expense\Domain;
 
-use App\Shared\Domain\IntegerValueObject;
-use App\Shared\Domain\InvalidArgumentException;
+use App\Shared\Domain\Exception\InvalidArgumentException;
+use App\Shared\Domain\ValueObject\IntegerValueObject;
 
 class ExpenseAmount extends IntegerValueObject
 {

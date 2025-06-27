@@ -10,7 +10,7 @@ use App\Shared\Application\EventBus;
 
 readonly class EnableAccountCommandHandler implements CommandHandler
 {
-    public function __construct(private AccountRepository $accountRepository, private EventBus $eventBus) {}
+    public function __construct(private AccountRepository $accountRepository) {}
 
     public function __invoke(EnableAccountCommand $command): void
     {
@@ -19,6 +19,5 @@ readonly class EnableAccountCommandHandler implements CommandHandler
         $account->enable();
 
         $this->accountRepository->save($account);
-        $this->eventBus->publish(...$account->pullDomainEvents());
     }
 }

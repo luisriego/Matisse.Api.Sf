@@ -18,7 +18,6 @@ readonly class UpdateExpenseCommandHandler implements CommandHandler
 {
     public function __construct(
         private ExpenseRepository $repository,
-        private EventBus $bus,
     ) {}
 
     /**
@@ -45,6 +44,5 @@ readonly class UpdateExpenseCommandHandler implements CommandHandler
         }
 
         $this->repository->save($expense, true);
-        $this->bus->publish(...$expense->pullDomainEvents());
     }
 }

@@ -11,11 +11,11 @@ use App\Context\ResidentUnit\Domain\ResidentUnitRepository;
 use App\Context\ResidentUnit\Domain\ResidentUnitVO;
 use App\Shared\Application\CommandHandler;
 use App\Shared\Application\EventBus;
-use App\Shared\Domain\InvalidArgumentException;
+use App\Shared\Domain\Exception\InvalidArgumentException;
 
 final readonly class CreateResidentUnitCommandHandler implements CommandHandler
 {
-    public function __construct(private ResidentUnitRepository $repository, private EventBus $bus) {}
+    public function __construct(private ResidentUnitRepository $repository) {}
 
     /**
      * @throws InvalidArgumentException
@@ -35,6 +35,5 @@ final readonly class CreateResidentUnitCommandHandler implements CommandHandler
         $residentUnit = ResidentUnit::create($id, $unit, $idealFraction);
 
         $this->repository->save($residentUnit, true);
-        $this->bus->publish(...$residentUnit->pullDomainEvents());
     }
 }

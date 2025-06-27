@@ -4,6 +4,6 @@ declare(strict_types=1);
 
 namespace App\Context\Expense\Domain;
 
-use App\Shared\Domain\Uuid;
+use App\Shared\Domain\ValueObject\Uuid;
 
 final readonly class ExpenseId extends Uuid {}

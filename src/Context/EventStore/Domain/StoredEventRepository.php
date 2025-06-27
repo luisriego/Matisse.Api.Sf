@@ -6,7 +6,7 @@ namespace App\Context\EventStore\Domain;
 
 interface StoredEventRepository
 {
-    public function save(StoredEvent $event): void;
+    public function save(StoredEvent $event, bool $flush = true): void;
 
     public function findByAggregateId(string $aggregateId): StoredEvent;
 }

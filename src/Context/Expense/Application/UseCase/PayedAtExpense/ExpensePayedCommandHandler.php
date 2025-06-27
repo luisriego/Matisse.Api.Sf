@@ -8,7 +8,7 @@ use App\Shared\Application\EventBus;
 
 readonly class ExpensePayedCommandHandler implements CommandHandler
 {
-    public function __construct(private ExpenseRepository $repository, private EventBus $eventBus) {}
+    public function __construct(private ExpenseRepository $repository) {}
 
     public function __invoke(PayedAtExpenseCommand $command): void
     {
@@ -16,6 +16,5 @@ readonly class ExpensePayedCommandHandler implements CommandHandler
         $expense->markAsPaid();
 
         $this->repository->save($expense, true);
-        $this->eventBus->publish(...$expense->pullDomainEvents());
     }
 }

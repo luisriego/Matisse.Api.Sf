@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace App\Tests\Context\ResidentUnit\Domain;
 
 use App\Context\ResidentUnit\Domain\ResidentUnitId;
-use App\Shared\Domain\Uuid;
+use App\Shared\Domain\ValueObject\Uuid;
 
 final class ResidentUnitIdMother
 {

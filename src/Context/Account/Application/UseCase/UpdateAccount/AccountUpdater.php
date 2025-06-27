@@ -13,7 +13,7 @@ use App\Shared\Application\EventBus;
 
 final readonly class AccountUpdater
 {
-    public function __construct(private AccountRepository $accountRepository, private EventBus $bus) {}
+    public function __construct(private AccountRepository $accountRepository) {}
 
     public function __invoke(
         AccountId $accountId,
@@ -28,6 +28,5 @@ final readonly class AccountUpdater
         $account->updateDescription($accountDescription);
 
         $this->accountRepository->save($account, true);
-        $this->bus->publish(...$account->pullDomainEvents());
     }
 }

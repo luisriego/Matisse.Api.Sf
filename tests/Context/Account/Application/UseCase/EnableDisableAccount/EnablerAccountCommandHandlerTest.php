@@ -13,14 +13,12 @@ use PHPUnit\Framework\TestCase;
 class EnablerAccountCommandHandlerTest extends TestCase
 {
     private AccountRepository|MockObject $repository;
-    private EventBus|MockObject $eventBus;
     private DisableAccountCommandHandler $handler;
 
     protected function setUp(): void
     {
         $this->repository = $this->createMock(AccountRepository::class);
-        $this->eventBus = $this->createMock(EventBus::class);
-        $this->handler = new DisableAccountCommandHandler($this->repository, $this->eventBus);
+        $this->handler = new DisableAccountCommandHandler($this->repository);
     }
 
     public function testDisableAccount(): void
@@ -41,10 +39,6 @@ class EnablerAccountCommandHandlerTest extends TestCase
             ->expects($this->once())
             ->method('save')
             ->with($account);
-
-        $this->eventBus
-            ->expects($this->once())
-            ->method('publish');
 
         // Act
         ($this->handler)($command);

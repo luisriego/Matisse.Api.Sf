@@ -6,7 +6,7 @@ namespace App\Context\EventStore\Infrastructure\Persistence\Doctrine;
 
 use App\Context\EventStore\Domain\StoredEvent;
 use App\Context\EventStore\Domain\StoredEventRepository;
-use App\Shared\Domain\ResourceNotFoundException;
+use App\Shared\Domain\Exception\ResourceNotFoundException;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
 

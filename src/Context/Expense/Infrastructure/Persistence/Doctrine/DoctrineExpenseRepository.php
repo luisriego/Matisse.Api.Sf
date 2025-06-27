@@ -6,7 +6,7 @@ namespace App\Context\Expense\Infrastructure\Persistence\Doctrine;
 
 use App\Context\Expense\Domain\Expense;
 use App\Context\Expense\Domain\ExpenseRepository;
-use App\Shared\Domain\ResourceNotFoundException;
+use App\Shared\Domain\Exception\ResourceNotFoundException;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
 
@@ -15,6 +15,11 @@ class DoctrineExpenseRepository extends ServiceEntityRepository implements Expen
     public function __construct(ManagerRegistry $registry)
     {
         parent::__construct($registry, Expense::class);
+    }
+
+    public function flush(): void
+    {
+        $this->getEntityManager()->flush();
     }
 
     public function save(Expense $expense, bool $flush = true): void
