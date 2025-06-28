@@ -39,4 +39,10 @@ class DoctrineExpenseRepository extends ServiceEntityRepository implements Expen
 
         return $expense;
     }
+
+    public function findAll(): array
+    {
+        return $this->findAll();
+
+    }
 }

@@ -2,7 +2,6 @@
 
 namespace App\Context\Expense\Infrastructure\Http\Controller;
 
-use App\Context\Account\Application\UseCase\EnableAccount\EnableAccountCommandHandler;
 use App\Context\Expense\Application\UseCase\PayedAtExpense\ExpensePayedCommandHandler;
 use App\Context\Expense\Application\UseCase\PayedAtExpense\PayedAtExpenseCommand;
 use Symfony\Component\HttpFoundation\Response;
