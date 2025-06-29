@@ -17,3 +17,13 @@ expense_payed:
     path: /api/v1/expenses/payed/{id}
     controller: App\Context\Expense\Infrastructure\Http\Controller\ExpensePayedPatchController
     methods: ['PATCH']
+
+expenses_get:
+    path: /api/v1/expenses
+    controller: App\Context\Expense\Infrastructure\Http\Controller\GetAllExpensesController
+    methods: ['GET']
+
+expense_get:
+    path: /api/v1/expenses/{id}
+    controller: App\Context\Expense\Infrastructure\Http\Controller\GetExpenseByIdController
+    methods: ['GET']

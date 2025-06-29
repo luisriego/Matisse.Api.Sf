@@ -21,7 +21,6 @@ readonly class EnterExpenseCommandHandler implements CommandHandler
     public function __construct(
         private ExpenseRepository $expenseRepo,
         private AccountRepository $accountRepo,
-//        private EventStore $eventStore,
         private EventBus $bus,
     ) {}
 

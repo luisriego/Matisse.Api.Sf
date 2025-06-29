@@ -16,14 +16,14 @@ services:
             - './Infrastructure/Http/Controller/'
             - './account.yaml'
 
-    # Alias para EventBus
-    App\Shared\Application\EventBus:
-        alias: App\Shared\Infrastructure\Bus\SymfonyEventBus
-
-    # Implementación de EventBus
-    App\Shared\Infrastructure\Bus\SymfonyEventBus:
-        arguments:
-            - '@event.bus'
+#    # Alias para EventBus
+#    App\Shared\Application\EventBus:
+#        alias: App\Shared\Infrastructure\Bus\SymfonyEventBus
+#
+#    # Implementación de EventBus
+#    App\Shared\Infrastructure\Bus\SymfonyEventBus:
+#        arguments:
+#            - '@event.bus'
 
     App\Context\Account\Application\UseCase\FindAccount\FindAccountQueryHandler:
         tags:

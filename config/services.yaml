@@ -17,7 +17,6 @@ services:
         resource: '../src/Context/User/Infrastructure/Http/Controller/'
         tags: ['controller.service_arguments']
 
-    # Servicios de dominio y aplicación por contexto
     App\Context\:
         resource: '../src/Context/'
         exclude:
@@ -25,7 +24,6 @@ services:
             - '../src/Context/*/Infrastructure/Persistence/Entity/'
             - '../src/Context/*/Infrastructure/Http/Controller/'
 
-    # Servicios compartidos
     App\Shared\:
         resource: '../src/Shared/'
         exclude:
@@ -51,4 +49,3 @@ services:
     App\Shared\Infrastructure\InMemorySymfonyEventBus:
         arguments:
             $subscribers: !tagged_iterator app.event_subscriber
-

@@ -8,6 +8,8 @@ use App\Context\Expense\Domain\Expense;
 use App\Context\Expense\Domain\ExpenseRepository;
 use App\Shared\Domain\Exception\ResourceNotFoundException;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
+use Doctrine\ORM\Exception\ORMException;
+use Doctrine\ORM\OptimisticLockException;
 use Doctrine\Persistence\ManagerRegistry;
 
 class DoctrineExpenseRepository extends ServiceEntityRepository implements ExpenseRepository
@@ -38,11 +40,5 @@ class DoctrineExpenseRepository extends ServiceEntityRepository implements Expen
         }
 
         return $expense;
-    }
-
-    public function findAll(): array
-    {
-        return $this->findAll();
-
     }
 }

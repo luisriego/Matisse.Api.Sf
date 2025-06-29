@@ -6,7 +6,9 @@ namespace App\Context\Expense\Application\UseCase\FindAllExpenses;
 
 use App\Shared\Application\QueryHandler;
 use App\Context\Expense\Domain\ExpenseRepository;
+use Symfony\Component\Messenger\Attribute\AsMessageHandler;
 
+#[AsMessageHandler(bus: 'query.bus')]
 readonly class FindAllExpensesQueryHandler implements QueryHandler
 {
     public function __construct(private ExpenseRepository $repository) {}
