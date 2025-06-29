@@ -10,7 +10,6 @@ readonly class UpdateExpenseCommand implements Command
 {
     public function __construct(
         private string $id,
-        private ?int $amount,
         private ?string $dueDate,
         private ?string $description,
     ) {}
@@ -18,11 +17,6 @@ readonly class UpdateExpenseCommand implements Command
     public function id(): string
     {
         return $this->id;
-    }
-
-    public function amount(): ?int
-    {
-        return $this->amount;
     }
 
     public function dueDate(): ?string

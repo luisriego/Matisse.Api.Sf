@@ -6,4 +6,8 @@ namespace App\Context\Expense\Domain;
 
 use App\Shared\Domain\ValueObject\DateTimeValueObject;
 
-class ExpenseDueDate extends DateTimeValueObject {}
+class ExpenseDueDate extends DateTimeValueObject {
+    public static function fromDateTime(\DateTime $dueDate)
+    {
+    }
+}

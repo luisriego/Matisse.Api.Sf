@@ -11,10 +11,8 @@ use App\Context\Expense\Domain\ExpenseDueDate;
 use App\Context\Expense\Domain\ExpenseId;
 use App\Context\Expense\Domain\ExpenseRepository;
 use App\Shared\Application\CommandHandler;
-use App\Shared\Application\EventStore;
 use App\Shared\Domain\Event\EventBus;
 use DateTime;
-use Symfony\Component\Messenger\MessageBusInterface;
 
 readonly class EnterExpenseCommandHandler implements CommandHandler
 {

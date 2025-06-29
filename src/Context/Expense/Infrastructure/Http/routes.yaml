@@ -8,6 +8,11 @@ expense_enter:
     controller: App\Context\Expense\Infrastructure\Http\Controller\ExpenseEnterPutController
     methods: ['PUT']
 
+expense_compensate:
+    path: /api/v1/expenses/compensate/{id}
+    controller: App\Context\Expense\Infrastructure\Http\Controller\CompensateExpensePatchController
+    methods: ['PATCH']
+
 expense_update:
     path: /api/v1/expenses/update/{id}
     controller: App\Context\Expense\Infrastructure\Http\Controller\UpdateExpensePatchController

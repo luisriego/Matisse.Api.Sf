@@ -21,7 +21,6 @@ final readonly class UpdateExpensePatchController
     {
         $command = new UpdateExpenseCommand(
             $id,
-            $request->amount,
             $request->dueDate,
             $request->description,
         );

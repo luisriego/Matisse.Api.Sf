@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Context\Expense\Domain;
 
 use App\Context\Account\Domain\Account;
+use App\Context\Expense\Domain\Bus\ExpenseWasCompensated;
 use App\Context\Expense\Domain\Bus\ExpenseWasEntered;
 use App\Context\Expense\Domain\Event\ExpenseWasCreated;
 use App\Shared\Domain\AggregateRoot;
@@ -62,6 +63,19 @@ class Expense extends AggregateRoot
         ));
 
         return $expense;
+    }
+
+    public function compensate(): void
+    {
+        $event = new ExpenseWasCompensated(
+            aggregateId: $this->id,
+            amount: - $this->amount,
+            accountId: $this->account->id(),
+            dueDate: $this->dueDate->format('Y-m-d')
+        );
+
+        $this->record($event);
+        $this->applyExpenseWasCompensated($event);
     }
 
     public function id(): string
@@ -138,5 +152,10 @@ class Expense extends AggregateRoot
             'paidAt' => $this->paidAt,
             'createdAt' => $this->createdAt,
         ];
+    }
+
+    private function applyExpenseWasCompensated(ExpenseWasCompensated $event): void
+    {
+        $this->amount -= $event->toPrimitives()['amount'];
     }
 }

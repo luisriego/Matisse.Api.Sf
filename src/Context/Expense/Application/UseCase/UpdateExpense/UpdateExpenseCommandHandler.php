@@ -10,7 +10,6 @@ use App\Context\Expense\Domain\ExpenseDueDate;
 use App\Context\Expense\Domain\ExpenseId;
 use App\Context\Expense\Domain\ExpenseRepository;
 use App\Shared\Application\CommandHandler;
-use App\Shared\Application\EventBus;
 use DateMalformedStringException;
 use DateTime;
 
@@ -27,11 +26,6 @@ readonly class UpdateExpenseCommandHandler implements CommandHandler
     {
         $id = new ExpenseId($command->id());
         $expense = $this->repository->findOneByIdOrFail($id->value());
-
-        if (null !== $command->amount()) {
-            $amount = new ExpenseAmount($command->amount());
-            $expense->updateAmount($amount->value());
-        }
 
         if (null !== $command->dueDate()) {
             $dueDate = new ExpenseDueDate(new DateTime($command->dueDate()));
