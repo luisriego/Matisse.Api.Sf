@@ -1,0 +1,42 @@
+<?php
+
+declare(strict_types=1);
+
+namespace App\Context\Expense\Application\UseCase\EnterExpense;
+
+use App\Context\Account\Domain\AccountRepository;
+use App\Context\Expense\Domain\Expense;
+use App\Context\Expense\Domain\ExpenseAmount;
+use App\Context\Expense\Domain\ExpenseDescription;
+use App\Context\Expense\Domain\ExpenseDueDate;
+use App\Context\Expense\Domain\ExpenseId;
+use App\Context\Expense\Domain\ExpenseRepository;
+use App\Shared\Application\CommandHandler;
+use App\Shared\Domain\Event\EventBus;
+use DateTime;
+
+readonly class EnterExpenseWithDescriptionCommandHandler implements CommandHandler
+{
+    public function __construct(
+        private ExpenseRepository $expenseRepository,
+        private AccountRepository $accountRepository,
+        private EventBus          $bus,
+    ) {}
+
+    /**
+     * @throws \DateMalformedStringException
+     */
+    public function __invoke(EnterExpenseWithDescriptionCommand $command): void
+    {
+        $id      = new ExpenseId($command->id());
+        $amount  = new ExpenseAmount($command->amount());
+        $account = $this->accountRepository->findOneByIdOrFail($command->accountId());
+        $dueDate = new ExpenseDueDate(new DateTime($command->dueDate()));
+        $description = new ExpenseDescription($command->description());
+
+        $expense = Expense::createWithDescription($id, $amount, $account, $dueDate, $description);
+
+        $this->expenseRepository->save($expense, true);
+        $this->bus->publish(...$expense->pullDomainEvents());
+    }
+}

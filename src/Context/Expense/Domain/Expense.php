@@ -7,7 +7,6 @@ namespace App\Context\Expense\Domain;
 use App\Context\Account\Domain\Account;
 use App\Context\Expense\Domain\Bus\ExpenseWasCompensated;
 use App\Context\Expense\Domain\Bus\ExpenseWasEntered;
-use App\Context\Expense\Domain\Event\ExpenseWasCreated;
 use App\Shared\Domain\AggregateRoot;
 use DateTime;
 use DateTimeImmutable;
@@ -53,6 +52,28 @@ class Expense extends AggregateRoot
         ExpenseDueDate $dueDate,
     ): self {
         $expense = new self($id->value(), $amount->value(), $account, $dueDate->toDateTime());
+
+        $expense->record(new ExpenseWasEntered(
+            $id->value(),
+            $amount->value(),
+            $account->id(),
+            $dueDate->value()
+
+        ));
+
+        return $expense;
+    }
+
+    public static function createWithDescription(
+        ExpenseId $id,
+        ExpenseAmount $amount,
+        //        ExpenseType $type,
+        ?Account $account,
+        ExpenseDueDate $dueDate,
+        ExpenseDescription $description,
+    ): self {
+        $expense = new self($id->value(), $amount->value(), $account, $dueDate->toDateTime());
+        $expense->updateDescription($description->value());
 
         $expense->record(new ExpenseWasEntered(
             $id->value(),
