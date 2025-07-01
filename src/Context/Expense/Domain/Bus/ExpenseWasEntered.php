@@ -11,9 +11,10 @@ final readonly class ExpenseWasEntered extends DomainEvent
 {
     public function __construct(
         string $aggregateId,
-        private readonly int $amount,
-        private readonly string $accountId,
-        private readonly string $dueDate,
+        private int $amount,
+        private string $type,
+        private string $accountId,
+        private string $dueDate,
         ?string $eventId = null,
         ?string $occurredOn = null
     ) {
@@ -33,6 +34,7 @@ final readonly class ExpenseWasEntered extends DomainEvent
         return new self(
             $aggregateId,
             $body['amount'],
+            $body['type'],
             $body['accountId'],
             $body['dueDate'],
             $eventId,
@@ -49,6 +51,7 @@ final readonly class ExpenseWasEntered extends DomainEvent
     {
         return [
             'amount' => $this->amount,
+            'type' => $this->type,
             'accountId' => $this->accountId,
             'dueDate' => $this->dueDate
         ];

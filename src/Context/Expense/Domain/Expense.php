@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Context\Expense\Domain;
 
+use AllowDynamicProperties;
 use App\Context\Account\Domain\Account;
 use App\Context\Expense\Domain\Bus\ExpenseWasCompensated;
 use App\Context\Expense\Domain\Bus\ExpenseWasEntered;
@@ -11,7 +12,7 @@ use App\Shared\Domain\AggregateRoot;
 use DateTime;
 use DateTimeImmutable;
 
-class Expense extends AggregateRoot
+#[AllowDynamicProperties] class Expense extends AggregateRoot
 {
     private string $id;
     private int $amount;
@@ -22,8 +23,7 @@ class Expense extends AggregateRoot
 
     private Account $account;
 
-//    #[ORM\ManyToOne(inversedBy: 'expenses')]
-//    private ?ExpenseType $type = null;
+    private ?ExpenseType $type = null;
 
     //    #[ORM\ManyToOne(targetEntity: RecurringExpense::class, inversedBy: 'expenses')]
     //    #[ORM\JoinColumn(name: "recurring_id", referencedColumnName: "id", nullable: true, onDelete: "SET NULL")]
@@ -32,14 +32,14 @@ class Expense extends AggregateRoot
     public function __construct(
         string $id,
         int $amount,
-        //        ExpenseType $type,
+        ExpenseType $type,
         ?Account $account,
         DateTime $dueDate,
     ) {
         $this->id = $id;
         $this->amount = $amount;
         $this->dueDate = $dueDate;
-        //        $this->type = $type;
+        $this->type = $type;
         $this->account = $account;
         $this->createdAt = new DateTimeImmutable();
     }
@@ -47,15 +47,16 @@ class Expense extends AggregateRoot
     public static function create(
         ExpenseId $id,
         ExpenseAmount $amount,
-        //        ExpenseType $type,
+        ExpenseType $type,
         ?Account $account,
         ExpenseDueDate $dueDate,
     ): self {
-        $expense = new self($id->value(), $amount->value(), $account, $dueDate->toDateTime());
+        $expense = new self($id->value(), $amount->value(), $type, $account, $dueDate->toDateTime());
 
         $expense->record(new ExpenseWasEntered(
             $id->value(),
             $amount->value(),
+            $type->id(),
             $account->id(),
             $dueDate->value()
 
@@ -67,17 +68,18 @@ class Expense extends AggregateRoot
     public static function createWithDescription(
         ExpenseId $id,
         ExpenseAmount $amount,
-        //        ExpenseType $type,
+        ExpenseType $type,
         ?Account $account,
         ExpenseDueDate $dueDate,
         ExpenseDescription $description,
     ): self {
-        $expense = new self($id->value(), $amount->value(), $account, $dueDate->toDateTime());
+        $expense = new self($id->value(), $amount->value(), $type, $account, $dueDate->toDateTime());
         $expense->updateDescription($description->value());
 
         $expense->record(new ExpenseWasEntered(
             $id->value(),
             $amount->value(),
+            $type->id(),
             $account->id(),
             $dueDate->value()
 
@@ -91,6 +93,7 @@ class Expense extends AggregateRoot
         $event = new ExpenseWasCompensated(
             aggregateId: $this->id,
             amount: - $this->amount,
+            type: $this->type->id(),
             accountId: $this->account->id(),
             dueDate: $this->dueDate->format('Y-m-d')
         );
@@ -109,7 +112,12 @@ class Expense extends AggregateRoot
         return $this->amount;
     }
 
-    public function description(): ?string
+    public function type(): ExpenseType
+    {
+        return $this->type;
+    }
+
+    public function description(): ?stringy
     {
         return $this->description;
     }

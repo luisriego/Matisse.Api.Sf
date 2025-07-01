@@ -12,6 +12,7 @@ final readonly class ExpenseWasCompensated extends DomainEvent
     public function __construct(
         string $aggregateId,
         private int $amount,
+        private string $type,
         private string $accountId,
         private string $dueDate,
         ?string $eventId = null,
@@ -33,6 +34,7 @@ final readonly class ExpenseWasCompensated extends DomainEvent
         return new self(
             $aggregateId,
             $body['amount'],
+            $body['type'],
             $body['accountId'],
             $body['dueDate'],
             $eventId,
@@ -49,6 +51,7 @@ final readonly class ExpenseWasCompensated extends DomainEvent
     {
         return [
             'amount' => $this->amount,
+            'type' => $this->type,
             'accountId' => $this->accountId,
             'dueDate' => $this->dueDate
         ];
