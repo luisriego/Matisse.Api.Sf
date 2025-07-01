@@ -9,7 +9,7 @@ use App\Shared\Domain\ValueObject\StringValueObject;
 use function mb_strlen;
 use function sprintf;
 
-class AccountDescription extends StringValueObject
+readonly class AccountDescription extends StringValueObject
 {
     public function __construct(string $description)
     {

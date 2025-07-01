@@ -11,7 +11,7 @@ use function mb_strtoupper;
 use function preg_match;
 use function sprintf;
 
-final class AccountCode extends StringValueObject
+final readonly class AccountCode extends StringValueObject
 {
     public function __construct(string $value)
     {

@@ -22,8 +22,8 @@ class Expense extends AggregateRoot
 
     private Account $account;
 
-    //    #[ORM\ManyToOne(inversedBy: 'expenses')]
-    //    private ?ExpenseType $type = null;
+//    #[ORM\ManyToOne(inversedBy: 'expenses')]
+//    private ?ExpenseType $type = null;
 
     //    #[ORM\ManyToOne(targetEntity: RecurringExpense::class, inversedBy: 'expenses')]
     //    #[ORM\JoinColumn(name: "recurring_id", referencedColumnName: "id", nullable: true, onDelete: "SET NULL")]

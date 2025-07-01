@@ -9,7 +9,7 @@ use InvalidArgumentException;
 use function mb_strlen;
 use function sprintf;
 
-final class AccountName extends StringValueObject
+final readonly class AccountName extends StringValueObject
 {
     public function __construct(string $value)
     {

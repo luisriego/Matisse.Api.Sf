@@ -6,4 +6,4 @@ namespace App\Context\ResidentUnit\Domain;
 
 use App\Shared\Domain\ValueObject\StringValueObject;
 
-class ResidentUnitVO extends StringValueObject {}
+readonly class ResidentUnitVO extends StringValueObject {}

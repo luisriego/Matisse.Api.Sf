@@ -6,7 +6,7 @@ namespace App\Shared\Domain\ValueObject;
 
 use function mb_strlen;
 
-abstract class StringValueObject
+readonly abstract class StringValueObject
 {
     public function __construct(protected string $value) {}
 

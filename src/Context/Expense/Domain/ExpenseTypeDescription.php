@@ -6,4 +6,4 @@ namespace App\Context\Expense\Domain;
 
 use App\Shared\Domain\ValueObject\StringValueObject;
 
-final readonly class ExpenseDescription extends StringValueObject {}
+final readonly class ExpenseTypeDescription extends StringValueObject {}
