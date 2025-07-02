@@ -38,9 +38,9 @@ use DateTimeImmutable;
     ) {
         $this->id = $id;
         $this->amount = $amount;
-        $this->dueDate = $dueDate;
         $this->type = $type;
         $this->account = $account;
+        $this->dueDate = $dueDate;
         $this->createdAt = new DateTimeImmutable();
     }
 
@@ -50,20 +50,28 @@ use DateTimeImmutable;
         ExpenseType $type,
         ?Account $account,
         ExpenseDueDate $dueDate,
+        ?ExpenseDescription $description = null
     ): self {
-        $expense = new self($id->value(), $amount->value(), $type, $account, $dueDate->toDateTime());
+        $expense = new self(
+            id: $id->value(),
+            amount: $amount->value(),
+            type: $type,
+            account: $account,
+            dueDate: $dueDate->toDateTime(),
+        );
 
         $expense->record(new ExpenseWasEntered(
             $id->value(),
             $amount->value(),
             $type->id(),
             $account->id(),
-            $dueDate->value()
-
+            $dueDate->value(),
+            $description?->value()
         ));
 
         return $expense;
     }
+
 
     public static function createWithDescription(
         ExpenseId $id,
@@ -117,7 +125,7 @@ use DateTimeImmutable;
         return $this->type;
     }
 
-    public function description(): ?stringy
+    public function description(): ?string
     {
         return $this->description;
     }

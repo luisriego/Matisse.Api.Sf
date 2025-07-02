@@ -11,6 +11,7 @@ class EnterExpenseRequestDto implements RequestDto
 {
     public string $id;
     public int $amount;
+    public string $type;
     public string $accountId;
     public string $dueDate;
 
@@ -18,6 +19,7 @@ class EnterExpenseRequestDto implements RequestDto
     {
         $this->id = $request->get('id');
         $this->amount = $request->get('amount');
+        $this->type = $request->get('type');
         $this->accountId = $request->get('accountId');
         $this->dueDate = $request->get('dueDate');
     }

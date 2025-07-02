@@ -21,6 +21,7 @@ final readonly class ExpenseEnterWithDescriptionPutController
         $command = new EnterExpenseWithDescriptionCommand(
             $request->id,
             $request->amount,
+            $request->type,
             $request->accountId,
             $request->dueDate,
             $request->description,

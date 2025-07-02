@@ -11,6 +11,8 @@ use App\Context\Expense\Domain\ExpenseDescription;
 use App\Context\Expense\Domain\ExpenseDueDate;
 use App\Context\Expense\Domain\ExpenseId;
 use App\Context\Expense\Domain\ExpenseRepository;
+use App\Context\Expense\Domain\ExpenseType;
+use App\Context\Expense\Domain\ExpenseTypeRepository;
 use App\Shared\Application\CommandHandler;
 use App\Shared\Domain\Event\EventBus;
 use DateTime;
@@ -20,7 +22,8 @@ readonly class EnterExpenseWithDescriptionCommandHandler implements CommandHandl
     public function __construct(
         private ExpenseRepository $expenseRepository,
         private AccountRepository $accountRepository,
-        private EventBus          $bus,
+        private ExpenseTypeRepository $typeRepository,
+        private EventBus $bus,
     ) {}
 
     /**
@@ -30,11 +33,12 @@ readonly class EnterExpenseWithDescriptionCommandHandler implements CommandHandl
     {
         $id      = new ExpenseId($command->id());
         $amount  = new ExpenseAmount($command->amount());
+        $type = $this->typeRepository->findOneByIdOrFail($command->type());
         $account = $this->accountRepository->findOneByIdOrFail($command->accountId());
         $dueDate = new ExpenseDueDate(new DateTime($command->dueDate()));
         $description = new ExpenseDescription($command->description());
 
-        $expense = Expense::createWithDescription($id, $amount, $account, $dueDate, $description);
+        $expense = Expense::createWithDescription($id, $amount, $type, $account, $dueDate, $description);
 
         $this->expenseRepository->save($expense, true);
         $this->bus->publish(...$expense->pullDomainEvents());

@@ -11,6 +11,7 @@ final readonly class EnterExpenseCommand implements Command
     public function __construct(
         private string $id,
         private int $amount,
+        private string $type,
         private string $accountId,
         private string $dueDate,
     ) {}
@@ -20,18 +21,11 @@ final readonly class EnterExpenseCommand implements Command
         return $this->id;
     }
 
-    public function amount(): int
-    {
-        return $this->amount;
-    }
+    public function amount(): int { return $this->amount; }
 
-    public function accountId(): string
-    {
-        return $this->accountId;
-    }
+    public function type(): string { return $this->type; }
 
-    public function dueDate(): string
-    {
-        return $this->dueDate;
-    }
+    public function accountId(): string { return $this->accountId; }
+
+    public function dueDate(): string { return $this->dueDate; }
 }
