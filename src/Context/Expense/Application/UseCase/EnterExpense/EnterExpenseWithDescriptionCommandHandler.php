@@ -6,13 +6,12 @@ namespace App\Context\Expense\Application\UseCase\EnterExpense;
 
 use App\Context\Account\Domain\AccountRepository;
 use App\Context\Expense\Domain\Expense;
-use App\Context\Expense\Domain\ExpenseAmount;
-use App\Context\Expense\Domain\ExpenseDescription;
-use App\Context\Expense\Domain\ExpenseDueDate;
-use App\Context\Expense\Domain\ExpenseId;
 use App\Context\Expense\Domain\ExpenseRepository;
-use App\Context\Expense\Domain\ExpenseType;
-use App\Context\Expense\Domain\ExpenseTypeRepository;
+use App\Context\Expense\Domain\ValueObject\ExpenseAmount;
+use App\Context\Expense\Domain\ValueObject\ExpenseDescription;
+use App\Context\Expense\Domain\ValueObject\ExpenseDueDate;
+use App\Context\Expense\Domain\ValueObject\ExpenseId;
+use App\Context\Expense\Domain\ValueObject\ExpenseTypeRepository;
 use App\Shared\Application\CommandHandler;
 use App\Shared\Domain\Event\EventBus;
 use DateTime;

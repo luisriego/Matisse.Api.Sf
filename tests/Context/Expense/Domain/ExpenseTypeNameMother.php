@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\Tests\Context\Expense\Domain;
 
-use App\Context\Expense\Domain\ExpenseTypeName;
+use App\Context\Expense\Domain\ValueObject\ExpenseTypeName;
 
 final class ExpenseTypeNameMother
 {

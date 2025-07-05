@@ -5,10 +5,10 @@ declare(strict_types=1);
 namespace App\Context\Expense\Application\UseCase\CompensateExpense;
 
 use App\Context\Expense\Domain\Expense;
-use App\Context\Expense\Domain\ExpenseAmount;
-use App\Context\Expense\Domain\ExpenseDueDate;
-use App\Context\Expense\Domain\ExpenseId;
 use App\Context\Expense\Domain\ExpenseRepository;
+use App\Context\Expense\Domain\ValueObject\ExpenseAmount;
+use App\Context\Expense\Domain\ValueObject\ExpenseDueDate;
+use App\Context\Expense\Domain\ValueObject\ExpenseId;
 use App\Shared\Application\CommandHandler;
 use App\Shared\Domain\Event\EventBus;
 use Symfony\Component\Uid\Uuid;

@@ -4,11 +4,11 @@ namespace App\Tests\Context\Expense\Domain;
 
 use App\Context\Account\Domain\Account;
 use App\Context\Expense\Domain\Expense;
-use App\Context\Expense\Domain\ExpenseId;
-use App\Context\Expense\Domain\ExpenseAmount;
-use App\Context\Expense\Domain\ExpenseDueDate;
 use App\Context\Expense\Domain\ExpenseType;
-use App\Context\Expense\Domain\ExpenseTypeId;
+use App\Context\Expense\Domain\ValueObject\ExpenseAmount;
+use App\Context\Expense\Domain\ValueObject\ExpenseDueDate;
+use App\Context\Expense\Domain\ValueObject\ExpenseId;
+use App\Context\Expense\Domain\ValueObject\ExpenseTypeId;
 use App\Tests\Context\Account\Domain\AccountMother;
 
 final class ExpenseMother

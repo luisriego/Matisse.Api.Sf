@@ -4,13 +4,12 @@ declare(strict_types=1);
 
 namespace App\Tests\Context\Expense\Domain;
 
-use App\Context\Expense\Domain\ExpenseAmount;
 use App\Context\Expense\Domain\ExpenseType;
-use App\Context\Expense\Domain\ExpenseTypeCode;
-use App\Context\Expense\Domain\ExpenseTypeDescription;
-use App\Context\Expense\Domain\ExpenseTypeDistributionMethod;
-use App\Context\Expense\Domain\ExpenseTypeId;
-use App\Context\Expense\Domain\ExpenseTypeName;
+use App\Context\Expense\Domain\ValueObject\ExpenseTypeCode;
+use App\Context\Expense\Domain\ValueObject\ExpenseTypeDescription;
+use App\Context\Expense\Domain\ValueObject\ExpenseTypeDistributionMethod;
+use App\Context\Expense\Domain\ValueObject\ExpenseTypeId;
+use App\Context\Expense\Domain\ValueObject\ExpenseTypeName;
 
 final class ExpenseTypeMother
 {

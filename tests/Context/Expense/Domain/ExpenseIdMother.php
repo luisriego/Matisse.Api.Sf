@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\Tests\Context\Expense\Domain;
 
-use App\Context\Expense\Domain\ExpenseId;
+use App\Context\Expense\Domain\ValueObject\ExpenseId;
 use Symfony\Component\Uid\Uuid;
 
 final class ExpenseIdMother

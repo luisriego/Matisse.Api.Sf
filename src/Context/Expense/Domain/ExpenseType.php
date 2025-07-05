@@ -4,6 +4,13 @@ declare(strict_types=1);
 
 namespace App\Context\Expense\Domain;
 
+use App\Context\Expense\Domain\ValueObject\ExpenseEndDate;
+use App\Context\Expense\Domain\ValueObject\ExpenseStartDate;
+use App\Context\Expense\Domain\ValueObject\ExpenseTypeCode;
+use App\Context\Expense\Domain\ValueObject\ExpenseTypeDescription;
+use App\Context\Expense\Domain\ValueObject\ExpenseTypeDistributionMethod;
+use App\Context\Expense\Domain\ValueObject\ExpenseTypeId;
+use App\Context\Expense\Domain\ValueObject\ExpenseTypeName;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 
@@ -46,7 +53,9 @@ class ExpenseType
         ExpenseTypeCode $code,
         ExpenseTypeName $name,
         ExpenseTypeDistributionMethod $distributionMethod,
-        ExpenseTypeDescription $description
+        ExpenseTypeDescription $description,
+        ?ExpenseStartDate $startDate = null,
+        ?ExpenseEndDate $endDate = null
     ): self {
         return new self(
             $id->value(),

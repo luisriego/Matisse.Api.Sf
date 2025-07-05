@@ -4,9 +4,9 @@ declare(strict_types=1);
 
 namespace App\Tests\Context\Expense\Domain;
 
-use App\Context\Expense\Domain\ExpenseAmount;
-use App\Context\Expense\Domain\ExpenseDescription;
-use App\Context\Expense\Domain\ExpenseDueDate;
+use App\Context\Expense\Domain\ValueObject\ExpenseAmount;
+use App\Context\Expense\Domain\ValueObject\ExpenseDescription;
+use App\Context\Expense\Domain\ValueObject\ExpenseDueDate;
 use PHPUnit\Framework\TestCase;
 
 final class ExpenseUpdateTest extends TestCase

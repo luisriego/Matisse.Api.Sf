@@ -16,7 +16,21 @@
         <field name="createdAt" column="created_at" type="datetime_immutable" />
 
         <many-to-one field="account" target-entity="App\Context\Account\Domain\Account" inversed-by="expenses">
-            <join-column name="account_id" referenced-column-name="id" nullable="false" />
+            <join-column name="account_id" referenced-column-name="id" nullable="true" />
         </many-to-one>
+
+        <many-to-one field="type" target-entity="App\Context\Expense\Domain\ExpenseType" inversed-by="expenses">
+            <join-column name="type_id" referenced-column-name="id" nullable="true" on-delete="RESTRICT" />
+        </many-to-one>
+
+        <many-to-one field="recurringExpense"
+                     target-entity="App\Context\Expense\Domain\RecurringExpense"
+                     inversed-by="expenses">
+            <join-column name="recurring_id"
+                         referenced-column-name="id"
+                         nullable="true"
+                         on-delete="SET NULL" />
+        </many-to-one>
+
     </entity>
 </doctrine-mapping>

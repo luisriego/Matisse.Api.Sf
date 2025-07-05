@@ -37,3 +37,8 @@ expense_get:
     path: /api/v1/expenses/{id}
     controller: App\Context\Expense\Infrastructure\Http\Controller\GetExpenseByIdController
     methods: ['GET']
+
+recurring_expense_create:
+    path: /api/v1/recurring-expenses/create
+    controller: App\Context\Expense\Infrastructure\Http\Controller\RecurringExpenseCreatePutController
+    methods: ['PUT']

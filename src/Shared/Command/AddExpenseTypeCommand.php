@@ -4,23 +4,23 @@ declare(strict_types=1);
 
 namespace App\Shared\Command;
 
-use App\Shared\Domain\ValueObject\Uuid;
 use App\Context\Expense\Domain\ExpenseType;
-use App\Context\Expense\Domain\ExpenseTypeCode;
-use App\Context\Expense\Domain\ExpenseTypeDescription;
-use App\Context\Expense\Domain\ExpenseTypeDistributionMethod;
-use App\Context\Expense\Domain\ExpenseTypeId;
-use App\Context\Expense\Domain\ExpenseTypeName;
-use App\Context\Expense\Domain\ExpenseTypeRepository;
+use App\Context\Expense\Domain\ValueObject\ExpenseTypeCode;
+use App\Context\Expense\Domain\ValueObject\ExpenseTypeDescription;
+use App\Context\Expense\Domain\ValueObject\ExpenseTypeDistributionMethod;
+use App\Context\Expense\Domain\ValueObject\ExpenseTypeId;
+use App\Context\Expense\Domain\ValueObject\ExpenseTypeName;
+use App\Context\Expense\Domain\ValueObject\ExpenseTypeRepository;
 use App\Shared\Domain\Exception\InvalidArgumentException;
+use App\Shared\Domain\ValueObject\Uuid;
 use http\Exception\RuntimeException;
 use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
-use Symfony\Component\Console\Input\InputOption;
-use Symfony\Component\Console\Style\SymfonyStyle;
 use Symfony\Component\Console\Input\InputInterface;
+use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
+use Symfony\Component\Console\Style\SymfonyStyle;
 
 #[AsCommand(
     name: 'app:add-expense-type',

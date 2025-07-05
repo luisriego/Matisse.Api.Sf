@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace App\Context\Expense\Application\UseCase\FindExpense;
 
-use App\Context\Expense\Domain\ExpenseId;
 use App\Context\Expense\Domain\ExpenseRepository;
+use App\Context\Expense\Domain\ValueObject\ExpenseId;
 use App\Shared\Application\QueryHandler;
 use Symfony\Component\Messenger\Attribute\AsMessageHandler;
 

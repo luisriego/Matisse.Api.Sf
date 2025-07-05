@@ -8,11 +8,16 @@ use AllowDynamicProperties;
 use App\Context\Account\Domain\Account;
 use App\Context\Expense\Domain\Bus\ExpenseWasCompensated;
 use App\Context\Expense\Domain\Bus\ExpenseWasEntered;
+use App\Context\Expense\Domain\ValueObject\ExpenseAmount;
+use App\Context\Expense\Domain\ValueObject\ExpenseDescription;
+use App\Context\Expense\Domain\ValueObject\ExpenseDueDate;
+use App\Context\Expense\Domain\ValueObject\ExpenseId;
 use App\Shared\Domain\AggregateRoot;
 use DateTime;
 use DateTimeImmutable;
 
-#[AllowDynamicProperties] class Expense extends AggregateRoot
+#[AllowDynamicProperties]
+class Expense extends AggregateRoot
 {
     private string $id;
     private int $amount;
@@ -24,10 +29,11 @@ use DateTimeImmutable;
     private Account $account;
 
     private ?ExpenseType $type = null;
+    private ?RecurringExpense $recurringExpense = null;
+
 
     //    #[ORM\ManyToOne(targetEntity: RecurringExpense::class, inversedBy: 'expenses')]
     //    #[ORM\JoinColumn(name: "recurring_id", referencedColumnName: "id", nullable: true, onDelete: "SET NULL")]
-    //    private ?RecurringExpense $recurringExpense = null;
 
     public function __construct(
         string $id,
@@ -195,4 +201,15 @@ use DateTimeImmutable;
     {
         $this->amount -= $event->toPrimitives()['amount'];
     }
+
+    public function setRecurringExpense(?RecurringExpense $recurringExpense): void
+    {
+        $this->recurringExpense = $recurringExpense;
+    }
+
+    public function recurringExpense(): ?RecurringExpense
+    {
+        return $this->recurringExpense;
+    }
+
 }
