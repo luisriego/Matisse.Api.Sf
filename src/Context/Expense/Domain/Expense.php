@@ -40,7 +40,8 @@ class Expense extends AggregateRoot
         ExpenseType $type,
         ?Account $account,
         DateTime $dueDate,
-        bool $isActive = true,
+        ?bool $isActive = true,
+        ?string $description = null,
     ) {
         $this->id = $id;
         $this->amount = $amount;
@@ -48,6 +49,7 @@ class Expense extends AggregateRoot
         $this->account = $account;
         $this->dueDate = $dueDate;
         $this->isActive = $isActive;
+        $this->description = $description;
         $this->createdAt = new DateTimeImmutable();
     }
 
@@ -57,8 +59,8 @@ class Expense extends AggregateRoot
         ExpenseType $type,
         ?Account $account,
         ExpenseDueDate $dueDate,
-        bool $isActive,
-        ?ExpenseDescription $description = null,
+        ?bool $isActive,
+        ?ExpenseDescription $description,
     ): self {
         $expense = new self(
             id: $id->value(),
@@ -67,16 +69,19 @@ class Expense extends AggregateRoot
             account: $account,
             dueDate: $dueDate->toDateTime(),
             isActive: $isActive,
+            description: $description?->value(),
         );
 
-        $expense->record(new ExpenseWasEntered(
-            $id->value(),
-            $amount->value(),
-            $type->id(),
-            $account->id(),
-            $dueDate->value(),
-            $description?->value(),
-        ));
+        if ($isActive !== false) {
+            $expense->record(new ExpenseWasEntered(
+                $id->value(),
+                $amount->value(),
+                $type->id(),
+                $account->id(),
+                $dueDate->value(),
+                $description?->value(),
+            ));
+        }
 
         return $expense;
     }

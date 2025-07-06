@@ -25,6 +25,8 @@ final readonly class ExpenseEnterPutController
             $request->type,
             $request->accountId,
             $request->dueDate,
+            $request->isActive,
+            $request->description,
         );
 
         $this->commandHandler->__invoke($command);

@@ -4,8 +4,13 @@ declare(strict_types=1);
 
 namespace App\Tests\Context\Expense\Application\UseCase\EnterExpense;
 
+use App\Context\Account\Domain\AccountRepository;
 use App\Context\Expense\Application\UseCase\EnterExpense\EnterExpenseCommand;
 use App\Context\Expense\Application\UseCase\EnterExpense\EnterExpenseCommandHandler;
+use App\Context\Expense\Domain\Bus\ExpenseWasEntered;
+use App\Context\Expense\Domain\ExpenseRepository;
+use App\Context\Expense\Domain\ValueObject\ExpenseTypeRepository;
+use App\Shared\Domain\Event\EventBus;
 use App\Tests\Context\Account\Domain\AccountMother;
 use App\Tests\Context\Expense\Domain\ExpenseAmountMother;
 use App\Tests\Context\Expense\Domain\ExpenseDueDateMother;
@@ -29,7 +34,9 @@ class EnterExpenseCommandHandlerTest extends TestCase
         $this->commandHandler = $this->createMock(EnterExpenseCommandHandler::class);
     }
 
-    /** @test */
+    /** @test
+     * @throws \DateMalformedStringException
+     */
     public function test_it_should_enter_an_expense(): void
     {
         $id = ExpenseIdMother::create();
@@ -40,7 +47,7 @@ class EnterExpenseCommandHandlerTest extends TestCase
 
         $expense = ExpenseMother::create($id, $amount, $account, $dueDate);
 
-        $command = new EnterExpenseCommand($id->value(), $amount->value(), $type->id(), $account->id(), $dueDate->value());
+        $command = new EnterExpenseCommand($id->value(), $amount->value(), $type->id(), $account->id(), $dueDate->value(), true);
 
         $this->commandHandler
             ->expects($this->once())

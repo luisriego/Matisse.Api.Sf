@@ -8,6 +8,7 @@ use App\Context\Account\Domain\AccountRepository;
 use App\Context\Expense\Domain\Expense;
 use App\Context\Expense\Domain\ExpenseRepository;
 use App\Context\Expense\Domain\ValueObject\ExpenseAmount;
+use App\Context\Expense\Domain\ValueObject\ExpenseDescription;
 use App\Context\Expense\Domain\ValueObject\ExpenseDueDate;
 use App\Context\Expense\Domain\ValueObject\ExpenseId;
 use App\Context\Expense\Domain\ValueObject\ExpenseTypeRepository;
@@ -15,6 +16,8 @@ use App\Shared\Application\CommandHandler;
 use App\Shared\Domain\Event\EventBus;
 use DateMalformedStringException;
 use DateTime;
+
+use function trim;
 
 readonly class EnterExpenseCommandHandler implements CommandHandler
 {
@@ -35,10 +38,19 @@ readonly class EnterExpenseCommandHandler implements CommandHandler
         $type = $this->typeRepository->findOneByIdOrFail($command->type());
         $account = $this->accountRepo->findOneByIdOrFail($command->accountId());
         $dueDate = new ExpenseDueDate(new DateTime($command->dueDate()));
+        $isActive = $command->isActive() ?? true;
+        $descriptionValue = $command->description();
+        $description = ($descriptionValue !== null && trim($descriptionValue) !== '')
+            ? new ExpenseDescription($descriptionValue)
+            : null;
 
-        $expense = Expense::create($id, $amount, $type, $account, $dueDate);
+        $expense = Expense::create($id, $amount, $type, $account, $dueDate, $isActive, $description);
 
-        $this->expenseRepo->save($expense, false);
-        $this->bus->publish(...$expense->pullDomainEvents());
+        if ($expense->hasDomainEvents()) {
+            $this->expenseRepo->save($expense, false);
+            $this->bus->publish(...$expense->pullDomainEvents());
+        }
+
+        $this->expenseRepo->save($expense, true);
     }
 }
