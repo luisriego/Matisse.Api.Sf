@@ -47,3 +47,8 @@ recurring_expense_remove:
     path: /api/v1/recurring-expenses/{id}
     controller: App\Context\Expense\Infrastructure\Http\Controller\RecurringExpenseRemoveDeleteController
     methods: ['DELETE']
+
+recurring_expense_update:
+    path: /api/v1/recurring-expenses/{id}
+    controller: App\Context\Expense\Infrastructure\Http\Controller\UpdateRecurrentExpensePatchController
+    methods: ['PATCH']

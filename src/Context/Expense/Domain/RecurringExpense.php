@@ -15,7 +15,7 @@ use DateTimeInterface;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 
-final class RecurringExpense
+class RecurringExpense
 {
     private Collection $expenses;
     private readonly DateTimeImmutable $createdAt;
@@ -23,14 +23,14 @@ final class RecurringExpense
 
     public function __construct(
         private readonly string $id,
-        private readonly int $amount,
-        private readonly ExpenseType $expenseType,
-        private readonly int $dueDay,
-        private readonly array $monthsOfYear,
-        private readonly DateTimeInterface $startDate,
-        private readonly ?DateTimeInterface $endDate = null,
-        private readonly ?string $description = null,
-        private readonly ?string $notes = null,
+        private int $amount,
+        private ExpenseType $expenseType,
+        private int $dueDay,
+        private array $monthsOfYear,
+        private DateTimeInterface $startDate,
+        private ?DateTimeInterface $endDate = null,
+        private ?string $description = null,
+        private ?string $notes = null,
     ) {
         $this->expenses   = new ArrayCollection();
         $this->createdAt  = new DateTimeImmutable();
@@ -145,4 +145,63 @@ final class RecurringExpense
             $e->setRecurringExpense(null);
         }
     }
+
+    public function updateAmount(?int $amount): void
+    {
+        if (null !== $amount) {
+            $this->amount = $amount;
+        }
+    }
+
+    public function updateType(ExpenseType $type): void
+    {
+        $this->expenseType = $type;
+    }
+
+    public function UpdateDueDay(?int $dueDay): void
+    {
+        if (null !== $dueDay) {
+            $this->dueDay = $dueDay;
+        }
+    }
+
+    public function updateMonthsOfYear(?array $monthsOfYear): void
+    {
+        if (null !== $monthsOfYear) {
+            $this->monthsOfYear = $monthsOfYear;
+        }
+    }
+
+    public function updateStartDate(?DateTimeInterface $startDate): void
+    {
+        if (null !== $startDate) {
+            $this->startDate = $startDate;
+        }
+    }
+
+    public function updateEndDate(?DateTimeInterface $endDate): void
+    {
+        if (null !== $endDate) {
+            $this->endDate = $endDate;
+        }
+    }
+
+    public function updateDescription(?string $description): void
+    {
+        if (null !== $description) {
+            $this->description = $description;
+        }
+    }
+
+    public function updateNotes(?string $notes): void
+    {
+        if (null !== $notes) {
+            $this->notes = $notes;
+        }
+    }
+
+    //    public function activate(): void
+    //    {
+    //        $this->isActive = true;
+    //    }
 }
