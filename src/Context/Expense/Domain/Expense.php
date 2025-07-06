@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace App\Context\Expense\Domain;
 
-use AllowDynamicProperties;
 use App\Context\Account\Domain\Account;
 use App\Context\Expense\Domain\Bus\ExpenseWasCompensated;
 use App\Context\Expense\Domain\Bus\ExpenseWasEntered;
@@ -16,7 +15,6 @@ use App\Shared\Domain\AggregateRoot;
 use DateTime;
 use DateTimeImmutable;
 
-#[AllowDynamicProperties]
 class Expense extends AggregateRoot
 {
     private string $id;
@@ -25,6 +23,8 @@ class Expense extends AggregateRoot
     private DateTime $dueDate;
     private ?DateTimeImmutable $paidAt = null;
     private DateTimeImmutable $createdAt;
+
+    private bool $isActive = true;
 
     private Account $account;
 
@@ -40,12 +40,14 @@ class Expense extends AggregateRoot
         ExpenseType $type,
         ?Account $account,
         DateTime $dueDate,
+        bool $isActive = true,
     ) {
         $this->id = $id;
         $this->amount = $amount;
         $this->type = $type;
         $this->account = $account;
         $this->dueDate = $dueDate;
+        $this->isActive = $isActive;
         $this->createdAt = new DateTimeImmutable();
     }
 
@@ -55,6 +57,7 @@ class Expense extends AggregateRoot
         ExpenseType $type,
         ?Account $account,
         ExpenseDueDate $dueDate,
+        bool $isActive,
         ?ExpenseDescription $description = null,
     ): self {
         $expense = new self(
@@ -63,6 +66,7 @@ class Expense extends AggregateRoot
             type: $type,
             account: $account,
             dueDate: $dueDate->toDateTime(),
+            isActive: $isActive,
         );
 
         $expense->record(new ExpenseWasEntered(
@@ -99,6 +103,7 @@ class Expense extends AggregateRoot
         return $expense;
     }
 
+    // Compensate means that a new instance of Expense replaces an older one.
     public function compensate(): void
     {
         $event = new ExpenseWasCompensated(
@@ -175,6 +180,21 @@ class Expense extends AggregateRoot
         if (!$this->paidAt()) {
             $this->dueDate = $dueDate;
         }
+    }
+
+    public function isActive(): bool
+    {
+        return $this->isActive;
+    }
+
+    public function activate(bool $isActive): void
+    {
+        $this->isActive = true;
+    }
+
+    public function deactivate(bool $isActive): void
+    {
+        $this->isActive = false;
     }
 
     public function updateDescription(string $description): void
