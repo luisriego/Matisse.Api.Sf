@@ -39,7 +39,6 @@ final class UpdateExpenseCommandHandlerTest extends ExpenseModuleUnitTestCase
 
         $command = new UpdateExpenseCommand(
             $id->value(),
-            $newAmount,
             $newDueDate,
             $newDescription
         );

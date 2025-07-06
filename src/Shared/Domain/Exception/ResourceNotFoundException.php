@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Shared\Domain\Exception;
 
 use DomainException;
+
 use function sprintf;
 
 class ResourceNotFoundException extends DomainException

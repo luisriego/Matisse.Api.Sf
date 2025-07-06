@@ -37,9 +37,8 @@ class ExpenseType
         string $code,
         string $name,
         string $distributionMethod = self::EQUAL,
-        ?string $description = null
-    )
-    {
+        ?string $description = null,
+    ) {
         $this->id                 = $id;
         $this->code               = $code;
         $this->name               = $name;
@@ -55,14 +54,15 @@ class ExpenseType
         ExpenseTypeDistributionMethod $distributionMethod,
         ExpenseTypeDescription $description,
         ?ExpenseStartDate $startDate = null,
-        ?ExpenseEndDate $endDate = null
+        ?ExpenseEndDate $endDate = null,
     ): self {
         return new self(
             $id->value(),
             $code->value(),
             $name->value(),
             $distributionMethod->value(),
-            $description->value());
+            $description->value(),
+        );
     }
 
     public function id(): ?string

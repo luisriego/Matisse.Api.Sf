@@ -21,11 +21,23 @@ final readonly class EnterExpenseCommand implements Command
         return $this->id;
     }
 
-    public function amount(): int { return $this->amount; }
+    public function amount(): int
+    {
+        return $this->amount;
+    }
 
-    public function type(): string { return $this->type; }
+    public function type(): string
+    {
+        return $this->type;
+    }
 
-    public function accountId(): string { return $this->accountId; }
+    public function accountId(): string
+    {
+        return $this->accountId;
+    }
 
-    public function dueDate(): string { return $this->dueDate; }
+    public function dueDate(): string
+    {
+        return $this->dueDate;
+    }
 }

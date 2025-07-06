@@ -5,8 +5,6 @@ declare(strict_types=1);
 namespace App\Context\Expense\Application\UseCase\EnterExpense;
 
 use App\Shared\Application\Command;
-use DateTime;
-use DateTimeInterface;
 
 final readonly class CreateRecurringExpenseCommand implements Command
 {
@@ -19,24 +17,51 @@ final readonly class CreateRecurringExpenseCommand implements Command
         private string $startDate,
         private string $endDate,
         private string $description,
-        private string $notes
+        private string $notes,
     ) {}
 
-    public function id(): string { return $this->id; }
+    public function id(): string
+    {
+        return $this->id;
+    }
 
-    public function amount(): int { return $this->amount; }
+    public function amount(): int
+    {
+        return $this->amount;
+    }
 
-    public function type(): string { return $this->type; }
+    public function type(): string
+    {
+        return $this->type;
+    }
 
-    public function dueDay(): int { return $this->dueDay; }
+    public function dueDay(): int
+    {
+        return $this->dueDay;
+    }
 
-    public function monthsOfYear(): array { return $this->monthsOfYear; }
+    public function monthsOfYear(): array
+    {
+        return $this->monthsOfYear;
+    }
 
-    public function startDate(): string { return $this->startDate; }
+    public function startDate(): string
+    {
+        return $this->startDate;
+    }
 
-    public function endDate(): string { return $this->endDate; }
+    public function endDate(): string
+    {
+        return $this->endDate;
+    }
 
-    public function description(): string { return $this->description; }
+    public function description(): string
+    {
+        return $this->description;
+    }
 
-    public function notes(): string { return $this->notes; }
+    public function notes(): string
+    {
+        return $this->notes;
+    }
 }

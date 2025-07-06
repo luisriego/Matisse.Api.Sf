@@ -9,7 +9,6 @@ use App\Context\Expense\Domain\ValueObject\ExpenseDueDay;
 use App\Context\Expense\Domain\ValueObject\ExpenseEndDate;
 use App\Context\Expense\Domain\ValueObject\ExpenseId;
 use App\Context\Expense\Domain\ValueObject\ExpenseStartDate;
-use App\Shared\Domain\AggregateRoot;
 use DateMalformedStringException;
 use DateTimeImmutable;
 use DateTimeInterface;
@@ -50,7 +49,7 @@ final class RecurringExpense
         ?ExpenseStartDate $startDate = null,
         ?ExpenseEndDate $endDate   = null,
         ?string $description      = null,
-        ?string $notes            = null
+        ?string $notes            = null,
     ): self {
         $start = $startDate ?? ExpenseStartDate::from();
         $end = $endDate   ?? ExpenseEndDate::from();
@@ -64,28 +63,77 @@ final class RecurringExpense
             $start->toDateTime(),
             $end->toDateTime(),
             $description,
-            $notes
+            $notes,
         );
     }
 
     // getters...
-    public function id(): string { return $this->id; }
-    public function amount(): int { return $this->amount; }
-    public function description(): ?string { return $this->description; }
-    public function expenseType(): ExpenseType { return $this->expenseType; }
-    public function dueDay(): int { return $this->dueDay; }
-    public function monthsOfYear(): ?array { return $this->monthsOfYear; }
-    public function startDate(): DateTimeInterface { return $this->startDate; }
-    public function endDate(): ?DateTimeInterface { return $this->endDate; }
-    public function createdAt(): DateTimeImmutable { return $this->createdAt; }
-    public function isActive(): bool { return $this->isActive; }
-    public function notes(): ?string { return $this->notes; }
-    /** @return Collection<int,Expense> */
-    public function expenses(): Collection { return $this->expenses; }
+    public function id(): string
+    {
+        return $this->id;
+    }
+
+    public function amount(): int
+    {
+        return $this->amount;
+    }
+
+    public function description(): ?string
+    {
+        return $this->description;
+    }
+
+    public function expenseType(): ExpenseType
+    {
+        return $this->expenseType;
+    }
+
+    public function dueDay(): int
+    {
+        return $this->dueDay;
+    }
+
+    public function monthsOfYear(): ?array
+    {
+        return $this->monthsOfYear;
+    }
+
+    public function startDate(): DateTimeInterface
+    {
+        return $this->startDate;
+    }
+
+    public function endDate(): ?DateTimeInterface
+    {
+        return $this->endDate;
+    }
+
+    public function createdAt(): DateTimeImmutable
+    {
+        return $this->createdAt;
+    }
+
+    public function isActive(): bool
+    {
+        return $this->isActive;
+    }
+
+    public function notes(): ?string
+    {
+        return $this->notes;
+    }
+
+    /**
+     * @return Collection<int,Expense>
+     */
+    public function expenses(): Collection
+    {
+        return $this->expenses;
+    }
 
     public function addExpense(Expense $e): void
     {
-        if (! $this->expenses->contains($e)) {
+        if (!$this->expenses->contains($e)) {
             $this->expenses->add($e);
             $e->setRecurringExpense($this);
         }

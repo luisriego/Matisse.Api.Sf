@@ -12,6 +12,7 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Messenger\MessageBusInterface;
 use Symfony\Component\Messenger\Stamp\HandledStamp;
 use Symfony\Component\Routing\Attribute\Route;
+use Throwable;
 
 final readonly class GetExpenseByIdController
 {
@@ -31,7 +32,7 @@ final readonly class GetExpenseByIdController
             return new JsonResponse($expenseData, Response::HTTP_OK);
         } catch (ExpenseNotFoundException) {
             return new JsonResponse(['error' => 'Expense not found'], Response::HTTP_NOT_FOUND);
-        } catch (\Throwable $e) {
+        } catch (Throwable $e) {
             return new JsonResponse(['error' => $e->getMessage()], Response::HTTP_INTERNAL_SERVER_ERROR);
         }
     }

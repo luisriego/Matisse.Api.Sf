@@ -6,6 +6,7 @@ namespace App\Context\Account\Domain;
 
 use App\Shared\Domain\Exception\InvalidArgumentException;
 use App\Shared\Domain\ValueObject\StringValueObject;
+
 use function mb_strlen;
 use function sprintf;
 

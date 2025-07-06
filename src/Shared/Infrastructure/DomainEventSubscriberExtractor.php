@@ -4,10 +4,11 @@ declare(strict_types=1);
 
 namespace App\Shared\Infrastructure;
 
-use App\Shared\Domain\Event\DomainEvent;
 use App\Shared\Domain\Event\EventSubscriber;
+use InvalidArgumentException;
 use Symfony\Component\Messenger\Handler\HandlerDescriptor;
-use Symfony\Component\Messenger\Handler\HandlersLocator;
+
+use function sprintf;
 
 final class DomainEventSubscriberExtractor
 {
@@ -17,10 +18,10 @@ final class DomainEventSubscriberExtractor
 
         foreach ($subscribers as $subscriber) {
             if (!$subscriber instanceof EventSubscriber) {
-                throw new \InvalidArgumentException(sprintf(
+                throw new InvalidArgumentException(sprintf(
                     'Subscriber must be an instance of %s, %s given',
                     EventSubscriber::class,
-                    get_class($subscriber)
+                    $subscriber::class,
                 ));
             }
 
@@ -33,9 +34,8 @@ final class DomainEventSubscriberExtractor
 
                 $extractedSubscribers[$eventClass][] = new HandlerDescriptor(
                     $subscriber,
-                    ['method' => '__invoke'] // Ahora pasamos un array de opciones
+                    ['method' => '__invoke'], // Ahora pasamos un array de opciones
                 );
-
             }
         }
 

@@ -31,7 +31,6 @@ class Expense extends AggregateRoot
     private ?ExpenseType $type = null;
     private ?RecurringExpense $recurringExpense = null;
 
-
     //    #[ORM\ManyToOne(targetEntity: RecurringExpense::class, inversedBy: 'expenses')]
     //    #[ORM\JoinColumn(name: "recurring_id", referencedColumnName: "id", nullable: true, onDelete: "SET NULL")]
 
@@ -56,7 +55,7 @@ class Expense extends AggregateRoot
         ExpenseType $type,
         ?Account $account,
         ExpenseDueDate $dueDate,
-        ?ExpenseDescription $description = null
+        ?ExpenseDescription $description = null,
     ): self {
         $expense = new self(
             id: $id->value(),
@@ -72,12 +71,11 @@ class Expense extends AggregateRoot
             $type->id(),
             $account->id(),
             $dueDate->value(),
-            $description?->value()
+            $description?->value(),
         ));
 
         return $expense;
     }
-
 
     public static function createWithDescription(
         ExpenseId $id,
@@ -95,8 +93,7 @@ class Expense extends AggregateRoot
             $amount->value(),
             $type->id(),
             $account->id(),
-            $dueDate->value()
-
+            $dueDate->value(),
         ));
 
         return $expense;
@@ -106,10 +103,10 @@ class Expense extends AggregateRoot
     {
         $event = new ExpenseWasCompensated(
             aggregateId: $this->id,
-            amount: - $this->amount,
+            amount: -$this->amount,
             type: $this->type->id(),
             accountId: $this->account->id(),
-            dueDate: $this->dueDate->format('Y-m-d')
+            dueDate: $this->dueDate->format('Y-m-d'),
         );
 
         $this->record($event);
@@ -197,11 +194,6 @@ class Expense extends AggregateRoot
         ];
     }
 
-    private function applyExpenseWasCompensated(ExpenseWasCompensated $event): void
-    {
-        $this->amount -= $event->toPrimitives()['amount'];
-    }
-
     public function setRecurringExpense(?RecurringExpense $recurringExpense): void
     {
         $this->recurringExpense = $recurringExpense;
@@ -212,4 +204,8 @@ class Expense extends AggregateRoot
         return $this->recurringExpense;
     }
 
+    private function applyExpenseWasCompensated(ExpenseWasCompensated $event): void
+    {
+        $this->amount -= $event->toPrimitives()['amount'];
+    }
 }

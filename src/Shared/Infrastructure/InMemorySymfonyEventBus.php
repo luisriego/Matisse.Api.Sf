@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace App\Shared\Infrastructure;
 
-use App\Shared\Domain\Event\EventBus;
 use App\Shared\Domain\Event\DomainEvent;
+use App\Shared\Domain\Event\EventBus;
 use Symfony\Component\Messenger\Exception\NoHandlerForMessageException;
 use Symfony\Component\Messenger\Handler\HandlersLocator;
 use Symfony\Component\Messenger\MessageBus;

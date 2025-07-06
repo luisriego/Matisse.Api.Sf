@@ -17,7 +17,7 @@ readonly class CompensateExpenseCommandHandler implements CommandHandler
 {
     public function __construct(
         private ExpenseRepository $expenseRepo,
-        private EventBus          $bus
+        private EventBus $bus,
     ) {}
 
     public function __invoke(CompensateExpenseCommand $command): void
@@ -40,7 +40,7 @@ readonly class CompensateExpenseCommandHandler implements CommandHandler
             new ExpenseId(Uuid::v4()->toRfc4122()),
             new ExpenseAmount($command->amount()),
             $expense->account(),
-            new ExpenseDueDate($expense->dueDate())
+            new ExpenseDueDate($expense->dueDate()),
         );
 
         // 6) remove the old one, then save and publish the new expense

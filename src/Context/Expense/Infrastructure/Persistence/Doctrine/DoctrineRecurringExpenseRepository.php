@@ -9,6 +9,9 @@ use App\Context\Expense\Domain\RecurringExpenseRepository;
 use App\Shared\Domain\Exception\ResourceNotFoundException;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
+use Exception;
+
+use function in_array;
 
 class DoctrineRecurringExpenseRepository extends ServiceEntityRepository implements RecurringExpenseRepository
 {
@@ -36,7 +39,7 @@ class DoctrineRecurringExpenseRepository extends ServiceEntityRepository impleme
     }
 
     /**
-     * @throws \Exception
+     * @throws Exception
      */
     public function findOneByIdOrFail(string $id): RecurringExpense
     {
@@ -60,7 +63,7 @@ class DoctrineRecurringExpenseRepository extends ServiceEntityRepository impleme
             // - Si es mensual, siempre se incluye.
             // - Si NO es mensual, se incluye SOLO si el array monthsOfYear no es null
             //   y contiene el número del mes actual.
-            if ($monthsOfYear !== null && in_array($month, $monthsOfYear)) {
+            if ($monthsOfYear !== null && in_array($month, $monthsOfYear, true)) {
                 $activeForThisMonth[] = $recurringExpense;
             }
         }

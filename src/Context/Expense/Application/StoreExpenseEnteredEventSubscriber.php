@@ -12,20 +12,18 @@ use App\Shared\Domain\Event\EventSubscriber;
 final readonly class StoreExpenseEnteredEventSubscriber implements EventSubscriber
 {
     public function __construct(
-        private EventStore $eventStore
-    ) {
-    }
-
-    public static function subscribedTo(): array
-    {
-        return [
-            ExpenseWasEntered::class
-        ];
-    }
+        private EventStore $eventStore,
+    ) {}
 
     public function __invoke(DomainEvent $event): void
     {
         $this->eventStore->append($event);
     }
-}
 
+    public static function subscribedTo(): array
+    {
+        return [
+            ExpenseWasEntered::class,
+        ];
+    }
+}

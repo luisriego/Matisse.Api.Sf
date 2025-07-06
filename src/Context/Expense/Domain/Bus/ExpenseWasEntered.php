@@ -7,6 +7,8 @@ namespace App\Context\Expense\Domain\Bus;
 use App\Shared\Domain\Event\DomainEvent;
 use Symfony\Component\Uid\Uuid as SfUuid;
 
+use function date;
+
 final readonly class ExpenseWasEntered extends DomainEvent
 {
     public function __construct(
@@ -16,12 +18,12 @@ final readonly class ExpenseWasEntered extends DomainEvent
         private string $accountId,
         private string $dueDate,
         ?string $eventId = null,
-        ?string $occurredOn = null
+        ?string $occurredOn = null,
     ) {
         parent::__construct(
             $aggregateId,
             $eventId ?? SfUuid::v4()->toRfc4122(),
-            $occurredOn ?? date('Y-m-d H:i:s')
+            $occurredOn ?? date('Y-m-d H:i:s'),
         );
     }
 
@@ -38,7 +40,7 @@ final readonly class ExpenseWasEntered extends DomainEvent
             $body['accountId'],
             $body['dueDate'],
             $eventId,
-            $occurredOn
+            $occurredOn,
         );
     }
 
@@ -53,7 +55,7 @@ final readonly class ExpenseWasEntered extends DomainEvent
             'amount' => $this->amount,
             'type' => $this->type,
             'accountId' => $this->accountId,
-            'dueDate' => $this->dueDate
+            'dueDate' => $this->dueDate,
         ];
     }
 }

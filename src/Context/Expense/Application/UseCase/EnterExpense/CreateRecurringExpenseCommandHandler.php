@@ -13,16 +13,17 @@ use App\Context\Expense\Domain\ValueObject\ExpenseId;
 use App\Context\Expense\Domain\ValueObject\ExpenseStartDate;
 use App\Context\Expense\Domain\ValueObject\ExpenseTypeRepository;
 use App\Shared\Application\CommandHandler;
+use DateMalformedStringException;
 
 readonly class CreateRecurringExpenseCommandHandler implements CommandHandler
 {
     public function __construct(
         private RecurringExpenseRepository $recurringExpenseRepo,
-        private ExpenseTypeRepository $typeRepo
+        private ExpenseTypeRepository $typeRepo,
     ) {}
 
     /**
-     * @throws \DateMalformedStringException
+     * @throws DateMalformedStringException
      */
     public function __invoke(CreateRecurringExpenseCommand $command): void
     {
@@ -37,7 +38,16 @@ readonly class CreateRecurringExpenseCommandHandler implements CommandHandler
         $notes = $command->notes();
 
         $recurringExpense = RecurringExpense::create(
-            $id, $amount, $type, $dueDay, $monthsOfYear, $startDate, $endDate, $description, $notes);
+            $id,
+            $amount,
+            $type,
+            $dueDay,
+            $monthsOfYear,
+            $startDate,
+            $endDate,
+            $description,
+            $notes,
+        );
 
         $this->recurringExpenseRepo->save($recurringExpense, true);
     }

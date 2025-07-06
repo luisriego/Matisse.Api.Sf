@@ -14,6 +14,7 @@ use App\Context\Expense\Domain\ValueObject\ExpenseId;
 use App\Context\Expense\Domain\ValueObject\ExpenseTypeRepository;
 use App\Shared\Application\CommandHandler;
 use App\Shared\Domain\Event\EventBus;
+use DateMalformedStringException;
 use DateTime;
 
 readonly class EnterExpenseWithDescriptionCommandHandler implements CommandHandler
@@ -26,7 +27,7 @@ readonly class EnterExpenseWithDescriptionCommandHandler implements CommandHandl
     ) {}
 
     /**
-     * @throws \DateMalformedStringException
+     * @throws DateMalformedStringException
      */
     public function __invoke(EnterExpenseWithDescriptionCommand $command): void
     {

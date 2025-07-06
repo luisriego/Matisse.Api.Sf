@@ -9,7 +9,7 @@ use DateTimeImmutable;
 
 final class StoredEvent
 {
-    private String $id;
+    private string $id;
     private string $aggregateId;
     private string $eventType;
     private array $payload;
@@ -17,10 +17,10 @@ final class StoredEvent
 
     private function __construct(
         string $id,
-        string                              $aggregateId,
-        string                              $eventType,
-        array                               $payload,
-        DateTimeImmutable                   $occurredAt,
+        string $aggregateId,
+        string $eventType,
+        array $payload,
+        DateTimeImmutable $occurredAt,
     ) {
         $this->id = $id;
         $this->aggregateId = $aggregateId;

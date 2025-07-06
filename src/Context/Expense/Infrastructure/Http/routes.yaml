@@ -42,3 +42,8 @@ recurring_expense_create:
     path: /api/v1/recurring-expenses/create
     controller: App\Context\Expense\Infrastructure\Http\Controller\RecurringExpenseCreatePutController
     methods: ['PUT']
+
+recurring_expense_remove:
+    path: /api/v1/recurring-expenses/{id}
+    controller: App\Context\Expense\Infrastructure\Http\Controller\RecurringExpenseRemoveDeleteController
+    methods: ['DELETE']

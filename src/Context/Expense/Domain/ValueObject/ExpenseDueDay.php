@@ -20,7 +20,7 @@ class ExpenseDueDay extends IntegerValueObject
     {
         if ($value < 1 || $value > 31) {
             throw new InvalidArgumentException(
-                "O dia do vencimento deve ser um número de mês entre 1 e 31: você insertou {$value}"
+                "O dia do vencimento deve ser um número de mês entre 1 e 31: você insertou {$value}",
             );
         }
     }

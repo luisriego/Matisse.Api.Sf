@@ -1,10 +1,11 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Context\Expense\Application\UseCase\PayedAtExpense;
 
 use App\Context\Expense\Domain\ExpenseRepository;
 use App\Shared\Application\CommandHandler;
-use App\Shared\Application\EventBus;
 
 readonly class ExpensePayedCommandHandler implements CommandHandler
 {

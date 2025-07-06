@@ -7,6 +7,10 @@ namespace App\Context\Expense\Domain\ValueObject;
 use App\Shared\Domain\ValueObject\DateTimeValueObject;
 use DateMalformedStringException;
 use DateTime;
+use Exception;
+
+use function sprintf;
+use function trim;
 
 final class ExpenseStartDate extends DateTimeValueObject
 {
@@ -21,11 +25,11 @@ final class ExpenseStartDate extends DateTimeValueObject
         } else {
             try {
                 $dateTime = new DateTime($date);
-            } catch (\Exception $e) {
+            } catch (Exception $e) {
                 throw new DateMalformedStringException(
                     sprintf('Data malformada para ExpenseStartDate: "%s"', $date),
                     0,
-                    $e
+                    $e,
                 );
             }
         }

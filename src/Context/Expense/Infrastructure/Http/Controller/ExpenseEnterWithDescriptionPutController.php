@@ -7,6 +7,7 @@ namespace App\Context\Expense\Infrastructure\Http\Controller;
 use App\Context\Expense\Application\UseCase\EnterExpense\EnterExpenseWithDescriptionCommand;
 use App\Context\Expense\Application\UseCase\EnterExpense\EnterExpenseWithDescriptionCommandHandler;
 use App\Context\Expense\Infrastructure\Http\Dto\EnterExpenseWithDescriptionRequestDto;
+use DateMalformedStringException;
 use Symfony\Component\HttpFoundation\Response;
 
 final readonly class ExpenseEnterWithDescriptionPutController
@@ -14,7 +15,7 @@ final readonly class ExpenseEnterWithDescriptionPutController
     public function __construct(private EnterExpenseWithDescriptionCommandHandler $commandHandler) {}
 
     /**
-     * @throws \DateMalformedStringException
+     * @throws DateMalformedStringException
      */
     public function __invoke(EnterExpenseWithDescriptionRequestDto $request): Response
     {

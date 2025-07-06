@@ -1,5 +1,6 @@
 <?php
- declare(strict_types=1);
+
+declare(strict_types=1);
 
 namespace App\Context\Expense\Infrastructure\Http\Controller;
 
@@ -10,6 +11,7 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Messenger\MessageBusInterface;
 use Symfony\Component\Messenger\Stamp\HandledStamp;
 use Symfony\Component\Routing\Attribute\Route;
+use Throwable;
 
 final readonly class GetAllExpensesController
 {
@@ -27,7 +29,7 @@ final readonly class GetAllExpensesController
             $expensesData = $envelope->last(HandledStamp::class)->getResult();
 
             return new JsonResponse($expensesData, Response::HTTP_OK);
-        } catch (\Throwable $e) {
+        } catch (Throwable $e) {
             return new JsonResponse(['error' => $e->getMessage()], Response::HTTP_INTERNAL_SERVER_ERROR);
         }
     }

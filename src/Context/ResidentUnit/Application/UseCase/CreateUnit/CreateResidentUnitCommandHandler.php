@@ -10,7 +10,6 @@ use App\Context\ResidentUnit\Domain\ResidentUnitIdealFraction;
 use App\Context\ResidentUnit\Domain\ResidentUnitRepository;
 use App\Context\ResidentUnit\Domain\ResidentUnitVO;
 use App\Shared\Application\CommandHandler;
-use App\Shared\Application\EventBus;
 use App\Shared\Domain\Exception\InvalidArgumentException;
 
 final readonly class CreateResidentUnitCommandHandler implements CommandHandler

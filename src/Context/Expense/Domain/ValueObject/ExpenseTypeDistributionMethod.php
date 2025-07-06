@@ -7,6 +7,8 @@ namespace App\Context\Expense\Domain\ValueObject;
 use App\Shared\Domain\Exception\InvalidArgumentException;
 use App\Shared\Domain\ValueObject\StringValueObject;
 
+use function in_array;
+
 final readonly class ExpenseTypeDistributionMethod extends StringValueObject
 {
     public const string EQUAL      = 'EQUAL';
@@ -21,7 +23,7 @@ final readonly class ExpenseTypeDistributionMethod extends StringValueObject
 
     public function __construct(string $value)
     {
-        if (!\in_array($value, self::ALLOWED, true)) {
+        if (!in_array($value, self::ALLOWED, true)) {
             throw InvalidArgumentException::createFromMessage($value);
         }
 

@@ -9,7 +9,6 @@ use App\Context\Account\Domain\AccountDescription;
 use App\Context\Account\Domain\AccountId;
 use App\Context\Account\Domain\AccountName;
 use App\Context\Account\Domain\AccountRepository;
-use App\Shared\Application\EventBus;
 
 final readonly class AccountUpdater
 {

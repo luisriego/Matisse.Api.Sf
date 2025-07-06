@@ -13,8 +13,6 @@ final readonly class CompensateExpensePatchController
 {
     public function __construct(private CompensateExpenseCommandHandler $commandHandler) {}
 
-    /**
-     */
     public function __invoke(string $id, CompensateExpenseRequestDto $request): Response
     {
         $command = new CompensateExpenseCommand(

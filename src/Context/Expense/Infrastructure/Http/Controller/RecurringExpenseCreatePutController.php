@@ -28,7 +28,7 @@ readonly class RecurringExpenseCreatePutController
             $request->startDate,
             $request->endDate,
             $request->description,
-            $request->notes
+            $request->notes,
         );
 
         $this->commandHandler->__invoke($command);

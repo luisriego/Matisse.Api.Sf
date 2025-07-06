@@ -8,10 +8,13 @@ use App\Shared\Domain\Event\DomainEvent;
 use Doctrine\DBAL\Connection;
 use Doctrine\DBAL\Exception\UniqueConstraintViolationException;
 
+use function json_encode;
+use function md5;
+
 readonly class EventStoreSubscriber
 {
     public function __construct(
-        private Connection $connection
+        private Connection $connection,
     ) {}
 
     public function __invoke(DomainEvent $event): void
@@ -29,7 +32,6 @@ readonly class EventStoreSubscriber
                 'occurred_on' => $event->occurredOn()->format('Y-m-d H:i:s'),
                 'content_hash' => $contentHash,
             ]);
-
         } catch (UniqueConstraintViolationException) {
             // Ignorar silenciosamente los eventos duplicados
             // Opcionalmente puedes registrar esto en logs para depuración
@@ -40,9 +42,9 @@ readonly class EventStoreSubscriber
     {
         // Crear un hash único basado en el contenido del evento
         return md5(
-            $event->aggregateId() .
-            $event->eventName() .
-            json_encode($event->toPrimitives())
+            $event->aggregateId()
+            . $event->eventName()
+            . json_encode($event->toPrimitives()),
         );
     }
 }

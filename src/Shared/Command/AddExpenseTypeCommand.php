@@ -22,14 +22,16 @@ use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Style\SymfonyStyle;
 
+use function in_array;
+use function sprintf;
+use function trim;
+
 #[AsCommand(
     name: 'app:add-expense-type',
-    description: 'Creates a new ExpenseType and stores it in the database'
+    description: 'Creates a new ExpenseType and stores it in the database',
 )]
 final class AddExpenseTypeCommand extends Command
 {
-    private SymfonyStyle $io;
-
     private const EXPENSE_TYPES = [
         // Manutenção e Reparos (MR)
         'MR1GE' => ['name' => 'MANUTENCAO_GERAL', 'description' => 'Pequenos reparos (hidráulica, elétrica em áreas comuns, chaveiro, etc.).', 'distributionMethod' => 'EQUAL', 'isRecurring' => false],
@@ -40,7 +42,6 @@ final class AddExpenseTypeCommand extends Command
         'MR6SI' => ['name' => 'MANUTENCAO_SISTEMAS_INCENDIO', 'description' => 'Recarga/revisão de extintores, teste de mangueiras, manutenção de alarmes e detectores.', 'distributionMethod' => 'EQUAL', 'isRecurring' => false],
         'MR7CP' => ['name' => 'CONTROLE_PRAGAS', 'description' => 'Dedetizações periódicas ou emergenciais (baratas, ratos, cupins, etc.).', 'distributionMethod' => 'EQUAL', 'isRecurring' => false],
         'MR8RO' => ['name' => 'MANUTENÇÃO PREVENTIVA PORTÃO', 'description' => 'Manutenção preventiva ou paliativa do portão da garagem).', 'distributionMethod' => 'EQUAL', 'isRecurring' => true],
-
 
         // Serviços Públicos / Contas de Consumo (SP)
         'SP1EL' => ['name' => 'CEMIG', 'description' => 'Conta de luz de corredores, elevador(es), bombas, portões, iluminação externa.', 'distributionMethod' => 'EQUAL', 'isRecurring' => true],
@@ -65,7 +66,7 @@ final class AddExpenseTypeCommand extends Command
         'OT1DA' => ['name' => 'DESPESAS_ASSEMBLEIA', 'description' => 'Aluguel de espaço (se necessário), cópias de documentos, envio de convocações.', 'distributionMethod' => 'EQUAL', 'isRecurring' => false],
         'OT2DD' => ['name' => 'DESPESAS_DIVERSAS', 'description' => 'Gastos menores e eventuais não classificáveis nas outras categorias.', 'distributionMethod' => 'EQUAL', 'isRecurring' => false],
     ];
-
+    private SymfonyStyle $io;
 
     public function __construct(
         private readonly ExpenseTypeRepository $repository,
@@ -96,6 +97,7 @@ final class AddExpenseTypeCommand extends Command
         // Si piden "all", iteramos el array
         if ($input->getOption('all')) {
             $this->io->title('Creating all predefined ExpenseTypes…');
+
             foreach (self::EXPENSE_TYPES as $code => $data) {
                 $id   = new ExpenseTypeId((string) Uuid::random()); // o como genere tu Uuid
                 $type = ExpenseType::create(
@@ -103,17 +105,18 @@ final class AddExpenseTypeCommand extends Command
                     new ExpenseTypeCode($code),
                     new ExpenseTypeName($data['name']),
                     new ExpenseTypeDistributionMethod($data['distributionMethod']),
-                    new ExpenseTypeDescription($data['description'])
+                    new ExpenseTypeDescription($data['description']),
                 );
                 $this->repository->save($type, true);
                 $this->io->writeln(sprintf(
                     ' ✓ [%s] %s (recurring: %s)',
                     $code,
                     $data['name'],
-                    $data['isRecurring'] ? 'yes' : 'no'
+                    $data['isRecurring'] ? 'yes' : 'no',
                 ));
             }
             $this->io->success('All expense types have been created.');
+
             return Command::SUCCESS;
         }
 
@@ -134,7 +137,7 @@ final class AddExpenseTypeCommand extends Command
         if (!$force && null !== $this->repository->findOneByIdOrFail($id)) {
             throw new RuntimeException(sprintf(
                 'ExpenseType con id "%s" ya existe. Usa --force para sobrescribir.',
-                $id
+                $id,
             ));
         }
 
@@ -143,7 +146,7 @@ final class AddExpenseTypeCommand extends Command
             new ExpenseTypeCode($code),
             new ExpenseTypeName($name),
             new ExpenseTypeDistributionMethod($distributionMethod),
-            new ExpenseTypeDescription($description)
+            new ExpenseTypeDescription($description),
         );
 
         $this->repository->save($expenseType, true);
@@ -151,7 +154,7 @@ final class AddExpenseTypeCommand extends Command
         $this->io->success(sprintf(
             'ExpenseType "%s" (code: %s) creado con éxito.',
             $name,
-            $code
+            $code,
         ));
 
         return Command::SUCCESS;
