@@ -13,9 +13,11 @@ use App\Context\Expense\Domain\RecurringExpense;
 use App\Context\Expense\Domain\RecurringExpenseRepository;
 use App\Context\Expense\Domain\ValueObject\ExpenseTypeRepository;
 use App\Shared\Domain\Event\EventBus;
+use App\Shared\Domain\Exception\ResourceNotFoundException;
 use App\Tests\Context\Expense\Domain\ExpenseAmountMother;
 use App\Tests\Context\Expense\Domain\ExpenseIdMother;
 use App\Tests\Context\Expense\Domain\ExpenseTypeMother;
+use DateMalformedStringException;
 use Exception;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
@@ -51,9 +53,7 @@ class CreateRecurringExpenseCommandHandlerTest extends TestCase
         );
     }
 
-    /** @test
-     * @throws \DateMalformedStringException
-     */
+    /** @test */
     public function test_it_should_create_and_save_recurring_expense(): void
     {
         // Arrange
@@ -84,7 +84,6 @@ class CreateRecurringExpenseCommandHandlerTest extends TestCase
         );
 
         // Mock expectations
-        // Se llama 2 veces: una para crear RecurringExpense, otra para crear individual expenses
         $this->typeRepo
             ->expects(self::exactly(2))
             ->method('findOneByIdOrFail')
@@ -122,6 +121,640 @@ class CreateRecurringExpenseCommandHandlerTest extends TestCase
         $this->eventBus
             ->expects(self::once())
             ->method('publish');
+
+        // Act
+        $this->handler->__invoke($command);
+    }
+
+    /** @test */
+    public function test_it_should_throw_exception_when_expense_type_not_found(): void
+    {
+        // Arrange
+        $idMother = ExpenseIdMother::create();
+        $amountMother = ExpenseAmountMother::create();
+        $nonExistentTypeId = 'non-existent-type-id';
+
+        $command = new CreateRecurringExpenseCommand(
+            $idMother->value(),
+            $amountMother->value(),
+            $nonExistentTypeId,
+            'account-123',
+            15,
+            [1, 6, 12],
+            '2025-01-15',
+            '2025-12-15',
+            'description',
+            'notes'
+        );
+
+        $this->typeRepo
+            ->expects(self::once())
+            ->method('findOneByIdOrFail')
+            ->with($nonExistentTypeId)
+            ->willThrowException(new ResourceNotFoundException('ExpenseType not found'));
+
+        // Assert
+        $this->expectException(ResourceNotFoundException::class);
+        $this->expectExceptionMessage('ExpenseType not found');
+
+        // Act
+        $this->handler->__invoke($command);
+    }
+
+    /** @test */
+    public function test_it_should_throw_exception_when_account_not_found(): void
+    {
+        // Arrange
+        $idMother = ExpenseIdMother::create();
+        $amountMother = ExpenseAmountMother::create();
+        $typeMother = ExpenseTypeMother::create();
+        $nonExistentAccountId = 'non-existent-account-id';
+
+        $command = new CreateRecurringExpenseCommand(
+            $idMother->value(),
+            $amountMother->value(),
+            $typeMother->id(),
+            $nonExistentAccountId,
+            15,
+            [1, 6, 12],
+            '2025-01-15',
+            '2025-12-15',
+            'description',
+            'notes'
+        );
+
+        $this->typeRepo
+            ->expects(self::once())
+            ->method('findOneByIdOrFail')
+            ->with($typeMother->id())
+            ->willReturn($typeMother);
+
+        $this->accountRepo
+            ->expects(self::once())
+            ->method('findOneByIdOrFail')
+            ->with($nonExistentAccountId)
+            ->willThrowException(new ResourceNotFoundException('Account not found'));
+
+        // Assert
+        $this->expectException(ResourceNotFoundException::class);
+        $this->expectExceptionMessage('Account not found');
+
+        // Act
+        $this->handler->__invoke($command);
+    }
+
+    /** @test */
+    public function test_it_should_handle_single_month_recurring_expense(): void
+    {
+        // Arrange
+        $idMother = ExpenseIdMother::create();
+        $amountMother = ExpenseAmountMother::create();
+        $typeMother = ExpenseTypeMother::create();
+        $accountMother = $this->createMock(Account::class);
+
+        $singleMonth = [6]; // Only June
+        $command = new CreateRecurringExpenseCommand(
+            $idMother->value(),
+            $amountMother->value(),
+            $typeMother->id(),
+            'account-123',
+            15,
+            $singleMonth,
+            '2025-01-15',
+            '2025-12-15',
+            'Single month expense',
+            'notes'
+        );
+
+        // Mock expectations
+        $this->typeRepo
+            ->expects(self::exactly(2))
+            ->method('findOneByIdOrFail')
+            ->willReturn($typeMother);
+
+        $this->accountRepo
+            ->expects(self::atLeastOnce())
+            ->method('findOneByIdOrFail')
+            ->willReturn($accountMother);
+
+        $this->recurringExpenseRepo
+            ->expects(self::once())
+            ->method('save');
+
+        $this->expenseRepo
+            ->expects(self::exactly(1)) // Only one expense for single month
+            ->method('save');
+
+        $this->recurringExpenseRepo
+            ->expects(self::once())
+            ->method('flush');
+
+        $this->eventBus
+            ->expects(self::once())
+            ->method('publish');
+
+        // Act
+        $this->handler->__invoke($command);
+    }
+
+    /** @test */
+    public function test_it_should_handle_all_months_recurring_expense(): void
+    {
+        // Arrange
+        $idMother = ExpenseIdMother::create();
+        $amountMother = ExpenseAmountMother::create();
+        $typeMother = ExpenseTypeMother::create();
+        $accountMother = $this->createMock(Account::class);
+
+        $allMonths = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12];
+        $command = new CreateRecurringExpenseCommand(
+            $idMother->value(),
+            $amountMother->value(),
+            $typeMother->id(),
+            'account-123',
+            15,
+            $allMonths,
+            '2025-01-15',
+            '2025-12-15',
+            'Monthly expense',
+            'notes'
+        );
+
+        // Mock expectations
+        $this->typeRepo
+            ->expects(self::exactly(2))
+            ->method('findOneByIdOrFail')
+            ->willReturn($typeMother);
+
+        $this->accountRepo
+            ->expects(self::atLeastOnce())
+            ->method('findOneByIdOrFail')
+            ->willReturn($accountMother);
+
+        $this->recurringExpenseRepo
+            ->expects(self::once())
+            ->method('save');
+
+        $this->expenseRepo
+            ->expects(self::exactly(12)) // 12 individual expenses
+            ->method('save');
+
+        $this->recurringExpenseRepo
+            ->expects(self::once())
+            ->method('flush');
+
+        $this->eventBus
+            ->expects(self::once())
+            ->method('publish');
+
+        // Act
+        $this->handler->__invoke($command);
+    }
+
+    /** @test */
+    public function test_it_should_handle_empty_months_array(): void
+    {
+        // Arrange
+        $idMother = ExpenseIdMother::create();
+        $amountMother = ExpenseAmountMother::create();
+        $typeMother = ExpenseTypeMother::create();
+        $accountMother = $this->createMock(Account::class);
+
+        $emptyMonths = [];
+        $command = new CreateRecurringExpenseCommand(
+            $idMother->value(),
+            $amountMother->value(),
+            $typeMother->id(),
+            'account-123',
+            15,
+            $emptyMonths,
+            '2025-01-15',
+            '2025-12-15',
+            'No months expense',
+            'notes'
+        );
+
+        // Mock expectations
+        $this->typeRepo
+            ->expects(self::exactly(2))
+            ->method('findOneByIdOrFail')
+            ->willReturn($typeMother);
+
+        $this->accountRepo
+            ->expects(self::atLeastOnce())
+            ->method('findOneByIdOrFail')
+            ->willReturn($accountMother);
+
+        $this->recurringExpenseRepo
+            ->expects(self::once())
+            ->method('save');
+
+        $this->expenseRepo
+            ->expects(self::exactly(0)) // No individual expenses
+            ->method('save');
+
+        $this->recurringExpenseRepo
+            ->expects(self::once())
+            ->method('flush');
+
+        $this->eventBus
+            ->expects(self::once())
+            ->method('publish');
+
+        // Act
+        $this->handler->__invoke($command);
+    }
+
+    /** @test */
+    public function test_it_should_handle_invalid_date_format(): void
+    {
+        // Arrange
+        $idMother = ExpenseIdMother::create();
+        $amountMother = ExpenseAmountMother::create();
+        $typeMother = ExpenseTypeMother::create();
+
+        $command = new CreateRecurringExpenseCommand(
+            $idMother->value(),
+            $amountMother->value(),
+            $typeMother->id(),
+            'account-123',
+            15,
+            [1, 6, 12],
+            'invalid-date-format',
+            '2025-12-15',
+            'description',
+            'notes'
+        );
+
+        $this->typeRepo
+            ->expects(self::once())
+            ->method('findOneByIdOrFail')
+            ->willReturn($typeMother);
+
+        // Assert
+        $this->expectException(DateMalformedStringException::class);
+
+        // Act
+        $this->handler->__invoke($command);
+    }
+
+    /** @test */
+    public function test_it_should_handle_edge_case_due_days(): void
+    {
+        // Arrange
+        $idMother = ExpenseIdMother::create();
+        $amountMother = ExpenseAmountMother::create();
+        $typeMother = ExpenseTypeMother::create();
+        $accountMother = $this->createMock(Account::class);
+
+        // Test with day 31 (which doesn't exist in all months)
+        $command = new CreateRecurringExpenseCommand(
+            $idMother->value(),
+            $amountMother->value(),
+            $typeMother->id(),
+            'account-123',
+            31, // Edge case: day 31
+            [2, 4, 6], // February, April, June (shorter months)
+            '2025-01-15',
+            '2025-12-15',
+            'Edge case due day',
+            'notes'
+        );
+
+        // Mock expectations
+        $this->typeRepo
+            ->expects(self::exactly(2))
+            ->method('findOneByIdOrFail')
+            ->willReturn($typeMother);
+
+        $this->accountRepo
+            ->expects(self::atLeastOnce())
+            ->method('findOneByIdOrFail')
+            ->willReturn($accountMother);
+
+        $this->recurringExpenseRepo
+            ->expects(self::once())
+            ->method('save');
+
+        $this->expenseRepo
+            ->expects(self::exactly(3))
+            ->method('save');
+
+        $this->recurringExpenseRepo
+            ->expects(self::once())
+            ->method('flush');
+
+        $this->eventBus
+            ->expects(self::once())
+            ->method('publish');
+
+        // Act
+        $this->handler->__invoke($command);
+    }
+
+    /** @test */
+    public function test_it_should_handle_minimum_due_day(): void
+    {
+        // Arrange
+        $idMother = ExpenseIdMother::create();
+        $amountMother = ExpenseAmountMother::create();
+        $typeMother = ExpenseTypeMother::create();
+        $accountMother = $this->createMock(Account::class);
+
+        $command = new CreateRecurringExpenseCommand(
+            $idMother->value(),
+            $amountMother->value(),
+            $typeMother->id(),
+            'account-123',
+            1, // Minimum due day
+            [1, 6, 12],
+            '2025-01-15',
+            '2025-12-15',
+            'Minimum due day',
+            'notes'
+        );
+
+        // Mock expectations
+        $this->typeRepo
+            ->expects(self::exactly(2))
+            ->method('findOneByIdOrFail')
+            ->willReturn($typeMother);
+
+        $this->accountRepo
+            ->expects(self::atLeastOnce())
+            ->method('findOneByIdOrFail')
+            ->willReturn($accountMother);
+
+        $this->recurringExpenseRepo
+            ->expects(self::once())
+            ->method('save');
+
+        $this->expenseRepo
+            ->expects(self::exactly(3))
+            ->method('save');
+
+        $this->recurringExpenseRepo
+            ->expects(self::once())
+            ->method('flush');
+
+        $this->eventBus
+            ->expects(self::once())
+            ->method('publish');
+
+        // Act
+        $this->handler->__invoke($command);
+    }
+
+    /** @test */
+    public function test_it_should_handle_zero_amount(): void
+    {
+        // Arrange
+        $idMother = ExpenseIdMother::create();
+        $typeMother = ExpenseTypeMother::create();
+        $accountMother = $this->createMock(Account::class);
+
+        $command = new CreateRecurringExpenseCommand(
+            $idMother->value(),
+            0, // Zero amount
+            $typeMother->id(),
+            'account-123',
+            15,
+            [1, 6, 12],
+            '2025-01-15',
+            '2025-12-15',
+            'Zero amount expense',
+            'notes'
+        );
+
+        // Mock expectations
+        $this->typeRepo
+            ->expects(self::exactly(2))
+            ->method('findOneByIdOrFail')
+            ->willReturn($typeMother);
+
+        $this->accountRepo
+            ->expects(self::atLeastOnce())
+            ->method('findOneByIdOrFail')
+            ->willReturn($accountMother);
+
+        $this->recurringExpenseRepo
+            ->expects(self::once())
+            ->method('save');
+
+        $this->expenseRepo
+            ->expects(self::exactly(3))
+            ->method('save');
+
+        $this->recurringExpenseRepo
+            ->expects(self::once())
+            ->method('flush');
+
+        $this->eventBus
+            ->expects(self::once())
+            ->method('publish');
+
+        // Act
+        $this->handler->__invoke($command);
+    }
+
+    /** @test */
+    public function test_it_should_handle_null_description_and_notes(): void
+    {
+        // Arrange
+        $idMother = ExpenseIdMother::create();
+        $amountMother = ExpenseAmountMother::create();
+        $typeMother = ExpenseTypeMother::create();
+        $accountMother = $this->createMock(Account::class);
+
+        $command = new CreateRecurringExpenseCommand(
+            $idMother->value(),
+            $amountMother->value(),
+            $typeMother->id(),
+            'account-123',
+            15,
+            [1, 6, 12],
+            '2025-01-15',
+            '2025-12-15',
+            '', // Empty description
+            '' // Empty notes
+        );
+
+        // Mock expectations
+        $this->typeRepo
+            ->expects(self::exactly(2))
+            ->method('findOneByIdOrFail')
+            ->willReturn($typeMother);
+
+        $this->accountRepo
+            ->expects(self::atLeastOnce())
+            ->method('findOneByIdOrFail')
+            ->willReturn($accountMother);
+
+        $this->recurringExpenseRepo
+            ->expects(self::once())
+            ->method('save');
+
+        $this->expenseRepo
+            ->expects(self::exactly(3))
+            ->method('save');
+
+        $this->recurringExpenseRepo
+            ->expects(self::once())
+            ->method('flush');
+
+        $this->eventBus
+            ->expects(self::once())
+            ->method('publish');
+
+        // Act
+        $this->handler->__invoke($command);
+    }
+
+    /** @test */
+    public function test_it_should_handle_leap_year_february(): void
+    {
+        // Arrange
+        $idMother = ExpenseIdMother::create();
+        $amountMother = ExpenseAmountMother::create();
+        $typeMother = ExpenseTypeMother::create();
+        $accountMother = $this->createMock(Account::class);
+
+        $command = new CreateRecurringExpenseCommand(
+            $idMother->value(),
+            $amountMother->value(),
+            $typeMother->id(),
+            'account-123',
+            29, // February 29th
+            [2], // February only
+            '2024-01-15', // 2024 is a leap year
+            '2024-12-15',
+            'Leap year test',
+            'notes'
+        );
+
+        // Mock expectations
+        $this->typeRepo
+            ->expects(self::exactly(2))
+            ->method('findOneByIdOrFail')
+            ->willReturn($typeMother);
+
+        $this->accountRepo
+            ->expects(self::atLeastOnce())
+            ->method('findOneByIdOrFail')
+            ->willReturn($accountMother);
+
+        $this->recurringExpenseRepo
+            ->expects(self::once())
+            ->method('save');
+
+        $this->expenseRepo
+            ->expects(self::exactly(1))
+            ->method('save');
+
+        $this->recurringExpenseRepo
+            ->expects(self::once())
+            ->method('flush');
+
+        $this->eventBus
+            ->expects(self::once())
+            ->method('publish');
+
+        // Act
+        $this->handler->__invoke($command);
+    }
+
+    /** @test */
+    public function test_it_should_handle_repository_save_failure(): void
+    {
+        // Arrange
+        $idMother = ExpenseIdMother::create();
+        $amountMother = ExpenseAmountMother::create();
+        $typeMother = ExpenseTypeMother::create();
+
+        $command = new CreateRecurringExpenseCommand(
+            $idMother->value(),
+            $amountMother->value(),
+            $typeMother->id(),
+            'account-123',
+            15,
+            [1, 6, 12],
+            '2025-01-15',
+            '2025-12-15',
+            'description',
+            'notes'
+        );
+
+        $this->typeRepo
+            ->expects(self::once()) // Only called once before the save fails
+            ->method('findOneByIdOrFail')
+            ->with($typeMother->id())
+            ->willReturn($typeMother);
+
+        $this->accountRepo
+            ->expects(self::never()) // Never called because save fails first
+            ->method('findOneByIdOrFail');
+
+        $this->recurringExpenseRepo
+            ->expects(self::once())
+            ->method('save')
+            ->willThrowException(new \Exception('Database connection failed'));
+
+        // Assert
+        $this->expectException(\Exception::class);
+        $this->expectExceptionMessage('Database connection failed');
+
+        // Act
+        $this->handler->__invoke($command);
+    }
+
+    /** @test */
+    public function test_it_should_handle_flush_failure(): void
+    {
+        // Arrange
+        $idMother = ExpenseIdMother::create();
+        $amountMother = ExpenseAmountMother::create();
+        $typeMother = ExpenseTypeMother::create();
+        $accountMother = $this->createMock(Account::class);
+
+        $command = new CreateRecurringExpenseCommand(
+            $idMother->value(),
+            $amountMother->value(),
+            $typeMother->id(),
+            'account-123',
+            15,
+            [1, 6, 12],
+            '2025-01-15',
+            '2025-12-15',
+            'description',
+            'notes'
+        );
+
+        $this->typeRepo
+            ->expects(self::exactly(2))
+            ->method('findOneByIdOrFail')
+            ->willReturn($typeMother);
+
+        $this->accountRepo
+            ->expects(self::atLeastOnce())
+            ->method('findOneByIdOrFail')
+            ->willReturn($accountMother);
+
+        $this->recurringExpenseRepo
+            ->expects(self::once())
+            ->method('save');
+
+        $this->expenseRepo
+            ->expects(self::exactly(3))
+            ->method('save');
+
+        $this->recurringExpenseRepo
+            ->expects(self::once())
+            ->method('flush')
+            ->willThrowException(new Exception('Flush failed'));
+
+        // Assert
+        $this->expectException(Exception::class);
+        $this->expectExceptionMessage('Flush failed');
 
         // Act
         $this->handler->__invoke($command);
