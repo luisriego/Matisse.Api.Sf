@@ -23,6 +23,7 @@ readonly class RecurringExpenseCreatePutController
             $request->id,
             $request->amount,
             $request->type,
+            $request->accountId,
             $request->dueDay,
             $request->monthsOfYear,
             $request->startDate,

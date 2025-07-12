@@ -12,6 +12,7 @@ class CreateRecurringExpenseRequestDto implements RequestDto
     public string $id;
     public int $amount;
     public string $type;
+    public string $accountId;
     public int $dueDay;
     public array $monthsOfYear;
     public string $startDate;
@@ -24,6 +25,7 @@ class CreateRecurringExpenseRequestDto implements RequestDto
         $this->id = $request->get('id');
         $this->amount = $request->get('amount');
         $this->type = $request->get('type');
+        $this->accountId = $request->get('accountId');
         $this->dueDay = $request->get('dueDay');
         $this->monthsOfYear = $request->get('monthsOfYear');
         $this->startDate = $request->get('startDate', '');

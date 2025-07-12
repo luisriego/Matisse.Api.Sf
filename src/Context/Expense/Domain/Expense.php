@@ -72,7 +72,7 @@ class Expense extends AggregateRoot
             description: $description?->value(),
         );
 
-        if ($isActive !== false) {
+        if ($expense->isActive()) {
             $expense->record(new ExpenseWasEntered(
                 $id->value(),
                 $amount->value(),
@@ -97,13 +97,15 @@ class Expense extends AggregateRoot
         $expense = new self($id->value(), $amount->value(), $type, $account, $dueDate->toDateTime());
         $expense->updateDescription($description->value());
 
-        $expense->record(new ExpenseWasEntered(
-            $id->value(),
-            $amount->value(),
-            $type->id(),
-            $account->id(),
-            $dueDate->value(),
-        ));
+        if ($expense->isActive()) {
+            $expense->record(new ExpenseWasEntered(
+                $id->value(),
+                $amount->value(),
+                $type->id(),
+                $account->id(),
+                $dueDate->value(),
+            ));
+        }
 
         return $expense;
     }
@@ -197,7 +199,7 @@ class Expense extends AggregateRoot
         $this->isActive = true;
     }
 
-    public function deactivate(bool $isActive): void
+    public function deactivate(): void
     {
         $this->isActive = false;
     }

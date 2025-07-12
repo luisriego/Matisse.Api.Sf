@@ -9,13 +9,14 @@ use App\Context\Expense\Domain\ValueObject\ExpenseDueDay;
 use App\Context\Expense\Domain\ValueObject\ExpenseEndDate;
 use App\Context\Expense\Domain\ValueObject\ExpenseId;
 use App\Context\Expense\Domain\ValueObject\ExpenseStartDate;
+use App\Shared\Domain\AggregateRoot;
 use DateMalformedStringException;
 use DateTimeImmutable;
 use DateTimeInterface;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 
-class RecurringExpense
+class RecurringExpense extends AggregateRoot
 {
     private Collection $expenses;
     private readonly DateTimeImmutable $createdAt;

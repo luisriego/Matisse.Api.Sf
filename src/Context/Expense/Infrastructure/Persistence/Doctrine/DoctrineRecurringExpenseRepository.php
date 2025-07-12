@@ -20,6 +20,11 @@ class DoctrineRecurringExpenseRepository extends ServiceEntityRepository impleme
         parent::__construct($registry, RecurringExpense::class);
     }
 
+    public function flush(): void
+    {
+        $this->getEntityManager()->flush();
+    }
+
     public function save(RecurringExpense $recurringExpense, bool $flush = true): void
     {
         $this->getEntityManager()->persist($recurringExpense);

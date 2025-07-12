@@ -12,6 +12,7 @@ final readonly class CreateRecurringExpenseCommand implements Command
         private string $id,
         private int $amount,
         private string $type,
+        private string $accountId,
         private int $dueDay,
         private array $monthsOfYear,
         private string $startDate,
@@ -33,6 +34,11 @@ final readonly class CreateRecurringExpenseCommand implements Command
     public function type(): string
     {
         return $this->type;
+    }
+
+    public function accountId(): string
+    {
+        return $this->accountId;
     }
 
     public function dueDay(): int
