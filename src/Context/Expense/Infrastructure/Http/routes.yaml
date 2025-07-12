@@ -45,7 +45,7 @@ expense_get_date_range_recurring:
 
 expense_get_date_range:
     path: /api/v1/expenses/date-range/{year}/{month}
-    controller: App\Context\Expense\Infrastructure\Http\Controller\GetExpensesByDateRangeController
+    controller: App\Context\Expense\Infrastructure\Http\Controller\GetActiveExpensesByDateRangeController
     methods: ['GET']
 
 recurring_expense_create:

@@ -50,6 +50,21 @@ class DoctrineExpenseRepository extends ServiceEntityRepository implements Expen
         return $expense;
     }
 
+    public function findActiveByDateRange(DateRange $dateRange): array
+    {
+        return $this->getEntityManager()
+            ->createQuery('
+            SELECT e FROM App\Context\Expense\Domain\Expense e 
+            WHERE e.isActive = true 
+            AND e.dueDate >= :startDate 
+            AND e.dueDate <= :endDate
+            ORDER BY e.dueDate ASC
+        ')
+            ->setParameter('startDate', $dateRange->startDate())
+            ->setParameter('endDate', $dateRange->endDate())
+            ->getResult();
+    }
+
     public function findInactiveByDateRange(DateRange $dateRange): array
     {
         return $this->getEntityManager()

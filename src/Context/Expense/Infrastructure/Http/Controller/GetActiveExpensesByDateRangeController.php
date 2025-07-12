@@ -4,9 +4,8 @@ declare(strict_types=1);
 
 namespace App\Context\Expense\Infrastructure\Http\Controller;
 
-use App\Context\Expense\Application\UseCase\FindInactiveExpensesByDateRange\FindActiveExpensesByDateRangeQuery;
+use App\Context\Expense\Application\UseCase\FindActiveExpensesByDateRange\FindActiveExpensesByDateRangeQuery;
 use App\Shared\Domain\ValueObject\DateRange;
-use DateMalformedStringException;
 use Symfony\Component\DependencyInjection\Attribute\Autowire;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Response;
@@ -14,16 +13,13 @@ use Symfony\Component\Messenger\MessageBusInterface;
 use Symfony\Component\Messenger\Stamp\HandledStamp;
 use Throwable;
 
-final readonly class GetInactiveExpensesByDateRangeController
+final readonly class GetActiveExpensesByDateRangeController
 {
     public function __construct(
         #[Autowire(service: 'query.bus')]
         private MessageBusInterface $queryBus,
     ) {}
 
-    /**
-     * @throws DateMalformedStringException
-     */
     public function __invoke(int $year, int $month): JsonResponse
     {
         try {
