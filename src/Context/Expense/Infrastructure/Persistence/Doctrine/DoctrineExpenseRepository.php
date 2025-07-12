@@ -9,6 +9,7 @@ use App\Context\Expense\Domain\ExpenseRepository;
 use App\Shared\Domain\Exception\ResourceNotFoundException;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
+use App\Shared\Domain\ValueObject\DateRange;
 
 class DoctrineExpenseRepository extends ServiceEntityRepository implements ExpenseRepository
 {
@@ -47,5 +48,20 @@ class DoctrineExpenseRepository extends ServiceEntityRepository implements Expen
         }
 
         return $expense;
+    }
+
+    public function findInactiveByDateRange(DateRange $dateRange): array
+    {
+        return $this->getEntityManager()
+            ->createQuery('
+            SELECT e FROM App\Context\Expense\Domain\Expense e 
+            WHERE e.isActive = false 
+            AND e.dueDate >= :startDate 
+            AND e.dueDate <= :endDate
+            ORDER BY e.dueDate ASC
+        ')
+            ->setParameter('startDate', $dateRange->startDate())
+            ->setParameter('endDate', $dateRange->endDate())
+            ->getResult();
     }
 }

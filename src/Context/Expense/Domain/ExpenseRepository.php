@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace App\Context\Expense\Domain;
 
+use App\Shared\Domain\ValueObject\DateRange;
+
 interface ExpenseRepository
 {
     public function flush(): void;
@@ -15,4 +17,6 @@ interface ExpenseRepository
     public function findOneByIdOrFail(string $id): Expense;
 
     public function findAll(): array;
+
+    public function findInactiveByDateRange(DateRange $dateRange): array;
 }

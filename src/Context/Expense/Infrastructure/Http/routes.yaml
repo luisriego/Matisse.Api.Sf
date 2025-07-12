@@ -38,6 +38,16 @@ expense_get:
     controller: App\Context\Expense\Infrastructure\Http\Controller\GetExpenseByIdController
     methods: ['GET']
 
+expense_get_date_range_recurring:
+    path: /api/v1/expenses/date-range-recurring/{year}/{month}
+    controller: App\Context\Expense\Infrastructure\Http\Controller\GetInactiveExpensesByDateRangeController
+    methods: ['GET']
+
+expense_get_date_range:
+    path: /api/v1/expenses/date-range/{year}/{month}
+    controller: App\Context\Expense\Infrastructure\Http\Controller\GetExpensesByDateRangeController
+    methods: ['GET']
+
 recurring_expense_create:
     path: /api/v1/recurring-expenses/create
     controller: App\Context\Expense\Infrastructure\Http\Controller\RecurringExpenseCreatePutController
