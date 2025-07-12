@@ -38,4 +38,31 @@ final class ExpenseMother
             $dueDate
         );
     }
+
+    public static function createInactive(
+        ?ExpenseId $id = null,
+        ?ExpenseAmount $amount = null,
+        ?Account $account = null,
+        ?ExpenseDueDate $dueDate = null,
+        ?ExpenseType $type = null
+    ): Expense {
+        $id      = $id      ?? ExpenseIdMother::create();
+        $amount  = $amount  ?? ExpenseAmountMother::create();
+        $account = $account ?? AccountMother::create();
+        $dueDate = $dueDate?->toDateTime() ?? new \DateTime();
+        $type    = $type    ?? new ExpenseType(
+            ExpenseTypeId::random()->value(),
+            'DEFAULT_CODE',
+            'Default Type'
+        );
+
+        return new Expense(
+            $id->value(),
+            $amount->value(),
+            $type,
+            $account,
+            $dueDate,
+            false
+        );
+    }
 }
