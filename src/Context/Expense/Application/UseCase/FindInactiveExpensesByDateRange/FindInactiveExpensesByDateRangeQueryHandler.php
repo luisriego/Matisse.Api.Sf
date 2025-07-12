@@ -8,6 +8,8 @@ use App\Context\Expense\Domain\ExpenseRepository;
 use App\Shared\Application\QueryHandler;
 use Symfony\Component\Messenger\Attribute\AsMessageHandler;
 
+use function array_map;
+
 #[AsMessageHandler(bus: 'query.bus')]
 final readonly class FindInactiveExpensesByDateRangeQueryHandler implements QueryHandler
 {
@@ -17,6 +19,6 @@ final readonly class FindInactiveExpensesByDateRangeQueryHandler implements Quer
     {
         $expenses = $this->repository->findInactiveByDateRange($query->dateRange());
 
-        return array_map(fn($expense) => $expense->toArray(), $expenses);
+        return array_map(fn ($expense) => $expense->toArray(), $expenses);
     }
 }

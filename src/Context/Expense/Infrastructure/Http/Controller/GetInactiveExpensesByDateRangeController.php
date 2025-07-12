@@ -6,6 +6,7 @@ namespace App\Context\Expense\Infrastructure\Http\Controller;
 
 use App\Context\Expense\Application\UseCase\FindInactiveExpensesByDateRange\FindInactiveExpensesByDateRangeQuery;
 use App\Shared\Domain\ValueObject\DateRange;
+use DateMalformedStringException;
 use Symfony\Component\DependencyInjection\Attribute\Autowire;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Response;
@@ -21,7 +22,7 @@ final readonly class GetInactiveExpensesByDateRangeController
     ) {}
 
     /**
-     * @throws \DateMalformedStringException
+     * @throws DateMalformedStringException
      */
     public function __invoke(int $year, int $month): JsonResponse
     {

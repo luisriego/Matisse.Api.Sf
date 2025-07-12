@@ -7,9 +7,9 @@ namespace App\Context\Expense\Infrastructure\Persistence\Doctrine;
 use App\Context\Expense\Domain\Expense;
 use App\Context\Expense\Domain\ExpenseRepository;
 use App\Shared\Domain\Exception\ResourceNotFoundException;
+use App\Shared\Domain\ValueObject\DateRange;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
-use App\Shared\Domain\ValueObject\DateRange;
 
 class DoctrineExpenseRepository extends ServiceEntityRepository implements ExpenseRepository
 {
