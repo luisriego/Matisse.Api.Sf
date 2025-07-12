@@ -23,12 +23,14 @@ use App\Shared\Domain\ValueObject\Uuid;
 use DateMalformedStringException;
 use DateTime;
 
+use function sprintf;
+
 readonly class CreateRecurringExpenseCommandHandler implements CommandHandler
 {
     public function __construct(
         private RecurringExpenseRepository $recurringExpenseRepository,
         private ExpenseTypeRepository $typeRepo,
-        protected AccountRepository $accountRepository, 
+        protected AccountRepository $accountRepository,
         protected ExpenseRepository $expenseRepository,
         private EventBus $eventBus,
     ) {}
@@ -71,7 +73,6 @@ readonly class CreateRecurringExpenseCommandHandler implements CommandHandler
         // Collect events from individual expenses
         foreach ($individualExpenses as $expense) {
             $events = [...$events, ...$expense->pullDomainEvents()];
-
         }
 
         // Flush everything at once
@@ -95,7 +96,7 @@ readonly class CreateRecurringExpenseCommandHandler implements CommandHandler
         $expenses = [];
 
         foreach ($command->monthsOfYear() as $month) {
-            $dueDate = (new DateTime())->setDate((int)$year, $month, $command->dueDay())->setTime(0, 30);
+            $dueDate = (new DateTime())->setDate((int) $year, $month, $command->dueDay())->setTime(0, 30);
 
             $expense = Expense::create(
                 new ExpenseId(Uuid::random()->value()),
@@ -104,7 +105,7 @@ readonly class CreateRecurringExpenseCommandHandler implements CommandHandler
                 $account,
                 new ExpenseDueDate($dueDate),
                 false,
-                new ExpenseDescription(sprintf('%s (%s)', $command->description() ?? 'Recurring expense', $dueDate->format('F')))
+                new ExpenseDescription(sprintf('%s (%s)', $command->description() ?? 'Recurring expense', $dueDate->format('F'))),
             );
 
             $expense->setRecurringExpense($recurringExpense);
@@ -116,6 +117,4 @@ readonly class CreateRecurringExpenseCommandHandler implements CommandHandler
 
         return $expenses;
     }
-
-
 }
