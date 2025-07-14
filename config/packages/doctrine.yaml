@@ -59,6 +59,13 @@ doctrine:
                 prefix: 'App\Context\Expense\Domain'
                 alias: Expense
 
+            Income:
+                is_bundle: false
+                type: xml
+                dir: '%kernel.project_dir%/src/Context/Income/Infrastructure/Persistence/Doctrine'
+                prefix: 'App\Context\Income\Domain'
+                alias: Income
+
 when@test:
     doctrine:
         dbal:

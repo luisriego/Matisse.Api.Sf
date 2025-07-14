@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<doctrine-mapping xmlns="http://doctrine-project.org/schemas/orm/doctrine-mapping"
+                  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                  xsi:schemaLocation="http://doctrine-project.org/schemas/orm/doctrine-mapping
+                  https://www.doctrine-project.org/schemas/orm/doctrine-mapping.xsd">
+
+    <entity name="App\Context\Income\Domain\IncomeType" table="income_type" repository-class="App\Context\Income\Infrastructure\Persistence\Doctrine\DoctrineIncomeTypeRepository" >
+        <id name="id" type="string" column="id" length="36">
+            <generator strategy="NONE"/>
+        </id>
+        <field name="name" column="name" type="string" />
+        <field name="code" column="code" type="string" nullable="true" />
+        <field name="description" column="description" type="text" />
+
+       <one-to-many field="incomes" target-entity="App\Context\Income\Domain\Income" mapped-by="incomeType" />
+
+    </entity>
+</doctrine-mapping>

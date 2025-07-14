@@ -14,3 +14,6 @@ resident_unit_routes:
 
 expense_routes:
     resource: '../src/Context/Expense/Infrastructure/Http/routes.yaml'
+
+income_routes:
+    resource: '../src/Context/Income/Infrastructure/Http/routes.yaml'

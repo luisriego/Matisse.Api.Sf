@@ -4,9 +4,8 @@ declare(strict_types=1);
 
 namespace App\Context\Expense\Infrastructure\Http\Controller;
 
-use App\Context\Expense\Application\UseCase\FindInactiveExpensesByDateRange\FindActiveExpensesByDateRangeQuery;
+use App\Context\Expense\Application\UseCase\FindInactiveExpensesByDateRange\FindInactiveExpensesByDateRangeQuery;
 use App\Shared\Domain\ValueObject\DateRange;
-use DateMalformedStringException;
 use Symfony\Component\DependencyInjection\Attribute\Autowire;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Response;
@@ -21,14 +20,11 @@ final readonly class GetInactiveExpensesByDateRangeController
         private MessageBusInterface $queryBus,
     ) {}
 
-    /**
-     * @throws DateMalformedStringException
-     */
     public function __invoke(int $year, int $month): JsonResponse
     {
         try {
             $dateRange = DateRange::fromMonth($year, $month);
-            $query = new FindActiveExpensesByDateRangeQuery($dateRange);
+            $query = new FindInactiveExpensesByDateRangeQuery($dateRange);
 
             $envelope = $this->queryBus->dispatch($query);
             $handledStamp = $envelope->last(HandledStamp::class);
