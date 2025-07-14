@@ -4,11 +4,9 @@ declare(strict_types=1);
 
 namespace App\Context\Income\Domain;
 
-use App\Context\Expense\Domain\ValueObject\ExpenseIsActive;
 use App\Context\Income\Domain\ValueObject\IncomeAmount;
 use App\Context\Income\Domain\ValueObject\IncomeDueDate;
 use App\Context\Income\Domain\ValueObject\IncomeId;
-use App\Context\Income\Domain\ValueObject\IncomePaidAt;
 use App\Context\ResidentUnit\Domain\ResidentUnit;
 use App\Shared\Domain\AggregateRoot;
 use DateTime;
@@ -98,6 +96,16 @@ class Income extends AggregateRoot
     public function setIncomeType(?IncomeType $incomeType): void
     {
         $this->incomeType = $incomeType;
+    }
+
+    public function updateDueDate(DateTime $dueDate): void
+    {
+        $this->dueDate = $dueDate;
+    }
+
+    public function updateDescription(string $description): void
+    {
+        $this->description = $description;
     }
 
     public function toArray(): array

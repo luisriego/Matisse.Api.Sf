@@ -27,7 +27,6 @@ class EnterIncomeRequestDto implements RequestDto
         $this->description = $request->get('description');
     }
 
-
     public function toCommand(): EnterIncomeCommand
     {
         return new EnterIncomeCommand(
