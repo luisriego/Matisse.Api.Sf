@@ -14,7 +14,6 @@ final readonly class EnterIncomeCommand implements Command
         private string $residentUnitId,
         private string $type,
         private string $dueDate,
-        private ?bool $isActive,
         private ?string $description = null,
     ) {}
 
@@ -41,11 +40,6 @@ final readonly class EnterIncomeCommand implements Command
     public function dueDate(): string
     {
         return $this->dueDate;
-    }
-
-    public function isActive(): ?bool
-    {
-        return $this->isActive;
     }
 
     public function description(): ?string

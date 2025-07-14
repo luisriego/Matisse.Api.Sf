@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Context\Income\Infrastructure\Http\Dto;
 
+use App\Context\Income\Application\UseCase\EnterIncome\EnterIncomeCommand;
 use App\Shared\Infrastructure\RequestDto;
 use Symfony\Component\HttpFoundation\Request;
 
@@ -14,7 +15,6 @@ class EnterIncomeRequestDto implements RequestDto
     public int $amount;
     public string $type;
     public string $dueDate;
-    public ?bool $isActive;
     public ?string $description;
 
     public function __construct(Request $request)
@@ -24,7 +24,19 @@ class EnterIncomeRequestDto implements RequestDto
         $this->residentUnitId = $request->get('residentUnitId');
         $this->type = $request->get('type');
         $this->dueDate = $request->get('dueDate');
-        $this->isActive = $request->get('isActive');
         $this->description = $request->get('description');
+    }
+
+
+    public function toCommand(): EnterIncomeCommand
+    {
+        return new EnterIncomeCommand(
+            $this->id,
+            $this->amount,
+            $this->residentUnitId,
+            $this->type,
+            $this->dueDate,
+            $this->description,
+        );
     }
 }

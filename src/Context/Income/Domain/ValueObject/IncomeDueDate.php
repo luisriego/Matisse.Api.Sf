@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Context\Income\Domain\ValueObject;
 
+use App\Shared\Domain\Exception\DueDateMustBeInTheFutureException;
 use App\Shared\Domain\ValueObject\DateTimeValueObject;
 use DateMalformedStringException;
 use DateTime;
@@ -12,6 +13,12 @@ use function trim;
 
 class IncomeDueDate extends DateTimeValueObject
 {
+    public function __construct(DateTime $value)
+    {
+        $this->ensureIsFutureDate($value);
+        parent::__construct($value);
+    }
+
     public static function fromDateTime(DateTime $dueDate): self
     {
         return new self($dueDate);
@@ -45,5 +52,12 @@ class IncomeDueDate extends DateTimeValueObject
     public function isInFuture(): bool
     {
         return $this->value > new DateTime();
+    }
+
+    private function ensureIsFutureDate(DateTime $date): void
+    {
+        if ($date < new DateTime('today')) {
+            throw new DueDateMustBeInTheFutureException();
+        }
     }
 }

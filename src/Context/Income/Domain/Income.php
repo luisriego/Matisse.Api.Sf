@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Context\Income\Domain;
 
+use App\Context\Expense\Domain\ValueObject\ExpenseIsActive;
 use App\Context\Income\Domain\ValueObject\IncomeAmount;
 use App\Context\Income\Domain\ValueObject\IncomeDueDate;
 use App\Context\Income\Domain\ValueObject\IncomeId;
@@ -17,6 +18,7 @@ class Income extends AggregateRoot
 {
     private readonly DateTimeImmutable $createdAt;
     private bool $isActive;
+    private ?DateTimeImmutable $paidAt = null;
 
     public function __construct(
         private readonly string $id,
@@ -24,7 +26,6 @@ class Income extends AggregateRoot
         private ResidentUnit $residentUnit,
         private ?IncomeType $incomeType,
         private DateTime $dueDate,
-        private ?DateTimeImmutable $paidAt = null,
         private ?string $description = null,
     ) {
         $this->createdAt = new DateTimeImmutable();
@@ -37,7 +38,6 @@ class Income extends AggregateRoot
         ResidentUnit $residentUnit,
         ?IncomeType $type,
         IncomeDueDate $dueDate,
-        ?IncomePaidAt $paidAt = null,
         ?string $description = null,
     ): self {
         return new self(
@@ -46,7 +46,6 @@ class Income extends AggregateRoot
             $residentUnit,
             $type,
             $dueDate->toDateTime(),
-            $paidAt ?? null,
             $description,
         );
     }

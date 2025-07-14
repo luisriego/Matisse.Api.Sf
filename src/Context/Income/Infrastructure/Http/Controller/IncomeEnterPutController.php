@@ -25,11 +25,10 @@ final readonly class IncomeEnterPutController
             $request->residentUnitId,
             $request->type,
             $request->dueDate,
-            $request->isActive,
             $request->description,
         );
 
-        $this->commandHandler->__invoke($command);
+        $this->commandHandler->__invoke($request->toCommand());
 
         return new Response('', Response::HTTP_CREATED);
     }
