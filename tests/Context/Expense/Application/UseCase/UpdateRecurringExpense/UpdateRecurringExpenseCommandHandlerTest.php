@@ -33,8 +33,8 @@ class UpdateRecurringExpenseCommandHandlerTest extends TestCase
     {
         parent::setUp();
         $this->recurringExpenseRepo = $this->createMock(RecurringExpenseRepository::class);
-        $this->typeRepo            = $this->createMock(ExpenseTypeRepository::class);
-        $this->handler             = new UpdateRecurrentExpenseCommandHandler(
+        $this->typeRepo = $this->createMock(ExpenseTypeRepository::class);
+        $this->handler = new UpdateRecurrentExpenseCommandHandler(
             $this->recurringExpenseRepo,
             $this->typeRepo
         );

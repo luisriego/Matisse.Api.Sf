@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Context\Income\Domain;
 
+use App\Context\Income\Domain\Bus\IncomeWasEntered;
 use App\Context\Income\Domain\ValueObject\IncomeAmount;
 use App\Context\Income\Domain\ValueObject\IncomeDueDate;
 use App\Context\Income\Domain\ValueObject\IncomeId;
@@ -38,7 +39,7 @@ class Income extends AggregateRoot
         IncomeDueDate $dueDate,
         ?string $description = null,
     ): self {
-        return new self(
+        $income =  new self(
             $id->value(),
             $amount->value(),
             $residentUnit,
@@ -46,6 +47,17 @@ class Income extends AggregateRoot
             $dueDate->toDateTime(),
             $description,
         );
+
+        $income->record(new IncomeWasEntered(
+            $id->value(),
+            $amount->value(),
+            $residentUnit->id(),
+            $type->id(),
+            $dueDate->value(),
+            $description,
+        ));
+
+        return $income;
     }
 
     public function id(): string

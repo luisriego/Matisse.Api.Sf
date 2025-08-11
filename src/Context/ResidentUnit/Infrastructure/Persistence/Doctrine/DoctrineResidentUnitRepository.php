@@ -42,4 +42,9 @@ class DoctrineResidentUnitRepository extends ServiceEntityRepository implements 
 
         return (float) $queryBuilder->getQuery()->getSingleScalarResult();
     }
+
+    public function findAllActive(): array
+    {
+        return $this->findBy(['isActive' => true, 'idealFraction' > 0], ['unit' => 'ASC']);
+    }
 }

@@ -2,12 +2,12 @@
 
 declare(strict_types=1);
 
-namespace App\Context\Income\Domain\ValueObject;
+namespace App\Context\Slip\Domain\ValueObject;
 
 use App\Shared\Domain\Exception\InvalidArgumentException;
 use App\Shared\Domain\ValueObject\IntegerValueObject;
 
-class IncomeAmount extends IntegerValueObject
+class SlipAmount extends IntegerValueObject
 {
     public function __construct(int $value)
     {
@@ -19,7 +19,7 @@ class IncomeAmount extends IntegerValueObject
     private function ensureIsPositive(int $value): void
     {
         if ($value < 0) {
-            throw new InvalidArgumentException("Income amount must be zero or greater. Got: {$value}");
+            throw new InvalidArgumentException("Slip amount must be zero or greater. Got: {$value}");
         }
     }
 }

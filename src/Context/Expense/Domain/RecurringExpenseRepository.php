@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace App\Context\Expense\Domain;
 
+use App\Shared\Domain\ValueObject\DateRange;
+
 interface RecurringExpenseRepository
 {
     public function flush(): void;
@@ -15,4 +17,6 @@ interface RecurringExpenseRepository
     public function findOneByIdOrFail(string $id): RecurringExpense;
 
     public function findForThisMonth(int $month): array;
+
+    public function findActiveForDateRange(DateRange $dateRange): array;
 }

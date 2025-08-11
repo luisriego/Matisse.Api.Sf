@@ -27,8 +27,10 @@ final readonly class DateRange
     public static function fromMonth(int $year, int $month): self
     {
         $startDate = new DateTime(sprintf('%d-%02d-01 00:00:00', $year, $month));
-        $endDate = new DateTime(sprintf('%d-%02d-01 23:59:59', $year, $month));
-        $endDate->modify('last day of this month');
+        $endDate = (clone $startDate)
+            ->modify('last day of this month')
+            ->setTime(23, 59, 59);
+
 
         return new self($startDate, $endDate);
     }
