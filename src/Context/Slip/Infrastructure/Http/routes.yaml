@@ -1,0 +1,9 @@
+slip_health_check:
+    path: /api/v1/slips/health-check
+    controller: App\Context\Slip\Infrastructure\Http\Controller\HealthCheckController
+    methods: ['GET']
+
+slip_generation:
+    path: /api/v1/slips/generation
+    controller: App\Context\Slip\Infrastructure\Http\Controller\SlipGenerationPostController
+    methods: ['POST']

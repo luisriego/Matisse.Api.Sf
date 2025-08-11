@@ -45,6 +45,14 @@ class DoctrineResidentUnitRepository extends ServiceEntityRepository implements 
 
     public function findAllActive(): array
     {
-        return $this->findBy(['isActive' => true, 'idealFraction' > 0], ['unit' => 'ASC']);
+        return $this->createQueryBuilder('u')
+            ->where('u.isActive = :isActive')
+            ->andWhere('u.idealFraction > :minFraction')
+            ->setParameter('isActive', true)
+            ->setParameter('minFraction', 0)
+            ->orderBy('u.unit', 'ASC')
+            ->getQuery()
+            ->getResult();
+
     }
 }

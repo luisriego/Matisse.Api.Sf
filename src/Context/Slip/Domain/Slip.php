@@ -10,6 +10,7 @@ use App\Context\Slip\Domain\ValueObject\SlipDueDate;
 use App\Context\Slip\Domain\ValueObject\SlipId;
 use App\Shared\Domain\AggregateRoot;
 use DateTimeImmutable;
+use phpDocumentor\Reflection\Types\Integer;
 
 class Slip extends AggregateRoot
 {
@@ -21,15 +22,18 @@ class Slip extends AggregateRoot
 
     private function __construct(
         private readonly SlipId $id,
-        private readonly SlipAmount $amount,
+        private readonly int $amount,
         private readonly ResidentUnit $residentUnit,
-        private readonly SlipDueDate $dueDate,
+        private readonly DateTimeImmutable $dueDate,
         private readonly ?string $description = null,
     ) {
         $this->status = SlipStatus::PENDING;
         $this->createdAt = new DateTimeImmutable();
     }
 
+    /**
+     * @throws \DateMalformedStringException
+     */
     public static function createForUnit(
         SlipId $id,
         SlipAmount $amount,
@@ -40,9 +44,9 @@ class Slip extends AggregateRoot
     {
         return new self(
             $id,
-            $amount,
+            $amount->value(),
             $residentUnit,
-            $dueDate,
+            $dueDate->toDateTimeImmutable(),
             $description
         );
     }
@@ -52,7 +56,7 @@ class Slip extends AggregateRoot
         return $this->id;
     }
 
-    public function amount(): SlipAmount
+    public function amount(): int
     {
         return $this->amount;
     }
@@ -67,7 +71,7 @@ class Slip extends AggregateRoot
         return $this->status;
     }
 
-    public function dueDate(): SlipDueDate
+    public function dueDate(): DateTimeImmutable
     {
         return $this->dueDate;
     }

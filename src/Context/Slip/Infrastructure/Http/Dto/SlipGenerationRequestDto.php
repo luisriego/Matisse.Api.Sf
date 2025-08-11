@@ -5,13 +5,14 @@ declare(strict_types=1);
 namespace App\Context\Slip\Infrastructure\Http\Dto;
 
 use App\Context\Slip\Application\UseCase\SlipGenerationCommand;
+use App\Shared\Domain\ValueObject\DateRange;
 use App\Shared\Infrastructure\RequestDto;
 use Symfony\Component\HttpFoundation\Request;
 
 class SlipGenerationRequestDto implements RequestDto
 {
-    public string $year;
-    public string $month;
+    public int $year;
+    public int $month;
 
     public function __construct(Request $request)
     {

@@ -16,6 +16,7 @@ use App\Context\Slip\Domain\ValueObject\SlipId;
 use App\Shared\Application\CommandHandler;
 use App\Shared\Domain\ValueObject\DateRange;
 use App\Shared\Domain\ValueObject\Uuid;
+use DateMalformedStringException;
 
 class SlipGenerationCommandHandler implements CommandHandler
 {
@@ -28,7 +29,7 @@ class SlipGenerationCommandHandler implements CommandHandler
     ) {}
 
     /**
-     * @throws \DateMalformedStringException
+     * @throws DateMalformedStringException
      */
     public function __invoke(SlipGenerationCommand $command): void
     {
@@ -46,9 +47,8 @@ class SlipGenerationCommandHandler implements CommandHandler
         $distribution = $this->expenseDistributor->distribute($allExpenses, $residentUnits);
 
         // Calculate the due date once, as it's the same for all slips in this batch.
-        $dueDateDateTime = new \DateTime(sprintf('%d-%d-01', $command->year(), $command->month()));
-        $dueDateDateTime->modify('second friday of this month');
-        $dueDate = new SlipDueDate($dueDateDateTime);
+        $dueDate = SlipDueDate::selectDueDate($command->year(), $command->month());
+        $dueDate = new SlipDueDate($dueDate);
 
         // 4. Generate a Slip for each residential unit with its calculated amount.
         foreach ($distribution as $unitId => $amount) {

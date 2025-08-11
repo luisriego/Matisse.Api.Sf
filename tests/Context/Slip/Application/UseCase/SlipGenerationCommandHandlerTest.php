@@ -113,11 +113,11 @@ final class SlipGenerationCommandHandlerTest extends TestCase
         $expectedAssertions = [
             function (Slip $slip) use ($unitA) {
                 $this->assertSame($unitA, $slip->residentUnit(), 'First slip should be for unit A');
-                $this->assertSame(15000, $slip->amount()->value(), 'Amount for unit A should be correct');
+                $this->assertSame(15000, $slip->amount(), 'Amount for unit A should be correct');
             },
             function (Slip $slip) use ($unitB) {
                 $this->assertSame($unitB, $slip->residentUnit(), 'Second slip should be for unit B');
-                $this->assertSame(15000, $slip->amount()->value(), 'Amount for unit B should be correct');
+                $this->assertSame(15000, $slip->amount(), 'Amount for unit B should be correct');
             }
         ];
 

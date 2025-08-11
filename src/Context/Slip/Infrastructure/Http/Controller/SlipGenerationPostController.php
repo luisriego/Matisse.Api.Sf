@@ -6,14 +6,15 @@ namespace App\Context\Slip\Infrastructure\Http\Controller;
 
 use App\Context\Slip\Application\UseCase\SlipGenerationCommandHandler;
 use App\Context\Slip\Infrastructure\Http\Dto\SlipGenerationRequestDto;
+use DateMalformedStringException;
 use Symfony\Component\HttpFoundation\Response;
 
-final readonly class SlipGenerationController
+final readonly class SlipGenerationPostController
 {
     public function __construct(private SlipGenerationCommandHandler $commandHandler) {}
 
     /**
-     * @throws \DateMalformedStringException
+     * @throws DateMalformedStringException
      */
     public function __invoke(SlipGenerationRequestDto $requestDto): Response
     {

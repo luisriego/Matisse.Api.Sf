@@ -17,3 +17,6 @@ expense_routes:
 
 income_routes:
     resource: '../src/Context/Income/Infrastructure/Http/routes.yaml'
+
+slip_routes:
+    resource: '../src/Context/Slip/Infrastructure/Http/routes.yaml'

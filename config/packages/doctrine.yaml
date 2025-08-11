@@ -66,6 +66,13 @@ doctrine:
                 prefix: 'App\Context\Income\Domain'
                 alias: Income
 
+            Slip:
+                is_bundle: false
+                type: xml
+                dir: '%kernel.project_dir%/src/Context/Slip/Infrastructure/Persistence/Doctrine'
+                prefix: 'App\Context\Slip\Domain'
+                alias: Slip
+
 when@test:
     doctrine:
         dbal:
