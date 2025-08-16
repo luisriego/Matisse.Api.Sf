@@ -11,9 +11,12 @@ final class FixedClock implements Clock
 {
     private DateTimeImmutable $now;
 
-    public function __construct(string $dateTime = 'now')
+    /**
+     * @throws \DateMalformedStringException
+     */
+    public function __construct(?string $now = 'now')
     {
-        $this->now = new DateTimeImmutable($dateTime);
+        $this->now = new DateTimeImmutable($now);
     }
 
     public function now(): DateTimeImmutable
@@ -21,6 +24,9 @@ final class FixedClock implements Clock
         return $this->now;
     }
 
+    /**
+     * @throws \Exception
+     */
     public function set(string $dateTime): void
     {
         $this->now = new DateTimeImmutable($dateTime);

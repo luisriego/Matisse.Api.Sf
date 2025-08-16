@@ -61,7 +61,18 @@ final class SlipGenerationCommandHandlerTest extends TestCase
         $year = 2025;
         $month = 7;
         $command = new SlipGenerationCommand($year, $month);
-        $range = DateRange::fromMonth($year, $month);
+        $expenseRange = DateRange::fromMonth($year, $month);
+        $dueDateRange = DateRange::fromMonth($year, $month + 1);
+
+        // --- Expect the policy to be checked ---
+        $this->generationPolicy->expects($this->once())
+            ->method('check')
+            ->with($year, $month, false);
+
+        // --- Expect old slips to be deleted ---
+        $this->slipRepo->expects($this->once())
+            ->method('deleteByDateRange')
+            ->with($this->equalTo($dueDateRange));
 
         // Mock expenses
         $expense1 = $this->createMock(Expense::class);
@@ -76,12 +87,12 @@ final class SlipGenerationCommandHandlerTest extends TestCase
 
         $this->expenseRepo->expects($this->once())
             ->method('findActiveByDateRange')
-            ->with($this->equalTo($range)) // Use PHPUnit's built-in matcher
+            ->with($this->equalTo($expenseRange))
             ->willReturn($expenses);
 
         $this->recurringRepo->expects($this->once())
             ->method('findActiveForDateRange')
-            ->with($this->equalTo($range)) // Use PHPUnit's built-in matcher
+            ->with($this->equalTo($expenseRange))
             ->willReturn($recurring);
 
         // Mock residential units
