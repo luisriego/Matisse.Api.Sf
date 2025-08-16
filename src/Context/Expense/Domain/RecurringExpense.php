@@ -84,7 +84,7 @@ class RecurringExpense extends AggregateRoot
         return $this->description;
     }
 
-    public function expenseType(): ExpenseType
+    public function type(): ExpenseType
     {
         return $this->expenseType;
     }

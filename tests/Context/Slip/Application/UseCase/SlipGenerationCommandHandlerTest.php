@@ -13,6 +13,7 @@ use App\Context\Slip\Application\UseCase\SlipGenerationCommandHandler;
 use App\Context\Expense\Domain\ExpenseRepository;
 use App\Context\Expense\Domain\RecurringExpenseRepository;
 use App\Context\Slip\Domain\Service\ExpenseDistributor;
+use App\Context\Slip\Domain\Service\SlipGenerationPolicy;
 use App\Context\Slip\Domain\Slip;
 use App\Context\Slip\Domain\SlipRepository;
 use App\Shared\Domain\ValueObject\DateRange;
@@ -27,6 +28,7 @@ final class SlipGenerationCommandHandlerTest extends TestCase
     private RecurringExpenseRepository&MockObject $recurringRepo;
     private ResidentUnitRepository&MockObject $residentUnitRepo;
     private ExpenseDistributor&MockObject $expenseDistributor;
+    private MockObject|SlipGenerationPolicy $generationPolicy;
 
     protected function setUp(): void
     {
@@ -37,13 +39,15 @@ final class SlipGenerationCommandHandlerTest extends TestCase
         $this->recurringRepo = $this->createMock(RecurringExpenseRepository::class);
         $this->residentUnitRepo = $this->createMock(ResidentUnitRepository::class);
         $this->expenseDistributor = $this->createMock(ExpenseDistributor::class);
+        $this->generationPolicy = $this->createMock(SlipGenerationPolicy::class);
 
         $this->handler = new SlipGenerationCommandHandler(
             $this->slipRepo,
             $this->expenseRepo,
             $this->recurringRepo,
             $this->residentUnitRepo,
-            $this->expenseDistributor
+            $this->expenseDistributor,
+            $this->generationPolicy
         );
     }
 

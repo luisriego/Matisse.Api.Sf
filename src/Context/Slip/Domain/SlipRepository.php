@@ -13,4 +13,8 @@ interface SlipRepository
     public function save(Slip $Slip, bool $flush = true): void;
 
     public function findOneByIdOrFail(string $id): Slip;
+
+    public function deleteByDateRange(DateRange $dateRange): void;
+
+    public function existsForDueDateMonth(int $year, int $month): bool;
 }

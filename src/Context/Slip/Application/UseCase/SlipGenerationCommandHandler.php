@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Context\Slip\Application\UseCase;
 
+use App\Context\Slip\Domain\Service\SlipGenerationPolicy;
 use App\Context\Expense\Domain\ExpenseRepository;
 use App\Context\Expense\Domain\RecurringExpenseRepository;
 use App\Context\ResidentUnit\Domain\ResidentUnitRepository;
@@ -26,6 +27,7 @@ class SlipGenerationCommandHandler implements CommandHandler
         private readonly RecurringExpenseRepository $recurringExpenseRepository,
         private readonly ResidentUnitRepository $residentUnitRepository,
         private readonly ExpenseDistributor $expenseDistributor,
+        private readonly SlipGenerationPolicy $generationPolicy,
     ) {}
 
     /**
@@ -33,24 +35,38 @@ class SlipGenerationCommandHandler implements CommandHandler
      */
     public function __invoke(SlipGenerationCommand $command): void
     {
-        $dateRange = DateRange::fromMonth($command->year(), $command->month());
+        $expenseYear = $command->year();
+        $expenseMonth = $command->month();
 
-        // 1. Get all expenses for the period.
-        $expenses = $this->expenseRepository->findActiveByDateRange($dateRange);
-        $recurringExpenses = $this->recurringExpenseRepository->findActiveForDateRange($dateRange);
+        // 1. Check if generation is allowed according to business rules.
+        $this->generationPolicy->check($expenseYear, $expenseMonth, $command->isForced());
+
+        // 2. Determine date ranges. The due date is for the month after the expenses.
+        $expenseRange = DateRange::fromMonth($expenseYear, $expenseMonth);
+        $dueDateContext = (new \DateTimeImmutable(sprintf('%d-%d-01', $expenseYear, $expenseMonth)))->modify('+1 month');
+        $dueYear = (int)$dueDateContext->format('Y');
+        $dueMonth = (int)$dueDateContext->format('m');
+        $dueDateRange = DateRange::fromMonth($dueYear, $dueMonth);
+
+        // 3. Delete any existing slips for the due date month before generating new ones.
+        $this->slipRepository->deleteByDateRange($dueDateRange);
+
+        // 4. Get all expenses for the period.
+        $expenses = $this->expenseRepository->findActiveByDateRange($expenseRange);
+        $recurringExpenses = $this->recurringExpenseRepository->findActiveForDateRange($expenseRange);
         $allExpenses = array_merge($expenses, $recurringExpenses);
 
-        // 2. Get all active and not condo residential units. (form 101 to 501 without condo type)
+        // 5. Get all active residential units.
         $residentUnits = $this->residentUnitRepository->findAllActive();
 
-        // 3. Use the service to calculate the distribution.
+        // 6. Use the service to calculate the distribution.
         $distribution = $this->expenseDistributor->distribute($allExpenses, $residentUnits);
 
-        // Calculate the due date once, as it's the same for all slips in this batch.
-        $dueDate = SlipDueDate::selectDueDate($command->year(), $command->month());
-        $dueDate = new SlipDueDate($dueDate);
+        // 7. Calculate the due date once for the correct month.
+        $dueDateTime = SlipDueDate::selectDueDate($dueYear, $dueMonth);
+        $dueDate = new SlipDueDate($dueDateTime);
 
-        // 4. Generate a Slip for each residential unit with its calculated amount.
+        // 8. Generate a Slip for each residential unit with its calculated amount.
         foreach ($distribution as $unitId => $amount) {
             $id = new SlipId(Uuid::random()->value());
             $residentUnit = $this->residentUnitRepository->findOneByIdOrFail($unitId);

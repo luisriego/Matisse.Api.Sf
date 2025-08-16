@@ -10,7 +10,6 @@ use App\Context\Slip\Domain\ValueObject\SlipDueDate;
 use App\Context\Slip\Domain\ValueObject\SlipId;
 use App\Shared\Domain\AggregateRoot;
 use DateTimeImmutable;
-use phpDocumentor\Reflection\Types\Integer;
 
 class Slip extends AggregateRoot
 {

@@ -7,6 +7,7 @@ namespace App\Context\ResidentUnit\Infrastructure\Persistence\Doctrine;
 use App\Context\ResidentUnit\Domain\ResidentUnit;
 use App\Context\ResidentUnit\Domain\ResidentUnitRepository;
 use App\Shared\Domain\Exception\ResourceNotFoundException;
+use App\Shared\Domain\ValueObject\DateRange;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
 

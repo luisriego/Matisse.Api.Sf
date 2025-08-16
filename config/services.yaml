@@ -41,6 +41,9 @@ services:
         tags:
             - { name: controller.argument_value_resolver, priority: 50 }
 
+    # Alias the Clock interface to the concrete implementation for autowiring
+    App\Shared\Domain\Clock: '@App\Shared\Infrastructure\SystemClock'
+
     _instanceof:
         App\Shared\Domain\Event\EventSubscriber:
             tags: [ 'app.event_subscriber' ]

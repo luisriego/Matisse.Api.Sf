@@ -13,10 +13,11 @@ class SlipGenerationRequestDto implements RequestDto
 {
     public int $year;
     public int $month;
+    public bool $isForced = false;
 
     public function __construct(Request $request)
     {
-        // Se espera "targetMonth" en formato "YYYY-MM" (p. ej. "2025-07")
+        // Is waiting for "targetMonth" in format "YYYY-MM" (ex. "2025-07")
         $monthValue = $request->get('targetMonth');
         if (false === preg_match('/^\d{4}-\d{2}$/', $monthValue)) {
             throw new \InvalidArgumentException("Invalid targetMonth: {$monthValue}");
@@ -25,6 +26,9 @@ class SlipGenerationRequestDto implements RequestDto
         [$year, $month] = array_map('intval', explode('-', $monthValue));
         $this->year = $year;
         $this->month = $month;
+
+        // Accept both JSON boolean true and string values like "true", "1", "on"
+        $this->isForced = filter_var($request->get('force'), FILTER_VALIDATE_BOOL);
     }
 
     public function toCommand(): SlipGenerationCommand
@@ -32,6 +36,7 @@ class SlipGenerationRequestDto implements RequestDto
         return new SlipGenerationCommand(
             $this->year,
             $this->month,
+            $this->isForced,
         );
     }
 }

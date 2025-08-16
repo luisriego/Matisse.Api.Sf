@@ -7,6 +7,7 @@ namespace App\Context\Slip\Infrastructure\Persistence\Doctrine;
 use App\Context\Slip\Domain\Slip;
 use App\Context\Slip\Domain\SlipRepository;
 use App\Shared\Domain\Exception\ResourceNotFoundException;
+use App\Shared\Domain\ValueObject\DateRange;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
 
@@ -38,5 +39,36 @@ class DoctrineSlipRepository extends ServiceEntityRepository implements SlipRepo
         }
 
         return $slip;
+    }
+
+    public function deleteByDateRange(DateRange $dateRange): void
+    {
+        $this->createQueryBuilder('s')
+            ->delete()
+            ->where('s.dueDate >= :start_date')
+            ->andWhere('s.dueDate <= :end_date')
+            ->setParameter('start_date', $dateRange->startDate())
+            ->setParameter('end_date', $dateRange->endDate())
+            ->getQuery()
+            ->execute();
+    }
+
+    /**
+     * @throws \DateMalformedStringException
+     */
+    public function existsForDueDateMonth(int $year, int $month): bool
+    {
+        $dateRange = DateRange::fromMonth($year, $month);
+
+        $count = $this->createQueryBuilder('s')
+            ->select('count(s.id)')
+            ->where('s.dueDate >= :start_date')
+            ->andWhere('s.dueDate <= :end_date')
+            ->setParameter('start_date', $dateRange->startDate())
+            ->setParameter('end_date', $dateRange->endDate())
+            ->getQuery()
+            ->getSingleScalarResult();
+
+        return (int)$count > 0;
     }
 }

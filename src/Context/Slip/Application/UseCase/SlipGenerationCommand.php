@@ -11,6 +11,7 @@ final readonly class SlipGenerationCommand implements Command
     public function __construct(
         private int $year,
         private int $month,
+        private bool $isForced = false,
     ) {}
 
     public function year(): int
@@ -21,5 +22,10 @@ final readonly class SlipGenerationCommand implements Command
     public function month(): int
     {
         return $this->month;
+    }
+
+    public function isForced(): bool
+    {
+        return $this->isForced;
     }
 }
