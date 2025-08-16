@@ -9,7 +9,6 @@ use App\Context\Expense\Domain\RecurringExpenseRepository;
 use App\Shared\Domain\Exception\ResourceNotFoundException;
 use App\Shared\Domain\ValueObject\DateRange;
 use DateMalformedStringException;
-use DateTime;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
 use Exception;
@@ -75,16 +74,6 @@ class DoctrineRecurringExpenseRepository extends ServiceEntityRepository impleme
         return $activeForThisMonth;
     }
 
-    private function findAllActives(): array
-    {
-        return $this->createQueryBuilder('r')
-            ->where('r.isActive = :isActive')
-            ->setParameter('isActive', true)
-            ->orderBy('r.dueDay', 'ASC')
-            ->getQuery()
-            ->getResult();
-    }
-
     /**
      * @throws DateMalformedStringException
      */
@@ -119,5 +108,15 @@ class DoctrineRecurringExpenseRepository extends ServiceEntityRepository impleme
         }
 
         return $result;
+    }
+
+    private function findAllActives(): array
+    {
+        return $this->createQueryBuilder('r')
+            ->where('r.isActive = :isActive')
+            ->setParameter('isActive', true)
+            ->orderBy('r.dueDay', 'ASC')
+            ->getQuery()
+            ->getResult();
     }
 }

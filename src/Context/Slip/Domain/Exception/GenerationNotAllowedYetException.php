@@ -4,6 +4,6 @@ declare(strict_types=1);
 
 namespace App\Context\Slip\Domain\Exception;
 
-class GenerationNotAllowedYetException extends \DomainException
-{
-}
+use DomainException;
+
+class GenerationNotAllowedYetException extends DomainException {}

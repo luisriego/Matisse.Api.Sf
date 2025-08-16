@@ -13,6 +13,10 @@ use App\Context\Slip\Domain\SlipRepository;
 use App\Shared\Application\CommandHandler;
 use App\Shared\Domain\ValueObject\DateRange;
 use DateMalformedStringException;
+use DateTimeImmutable;
+
+use function array_merge;
+use function sprintf;
 
 class SlipGenerationCommandHandler implements CommandHandler
 {
@@ -22,9 +26,8 @@ class SlipGenerationCommandHandler implements CommandHandler
         private readonly RecurringExpenseRepository $recurringExpenseRepository,
         private readonly ResidentUnitRepository $residentUnitRepository,
         private readonly SlipGenerationPolicy $generationPolicy,
-        private readonly SlipFactory $slipFactory
-    ) {
-    }
+        private readonly SlipFactory $slipFactory,
+    ) {}
 
     /**
      * @throws DateMalformedStringException
@@ -39,9 +42,9 @@ class SlipGenerationCommandHandler implements CommandHandler
 
         // 2. Determine date ranges. The due date is for the month after the expenses.
         $expenseRange = DateRange::fromMonth($expenseYear, $expenseMonth);
-        $dueDateContext = (new \DateTimeImmutable(sprintf('%d-%d-01', $expenseYear, $expenseMonth)))->modify('+1 month');
-        $dueYear = (int)$dueDateContext->format('Y');
-        $dueMonth = (int)$dueDateContext->format('m');
+        $dueDateContext = (new DateTimeImmutable(sprintf('%d-%d-01', $expenseYear, $expenseMonth)))->modify('+1 month');
+        $dueYear = (int) $dueDateContext->format('Y');
+        $dueMonth = (int) $dueDateContext->format('m');
         $dueDateRange = DateRange::fromMonth($dueYear, $dueMonth);
 
         // 3. Delete any existing slips for the due date month before generating new ones.
@@ -60,7 +63,7 @@ class SlipGenerationCommandHandler implements CommandHandler
             $allExpenses,
             $residentUnits,
             $expenseYear,
-            $expenseMonth
+            $expenseMonth,
         );
 
         // 7. Persist the new slips.

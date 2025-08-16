@@ -9,6 +9,7 @@ use App\Context\Slip\Domain\ValueObject\SlipAmount;
 use App\Context\Slip\Domain\ValueObject\SlipDueDate;
 use App\Context\Slip\Domain\ValueObject\SlipId;
 use App\Shared\Domain\AggregateRoot;
+use DateMalformedStringException;
 use DateTimeImmutable;
 
 class Slip extends AggregateRoot
@@ -31,22 +32,21 @@ class Slip extends AggregateRoot
     }
 
     /**
-     * @throws \DateMalformedStringException
+     * @throws DateMalformedStringException
      */
     public static function createForUnit(
         SlipId $id,
         SlipAmount $amount,
         ResidentUnit $residentUnit,
         SlipDueDate $dueDate,
-        ?string $description = 'Cuota de mantenimiento'
-    ): self
-    {
+        ?string $description = 'Cuota de mantenimiento',
+    ): self {
         return new self(
             $id,
             $amount->value(),
             $residentUnit,
             $dueDate->toDateTimeImmutable(),
-            $description
+            $description,
         );
     }
 

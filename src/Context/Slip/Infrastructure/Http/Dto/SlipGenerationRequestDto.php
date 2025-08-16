@@ -5,9 +5,16 @@ declare(strict_types=1);
 namespace App\Context\Slip\Infrastructure\Http\Dto;
 
 use App\Context\Slip\Application\UseCase\SlipGenerationCommand;
-use App\Shared\Domain\ValueObject\DateRange;
 use App\Shared\Infrastructure\RequestDto;
+use InvalidArgumentException;
 use Symfony\Component\HttpFoundation\Request;
+
+use function array_map;
+use function explode;
+use function filter_var;
+use function preg_match;
+
+use const FILTER_VALIDATE_BOOL;
 
 class SlipGenerationRequestDto implements RequestDto
 {
@@ -19,8 +26,9 @@ class SlipGenerationRequestDto implements RequestDto
     {
         // Is waiting for "targetMonth" in format "YYYY-MM" (ex. "2025-07")
         $monthValue = $request->get('targetMonth');
+
         if (false === preg_match('/^\d{4}-\d{2}$/', $monthValue)) {
-            throw new \InvalidArgumentException("Invalid targetMonth: {$monthValue}");
+            throw new InvalidArgumentException("Invalid targetMonth: {$monthValue}");
         }
 
         [$year, $month] = array_map('intval', explode('-', $monthValue));

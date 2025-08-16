@@ -8,6 +8,7 @@ use App\Context\Slip\Domain\Slip;
 use App\Context\Slip\Domain\SlipRepository;
 use App\Shared\Domain\Exception\ResourceNotFoundException;
 use App\Shared\Domain\ValueObject\DateRange;
+use DateMalformedStringException;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
 
@@ -54,7 +55,7 @@ class DoctrineSlipRepository extends ServiceEntityRepository implements SlipRepo
     }
 
     /**
-     * @throws \DateMalformedStringException
+     * @throws DateMalformedStringException
      */
     public function existsForDueDateMonth(int $year, int $month): bool
     {
@@ -69,6 +70,6 @@ class DoctrineSlipRepository extends ServiceEntityRepository implements SlipRepo
             ->getQuery()
             ->getSingleScalarResult();
 
-        return (int)$count > 0;
+        return (int) $count > 0;
     }
 }

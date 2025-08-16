@@ -31,7 +31,6 @@ final readonly class DateRange
             ->modify('last day of this month')
             ->setTime(23, 59, 59);
 
-
         return new self($startDate, $endDate);
     }
 

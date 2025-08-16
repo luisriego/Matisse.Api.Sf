@@ -10,21 +10,23 @@ use App\Context\Slip\Domain\ValueObject\SlipAmount;
 use App\Context\Slip\Domain\ValueObject\SlipDueDate;
 use App\Context\Slip\Domain\ValueObject\SlipId;
 use App\Shared\Domain\ValueObject\Uuid;
+use DateMalformedStringException;
+use DateTimeImmutable;
+
+use function sprintf;
 
 readonly class SlipFactory
 {
     public function __construct(
-        private ExpenseDistributor $expenseDistributor
-    ) {
-    }
+        private ExpenseDistributor $expenseDistributor,
+    ) {}
 
     /**
-     * @param array          $allExpenses
      * @param ResidentUnit[] $residentUnits
-     * @param int            $expenseYear
-     * @param int            $expenseMonth
+     *
      * @return Slip[]
-     * @throws \DateMalformedStringException
+     *
+     * @throws DateMalformedStringException
      */
     public function createFromExpensesAndUnits(array $allExpenses, array $residentUnits, int $expenseYear, int $expenseMonth): array
     {
@@ -34,18 +36,20 @@ readonly class SlipFactory
 
         $distribution = $this->expenseDistributor->distribute($allExpenses, $residentUnits);
 
-        $dueDateContext = (new \DateTimeImmutable(sprintf('%d-%d-01', $expenseYear, $expenseMonth)))->modify('+1 month');
-        $dueYear = (int)$dueDateContext->format('Y');
-        $dueMonth = (int)$dueDateContext->format('m');
+        $dueDateContext = (new DateTimeImmutable(sprintf('%d-%d-01', $expenseYear, $expenseMonth)))->modify('+1 month');
+        $dueYear = (int) $dueDateContext->format('Y');
+        $dueMonth = (int) $dueDateContext->format('m');
         $dueDateTime = SlipDueDate::selectDueDate($dueYear, $dueMonth);
         $dueDate = new SlipDueDate($dueDateTime);
 
         $unitMap = [];
+
         foreach ($residentUnits as $unit) {
             $unitMap[$unit->id()] = $unit;
         }
 
         $slips = [];
+
         foreach ($distribution as $unitId => $amount) {
             $id = new SlipId(Uuid::random()->value());
             $residentUnit = $unitMap[$unitId];
