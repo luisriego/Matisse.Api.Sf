@@ -4,19 +4,14 @@ declare(strict_types=1);
 
 namespace App\Context\Slip\Application\UseCase;
 
-use App\Context\Slip\Domain\Service\SlipGenerationPolicy;
 use App\Context\Expense\Domain\ExpenseRepository;
 use App\Context\Expense\Domain\RecurringExpenseRepository;
 use App\Context\ResidentUnit\Domain\ResidentUnitRepository;
-use App\Context\Slip\Domain\Service\ExpenseDistributor;
-use App\Context\Slip\Domain\Slip;
+use App\Context\Slip\Domain\Service\SlipFactory;
+use App\Context\Slip\Domain\Service\SlipGenerationPolicy;
 use App\Context\Slip\Domain\SlipRepository;
-use App\Context\Slip\Domain\ValueObject\SlipAmount;
-use App\Context\Slip\Domain\ValueObject\SlipDueDate;
-use App\Context\Slip\Domain\ValueObject\SlipId;
 use App\Shared\Application\CommandHandler;
 use App\Shared\Domain\ValueObject\DateRange;
-use App\Shared\Domain\ValueObject\Uuid;
 use DateMalformedStringException;
 
 class SlipGenerationCommandHandler implements CommandHandler
@@ -26,9 +21,10 @@ class SlipGenerationCommandHandler implements CommandHandler
         private readonly ExpenseRepository $expenseRepository,
         private readonly RecurringExpenseRepository $recurringExpenseRepository,
         private readonly ResidentUnitRepository $residentUnitRepository,
-        private readonly ExpenseDistributor $expenseDistributor,
         private readonly SlipGenerationPolicy $generationPolicy,
-    ) {}
+        private readonly SlipFactory $slipFactory
+    ) {
+    }
 
     /**
      * @throws DateMalformedStringException
@@ -56,25 +52,24 @@ class SlipGenerationCommandHandler implements CommandHandler
         $recurringExpenses = $this->recurringExpenseRepository->findActiveForDateRange($expenseRange);
         $allExpenses = array_merge($expenses, $recurringExpenses);
 
-        // 5. Get all active residential units.
+        // 5. Get all active residential units
         $residentUnits = $this->residentUnitRepository->findAllActive();
 
-        // 6. Use the service to calculate the distribution.
-        $distribution = $this->expenseDistributor->distribute($allExpenses, $residentUnits);
+        // 6. Use the factory to create the slip aggregates.
+        $slips = $this->slipFactory->createFromExpensesAndUnits(
+            $allExpenses,
+            $residentUnits,
+            $expenseYear,
+            $expenseMonth
+        );
 
-        // 7. Calculate the due date once for the correct month.
-        $dueDateTime = SlipDueDate::selectDueDate($dueYear, $dueMonth);
-        $dueDate = new SlipDueDate($dueDateTime);
-
-        // 8. Generate a Slip for each residential unit with its calculated amount.
-        foreach ($distribution as $unitId => $amount) {
-            $id = new SlipId(Uuid::random()->value());
-            $residentUnit = $this->residentUnitRepository->findOneByIdOrFail($unitId);
-            $slipAmount = new SlipAmount($amount);
-            $slip = Slip::createForUnit($id, $slipAmount, $residentUnit, dueDate: $dueDate);
+        // 7. Persist the new slips.
+        foreach ($slips as $slip) {
             $this->slipRepository->save($slip, false);
         }
 
-        $this->slipRepository->flush();
+        if (!empty($slips)) {
+            $this->slipRepository->flush();
+        }
     }
 }

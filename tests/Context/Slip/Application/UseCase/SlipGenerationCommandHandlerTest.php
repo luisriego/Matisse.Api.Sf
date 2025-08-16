@@ -10,13 +10,14 @@ use App\Context\ResidentUnit\Domain\ResidentUnit;
 use App\Context\ResidentUnit\Domain\ResidentUnitRepository;
 use App\Context\Slip\Application\UseCase\SlipGenerationCommand;
 use App\Context\Slip\Application\UseCase\SlipGenerationCommandHandler;
-use App\Context\Expense\Domain\ExpenseRepository;
 use App\Context\Expense\Domain\RecurringExpenseRepository;
-use App\Context\Slip\Domain\Service\ExpenseDistributor;
+use App\Context\Expense\Domain\ExpenseRepository;
+use App\Context\Slip\Domain\Service\SlipFactory;
 use App\Context\Slip\Domain\Service\SlipGenerationPolicy;
 use App\Context\Slip\Domain\Slip;
 use App\Context\Slip\Domain\SlipRepository;
 use App\Shared\Domain\ValueObject\DateRange;
+use PHPUnit\Framework\Attributes\Test;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 
@@ -27,8 +28,8 @@ final class SlipGenerationCommandHandlerTest extends TestCase
     private ExpenseRepository&MockObject $expenseRepo;
     private RecurringExpenseRepository&MockObject $recurringRepo;
     private ResidentUnitRepository&MockObject $residentUnitRepo;
-    private ExpenseDistributor&MockObject $expenseDistributor;
     private MockObject|SlipGenerationPolicy $generationPolicy;
+    private SlipFactory&MockObject $slipFactory;
 
     protected function setUp(): void
     {
@@ -38,24 +39,21 @@ final class SlipGenerationCommandHandlerTest extends TestCase
         $this->expenseRepo = $this->createMock(ExpenseRepository::class);
         $this->recurringRepo = $this->createMock(RecurringExpenseRepository::class);
         $this->residentUnitRepo = $this->createMock(ResidentUnitRepository::class);
-        $this->expenseDistributor = $this->createMock(ExpenseDistributor::class);
         $this->generationPolicy = $this->createMock(SlipGenerationPolicy::class);
+        $this->slipFactory = $this->createMock(SlipFactory::class);
 
         $this->handler = new SlipGenerationCommandHandler(
             $this->slipRepo,
             $this->expenseRepo,
             $this->recurringRepo,
             $this->residentUnitRepo,
-            $this->expenseDistributor,
-            $this->generationPolicy
+            $this->generationPolicy,
+            $this->slipFactory
         );
     }
 
-    /**
-     * @test
-     * @throws \DateMalformedStringException
-     */
-    public function test_it_generates_and_persists_slips_correctly(): void
+    #[Test]
+    public function it_generates_and_persists_slips_correctly(): void
     {
         // Arrange
         $year = 2025;
@@ -74,13 +72,11 @@ final class SlipGenerationCommandHandlerTest extends TestCase
             ->method('deleteByDateRange')
             ->with($this->equalTo($dueDateRange));
 
-        // Mock expenses
+        // --- Data fetching expectations ---
         $expense1 = $this->createMock(Expense::class);
-        $expense1->method('amount')->willReturn(10000);
         $expenses = [$expense1];
 
         $recurringExpense1 = $this->createMock(RecurringExpense::class);
-        $recurringExpense1->method('amount')->willReturn(20000);
         $recurring = [$recurringExpense1];
 
         $allExpenses = array_merge($expenses, $recurring);
@@ -95,54 +91,35 @@ final class SlipGenerationCommandHandlerTest extends TestCase
             ->with($this->equalTo($expenseRange))
             ->willReturn($recurring);
 
-        // Mock residential units
         $unitA = $this->createMock(ResidentUnit::class);
-        $unitA->method('id')->willReturn('unit-01');
         $unitB = $this->createMock(ResidentUnit::class);
-        $unitB->method('id')->willReturn('unit-02');
         $allUnits = [$unitA, $unitB];
 
         $this->residentUnitRepo->expects($this->once())
             ->method('findAllActive')
             ->willReturn($allUnits);
 
-        // Mock distribution
-        $distribution = [
-            'unit-01' => 15000,
-            'unit-02' => 15000,
-        ];
+        // --- Factory expectation ---
+        $slip1 = $this->createMock(Slip::class);
+        $slip2 = $this->createMock(Slip::class);
+        $generatedSlips = [$slip1, $slip2];
 
-        $this->expenseDistributor->expects($this->once())
-            ->method('distribute')
-            ->with($allExpenses, $allUnits)
-            ->willReturn($distribution);
+        $this->slipFactory->expects($this->once())
+            ->method('createFromExpensesAndUnits')
+            ->with($allExpenses, $allUnits, $year, $month)
+            ->willReturn($generatedSlips);
 
-        // Mock findOneByIdOrFail which is called inside the loop
-        $this->residentUnitRepo->method('findOneByIdOrFail')
-            ->willReturnMap([
-                ['unit-01', $unitA],
-                ['unit-02', $unitB],
-            ]);
-
-        // Expect slips to be saved for each unit
-        $expectedAssertions = [
-            function (Slip $slip) use ($unitA) {
-                $this->assertSame($unitA, $slip->residentUnit(), 'First slip should be for unit A');
-                $this->assertSame(15000, $slip->amount(), 'Amount for unit A should be correct');
-            },
-            function (Slip $slip) use ($unitB) {
-                $this->assertSame($unitB, $slip->residentUnit(), 'Second slip should be for unit B');
-                $this->assertSame(15000, $slip->amount(), 'Amount for unit B should be correct');
-            }
-        ];
-
+        // --- Persistence expectations ---
         $this->slipRepo->expects($this->exactly(2))
             ->method('save')
-            ->with($this->callback(function (Slip $slip) use (&$expectedAssertions) {
-                $assertion = array_shift($expectedAssertions);
-                $assertion($slip);
-                return true;
-            }), $this->equalTo(false));
+            ->with(
+                $this->callback(function (Slip $slip) use (&$generatedSlips) {
+                    $expectedSlip = array_shift($generatedSlips);
+                    $this->assertSame($expectedSlip, $slip, 'The correct slip object should be saved in order.');
+                    return true;
+                }),
+                $this->equalTo(false)
+            );
 
         $this->slipRepo->expects($this->once())->method('flush');
 
