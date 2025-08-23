@@ -21,7 +21,7 @@ class Slip extends AggregateRoot
     private SlipStatus $status;
 
     private function __construct(
-        private readonly SlipId $id,
+        private readonly string $id,
         private readonly int $amount,
         private readonly ResidentUnit $residentUnit,
         private readonly DateTimeImmutable $dueDate,
@@ -42,7 +42,7 @@ class Slip extends AggregateRoot
         ?string $description = 'Cuota de mantenimiento',
     ): self {
         return new self(
-            $id,
+            $id->value(),
             $amount->value(),
             $residentUnit,
             $dueDate->toDateTimeImmutable(),
@@ -50,7 +50,7 @@ class Slip extends AggregateRoot
         );
     }
 
-    public function id(): SlipId
+    public function id(): string
     {
         return $this->id;
     }
@@ -60,14 +60,9 @@ class Slip extends AggregateRoot
         return $this->amount;
     }
 
-    public function residentUnit(): ResidentUnit
+    public function getStatus(): string
     {
-        return $this->residentUnit;
-    }
-
-    public function status(): SlipStatus
-    {
-        return $this->status;
+        return $this->status->value;
     }
 
     public function dueDate(): DateTimeImmutable
@@ -85,11 +80,6 @@ class Slip extends AggregateRoot
         return $this->createdAt;
     }
 
-    public function paidAt(): ?DateTimeImmutable
-    {
-        return $this->paidAt;
-    }
-
     public function markAsPaid(): void
     {
         $this->status = SlipStatus::PAID;
@@ -104,5 +94,13 @@ class Slip extends AggregateRoot
     public function markAsCancelled(): void
     {
         $this->status = SlipStatus::CANCELLED;
+    }
+
+    /**
+     * This method should only be used by the Symfony Workflow component.
+     */
+    public function setStatus(string $status): void
+    {
+        $this->status = SlipStatus::from($status);
     }
 }

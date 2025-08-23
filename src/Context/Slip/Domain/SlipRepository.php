@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Context\Slip\Domain;
 
+use App\Context\Slip\Domain\ValueObject\SlipId;
 use App\Shared\Domain\ValueObject\DateRange;
 
 interface SlipRepository
@@ -12,7 +13,7 @@ interface SlipRepository
 
     public function save(Slip $Slip, bool $flush = true): void;
 
-    public function findOneByIdOrFail(string $id): Slip;
+    public function findOneByIdOrFail(SlipId $id): Slip;
 
     public function deleteByDateRange(DateRange $dateRange): void;
 

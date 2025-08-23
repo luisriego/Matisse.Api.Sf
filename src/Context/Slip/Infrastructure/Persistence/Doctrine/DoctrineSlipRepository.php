@@ -6,6 +6,7 @@ namespace App\Context\Slip\Infrastructure\Persistence\Doctrine;
 
 use App\Context\Slip\Domain\Slip;
 use App\Context\Slip\Domain\SlipRepository;
+use App\Context\Slip\Domain\ValueObject\SlipId;
 use App\Shared\Domain\Exception\ResourceNotFoundException;
 use App\Shared\Domain\ValueObject\DateRange;
 use DateMalformedStringException;
@@ -33,10 +34,10 @@ class DoctrineSlipRepository extends ServiceEntityRepository implements SlipRepo
         }
     }
 
-    public function findOneByIdOrFail(string $id): Slip
+    public function findOneByIdOrFail(SlipId $id): Slip
     {
-        if (null === $slip = $this->findOneBy(['id' => $id])) {
-            throw ResourceNotFoundException::createFromClassAndId(Slip::class, $id);
+        if (null === $slip = $this->findOneBy(['id' => $id->value()])) {
+            throw ResourceNotFoundException::createFromClassAndId(Slip::class, $id->value());
         }
 
         return $slip;

@@ -25,14 +25,4 @@ enum SlipStatus: string
     {
         return $this === self::PAID || $this === self::CANCELLED;
     }
-
-    public function canTransitionTo(self $to): bool
-    {
-        return match ($this) {
-            self::PENDING   => in_array($to, [self::SUBMITTED, self::PAID, self::CANCELLED, self::OVERDUE], true),
-            self::SUBMITTED => in_array($to, [self::PAID, self::CANCELLED, self::OVERDUE], true),
-            self::OVERDUE   => in_array($to, [self::PAID, self::CANCELLED], true),
-            default         => false, // PAID, CANCELLED => no transitions
-        };
-    }
 }

@@ -7,3 +7,8 @@ slip_generation:
     path: /api/v1/slips/generation
     controller: App\Context\Slip\Infrastructure\Http\Controller\SlipGenerationPostController
     methods: ['POST']
+
+slip_send:
+    path: /api/v1/slips/send/{id}
+    controller: App\Context\Slip\Infrastructure\Http\Controller\SlipSendPatchController
+    methods: ['PATCH']
