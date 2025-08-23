@@ -6,9 +6,8 @@ namespace App\Tests\Context\Slip\Application\UseCase\SendSlip;
 
 use App\Context\Slip\Application\UseCase\SendSlip\SlipSendCommand;
 use App\Context\Slip\Application\UseCase\SendSlip\SlipSendCommandHandler;
-use App\Context\Slip\Domain\Slip;
+use App\Context\Slip\Domain\Exception\SlipNotFoundException;
 use App\Context\Slip\Domain\SlipRepository;
-use App\Shared\Domain\Exception\NotFoundException;
 use App\Tests\Context\Slip\Domain\SlipMother;
 use App\Tests\Context\Slip\SlipModuleUnitTestCase;
 use PHPUnit\Framework\MockObject\MockObject;
@@ -36,7 +35,7 @@ final class SlipSendCommandHandlerTest extends SlipModuleUnitTestCase
     }
 
     /** @test */
-    public function it_should_apply_send_transition_to_slip(): void
+    public function test_it_should_apply_send_transition_to_slip(): void
     {
         $slip = SlipMother::create();
         $command = new SlipSendCommand($slip->id());
@@ -51,15 +50,15 @@ final class SlipSendCommandHandlerTest extends SlipModuleUnitTestCase
     }
 
     /** @test */
-    public function it_should_throw_an_exception_when_slip_not_found(): void
+    public function test_it_should_throw_an_exception_when_slip_not_found(): void
     {
-        $this->expectException(NotFoundException::class);
+        $this->expectException(SlipNotFoundException::class);
 
         $slip = SlipMother::create();
         $command = new SlipSendCommand($slip->id());
 
         $this->repository->method('findOneByIdOrFail')
-            ->willThrowException(new NotFoundException('Slip not found.'));
+            ->willThrowException(new SlipNotFoundException($slip->id()));
 
         $this->slipStateMachine->expects(self::never())
             ->method('apply');
@@ -68,7 +67,7 @@ final class SlipSendCommandHandlerTest extends SlipModuleUnitTestCase
     }
 
     /** @test */
-    public function it_should_throw_an_exception_when_transition_is_not_valid(): void
+    public function test_it_should_throw_an_exception_when_transition_is_not_valid(): void
     {
         $this->expectException(LogicException::class);
 
