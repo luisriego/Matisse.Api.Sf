@@ -52,6 +52,9 @@ final class SlipGenerationCommandHandlerTest extends TestCase
         );
     }
 
+    /**
+     * @throws \DateMalformedStringException
+     */
     #[Test]
     public function it_generates_and_persists_slips_correctly(): void
     {
