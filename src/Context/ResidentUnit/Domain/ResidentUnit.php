@@ -4,27 +4,44 @@ declare(strict_types=1);
 
 namespace App\Context\ResidentUnit\Domain;
 
+use App\Context\Income\Domain\Income; // <-- AÑADIDO
+use App\Context\Slip\Domain\Slip;     // <-- AÑADIDO
 use App\Shared\Domain\AggregateRoot;
 use DateTime;
 use DateTimeImmutable;
+use Doctrine\Common\Collections\ArrayCollection; // <-- AÑADIDO
+use Doctrine\Common\Collections\Collection;      // <-- AÑADIDO
+use Doctrine\ORM\Mapping as ORM;                 // <-- AÑADIDO
 
+#[ORM\Entity] // <-- AÑADIDO
+#[ORM\Table(name: 'resident_units')] // <-- AÑADIDO
 class ResidentUnit extends AggregateRoot
 {
+    #[ORM\Id] // <-- AÑADIDO
+    #[ORM\Column(type: 'string', length: 36)] // <-- AÑADIDO
     private string $id;
 
+    #[ORM\Column(type: 'string', length: 255)] // <-- AÑADIDO
     private string $unit;
 
+    #[ORM\Column(type: 'boolean')] // <-- AÑADIDO
     private bool $isActive;
 
+    #[ORM\Column(type: 'datetime_immutable')] // <-- AÑADIDO
     private DateTimeImmutable $createdAt;
 
+    #[ORM\Column(type: 'datetime')] // <-- AÑADIDO
     private DateTime $updatedAt;
 
+    #[ORM\Column(type: 'float')] // <-- AÑADIDO
     private float $idealFraction = 0.0;
 
-    //    private Collection $users;
-    //
-    //    private Collection $incomes;
+    // --- RELACIONES CORREGIDAS ---
+    #[ORM\OneToMany(mappedBy: 'residentUnit', targetEntity: Income::class)] // <-- AÑADIDO
+    private Collection $incomes;
+
+    #[ORM\OneToMany(mappedBy: 'residentUnit', targetEntity: Slip::class)] // <-- AÑADIDO
+    private Collection $slips;
 
     public function __construct(string $id, string $unit, float $idealFraction)
     {
@@ -33,6 +50,8 @@ class ResidentUnit extends AggregateRoot
         $this->idealFraction = $idealFraction;
         $this->isActive = true;
         $this->createdAt = new DateTimeImmutable();
+        $this->incomes = new ArrayCollection(); // <-- AÑADIDO
+        $this->slips = new ArrayCollection();   // <-- AÑADIDO
     }
 
     public static function create(

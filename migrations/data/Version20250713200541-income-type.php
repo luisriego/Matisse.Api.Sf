@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace DoctrineMigrations;
+namespace DoctrineMigrations\data;
 
 use App\Shared\Domain\ValueObject\Uuid;
 use Doctrine\DBAL\Schema\Schema;

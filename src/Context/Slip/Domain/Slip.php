@@ -80,6 +80,11 @@ class Slip extends AggregateRoot
         return $this->createdAt;
     }
 
+    public function residentUnit(): ResidentUnit
+    {
+        return $this->residentUnit;
+    }
+
     public function markAsPaid(): void
     {
         $this->status = SlipStatus::PAID;

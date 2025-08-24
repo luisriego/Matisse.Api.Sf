@@ -73,4 +73,24 @@ class DoctrineSlipRepository extends ServiceEntityRepository implements SlipRepo
 
         return (int) $count > 0;
     }
+
+    /**
+     * Finds slips by a set of ids.
+     *
+     * @param string[] $ids
+     *
+     * @return Slip[]
+     */
+    public function findManyByIds(array $ids): array
+    {
+        if (empty($ids)) {
+            return [];
+        }
+
+        return $this->createQueryBuilder('s')
+            ->where('s.id IN (:ids)')
+            ->setParameter('ids', $ids)
+            ->getQuery()
+            ->getResult();
+    }
 }

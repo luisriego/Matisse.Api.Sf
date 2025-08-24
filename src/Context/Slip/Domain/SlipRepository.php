@@ -18,4 +18,13 @@ interface SlipRepository
     public function deleteByDateRange(DateRange $dateRange): void;
 
     public function existsForDueDateMonth(int $year, int $month): bool;
+
+    /**
+     * Finds slips by a set of ids.
+     *
+     * @param string[] $ids
+     *
+     * @return Slip[]
+     */
+    public function findManyByIds(array $ids): array;
 }
