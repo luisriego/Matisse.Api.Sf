@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace App\Context\Slip\Application\UseCase;
+namespace App\Context\Slip\Application\UseCase\SlipGeneration;
 
 use App\Context\Expense\Domain\ExpenseRepository;
 use App\Context\Expense\Domain\RecurringExpenseRepository;

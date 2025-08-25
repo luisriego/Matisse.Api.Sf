@@ -17,3 +17,8 @@ slips_bulk_send:
     path: /api/v1/slips/bulk-send
     controller: App\Context\Slip\Infrastructure\Http\Controller\SlipsBulkSendPostController
     methods: ['POST']
+
+slip_pay:
+    path: /api/v1/slips/pay/{id}
+    controller: App\Context\Slip\Infrastructure\Http\Controller\SlipPayPatchController
+    methods: ['PATCH']

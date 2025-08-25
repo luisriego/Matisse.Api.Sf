@@ -32,6 +32,11 @@ services:
             - '../src/Shared/Domain/Entity/'
             - '../src/Shared/Infrastructure/Persistence/Entity/'
 
+    # Listener to unwrap HandlerFailedException from Messenger component
+    App\Shared\Infrastructure\Symfony\UnwrapHandlerFailedExceptionListener:
+        tags:
+            - { name: kernel.event_listener, event: kernel.exception, method: onKernelException, priority: 200 }
+
     # Event Listeners used to transform the exception into a JSON response
     App\Shared\Infrastructure\JsonTransformerExceptionListener:
         tags:

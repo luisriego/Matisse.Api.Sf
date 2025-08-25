@@ -7,6 +7,7 @@ namespace App\Tests\Context\Slip\Infrastructure\Http\Controller;
 use App\Context\Slip\Domain\Slip;
 use App\Tests\Context\Slip\Domain\SlipMother;
 use App\Tests\Shared\Infrastructure\PhpUnit\ApiTestCase;
+use DateMalformedStringException;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\Tools\SchemaTool;
 use Symfony\Component\HttpFoundation\Response;
@@ -20,14 +21,15 @@ final class SlipsBulkSendPostControllerTest extends ApiTestCase
         parent::setUp();
         $this->entityManager = $this->client->getContainer()->get('doctrine.orm.entity_manager');
 
-        // Re-creamos el esquema en cada test para asegurar un estado limpio
         $schemaTool = new SchemaTool($this->entityManager);
         $metadata = $this->entityManager->getMetadataFactory()->getAllMetadata();
         $schemaTool->dropSchema($metadata);
         $schemaTool->createSchema($metadata);
     }
 
-    /** @test */
+    /** @test
+     * @throws DateMalformedStringException
+     */
     public function test_it_should_send_multiple_slips_and_return_accepted(): void
     {
         // ... (test existente)
@@ -73,7 +75,9 @@ final class SlipsBulkSendPostControllerTest extends ApiTestCase
         self::assertSame(Response::HTTP_BAD_REQUEST, $this->client->getResponse()->getStatusCode());
     }
 
-    /** @test */
+    /** @test
+     * @throws DateMalformedStringException
+     */
     public function test_it_should_only_send_valid_slips_in_a_batch(): void
     {
         // ... (test existente)

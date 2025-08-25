@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace App\Context\Slip\Application\UseCase;
+namespace App\Context\Slip\Application\UseCase\SlipGeneration;
 
 use App\Shared\Application\Command;
 

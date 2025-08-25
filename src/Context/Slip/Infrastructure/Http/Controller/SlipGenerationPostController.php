@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\Context\Slip\Infrastructure\Http\Controller;
 
-use App\Context\Slip\Application\UseCase\SlipGenerationCommandHandler;
+use App\Context\Slip\Application\UseCase\SlipGeneration\SlipGenerationCommandHandler;
 use App\Context\Slip\Infrastructure\Http\Dto\SlipGenerationRequestDto;
 use DateMalformedStringException;
 use Symfony\Component\HttpFoundation\Response;

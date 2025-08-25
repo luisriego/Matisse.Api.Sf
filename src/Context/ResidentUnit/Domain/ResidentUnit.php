@@ -11,7 +11,9 @@ use DateTime;
 use DateTimeImmutable;
 use Doctrine\Common\Collections\ArrayCollection; // <-- AÑADIDO
 use Doctrine\Common\Collections\Collection;      // <-- AÑADIDO
-use Doctrine\ORM\Mapping as ORM;                 // <-- AÑADIDO
+use Doctrine\ORM\Mapping as ORM;
+
+                 // <-- AÑADIDO
 
 #[ORM\Entity] // <-- AÑADIDO
 #[ORM\Table(name: 'resident_units')] // <-- AÑADIDO
