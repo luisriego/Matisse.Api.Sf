@@ -4,9 +4,9 @@ declare(strict_types=1);
 
 namespace App\Context\Slip\Infrastructure\Http\Dto;
 
-use App\Context\Slip\Application\UseCase\SlipGenerationCommand;
+use App\Context\Slip\Application\UseCase\SlipGeneration\SlipGenerationCommand;
+use App\Shared\Domain\Exception\InvalidArgumentException;
 use App\Shared\Infrastructure\RequestDto;
-use InvalidArgumentException;
 use Symfony\Component\HttpFoundation\Request;
 
 use function array_map;

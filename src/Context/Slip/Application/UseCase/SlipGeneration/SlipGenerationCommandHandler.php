@@ -14,10 +14,12 @@ use App\Shared\Application\CommandHandler;
 use App\Shared\Domain\ValueObject\DateRange;
 use DateMalformedStringException;
 use DateTimeImmutable;
+use Symfony\Component\Messenger\Attribute\AsMessageHandler;
 
 use function array_merge;
 use function sprintf;
 
+#[AsMessageHandler]
 class SlipGenerationCommandHandler implements CommandHandler
 {
     public function __construct(
