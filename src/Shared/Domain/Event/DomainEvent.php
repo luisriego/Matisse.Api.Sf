@@ -4,12 +4,14 @@ declare(strict_types=1);
 
 namespace App\Shared\Domain\Event;
 
-abstract readonly class DomainEvent
+use DateTimeImmutable;
+
+abstract readonly class DomainEvent implements DomainEventInterface
 {
     public function __construct(
         private readonly string $aggregateId,
         private readonly string $eventId,
-        private readonly string $occurredOn,
+        private readonly DateTimeImmutable $occurredOn,
     ) {}
 
     abstract public static function fromPrimitives(
@@ -33,7 +35,7 @@ abstract readonly class DomainEvent
         return $this->eventId;
     }
 
-    final public function occurredOn(): string
+    final public function occurredOn(): DateTimeImmutable
     {
         return $this->occurredOn;
     }

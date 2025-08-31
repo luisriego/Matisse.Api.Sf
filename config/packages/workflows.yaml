@@ -1,0 +1,7 @@
+framework:
+    workflows:
+        slip:
+            # Garantiza que se despache el evento "completed" del workflow,
+            # necesario para que el suscriptor SlipWorkflowCompletedSubscriber se ejecute.
+            events_to_dispatch:
+                - workflow.completed

@@ -6,7 +6,7 @@ namespace App\Context\Slip\Infrastructure\Workflow;
 
 use App\Context\Slip\Domain\SlipRepository;
 use App\Context\Slip\Domain\ValueObject\SlipId;
-use App\Shared\Domain\Event\DomainEventDispatcherInterface;
+use App\Shared\Domain\Event\EventBus;
 use RuntimeException;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 use Symfony\Component\Workflow\Event\CompletedEvent;
@@ -23,7 +23,7 @@ final readonly class SlipWorkflowCompletedSubscriber implements EventSubscriberI
 {
     public function __construct(
         private SlipRepository $slipRepository,
-        private DomainEventDispatcherInterface $eventDispatcher,
+        private EventBus $eventBus,
     ) {}
 
     public static function getSubscribedEvents(): array
@@ -55,14 +55,16 @@ final readonly class SlipWorkflowCompletedSubscriber implements EventSubscriberI
 
         $slip = $this->slipRepository->findOneByIdOrFail(SlipId::fromString($slipId));
 
-        // Si añades un método de dominio específico (recomendado) como markAsSubmitted(),
-        // llámalo para que el agregado registre el evento SlipWasSubmitted.
         if (method_exists($slip, 'markAsSubmitted')) {
             $slip->markAsSubmitted();
+        } elseif (method_exists($slip, 'submit')) {
+            $slip->submit();
+        } elseif (method_exists($slip, 'send')) {
+            $slip->send();
         }
 
         $this->slipRepository->save($slip, true);
-        $this->eventDispatcher->dispatchAll($slip->pullDomainEvents());
+        $this->eventBus->publish(...$slip->pullDomainEvents());
 
         // Si tu entidad infra mantiene un campo "status" además de "currentPlace", sincronízalo.
         $this->syncInfraStatusFromMarking($entity, $event);
@@ -80,7 +82,7 @@ final readonly class SlipWorkflowCompletedSubscriber implements EventSubscriberI
         $slip->markAsPaid(); // El agregado define paidAt y registra eventos (si aplica)
 
         $this->slipRepository->save($slip);
-        $this->eventDispatcher->dispatchAll($slip->pullDomainEvents());
+        $this->eventBus->publish(...$slip->pullDomainEvents());
 
         $this->syncInfraStatusFromMarking($entity, $event);
     }
@@ -97,7 +99,7 @@ final readonly class SlipWorkflowCompletedSubscriber implements EventSubscriberI
         $slip->markAsOverdue();
 
         $this->slipRepository->save($slip);
-        $this->eventDispatcher->dispatchAll($slip->pullDomainEvents());
+        $this->eventBus->publish(...$slip->pullDomainEvents());
 
         $this->syncInfraStatusFromMarking($entity, $event);
     }
@@ -114,7 +116,7 @@ final readonly class SlipWorkflowCompletedSubscriber implements EventSubscriberI
         $slip->markAsCancelled();
 
         $this->slipRepository->save($slip);
-        $this->eventDispatcher->dispatchAll($slip->pullDomainEvents());
+        $this->eventBus->publish(...$slip->pullDomainEvents());
 
         $this->syncInfraStatusFromMarking($entity, $event);
     }

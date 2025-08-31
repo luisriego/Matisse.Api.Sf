@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Context\Slip\Domain;
 
 use App\Context\ResidentUnit\Domain\ResidentUnit;
+use App\Context\Slip\Domain\Event\SlipWasSubmitted;
 use App\Context\Slip\Domain\ValueObject\SlipAmount;
 use App\Context\Slip\Domain\ValueObject\SlipDueDate;
 use App\Context\Slip\Domain\ValueObject\SlipId;
@@ -83,6 +84,19 @@ class Slip extends AggregateRoot
     public function residentUnit(): ResidentUnit
     {
         return $this->residentUnit;
+    }
+
+    public function markAsSubmitted(): void
+    {
+        $this->status = SlipStatus::SUBMITTED;
+        $this->record(
+            new SlipWasSubmitted(
+                $this->id,
+                $this->residentUnit->id(),
+                $this->amount,
+                $this->dueDate->format(DATE_ATOM)
+            )
+        );
     }
 
     public function markAsPaid(): void

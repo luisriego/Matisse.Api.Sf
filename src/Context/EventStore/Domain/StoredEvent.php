@@ -7,7 +7,7 @@ namespace App\Context\EventStore\Domain;
 use App\Shared\Domain\ValueObject\Uuid;
 use DateTimeImmutable;
 
-final class StoredEvent
+class StoredEvent
 {
     private string $id;
     private string $aggregateId;

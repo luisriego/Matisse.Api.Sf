@@ -6,32 +6,29 @@ namespace App\Shared\Infrastructure;
 
 use App\Shared\Domain\Event\DomainEvent;
 use App\Shared\Domain\Event\EventBus;
-use Symfony\Component\Messenger\Exception\NoHandlerForMessageException;
-use Symfony\Component\Messenger\Handler\HandlersLocator;
-use Symfony\Component\Messenger\MessageBus;
-use Symfony\Component\Messenger\Middleware\HandleMessageMiddleware;
+use App\Shared\Domain\Event\EventSubscriber;
 
-readonly class InMemorySymfonyEventBus implements EventBus
+final readonly class InMemorySymfonyEventBus implements EventBus
 {
-    private MessageBus $bus;
+    /** @var EventSubscriber[] */
+    private iterable $subscribers;
 
     public function __construct(iterable $subscribers)
     {
-        $this->bus = new MessageBus(
-            [
-                new HandleMessageMiddleware(
-                    new HandlersLocator(DomainEventSubscriberExtractor::extract($subscribers)),
-                ),
-            ],
-        );
+        $this->subscribers = $subscribers;
     }
 
     public function publish(DomainEvent ...$events): void
     {
         foreach ($events as $event) {
-            try {
-                $this->bus->dispatch($event);
-            } catch (NoHandlerForMessageException) {
+            foreach ($this->subscribers as $subscriber) {
+                $subscribedTo = $subscriber::subscribedTo();
+                $eventClass = get_class($event);
+
+                if (array_key_exists($eventClass, $subscribedTo)) {
+                    $method = $subscribedTo[$eventClass];
+                    $subscriber->{$method}($event);
+                }
             }
         }
     }

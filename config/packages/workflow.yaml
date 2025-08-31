@@ -8,6 +8,8 @@ framework:
             supports:
                 - App\Context\Slip\Domain\Slip
             initial_marking: pending
+            events_to_dispatch:
+                - workflow.completed
             places:
                 - pending
                 - submitted

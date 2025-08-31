@@ -6,10 +6,14 @@ namespace App\Context\User\Domain;
 
 use App\Shared\Domain\AggregateRoot;
 use App\Shared\Domain\Exception\InvalidArgumentException;
+use DateTime;
+use DateTimeImmutable;
+use DateTimeInterface;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\PasswordHasher\PasswordHasherInterface;
 use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
 use Symfony\Component\Security\Core\User\UserInterface;
+use Symfony\Component\Uid\Uuid;
 
 use function array_unique;
 use function in_array;
@@ -77,7 +81,7 @@ class User extends AggregateRoot implements UserInterface, PasswordAuthenticated
         $this->token = sha1(uniqid('', true));
         $this->age = 18;
         $this->isActive = false;
-        $this->createdOn = new DateTimeImmutable();
+        $this->createdAt = new DateTimeImmutable();
         $this->markAsUpdated();
     }
 
@@ -275,8 +279,8 @@ class User extends AggregateRoot implements UserInterface, PasswordAuthenticated
             'age' => $this->age,
             'roles' => $this->roles,
             'isActive' => $this->isActive,
-            'createdOn' => $this->createdOn,
-            'updatedOn' => $this->updatedOn,
+            'createdOn' => $this->createdAt,
+            'updatedOn' => $this->updatedAt,
         ];
     }
 
