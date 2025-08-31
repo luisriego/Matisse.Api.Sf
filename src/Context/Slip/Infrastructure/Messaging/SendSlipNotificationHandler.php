@@ -5,15 +5,14 @@ declare(strict_types=1);
 namespace App\Context\Slip\Infrastructure\Messaging;
 
 use App\Context\Slip\Application\Message\SendSlipNotification;
-use Symfony\Component\Messenger\Attribute\AsMessageHandler;
 
-#[AsMessageHandler(bus: 'command.bus')]
+// ATRIBUTO #[AsMessageHandler] ELIMINADO PARA EVITAR DUPLICIDAD.
+// El manejador activo está en App\Context\Slip\Application\Message\SendSlipNotificationHandler.
 final readonly class SendSlipNotificationHandler
 {
     public function __invoke(SendSlipNotification $message): void
     {
-        // Aquí deberías invocar tu servicio real de envío de emails.
-        // Este handler existe para consumir el mensaje y evitar el "No handler for message".
-        // TODO: Integrar mailer/servicio de notificaciones.
+        // Este handler ha sido desactivado.
+        // TODO: Integrar mailer/servicio de notificaciones en el handler de Application.
     }
 }
