@@ -4,64 +4,44 @@ declare(strict_types=1);
 
 namespace App\Context\ResidentUnit\Domain;
 
-use App\Context\Income\Domain\Income; // <-- AÑADIDO
-use App\Context\Slip\Domain\Slip;     // <-- AÑADIDO
 use App\Shared\Domain\AggregateRoot;
 use DateTime;
 use DateTimeImmutable;
-use Doctrine\Common\Collections\ArrayCollection; // <-- AÑADIDO
-use Doctrine\Common\Collections\Collection;      // <-- AÑADIDO
-use Doctrine\ORM\Mapping as ORM;
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 
-                 // <-- AÑADIDO
-
-#[ORM\Entity] // <-- AÑADIDO
-#[ORM\Table(name: 'resident_units')] // <-- AÑADIDO
 class ResidentUnit extends AggregateRoot
 {
-    #[ORM\Id] // <-- AÑADIDO
-    #[ORM\Column(type: 'string', length: 36)] // <-- AÑADIDO
     private string $id;
-
-    #[ORM\Column(type: 'string', length: 255)] // <-- AÑADIDO
     private string $unit;
-
-    #[ORM\Column(type: 'boolean')] // <-- AÑADIDO
     private bool $isActive;
-
-    #[ORM\Column(type: 'datetime_immutable')] // <-- AÑADIDO
     private DateTimeImmutable $createdAt;
-
-    #[ORM\Column(type: 'datetime')] // <-- AÑADIDO
     private DateTime $updatedAt;
-
-    #[ORM\Column(type: 'float')] // <-- AÑADIDO
     private float $idealFraction = 0.0;
-
-    // --- RELACIONES CORREGIDAS ---
-    #[ORM\OneToMany(mappedBy: 'residentUnit', targetEntity: Income::class)] // <-- AÑADIDO
+    private array $notificationRecipients = [];
     private Collection $incomes;
-
-    #[ORM\OneToMany(mappedBy: 'residentUnit', targetEntity: Slip::class)] // <-- AÑADIDO
     private Collection $slips;
 
-    public function __construct(string $id, string $unit, float $idealFraction)
+    private function __construct(string $id, string $unit, float $idealFraction)
     {
         $this->id = $id;
         $this->unit = $unit;
         $this->idealFraction = $idealFraction;
-        $this->isActive = true;
-        $this->createdAt = new DateTimeImmutable();
-        $this->incomes = new ArrayCollection(); // <-- AÑADIDO
-        $this->slips = new ArrayCollection();   // <-- AÑADIDO
+        $this->incomes = new ArrayCollection();
+        $this->slips = new ArrayCollection();
     }
 
     public static function create(
         ResidentUnitId $id,
         ResidentUnitVO $unit,
-        ResidentUnitIdealFraction $idealFraction,
+        ResidentUnitIdealFraction $idealFraction
     ): self {
-        return new self($id->value(), $unit->value(), $idealFraction->value());
+        $residentUnit = new self($id->value(), $unit->value(), $idealFraction->value());
+        $residentUnit->isActive = true;
+        $residentUnit->createdAt = new DateTimeImmutable();
+        $residentUnit->markAsUpdated();
+
+        return $residentUnit;
     }
 
     public function id(): string
@@ -69,7 +49,7 @@ class ResidentUnit extends AggregateRoot
         return $this->id;
     }
 
-    public function getUnit(): string
+    public function unit(): string
     {
         return $this->unit;
     }
@@ -104,6 +84,17 @@ class ResidentUnit extends AggregateRoot
         return $accumulatedIF + $presentValue <= 1;
     }
 
+    public function notificationRecipients(): array
+    {
+        return $this->notificationRecipients;
+    }
+
+    public function setNotificationRecipients(array $recipients): void
+    {
+        $this->notificationRecipients = $recipients;
+        $this->markAsUpdated();
+    }
+
     public function toArray(): array
     {
         return [
@@ -112,6 +103,7 @@ class ResidentUnit extends AggregateRoot
             'idealFraction' => $this->idealFraction,
             'createdAt' => $this->createdAt,
             'updatedAt' => $this->updatedAt,
+            'notificationRecipients' => $this->notificationRecipients,
         ];
     }
 }

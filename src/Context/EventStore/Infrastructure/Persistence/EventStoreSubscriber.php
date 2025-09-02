@@ -6,6 +6,7 @@ namespace App\Context\EventStore\Infrastructure\Persistence;
 
 use App\Shared\Domain\Event\DomainEvent;
 use Doctrine\DBAL\Connection;
+use Doctrine\DBAL\Exception;
 use Doctrine\DBAL\Exception\UniqueConstraintViolationException;
 
 use function json_encode;
@@ -35,6 +36,7 @@ readonly class EventStoreSubscriber
         } catch (UniqueConstraintViolationException) {
             // Ignorar silenciosamente los eventos duplicados
             // Opcionalmente puedes registrar esto en logs para depuración
+        } catch (Exception $e) {
         }
     }
 

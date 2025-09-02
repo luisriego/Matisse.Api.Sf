@@ -59,3 +59,11 @@ services:
     App\Shared\Infrastructure\InMemorySymfonyEventBus:
         arguments:
             $subscribers: !tagged_iterator app.event_subscriber
+
+    # Mailer Service Configuration
+    App\Context\Slip\Application\Service\SlipMailerInterface:
+        alias: App\Context\Slip\Infrastructure\Mailer\SlipMailer
+
+    App\Context\Slip\Infrastructure\Mailer\SlipMailer:
+        arguments:
+            - '@Symfony\Component\Mailer\MailerInterface'

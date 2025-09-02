@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace App\Context\Slip\Infrastructure\Workflow;
 
+use App\Context\Slip\Application\Dto\SlipEmailDto;
+use App\Context\Slip\Application\Service\SlipMailerInterface;
 use App\Context\Slip\Domain\SlipRepository;
 use App\Context\Slip\Domain\ValueObject\SlipId;
 use App\Shared\Domain\Event\EventBus;
@@ -24,6 +26,7 @@ final readonly class SlipWorkflowCompletedSubscriber implements EventSubscriberI
     public function __construct(
         private SlipRepository $slipRepository,
         private EventBus $eventBus,
+        private SlipMailerInterface $slipMailer,
     ) {}
 
     public static function getSubscribedEvents(): array
@@ -54,6 +57,9 @@ final readonly class SlipWorkflowCompletedSubscriber implements EventSubscriberI
         $slipId = $this->extractId($entity);
 
         $slip = $this->slipRepository->findOneByIdOrFail(SlipId::fromString($slipId));
+
+        $emailData = new SlipEmailDto($slip);
+        $this->slipMailer->sendSlipSubmittedEmail($emailData);
 
         if (method_exists($slip, 'markAsSubmitted')) {
             $slip->markAsSubmitted();
