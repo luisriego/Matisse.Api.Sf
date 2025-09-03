@@ -8,6 +8,8 @@ use App\Shared\Domain\Event\DomainEvent;
 use App\Shared\Domain\Event\EventBus;
 use App\Shared\Domain\Event\EventSubscriber;
 
+use function array_key_exists;
+
 final readonly class InMemorySymfonyEventBus implements EventBus
 {
     /** @var EventSubscriber[] */
@@ -23,7 +25,7 @@ final readonly class InMemorySymfonyEventBus implements EventBus
         foreach ($events as $event) {
             foreach ($this->subscribers as $subscriber) {
                 $subscribedTo = $subscriber::subscribedTo();
-                $eventClass = get_class($event);
+                $eventClass = $event::class;
 
                 if (array_key_exists($eventClass, $subscribedTo)) {
                     $method = $subscribedTo[$eventClass];

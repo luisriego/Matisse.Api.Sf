@@ -11,13 +11,7 @@ use Symfony\Component\Messenger\MessageBusInterface;
 
 final readonly class EnqueueSlipNotificationOnSlipWasSubmitted implements EventSubscriber
 {
-    public function __construct(private MessageBusInterface $bus)
-    {}
-
-    public static function subscribedTo(): array
-    {
-        return [SlipWasSubmitted::class => '__invoke'];
-    }
+    public function __construct(private MessageBusInterface $bus) {}
 
     public function __invoke(SlipWasSubmitted $event): void
     {
@@ -25,7 +19,12 @@ final readonly class EnqueueSlipNotificationOnSlipWasSubmitted implements EventS
             $event->aggregateId(),
             $event->residentUnitId(),
             $event->amount(),
-            $event->dueDate()
+            $event->dueDate(),
         ));
+    }
+
+    public static function subscribedTo(): array
+    {
+        return [SlipWasSubmitted::class => '__invoke'];
     }
 }

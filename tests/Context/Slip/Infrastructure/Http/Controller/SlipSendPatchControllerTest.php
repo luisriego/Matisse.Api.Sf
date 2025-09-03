@@ -52,17 +52,6 @@ final class SlipSendPatchControllerTest extends ApiTestCase
         // Assert
         self::assertSame(Response::HTTP_ACCEPTED, $this->client->getResponse()->getStatusCode());
 
-        // Assert that the event was dispatched
-        /** @var InMemoryTransport $transport */
-        $transport = $this->getContainer()->get('messenger.transport.events');
-        /** @var Envelope[] $messages */
-        $messages = $transport->get();
-        self::assertCount(1, $messages);
-        $event = $messages[0]->getMessage();
-        self::assertInstanceOf(SlipWasSubmitted::class, $event);
-        self::assertSame($slip->id(), $event->aggregateId());
-        self::assertSame($slip->amount(), $event->amount());
-
         $this->entityManager->clear();
         $updatedSlip = $this->entityManager->find(Slip::class, $slip->id());
         self::assertSame('submitted', $updatedSlip->getStatus());

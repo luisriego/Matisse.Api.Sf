@@ -17,7 +17,7 @@ final readonly class DoctrineEventStore implements EventStore
     {
         $storedEvent = StoredEvent::create(
             $event->aggregateId(),
-            $event::class,
+            $event::eventName(),
             $event->toPrimitives(),
         );
 

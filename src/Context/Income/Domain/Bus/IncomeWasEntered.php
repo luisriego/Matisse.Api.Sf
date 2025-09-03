@@ -5,9 +5,8 @@ declare(strict_types=1);
 namespace App\Context\Income\Domain\Bus;
 
 use App\Shared\Domain\Event\DomainEvent;
+use DateTimeImmutable;
 use Symfony\Component\Uid\Uuid as SfUuid;
-
-use function date;
 
 final readonly class IncomeWasEntered extends DomainEvent
 {
@@ -18,12 +17,12 @@ final readonly class IncomeWasEntered extends DomainEvent
         private string $type,
         private string $dueDate,
         ?string $eventId = null,
-        ?string $occurredOn = null,
+        ?DateTimeImmutable $occurredOn = null,
     ) {
         parent::__construct(
             $aggregateId,
             $eventId ?? SfUuid::v4()->toRfc4122(),
-            $occurredOn ?? date('Y-m-d H:i:s'),
+            $occurredOn ?? new DateTimeImmutable(),
         );
     }
 
@@ -40,7 +39,7 @@ final readonly class IncomeWasEntered extends DomainEvent
             $body['type'],
             $body['dueDate'],
             $eventId,
-            $occurredOn,
+            new DateTimeImmutable($occurredOn),
         );
     }
 

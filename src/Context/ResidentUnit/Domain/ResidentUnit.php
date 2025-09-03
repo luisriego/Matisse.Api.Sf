@@ -34,7 +34,7 @@ class ResidentUnit extends AggregateRoot
     public static function create(
         ResidentUnitId $id,
         ResidentUnitVO $unit,
-        ResidentUnitIdealFraction $idealFraction
+        ResidentUnitIdealFraction $idealFraction,
     ): self {
         $residentUnit = new self($id->value(), $unit->value(), $idealFraction->value());
         $residentUnit->isActive = true;

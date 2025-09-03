@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Context\Slip\Domain\Event;
 
 use App\Shared\Domain\Event\DomainEvent;
+use DateMalformedStringException;
 use DateTimeImmutable;
 use Symfony\Component\Uid\Uuid;
 
@@ -16,10 +17,10 @@ final readonly class SlipWasSubmitted extends DomainEvent
         private readonly int $amount,
         private readonly string $dueDate,
         ?string $eventId = null,
-        ?DateTimeImmutable $occurredOn = null
+        ?DateTimeImmutable $occurredOn = null,
     ) {
-        $eventId = $eventId ?? Uuid::v4()->toRfc4122();
-        $occurredOn = $occurredOn ?? new DateTimeImmutable();
+        $eventId ??= Uuid::v4()->toRfc4122();
+        $occurredOn ??= new DateTimeImmutable();
 
         parent::__construct($aggregateId, $eventId, $occurredOn);
     }
@@ -39,13 +40,13 @@ final readonly class SlipWasSubmitted extends DomainEvent
     }
 
     /**
-     * @throws \DateMalformedStringException
+     * @throws DateMalformedStringException
      */
     public static function fromPrimitives(
         string $aggregateId,
         array $body,
         string $eventId,
-        string $occurredOn
+        string $occurredOn,
     ): self {
         return new self(
             $aggregateId,
@@ -53,7 +54,7 @@ final readonly class SlipWasSubmitted extends DomainEvent
             $body['amount'],
             $body['dueDate'],
             $eventId,
-            new DateTimeImmutable($occurredOn)
+            new DateTimeImmutable($occurredOn),
         );
     }
 

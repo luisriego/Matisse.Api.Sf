@@ -12,6 +12,6 @@ final readonly class SendSlipNotification implements AsyncMessage
         public string $slipId,
         public string $residentUnitId,
         public int $amount,
-        public string $dueDate
+        public string $dueDate,
     ) {}
 }

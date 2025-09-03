@@ -13,6 +13,8 @@ use App\Shared\Domain\AggregateRoot;
 use DateMalformedStringException;
 use DateTimeImmutable;
 
+use const DATE_ATOM;
+
 class Slip extends AggregateRoot
 {
     private readonly DateTimeImmutable $createdAt;
@@ -94,8 +96,8 @@ class Slip extends AggregateRoot
                 $this->id,
                 $this->residentUnit->id(),
                 $this->amount,
-                $this->dueDate->format(DATE_ATOM)
-            )
+                $this->dueDate->format(DATE_ATOM),
+            ),
         );
     }
 

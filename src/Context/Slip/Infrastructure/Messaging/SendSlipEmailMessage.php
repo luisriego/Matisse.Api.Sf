@@ -13,8 +13,7 @@ final readonly class SendSlipEmailMessage implements AsyncMessage
         private string $slipId,
         private int $amount,
         private string $dueDate,
-    ) {
-    }
+    ) {}
 
     public function residentUnitId(): string
     {

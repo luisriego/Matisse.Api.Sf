@@ -9,9 +9,8 @@ use App\Context\Slip\Domain\Slip;
 readonly class SlipEmailDto
 {
     public function __construct(
-        private Slip $slip
-    ) {
-    }
+        private Slip $slip,
+    ) {}
 
     public function slipId(): string
     {

@@ -8,6 +8,7 @@ use App\Shared\Domain\Event\DomainEvent;
 use Doctrine\DBAL\Connection;
 use Doctrine\DBAL\Exception;
 use Doctrine\DBAL\Exception\UniqueConstraintViolationException;
+use Doctrine\DBAL\Types\Types;
 
 use function json_encode;
 use function md5;
@@ -25,18 +26,27 @@ readonly class EventStoreSubscriber
             $contentHash = $this->generateEventHash($event);
 
             // Insertar el evento con una restricción única en el hash
-            $this->connection->insert('event_store', [
-                'id' => $event->eventId(),
-                'aggregate_id' => $event->aggregateId(),
-                'event_name' => $event->eventName(),
-                'body' => json_encode($event->toPrimitives()),
-                'occurred_on' => $event->occurredOn()->format('Y-m-d H:i:s'),
-                'content_hash' => $contentHash,
-            ]);
+            $this->connection->insert(
+                'event_store',
+                [
+                    'id' => $event->eventId(),
+                    'aggregate_id' => $event->aggregateId(),
+                    'event_name' => $event->eventName(),
+                    'body' => json_encode($event->toPrimitives()),
+                    'occurred_on' => $event->occurredOn()->format('Y-m-d H:i:s'),
+                    'content_hash' => $contentHash,
+                ],
+                [
+                    'body' => Types::JSON,
+                ],
+            );
         } catch (UniqueConstraintViolationException) {
             // Ignorar silenciosamente los eventos duplicados
             // Opcionalmente puedes registrar esto en logs para depuración
         } catch (Exception $e) {
+            // Re-lanzar la excepción para que no se oculte silenciosamente.
+            // Esto hará que los fallos sean visibles en los logs y en los tests.
+            throw $e;
         }
     }
 
