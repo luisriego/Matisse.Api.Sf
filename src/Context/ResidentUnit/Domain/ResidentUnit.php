@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Context\ResidentUnit\Domain;
 
+use App\Context\Income\Domain\Income;
 use App\Shared\Domain\AggregateRoot;
 use DateTime;
 use DateTimeImmutable;
@@ -40,6 +41,23 @@ class ResidentUnit extends AggregateRoot
         $residentUnit->isActive = true;
         $residentUnit->createdAt = new DateTimeImmutable();
         $residentUnit->markAsUpdated();
+
+        return $residentUnit;
+    }
+
+    public static function createWithRecipients(
+        ResidentUnitId $id,
+        ResidentUnitVO $unit,
+        ResidentUnitIdealFraction $idealFraction,
+        array $recipients,
+    ): self
+    {
+        $residentUnit = new self($id->value(), $unit->value(), $idealFraction->value());
+        $residentUnit->isActive = true;
+        $residentUnit->createdAt = new DateTimeImmutable();
+        $residentUnit->markAsUpdated();
+
+        $residentUnit->notificationRecipients = $recipients;
 
         return $residentUnit;
     }

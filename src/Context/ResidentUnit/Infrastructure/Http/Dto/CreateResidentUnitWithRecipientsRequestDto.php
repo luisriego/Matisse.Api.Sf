@@ -7,7 +7,7 @@ namespace App\Context\ResidentUnit\Infrastructure\Http\Dto;
 use App\Shared\Infrastructure\RequestDto;
 use Symfony\Component\HttpFoundation\Request;
 
-readonly class CreateResidentUnitRequestDto implements RequestDto
+readonly class CreateResidentUnitWithRecipientsRequestDto implements RequestDto
 {
     public string $id;
     public string $unit;
@@ -16,9 +16,10 @@ readonly class CreateResidentUnitRequestDto implements RequestDto
 
     public function __construct(Request $request)
     {
-        $this->id = $request->get('id');
-        $this->unit = $request->get('unit');
-        $this->idealFraction = $request->get('idealFraction');
-        $this->notificationRecipients = $request->get('notificationRecipients', []);
+        $data = $request->toArray();
+        $this->id = $data['id'];
+        $this->unit = $data['unit'];
+        $this->idealFraction = $data['idealFraction'];
+        $this->notificationRecipients = $data['notificationRecipients'] ?? [];
     }
 }

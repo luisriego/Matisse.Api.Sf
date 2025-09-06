@@ -49,7 +49,7 @@ final class SlipGenerationPostControllerTest extends ApiTestCase
     }
 
     /** @test */
-    public function test_it_should_return_bad_request_for_invalid_payload(): void
+    public function it_should_return_bad_request_for_invalid_payload(): void
     {
         // Arrange: 'targetMonth' con formato incorrecto
         $payload = [

@@ -7,3 +7,8 @@ resident_unit_create:
     path: /api/v1/resident-unit/create
     controller: App\Context\ResidentUnit\Infrastructure\Http\Controller\ResidentUnitCreateController
     methods: ['PUT']
+
+resident_unit_create_with_recipients:
+    path: /api/v1/resident-unit/create-with-recipients
+    controller: App\Context\ResidentUnit\Infrastructure\Http\Controller\ResidentUnitCreateWithRecipientsController
+    methods: ['PUT']

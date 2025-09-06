@@ -5,14 +5,12 @@ namespace App\Tests\Context\ResidentUnit\Application\UseCase\CreateUnit;
 use App\Context\ResidentUnit\Application\UseCase\CreateUnit\CreateResidentUnitCommand;
 use App\Context\ResidentUnit\Application\UseCase\CreateUnit\CreateResidentUnitCommandHandler;
 use App\Context\ResidentUnit\Domain\ResidentUnitRepository;
-use App\Shared\Application\EventBus;
 use PHPUnit\Framework\MockObject\Exception;
 use PHPUnit\Framework\TestCase;
 
 class CreateResidentUnitCommandHandlerTest extends TestCase
 {
     private ResidentUnitRepository $repository;
-    private EventBus $eventBus;
     private CreateResidentUnitCommandHandler $handler;
 
     /**
@@ -21,8 +19,7 @@ class CreateResidentUnitCommandHandlerTest extends TestCase
     protected function setUp(): void
     {
         $this->repository = $this->createMock(ResidentUnitRepository::class);
-        $this->eventBus = $this->createMock(EventBus::class);
-        $this->handler = new CreateResidentUnitCommandHandler($this->repository, $this->eventBus);
+        $this->handler = new CreateResidentUnitCommandHandler($this->repository);
     }
 
     public function test_it_throws_exception_when_ideal_fraction_exceeds_one(): void
@@ -34,7 +31,8 @@ class CreateResidentUnitCommandHandlerTest extends TestCase
         $command = new CreateResidentUnitCommand(
             'unit-id',
             'Unit Name',
-            0.2 // New fraction that exceeds the limit
+            0.2, // New fraction that exceeds the limit
+            []
         );
 
         $this->expectException(\Exception::class);

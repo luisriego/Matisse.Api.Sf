@@ -34,7 +34,9 @@ final class SlipSendCommandHandlerTest extends SlipModuleUnitTestCase
         );
     }
 
-    /** @test */
+    /** @test
+     * @throws \DateMalformedStringException
+     */
     public function test_it_should_apply_send_transition_to_slip(): void
     {
         $slip = SlipMother::create();
@@ -49,7 +51,9 @@ final class SlipSendCommandHandlerTest extends SlipModuleUnitTestCase
         ($this->handler)($command);
     }
 
-    /** @test */
+    /** @test
+     * @throws \DateMalformedStringException
+     */
     public function test_it_should_throw_an_exception_when_slip_not_found(): void
     {
         $this->expectException(SlipNotFoundException::class);
@@ -66,7 +70,9 @@ final class SlipSendCommandHandlerTest extends SlipModuleUnitTestCase
         ($this->handler)($command);
     }
 
-    /** @test */
+    /** @test
+     * @throws \DateMalformedStringException
+     */
     public function test_it_should_throw_an_exception_when_transition_is_not_valid(): void
     {
         $this->expectException(LogicException::class);
