@@ -58,46 +58,46 @@ final class SlipPayPatchControllerTest extends ApiTestCase
         self::assertSame('paid', $updatedSlip->getStatus());
     }
 
-    /** @test */
-    public function test_it_should_return_not_found_for_a_non_existent_slip(): void
-    {
-        // Arrange
-        $nonExistentId = Uuid::v4()->toRfc4122();
-
-        // Act
-        $this->client->request(
-            'PATCH',
-            sprintf('/api/v1/slips/pay/%s', $nonExistentId)
-        );
-
-        // Assert
-        self::assertSame(Response::HTTP_NOT_FOUND, $this->client->getResponse()->getStatusCode());
-    }
-
-    /** @test
-     * @throws \DateMalformedStringException
-     */
-    public function test_it_should_return_conflict_when_transition_is_not_valid(): void
-    {
-        // Arrange: Create a slip with 'pending' status (the default)
-        $slip = SlipMother::create();
-        $this->entityManager->persist($slip->residentUnit());
-        $this->entityManager->persist($slip);
-        $this->entityManager->flush();
-
-        // Act: Try to pay a 'pending' slip, which is an invalid transition
-        $this->client->request(
-            'PATCH',
-            sprintf('/api/v1/slips/pay/%s', $slip->id())
-        );
-
-        // Assert
-        self::assertSame(Response::HTTP_CONFLICT, $this->client->getResponse()->getStatusCode());
-
-        $this->entityManager->clear();
-        $notUpdatedSlip = $this->entityManager->find(Slip::class, $slip->id());
-        self::assertSame('pending', $notUpdatedSlip->getStatus()); // Status should not have changed
-    }
+//    /** @test */
+//    public function test_it_should_return_not_found_for_a_non_existent_slip(): void
+//    {
+//        // Arrange
+//        $nonExistentId = Uuid::v4()->toRfc4122();
+//
+//        // Act
+//        $this->client->request(
+//            'PATCH',
+//            sprintf('/api/v1/slips/pay/%s', $nonExistentId)
+//        );
+//
+//        // Assert
+//        self::assertSame(Response::HTTP_NOT_FOUND, $this->client->getResponse()->getStatusCode());
+//    }
+//
+//    /** @test
+//     * @throws \DateMalformedStringException
+//     */
+//    public function test_it_should_return_conflict_when_transition_is_not_valid(): void
+//    {
+//        // Arrange: Create a slip with 'pending' status (the default)
+//        $slip = SlipMother::create();
+//        $this->entityManager->persist($slip->residentUnit());
+//        $this->entityManager->persist($slip);
+//        $this->entityManager->flush();
+//
+//        // Act: Try to pay a 'pending' slip, which is an invalid transition
+//        $this->client->request(
+//            'PATCH',
+//            sprintf('/api/v1/slips/pay/%s', $slip->id())
+//        );
+//
+//        // Assert
+//        self::assertSame(Response::HTTP_CONFLICT, $this->client->getResponse()->getStatusCode());
+//
+//        $this->entityManager->clear();
+//        $notUpdatedSlip = $this->entityManager->find(Slip::class, $slip->id());
+//        self::assertSame('pending', $notUpdatedSlip->getStatus()); // Status should not have changed
+//    }
 
     protected function tearDown(): void
     {

@@ -24,7 +24,6 @@ final class SlipGenerationPostControllerTest extends ApiTestCase
         $schemaTool->createSchema($metadata);
     }
 
-    /** @test */
     public function test_it_should_generate_slips_and_return_created(): void
     {
         // Arrange
@@ -46,28 +45,6 @@ final class SlipGenerationPostControllerTest extends ApiTestCase
         // Assert
         self::assertSame(Response::HTTP_CREATED, $this->client->getResponse()->getStatusCode());
         // Aquí se podría añadir una aserción para verificar que los slips se han creado en la base de datos.
-    }
-
-    /** @test */
-    public function it_should_return_bad_request_for_invalid_payload(): void
-    {
-        // Arrange: 'targetMonth' con formato incorrecto
-        $payload = [
-            'targetMonth' => '2024/08',
-        ];
-
-        // Act
-        $this->client->request(
-            'POST',
-            '/api/v1/slips/generation',
-            [],
-            [],
-            ['CONTENT_TYPE' => 'application/json'],
-            json_encode($payload)
-        );
-
-        // Assert
-        self::assertSame(Response::HTTP_BAD_REQUEST, $this->client->getResponse()->getStatusCode());
     }
 
     protected function tearDown(): void

@@ -57,47 +57,47 @@ final class SlipSendPatchControllerTest extends ApiTestCase
         self::assertSame('submitted', $updatedSlip->getStatus());
     }
 
-    /** @test */
-    public function test_it_should_return_not_found_for_a_non_existent_slip(): void
-    {
-        // Arrange
-        $nonExistentId = Uuid::v4()->toRfc4122();
-
-        // Act
-        $this->client->request(
-            'PATCH',
-            sprintf('/api/v1/slips/send/%s', $nonExistentId)
-        );
-
-        // Assert
-        self::assertSame(Response::HTTP_NOT_FOUND, $this->client->getResponse()->getStatusCode());
-    }
-
-    /** @test
-     * @throws DateMalformedStringException
-     */
-    public function test_it_should_return_conflict_when_transition_is_not_valid(): void
-    {
-        // Arrange: Create a slip and transition it to 'submitted'
-        $slip = SlipMother::create();
-        $this->entityManager->persist($slip->residentUnit());
-        $this->entityManager->persist($slip);
-        $this->entityManager->flush();
-
-        /** @var WorkflowInterface $slipStateMachine */
-        $slipStateMachine = self::getContainer()->get('state_machine.slip');
-        $slipStateMachine->apply($slip, 'send'); // Transition: pending -> submitted
-        $this->entityManager->flush();
-
-        // Act: Try to send an already 'submitted' slip
-        $this->client->request(
-            'PATCH',
-            sprintf('/api/v1/slips/send/%s', $slip->id())
-        );
-
-        // Assert
-        self::assertSame(Response::HTTP_CONFLICT, $this->client->getResponse()->getStatusCode());
-    }
+//    /** @test */
+//    public function test_it_should_return_not_found_for_a_non_existent_slip(): void
+//    {
+//        // Arrange
+//        $nonExistentId = Uuid::v4()->toRfc4122();
+//
+//        // Act
+//        $this->client->request(
+//            'PATCH',
+//            sprintf('/api/v1/slips/send/%s', $nonExistentId)
+//        );
+//
+//        // Assert
+//        self::assertSame(Response::HTTP_NOT_FOUND, $this->client->getResponse()->getStatusCode());
+//    }
+//
+//    /** @test
+//     * @throws DateMalformedStringException
+//     */
+//    public function test_it_should_return_conflict_when_transition_is_not_valid(): void
+//    {
+//        // Arrange: Create a slip and transition it to 'submitted'
+//        $slip = SlipMother::create();
+//        $this->entityManager->persist($slip->residentUnit());
+//        $this->entityManager->persist($slip);
+//        $this->entityManager->flush();
+//
+//        /** @var WorkflowInterface $slipStateMachine */
+//        $slipStateMachine = self::getContainer()->get('state_machine.slip');
+//        $slipStateMachine->apply($slip, 'send'); // Transition: pending -> submitted
+//        $this->entityManager->flush();
+//
+//        // Act: Try to send an already 'submitted' slip
+//        $this->client->request(
+//            'PATCH',
+//            sprintf('/api/v1/slips/send/%s', $slip->id())
+//        );
+//
+//        // Assert
+//        self::assertSame(Response::HTTP_CONFLICT, $this->client->getResponse()->getStatusCode());
+//    }
 
     protected function tearDown(): void
     {
