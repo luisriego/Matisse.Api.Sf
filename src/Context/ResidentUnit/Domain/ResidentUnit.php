@@ -105,9 +105,15 @@ class ResidentUnit extends AggregateRoot
         return $this->notificationRecipients;
     }
 
-    public function setNotificationRecipients(array $recipients): void
+    public function replaceRecipients(array $recipients): void
     {
         $this->notificationRecipients = $recipients;
+        $this->markAsUpdated();
+    }
+
+    public function appendRecipient(string $name, string $email): void
+    {
+        $this->notificationRecipients[] = ['name' => $name, 'email' => $email];
         $this->markAsUpdated();
     }
 
