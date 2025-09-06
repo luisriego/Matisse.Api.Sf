@@ -27,11 +27,11 @@ final readonly class WelcomeResidentNotificationHandler
             ->subject(sprintf('Boas-vindas ao seu novo lar, %s!', $message->name))
             ->text(sprintf(
                 'Oi %s,\n\nSeja bem-vindo(a) ao Condomínio Matisse. Estamos felizes em ter você com a gente!\n\nAbraços,\nA Equipe da Administração',
-                $message->name
+                $message->name,
             ))
             ->html(sprintf(
                 '<p>Oi %s,</p><p>Seja bem-vindo(a) ao Condomínio Matisse. Estamos felizes em ter você com a gente!</p><p>Abraços,<br>A Equipe da Administração</p>',
-                $message->name
+                $message->name,
             ));
 
         $this->mailer->send($email);
@@ -40,7 +40,7 @@ final readonly class WelcomeResidentNotificationHandler
             "\n[OK] E-mail de boas-vindas para %s (%s) enviado para %s.\n",
             $message->name,
             $message->unitName,
-            $message->email
+            $message->email,
         );
     }
 }

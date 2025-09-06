@@ -19,7 +19,7 @@ final readonly class ResidentUnitCreateController
             $requestDto->id,
             $requestDto->unit,
             $requestDto->idealFraction,
-            $requestDto->notificationRecipients
+            $requestDto->notificationRecipients,
         );
 
         $this->commandHandler->__invoke($command);

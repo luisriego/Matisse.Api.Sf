@@ -18,7 +18,7 @@ final readonly class CreateResidentUnitWithRecipientsCommandHandler implements C
 {
     public function __construct(
         private ResidentUnitRepository $repository,
-        private MessageBusInterface $bus
+        private MessageBusInterface $bus,
     ) {}
 
     /**
@@ -40,7 +40,7 @@ final readonly class CreateResidentUnitWithRecipientsCommandHandler implements C
             $id,
             $unit,
             $idealFraction,
-            $command->notificationRecipients()
+            $command->notificationRecipients(),
         );
 
         $this->repository->save($residentUnit, true);
@@ -50,7 +50,7 @@ final readonly class CreateResidentUnitWithRecipientsCommandHandler implements C
                 $this->bus->dispatch(new WelcomeResidentNotification(
                     $recipient['name'],
                     $recipient['email'],
-                    $command->unit()
+                    $command->unit(),
                 ));
             }
         }

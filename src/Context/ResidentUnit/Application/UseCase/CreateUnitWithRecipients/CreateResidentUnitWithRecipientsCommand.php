@@ -12,7 +12,7 @@ final readonly class CreateResidentUnitWithRecipientsCommand implements Command
         private string $id,
         private string $unit,
         private float $idealFraction,
-        private array $notificationRecipients
+        private array $notificationRecipients,
     ) {}
 
     public function id(): string

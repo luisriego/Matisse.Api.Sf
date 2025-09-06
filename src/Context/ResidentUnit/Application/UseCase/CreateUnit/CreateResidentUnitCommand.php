@@ -11,7 +11,7 @@ final readonly class CreateResidentUnitCommand implements Command
     public function __construct(
         private string $id,
         private string $unit,
-        private float $idealFraction
+        private float $idealFraction,
     ) {}
 
     public function id(): string

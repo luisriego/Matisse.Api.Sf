@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace App\Context\ResidentUnit\Domain;
 
-use App\Context\Income\Domain\Income;
 use App\Shared\Domain\AggregateRoot;
 use DateTime;
 use DateTimeImmutable;
@@ -50,8 +49,7 @@ class ResidentUnit extends AggregateRoot
         ResidentUnitVO $unit,
         ResidentUnitIdealFraction $idealFraction,
         array $recipients,
-    ): self
-    {
+    ): self {
         $residentUnit = new self($id->value(), $unit->value(), $idealFraction->value());
         $residentUnit->isActive = true;
         $residentUnit->createdAt = new DateTimeImmutable();
