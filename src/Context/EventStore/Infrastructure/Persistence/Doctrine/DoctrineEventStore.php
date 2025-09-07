@@ -22,7 +22,7 @@ final readonly class DoctrineEventStore implements EventStore
         );
 
         $this->entityManager->persist($storedEvent);
-        $this->entityManager->flush();
+//        $this->entityManager->flush();
     }
 
     public function getEventsFrom(string $aggregateId): array

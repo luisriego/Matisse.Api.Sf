@@ -10,7 +10,7 @@
         </id>
         <field name="name" column="name" type="string" />
         <field name="code" column="code" type="string" nullable="true" />
-        <field name="description" column="description" type="text" />
+        <field name="description" column="description" type="text" nullable="true" />
 
        <one-to-many field="incomes" target-entity="App\Context\Income\Domain\Income" mapped-by="incomeType" />
 

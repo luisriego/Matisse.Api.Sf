@@ -17,13 +17,14 @@ final readonly class StoreExpenseEnteredEventSubscriber implements EventSubscrib
 
     public function __invoke(DomainEvent $event): void
     {
+
         $this->eventStore->append($event);
     }
 
     public static function subscribedTo(): array
     {
         return [
-            ExpenseWasEntered::class,
+            ExpenseWasEntered::class => '__invoke',
         ];
     }
 }

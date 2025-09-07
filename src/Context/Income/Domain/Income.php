@@ -23,7 +23,7 @@ class Income extends AggregateRoot
         private readonly string $id,
         private int $amount,
         private ResidentUnit $residentUnit,
-        private ?IncomeType $incomeType,
+        private IncomeType $incomeType,
         private DateTime $dueDate,
         private ?string $description = null,
     ) {
@@ -35,7 +35,7 @@ class Income extends AggregateRoot
         IncomeId $id,
         IncomeAmount $amount,
         ResidentUnit $residentUnit,
-        ?IncomeType $type,
+        IncomeType $type,
         IncomeDueDate $dueDate,
         ?string $description = null,
     ): self {
@@ -49,12 +49,12 @@ class Income extends AggregateRoot
         );
 
         $income->record(new IncomeWasEntered(
-            $id->value(),
-            $amount->value(),
-            $residentUnit->id(),
-            $type->id(),
-            $dueDate->value(),
-            $description,
+            aggregateId: $id->value(),
+            amount: $amount->value(),
+            residentUnitId: $residentUnit->id(),
+            type: $type->id(),
+            dueDate: $dueDate->toDateTime()->format('Y-m-d'),
+            description: $description
         ));
 
         return $income;
@@ -105,7 +105,7 @@ class Income extends AggregateRoot
         return $this->createdAt;
     }
 
-    public function setIncomeType(?IncomeType $incomeType): void
+    public function setIncomeType(IncomeType $incomeType): void
     {
         $this->incomeType = $incomeType;
     }
@@ -125,10 +125,9 @@ class Income extends AggregateRoot
         return [
             'id' => $this->id,
             'amount' => $this->amount,
-            //            'incomeType' => $this->incomeType,
             'dueDate' => $this->dueDate,
             'paidAt' => $this->paidAt,
-            'residentUnit' => $this->residentUnit?->getUnit(),
+            'residentUnit' => $this->residentUnit?->unit(),
             'description' => $this->description,
         ];
     }

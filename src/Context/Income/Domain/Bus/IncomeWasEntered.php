@@ -16,6 +16,7 @@ final readonly class IncomeWasEntered extends DomainEvent
         private string $residentUnitId,
         private string $type,
         private string $dueDate,
+        private ?string $description,
         ?string $eventId = null,
         ?DateTimeImmutable $occurredOn = null,
     ) {
@@ -26,6 +27,9 @@ final readonly class IncomeWasEntered extends DomainEvent
         );
     }
 
+    /**
+     * @throws \DateMalformedStringException
+     */
     public static function fromPrimitives(
         string $aggregateId,
         array $body,
@@ -38,6 +42,7 @@ final readonly class IncomeWasEntered extends DomainEvent
             $body['residentUnitId'],
             $body['type'],
             $body['dueDate'],
+            $body['description'] ?? null,
             $eventId,
             new DateTimeImmutable($occurredOn),
         );
@@ -55,6 +60,7 @@ final readonly class IncomeWasEntered extends DomainEvent
             'residentUnitId' => $this->residentUnitId,
             'type' => $this->type,
             'dueDate' => $this->dueDate,
+            'description' => $this->description,
         ];
     }
 }

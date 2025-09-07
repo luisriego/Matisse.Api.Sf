@@ -1,0 +1,368 @@
+<!DOCTYPE html>
+<html lang="en">
+ <head>
+  <meta charset="UTF-8">
+  <title>Dashboard for /var/www/html/src/Context/Expense/Domain</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link href="../../../_css/bootstrap.min.css?v=12.3.4" rel="stylesheet" type="text/css">
+  <link href="../../../_css/billboard.min.css?v=12.3.4" rel="stylesheet" type="text/css">
+  <link href="../../../_css/style.css?v=12.3.4" rel="stylesheet" type="text/css">
+  <link href="../../../_css/custom.css" rel="stylesheet" type="text/css">
+ </head>
+ <body>
+  <header>
+   <div class="container-fluid">
+    <div class="row">
+     <div class="col-md-12">
+      <nav aria-label="breadcrumb">
+       <ol class="breadcrumb">
+         <li class="breadcrumb-item"><a href="../../../index.html">/var/www/html/src</a></li>
+         <li class="breadcrumb-item"><a href="../../index.html">Context</a></li>
+         <li class="breadcrumb-item"><a href="../index.html">Expense</a></li>
+         <li class="breadcrumb-item"><a href="index.html">Domain</a></li>
+         <li class="breadcrumb-item active">(Dashboard)</li>
+
+       </ol>
+      </nav>
+     </div>
+    </div>
+   </div>
+  </header>
+  <div class="container-fluid">
+   <div class="row">
+    <div class="col-md-12">
+     <h2>Classes</h2>
+    </div>
+   </div>
+   <div class="row">
+    <div class="col-md-6">
+     <h3>Coverage Distribution</h3>
+     <div id="classesCoverageDistribution" style="height: 300px;">
+       <svg></svg>
+     </div>
+    </div>
+    <div class="col-md-6">
+     <h3>Complexity</h3>
+     <div id="classComplexity" style="height: 300px;">
+       <svg></svg>
+     </div>
+    </div>
+   </div>
+   <div class="row">
+    <div class="col-md-6">
+     <h3 style="margin-top: 2rem;">Insufficient Coverage</h3>
+     <div class="scrollbox">
+      <table class="table">
+       <thead>
+        <tr>
+         <th>Class</th>
+         <th class="text-right">Coverage</th>
+        </tr>
+       </thead>
+       <tbody>
+       <tr><td><a href="Bus/ExpenseWasCompensated.php.html#12">App\Context\Expense\Domain\Bus\ExpenseWasCompensated</a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Bus/ExpenseWasEntered.php.html#12">App\Context\Expense\Domain\Bus\ExpenseWasEntered</a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="ValueObject/ExpenseDueDate.php.html#10">App\Context\Expense\Domain\ValueObject\ExpenseDueDate</a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="ValueObject/ExpenseEndDate.php.html#15">App\Context\Expense\Domain\ValueObject\ExpenseEndDate</a></td><td class="text-right">45%</td></tr>
+       <tr><td><a href="ValueObject/ExpenseDueDay.php.html#10">App\Context\Expense\Domain\ValueObject\ExpenseDueDay</a></td><td class="text-right">50%</td></tr>
+       <tr><td><a href="Expense.php.html#18">App\Context\Expense\Domain\Expense</a></td><td class="text-right">53%</td></tr>
+       <tr><td><a href="ExpenseType.php.html#18">App\Context\Expense\Domain\ExpenseType</a></td><td class="text-right">65%</td></tr>
+       <tr><td><a href="RecurringExpense.php.html#19">App\Context\Expense\Domain\RecurringExpense</a></td><td class="text-right">68%</td></tr>
+       <tr><td><a href="ValueObject/ExpenseTypeDistributionMethod.php.html#12">App\Context\Expense\Domain\ValueObject\ExpenseTypeDistributionMethod</a></td><td class="text-right">83%</td></tr>
+
+       </tbody>
+      </table>
+     </div>
+    </div>
+    <div class="col-md-6">
+     <h3 style="margin-top: 2rem;">Project Risks</h3>
+     <div class="scrollbox">
+      <table class="table">
+       <thead>
+        <tr>
+         <th>Class</th>
+         <th class="text-right">Coverage</th>
+         <th class="text-right">Complexity</th>
+         <th class="text-right"><abbr title="Change Risk Anti-Patterns (CRAP) Index">CRAP</abbr></th>
+        </tr>
+       </thead>
+       <tbody>
+       <tr><td><a href="Expense.php.html#18">App\Context\Expense\Domain\Expense</a></td><td class="text-right">53.9%</td><td class="text-right">28</td><td class="text-right">104</td></tr>
+       <tr><td><a href="RecurringExpense.php.html#19">App\Context\Expense\Domain\RecurringExpense</a></td><td class="text-right">68.8%</td><td class="text-right">33</td><td class="text-right">66</td></tr>
+       <tr><td><a href="ExpenseType.php.html#18">App\Context\Expense\Domain\ExpenseType</a></td><td class="text-right">65.2%</td><td class="text-right">10</td><td class="text-right">14</td></tr>
+       <tr><td><a href="ValueObject/ExpenseDueDay.php.html#10">App\Context\Expense\Domain\ValueObject\ExpenseDueDay</a></td><td class="text-right">50.0%</td><td class="text-right">4</td><td class="text-right">6</td></tr>
+       <tr><td><a href="ValueObject/ExpenseEndDate.php.html#15">App\Context\Expense\Domain\ValueObject\ExpenseEndDate</a></td><td class="text-right">45.5%</td><td class="text-right">4</td><td class="text-right">6</td></tr>
+       <tr><td><a href="ValueObject/ExpenseTypeDistributionMethod.php.html#12">App\Context\Expense\Domain\ValueObject\ExpenseTypeDistributionMethod</a></td><td class="text-right">83.3%</td><td class="text-right">5</td><td class="text-right">5</td></tr>
+
+       </tbody>
+      </table>
+     </div>
+    </div>
+   </div>
+   <div class="row">
+    <div class="col-md-12">
+     <h2 style="margin-top: 3rem;">Methods</h2>
+    </div>
+   </div>
+   <div class="row">
+    <div class="col-md-6">
+     <h3>Coverage Distribution</h3>
+     <div id="methodsCoverageDistribution" style="height: 300px;">
+       <svg></svg>
+     </div>
+    </div>
+    <div class="col-md-6">
+     <h3>Complexity</h3>
+     <div id="methodComplexity" style="height: 300px;">
+       <svg></svg>
+     </div>
+    </div>
+   </div>
+   <div class="row">
+    <div class="col-md-6">
+     <h3 style="margin-top: 2rem;">Insufficient Coverage</h3>
+     <div class="scrollbox">
+      <table class="table">
+       <thead>
+        <tr>
+         <th>Method</th>
+         <th class="text-right">Coverage</th>
+        </tr>
+       </thead>
+       <tbody>
+       <tr><td><a href="Bus/ExpenseWasCompensated.php.html#14"><abbr title="App\Context\Expense\Domain\Bus\ExpenseWasCompensated::__construct">__construct</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Bus/ExpenseWasCompensated.php.html#30"><abbr title="App\Context\Expense\Domain\Bus\ExpenseWasCompensated::fromPrimitives">fromPrimitives</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Bus/ExpenseWasCompensated.php.html#47"><abbr title="App\Context\Expense\Domain\Bus\ExpenseWasCompensated::eventName">eventName</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Bus/ExpenseWasCompensated.php.html#52"><abbr title="App\Context\Expense\Domain\Bus\ExpenseWasCompensated::toPrimitives">toPrimitives</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Bus/ExpenseWasEntered.php.html#14"><abbr title="App\Context\Expense\Domain\Bus\ExpenseWasEntered::__construct">__construct</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Bus/ExpenseWasEntered.php.html#30"><abbr title="App\Context\Expense\Domain\Bus\ExpenseWasEntered::fromPrimitives">fromPrimitives</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Bus/ExpenseWasEntered.php.html#47"><abbr title="App\Context\Expense\Domain\Bus\ExpenseWasEntered::eventName">eventName</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Bus/ExpenseWasEntered.php.html#52"><abbr title="App\Context\Expense\Domain\Bus\ExpenseWasEntered::toPrimitives">toPrimitives</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Expense.php.html#89"><abbr title="App\Context\Expense\Domain\Expense::createWithDescription">createWithDescription</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Expense.php.html#114"><abbr title="App\Context\Expense\Domain\Expense::compensate">compensate</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Expense.php.html#138"><abbr title="App\Context\Expense\Domain\Expense::type">type</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Expense.php.html#158"><abbr title="App\Context\Expense\Domain\Expense::createdAt">createdAt</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Expense.php.html#168"><abbr title="App\Context\Expense\Domain\Expense::setAccount">setAccount</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Expense.php.html#173"><abbr title="App\Context\Expense\Domain\Expense::markAsPaid">markAsPaid</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Expense.php.html#197"><abbr title="App\Context\Expense\Domain\Expense::activate">activate</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Expense.php.html#202"><abbr title="App\Context\Expense\Domain\Expense::deactivate">deactivate</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Expense.php.html#234"><abbr title="App\Context\Expense\Domain\Expense::applyExpenseWasCompensated">applyExpenseWasCompensated</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="ExpenseType.php.html#88"><abbr title="App\Context\Expense\Domain\ExpenseType::name">name</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="ExpenseType.php.html#93"><abbr title="App\Context\Expense\Domain\ExpenseType::code">code</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="ExpenseType.php.html#98"><abbr title="App\Context\Expense\Domain\ExpenseType::description">description</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="ExpenseType.php.html#103"><abbr title="App\Context\Expense\Domain\ExpenseType::distributionMethod">distributionMethod</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="ExpenseType.php.html#108"><abbr title="App\Context\Expense\Domain\ExpenseType::expenses">expenses</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="ExpenseType.php.html#113"><abbr title="App\Context\Expense\Domain\ExpenseType::addExpense">addExpense</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="RecurringExpense.php.html#150"><abbr title="App\Context\Expense\Domain\RecurringExpense::updateAmount">updateAmount</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="RecurringExpense.php.html#157"><abbr title="App\Context\Expense\Domain\RecurringExpense::updateType">updateType</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="RecurringExpense.php.html#162"><abbr title="App\Context\Expense\Domain\RecurringExpense::UpdateDueDay">UpdateDueDay</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="RecurringExpense.php.html#169"><abbr title="App\Context\Expense\Domain\RecurringExpense::updateMonthsOfYear">updateMonthsOfYear</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="RecurringExpense.php.html#176"><abbr title="App\Context\Expense\Domain\RecurringExpense::updateStartDate">updateStartDate</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="RecurringExpense.php.html#183"><abbr title="App\Context\Expense\Domain\RecurringExpense::updateEndDate">updateEndDate</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="RecurringExpense.php.html#190"><abbr title="App\Context\Expense\Domain\RecurringExpense::updateDescription">updateDescription</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="RecurringExpense.php.html#197"><abbr title="App\Context\Expense\Domain\RecurringExpense::updateNotes">updateNotes</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="ValueObject/ExpenseDueDate.php.html#12"><abbr title="App\Context\Expense\Domain\ValueObject\ExpenseDueDate::fromDateTime">fromDateTime</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="ValueObject/ExpenseDueDay.php.html#19"><abbr title="App\Context\Expense\Domain\ValueObject\ExpenseDueDay::ensureIsMonth">ensureIsMonth</abbr></a></td><td class="text-right">25%</td></tr>
+       <tr><td><a href="ValueObject/ExpenseEndDate.php.html#20"><abbr title="App\Context\Expense\Domain\ValueObject\ExpenseEndDate::from">from</abbr></a></td><td class="text-right">45%</td></tr>
+       <tr><td><a href="Expense.php.html#56"><abbr title="App\Context\Expense\Domain\Expense::create">create</abbr></a></td><td class="text-right">57%</td></tr>
+       <tr><td><a href="ValueObject/ExpenseTypeDistributionMethod.php.html#24"><abbr title="App\Context\Expense\Domain\ValueObject\ExpenseTypeDistributionMethod::__construct">__construct</abbr></a></td><td class="text-right">66%</td></tr>
+
+       </tbody>
+      </table>
+     </div>
+    </div>
+    <div class="col-md-6">
+     <h3 style="margin-top: 2rem;">Project Risks</h3>
+     <div class="scrollbox">
+      <table class="table">
+       <thead>
+        <tr>
+         <th>Method</th>
+         <th class="text-right">Coverage</th>
+         <th class="text-right">Complexity</th>
+         <th class="text-right"><abbr title="Change Risk Anti-Patterns (CRAP) Index">CRAP</abbr></th>
+        </tr>
+       </thead>
+       <tbody>
+       <tr><td><a href="Expense.php.html#89"><abbr title="App\Context\Expense\Domain\Expense::createWithDescription">createWithDescription</abbr></a></td><td class="text-right">0.0%</td><td class="text-right">2</td><td class="text-right">6</td></tr>
+       <tr><td><a href="ExpenseType.php.html#113"><abbr title="App\Context\Expense\Domain\ExpenseType::addExpense">addExpense</abbr></a></td><td class="text-right">0.0%</td><td class="text-right">2</td><td class="text-right">6</td></tr>
+       <tr><td><a href="RecurringExpense.php.html#150"><abbr title="App\Context\Expense\Domain\RecurringExpense::updateAmount">updateAmount</abbr></a></td><td class="text-right">0.0%</td><td class="text-right">2</td><td class="text-right">6</td></tr>
+       <tr><td><a href="RecurringExpense.php.html#162"><abbr title="App\Context\Expense\Domain\RecurringExpense::UpdateDueDay">UpdateDueDay</abbr></a></td><td class="text-right">0.0%</td><td class="text-right">2</td><td class="text-right">6</td></tr>
+       <tr><td><a href="RecurringExpense.php.html#169"><abbr title="App\Context\Expense\Domain\RecurringExpense::updateMonthsOfYear">updateMonthsOfYear</abbr></a></td><td class="text-right">0.0%</td><td class="text-right">2</td><td class="text-right">6</td></tr>
+       <tr><td><a href="RecurringExpense.php.html#176"><abbr title="App\Context\Expense\Domain\RecurringExpense::updateStartDate">updateStartDate</abbr></a></td><td class="text-right">0.0%</td><td class="text-right">2</td><td class="text-right">6</td></tr>
+       <tr><td><a href="RecurringExpense.php.html#183"><abbr title="App\Context\Expense\Domain\RecurringExpense::updateEndDate">updateEndDate</abbr></a></td><td class="text-right">0.0%</td><td class="text-right">2</td><td class="text-right">6</td></tr>
+       <tr><td><a href="RecurringExpense.php.html#190"><abbr title="App\Context\Expense\Domain\RecurringExpense::updateDescription">updateDescription</abbr></a></td><td class="text-right">0.0%</td><td class="text-right">2</td><td class="text-right">6</td></tr>
+       <tr><td><a href="RecurringExpense.php.html#197"><abbr title="App\Context\Expense\Domain\RecurringExpense::updateNotes">updateNotes</abbr></a></td><td class="text-right">0.0%</td><td class="text-right">2</td><td class="text-right">6</td></tr>
+       <tr><td><a href="ValueObject/ExpenseDueDay.php.html#19"><abbr title="App\Context\Expense\Domain\ValueObject\ExpenseDueDay::ensureIsMonth">ensureIsMonth</abbr></a></td><td class="text-right">25.0%</td><td class="text-right">3</td><td class="text-right">6</td></tr>
+       <tr><td><a href="ValueObject/ExpenseEndDate.php.html#20"><abbr title="App\Context\Expense\Domain\ValueObject\ExpenseEndDate::from">from</abbr></a></td><td class="text-right">45.5%</td><td class="text-right">4</td><td class="text-right">6</td></tr>
+       <tr><td><a href="Expense.php.html#56"><abbr title="App\Context\Expense\Domain\Expense::create">create</abbr></a></td><td class="text-right">57.9%</td><td class="text-right">2</td><td class="text-right">2</td></tr>
+       <tr><td><a href="ValueObject/ExpenseTypeDistributionMethod.php.html#24"><abbr title="App\Context\Expense\Domain\ValueObject\ExpenseTypeDistributionMethod::__construct">__construct</abbr></a></td><td class="text-right">66.7%</td><td class="text-right">2</td><td class="text-right">2</td></tr>
+
+       </tbody>
+      </table>
+     </div>
+    </div>
+   </div>
+   <footer>
+    <hr/>
+    <p>
+     <small>Generated by <a href="https://github.com/sebastianbergmann/php-code-coverage" target="_top">php-code-coverage 12.3.4</a> using <a href="https://www.php.net/" target="_top">PHP 8.3.25</a> and <a href="https://phpunit.de/">PHPUnit 12.3.7</a> at Sat Sep 6 14:41:36 UTC 2025.</small>
+    </p>
+   </footer>
+  </div>
+  <script src="../../../_js/billboard.pkgd.min.js?v=12.3.4" type="text/javascript"></script>
+  <script type="application/json" id="complexity_class">[[0,4,"Bus\/ExpenseWasCompensated.php.html#12","App\\Context\\Expense\\Domain\\Bus\\ExpenseWasCompensated","20"],[0,4,"Bus\/ExpenseWasEntered.php.html#12","App\\Context\\Expense\\Domain\\Bus\\ExpenseWasEntered","20"],[0,1,"ValueObject\/ExpenseDueDate.php.html#10","App\\Context\\Expense\\Domain\\ValueObject\\ExpenseDueDate","2"],[45.45454545454545,4,"ValueObject\/ExpenseEndDate.php.html#15","App\\Context\\Expense\\Domain\\ValueObject\\ExpenseEndDate","6.60"],[50,4,"ValueObject\/ExpenseDueDay.php.html#10","App\\Context\\Expense\\Domain\\ValueObject\\ExpenseDueDay","6.00"],[53.94736842105263,28,"Expense.php.html#18","App\\Context\\Expense\\Domain\\Expense","104.57"],[65.21739130434783,10,"ExpenseType.php.html#18","App\\Context\\Expense\\Domain\\ExpenseType","14.21"],[68.75,33,"RecurringExpense.php.html#19","App\\Context\\Expense\\Domain\\RecurringExpense","66.23"],[83.33333333333334,5,"ValueObject\/ExpenseTypeDistributionMethod.php.html#12","App\\Context\\Expense\\Domain\\ValueObject\\ExpenseTypeDistributionMethod","5.12"],[100,3,"ValueObject\/ExpenseAmount.php.html#10","App\\Context\\Expense\\Domain\\ValueObject\\ExpenseAmount","3"],[100,0,"ValueObject\/ExpenseDescription.php.html#9","App\\Context\\Expense\\Domain\\ValueObject\\ExpenseDescription","0"],[100,0,"ValueObject\/ExpenseId.php.html#9","App\\Context\\Expense\\Domain\\ValueObject\\ExpenseId","0"],[100,0,"ValueObject\/ExpenseIsActive.php.html#9","App\\Context\\Expense\\Domain\\ValueObject\\ExpenseIsActive","0"],[100,4,"ValueObject\/ExpenseStartDate.php.html#15","App\\Context\\Expense\\Domain\\ValueObject\\ExpenseStartDate","4"],[100,0,"ValueObject\/ExpenseTypeCode.php.html#9","App\\Context\\Expense\\Domain\\ValueObject\\ExpenseTypeCode","0"],[100,0,"ValueObject\/ExpenseTypeDescription.php.html#9","App\\Context\\Expense\\Domain\\ValueObject\\ExpenseTypeDescription","0"],[100,0,"ValueObject\/ExpenseTypeId.php.html#9","App\\Context\\Expense\\Domain\\ValueObject\\ExpenseTypeId","0"],[100,0,"ValueObject\/ExpenseTypeName.php.html#9","App\\Context\\Expense\\Domain\\ValueObject\\ExpenseTypeName","0"],[100,0,"ValueObject\/RecurringExpenseId.php.html#7","App\\Context\\Expense\\Domain\\ValueObject\\RecurringExpenseId","0"]]</script>
+  <script type="application/json" id="complexity_method">[[0,1,"Bus\/ExpenseWasCompensated.php.html#14","App\\Context\\Expense\\Domain\\Bus\\ExpenseWasCompensated::__construct","2"],[0,1,"Bus\/ExpenseWasCompensated.php.html#30","App\\Context\\Expense\\Domain\\Bus\\ExpenseWasCompensated::fromPrimitives","2"],[0,1,"Bus\/ExpenseWasCompensated.php.html#47","App\\Context\\Expense\\Domain\\Bus\\ExpenseWasCompensated::eventName","2"],[0,1,"Bus\/ExpenseWasCompensated.php.html#52","App\\Context\\Expense\\Domain\\Bus\\ExpenseWasCompensated::toPrimitives","2"],[0,1,"Bus\/ExpenseWasEntered.php.html#14","App\\Context\\Expense\\Domain\\Bus\\ExpenseWasEntered::__construct","2"],[0,1,"Bus\/ExpenseWasEntered.php.html#30","App\\Context\\Expense\\Domain\\Bus\\ExpenseWasEntered::fromPrimitives","2"],[0,1,"Bus\/ExpenseWasEntered.php.html#47","App\\Context\\Expense\\Domain\\Bus\\ExpenseWasEntered::eventName","2"],[0,1,"Bus\/ExpenseWasEntered.php.html#52","App\\Context\\Expense\\Domain\\Bus\\ExpenseWasEntered::toPrimitives","2"],[0,2,"Expense.php.html#89","App\\Context\\Expense\\Domain\\Expense::createWithDescription","6"],[0,1,"Expense.php.html#114","App\\Context\\Expense\\Domain\\Expense::compensate","2"],[0,1,"Expense.php.html#138","App\\Context\\Expense\\Domain\\Expense::type","2"],[0,1,"Expense.php.html#158","App\\Context\\Expense\\Domain\\Expense::createdAt","2"],[0,1,"Expense.php.html#168","App\\Context\\Expense\\Domain\\Expense::setAccount","2"],[0,1,"Expense.php.html#173","App\\Context\\Expense\\Domain\\Expense::markAsPaid","2"],[0,1,"Expense.php.html#197","App\\Context\\Expense\\Domain\\Expense::activate","2"],[0,1,"Expense.php.html#202","App\\Context\\Expense\\Domain\\Expense::deactivate","2"],[0,1,"Expense.php.html#234","App\\Context\\Expense\\Domain\\Expense::applyExpenseWasCompensated","2"],[0,1,"ExpenseType.php.html#88","App\\Context\\Expense\\Domain\\ExpenseType::name","2"],[0,1,"ExpenseType.php.html#93","App\\Context\\Expense\\Domain\\ExpenseType::code","2"],[0,1,"ExpenseType.php.html#98","App\\Context\\Expense\\Domain\\ExpenseType::description","2"],[0,1,"ExpenseType.php.html#103","App\\Context\\Expense\\Domain\\ExpenseType::distributionMethod","2"],[0,1,"ExpenseType.php.html#108","App\\Context\\Expense\\Domain\\ExpenseType::expenses","2"],[0,2,"ExpenseType.php.html#113","App\\Context\\Expense\\Domain\\ExpenseType::addExpense","6"],[0,2,"RecurringExpense.php.html#150","App\\Context\\Expense\\Domain\\RecurringExpense::updateAmount","6"],[0,1,"RecurringExpense.php.html#157","App\\Context\\Expense\\Domain\\RecurringExpense::updateType","2"],[0,2,"RecurringExpense.php.html#162","App\\Context\\Expense\\Domain\\RecurringExpense::UpdateDueDay","6"],[0,2,"RecurringExpense.php.html#169","App\\Context\\Expense\\Domain\\RecurringExpense::updateMonthsOfYear","6"],[0,2,"RecurringExpense.php.html#176","App\\Context\\Expense\\Domain\\RecurringExpense::updateStartDate","6"],[0,2,"RecurringExpense.php.html#183","App\\Context\\Expense\\Domain\\RecurringExpense::updateEndDate","6"],[0,2,"RecurringExpense.php.html#190","App\\Context\\Expense\\Domain\\RecurringExpense::updateDescription","6"],[0,2,"RecurringExpense.php.html#197","App\\Context\\Expense\\Domain\\RecurringExpense::updateNotes","6"],[0,1,"ValueObject\/ExpenseDueDate.php.html#12","App\\Context\\Expense\\Domain\\ValueObject\\ExpenseDueDate::fromDateTime","2"],[25,3,"ValueObject\/ExpenseDueDay.php.html#19","App\\Context\\Expense\\Domain\\ValueObject\\ExpenseDueDay::ensureIsMonth","6.80"],[45.45454545454545,4,"ValueObject\/ExpenseEndDate.php.html#20","App\\Context\\Expense\\Domain\\ValueObject\\ExpenseEndDate::from","6.60"],[57.89473684210527,2,"Expense.php.html#56","App\\Context\\Expense\\Domain\\Expense::create","2.30"],[66.66666666666666,2,"ValueObject\/ExpenseTypeDistributionMethod.php.html#24","App\\Context\\Expense\\Domain\\ValueObject\\ExpenseTypeDistributionMethod::__construct","2.15"],[100,1,"Expense.php.html#37","App\\Context\\Expense\\Domain\\Expense::__construct","1"],[100,1,"Expense.php.html#128","App\\Context\\Expense\\Domain\\Expense::id","1"],[100,1,"Expense.php.html#133","App\\Context\\Expense\\Domain\\Expense::amount","1"],[100,1,"Expense.php.html#143","App\\Context\\Expense\\Domain\\Expense::description","1"],[100,1,"Expense.php.html#148","App\\Context\\Expense\\Domain\\Expense::dueDate","1"],[100,1,"Expense.php.html#153","App\\Context\\Expense\\Domain\\Expense::paidAt","1"],[100,1,"Expense.php.html#163","App\\Context\\Expense\\Domain\\Expense::account","1"],[100,2,"Expense.php.html#178","App\\Context\\Expense\\Domain\\Expense::updateAmount","2"],[100,2,"Expense.php.html#185","App\\Context\\Expense\\Domain\\Expense::updateDueDate","2"],[100,1,"Expense.php.html#192","App\\Context\\Expense\\Domain\\Expense::isActive","1"],[100,1,"Expense.php.html#207","App\\Context\\Expense\\Domain\\Expense::updateDescription","1"],[100,1,"Expense.php.html#212","App\\Context\\Expense\\Domain\\Expense::toArray","1"],[100,1,"Expense.php.html#224","App\\Context\\Expense\\Domain\\Expense::setRecurringExpense","1"],[100,1,"Expense.php.html#229","App\\Context\\Expense\\Domain\\Expense::recurringExpense","1"],[100,1,"ExpenseType.php.html#49","App\\Context\\Expense\\Domain\\ExpenseType::__construct","1"],[100,1,"ExpenseType.php.html#65","App\\Context\\Expense\\Domain\\ExpenseType::create","1"],[100,1,"ExpenseType.php.html#83","App\\Context\\Expense\\Domain\\ExpenseType::id","1"],[100,1,"RecurringExpense.php.html#25","App\\Context\\Expense\\Domain\\RecurringExpense::__construct","1"],[100,1,"RecurringExpense.php.html#44","App\\Context\\Expense\\Domain\\RecurringExpense::create","1"],[100,1,"RecurringExpense.php.html#72","App\\Context\\Expense\\Domain\\RecurringExpense::id","1"],[100,1,"RecurringExpense.php.html#77","App\\Context\\Expense\\Domain\\RecurringExpense::amount","1"],[100,1,"RecurringExpense.php.html#82","App\\Context\\Expense\\Domain\\RecurringExpense::description","1"],[100,1,"RecurringExpense.php.html#87","App\\Context\\Expense\\Domain\\RecurringExpense::type","1"],[100,1,"RecurringExpense.php.html#92","App\\Context\\Expense\\Domain\\RecurringExpense::dueDay","1"],[100,1,"RecurringExpense.php.html#97","App\\Context\\Expense\\Domain\\RecurringExpense::monthsOfYear","1"],[100,1,"RecurringExpense.php.html#102","App\\Context\\Expense\\Domain\\RecurringExpense::startDate","1"],[100,1,"RecurringExpense.php.html#107","App\\Context\\Expense\\Domain\\RecurringExpense::endDate","1"],[100,1,"RecurringExpense.php.html#112","App\\Context\\Expense\\Domain\\RecurringExpense::createdAt","1"],[100,1,"RecurringExpense.php.html#117","App\\Context\\Expense\\Domain\\RecurringExpense::isActive","1"],[100,1,"RecurringExpense.php.html#122","App\\Context\\Expense\\Domain\\RecurringExpense::notes","1"],[100,1,"RecurringExpense.php.html#130","App\\Context\\Expense\\Domain\\RecurringExpense::expenses","1"],[100,2,"RecurringExpense.php.html#135","App\\Context\\Expense\\Domain\\RecurringExpense::addExpense","2"],[100,2,"RecurringExpense.php.html#143","App\\Context\\Expense\\Domain\\RecurringExpense::removeExpense","2"],[100,1,"ValueObject\/ExpenseAmount.php.html#12","App\\Context\\Expense\\Domain\\ValueObject\\ExpenseAmount::__construct","1"],[100,2,"ValueObject\/ExpenseAmount.php.html#19","App\\Context\\Expense\\Domain\\ValueObject\\ExpenseAmount::ensureIsPositive","2"],[100,1,"ValueObject\/ExpenseDueDay.php.html#12","App\\Context\\Expense\\Domain\\ValueObject\\ExpenseDueDay::__construct","1"],[100,4,"ValueObject\/ExpenseStartDate.php.html#20","App\\Context\\Expense\\Domain\\ValueObject\\ExpenseStartDate::from","4"],[100,1,"ValueObject\/ExpenseTypeDistributionMethod.php.html#33","App\\Context\\Expense\\Domain\\ValueObject\\ExpenseTypeDistributionMethod::equal","1"],[100,1,"ValueObject\/ExpenseTypeDistributionMethod.php.html#38","App\\Context\\Expense\\Domain\\ValueObject\\ExpenseTypeDistributionMethod::fraction","1"],[100,1,"ValueObject\/ExpenseTypeDistributionMethod.php.html#43","App\\Context\\Expense\\Domain\\ValueObject\\ExpenseTypeDistributionMethod::individual","1"]]</script>
+  <script type="text/javascript" defer>
+  const barLabels = [
+    '0%',
+    '0-10%',
+    '10-20%',
+    '20-30%',
+    '30-40%',
+    '40-50%',
+    '50-60%',
+    '60-70%',
+    '70-80%',
+    '80-90%',
+    '90-100%',
+    '100%'
+  ];
+  const barConfig = (name, fullName, values) => ({
+    axis: {
+      x: {
+        type: "category",
+        categories: barLabels,
+      },
+      y: {
+        label: {
+          text: `#${name}`,
+          position: 'outer-top',
+        },
+      },
+    },
+    bindto: `#${name}CoverageDistribution`,
+    data: {
+      columns: [
+        [fullName].concat(values),
+      ],
+      colors: {
+        [fullName]: "rgba(69, 114, 167, 0.75)",
+      },
+      type: "bar",
+    },
+    bar: {
+      width: {
+        ratio: 0.9,
+      },
+    },
+    grid: {
+      focus: {
+        show: false,
+      },
+      x: {
+        show: true,
+      },
+      y: {
+        show: true,
+      },
+    },
+    legend: {
+      show: false,
+    },
+    tooltip: {
+      contents: function (data) {
+        return `<table class="bb-tooltip"><tbody>
+            <tr><th colspan="2">Coverage ${barLabels[data[0].x]}</th></tr>
+            <tr><td class="value">${data[0].value} ${name}</td></tr>
+          </tbody></table>`;
+      },
+      grouped: false,
+    },
+  });
+  bb.generate(
+    barConfig('classes', "Class Coverage", [3,0,0,0,0,1,2,2,0,1,0,10])
+  );
+  bb.generate(
+    barConfig('methods', "Method Coverage", [32,0,0,1,0,1,1,1,0,0,0,40])
+  );
+
+  const scatterConfig = (name, complexityData) => ({
+    axis: {
+      x: {
+        label: {
+          text: 'Code Coverage (in percent)',
+          position: 'outer-right',
+        },
+        tick: {
+          values: [0, 20, 40, 60, 80, 100],
+        },
+      },
+      y: {
+        label: {
+          text: 'Cyclomatic Complexity',
+          position: 'outer-top',
+        },
+        min: 0,
+        padding: {
+          bottom: 0,
+          top: 5,
+        },
+      },
+    },
+    bindto: `#${name}Complexity`,
+    data: {
+      columns: [
+        ["complexity_x"].concat(complexityData.map(d => d[0])),
+        ["complexity"].concat(complexityData.map(d => d[1])),
+      ],
+      onclick: function(data, element) {
+        window.location = complexityData[data.index][2];
+      },
+      type: "scatter",
+      xs: {
+        "complexity": "complexity_x",
+      },
+    },
+    grid: {
+      focus: {
+        show: true,
+        y: true,
+      },
+      x: {
+        show: true,
+      },
+      y: {
+        show: true,
+      },
+    },
+    legend: {
+      show: false,
+    },
+    tooltip: {
+      contents: function (data) {
+        const coverage = Math.round(data[0].x);
+        const complexity = data[0].value;
+        const targetName = complexityData[data[0].index][3];
+        const crap = complexityData[data[0].index][4];
+        return `<table class="bb-tooltip"><tbody>
+            <tr><th colspan="2">${targetName}</th></tr>
+            <tr class="bb-tooltip-name-complexity"><td>Coverage</td><td class="name">${coverage}%</td></tr>
+            <tr class="bb-tooltip-name-complexity"><td>Complexity</td><td class="value">${complexity}</td></tr>
+            <tr class="bb-tooltip-name-complexity"><td>Crap</td><td class="value">${crap}</td></tr>
+          </tbody></table>`;
+      },
+      grouped: false,
+    },
+  });
+  const classComplexityData = JSON.parse(document.getElementById('complexity_class').textContent);
+  bb.generate(
+    scatterConfig("class", classComplexityData)
+  );
+  const methodComplexityData = JSON.parse(document.getElementById('complexity_method').textContent);
+  bb.generate(
+    scatterConfig("method", methodComplexityData),
+  );
+  </script>
+ </body>
+</html>

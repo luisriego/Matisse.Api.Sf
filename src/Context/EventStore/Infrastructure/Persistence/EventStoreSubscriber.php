@@ -22,10 +22,8 @@ readonly class EventStoreSubscriber
     public function __invoke(DomainEvent $event): void
     {
         try {
-            // Generar un hash único basado en el contenido del evento
             $contentHash = $this->generateEventHash($event);
 
-            // Insertar el evento con una restricción única en el hash
             $this->connection->insert(
                 'event_store',
                 [
@@ -41,11 +39,7 @@ readonly class EventStoreSubscriber
                 ],
             );
         } catch (UniqueConstraintViolationException) {
-            // Ignorar silenciosamente los eventos duplicados
-            // Opcionalmente puedes registrar esto en logs para depuración
         } catch (Exception $e) {
-            // Re-lanzar la excepción para que no se oculte silenciosamente.
-            // Esto hará que los fallos sean visibles en los logs y en los tests.
             throw $e;
         }
     }

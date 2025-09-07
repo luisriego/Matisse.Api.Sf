@@ -1,0 +1,332 @@
+<!DOCTYPE html>
+<html lang="en">
+ <head>
+  <meta charset="UTF-8">
+  <title>Dashboard for /var/www/html/src/Context/Slip/Application</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link href="../../../_css/bootstrap.min.css?v=12.3.4" rel="stylesheet" type="text/css">
+  <link href="../../../_css/billboard.min.css?v=12.3.4" rel="stylesheet" type="text/css">
+  <link href="../../../_css/style.css?v=12.3.4" rel="stylesheet" type="text/css">
+  <link href="../../../_css/custom.css" rel="stylesheet" type="text/css">
+ </head>
+ <body>
+  <header>
+   <div class="container-fluid">
+    <div class="row">
+     <div class="col-md-12">
+      <nav aria-label="breadcrumb">
+       <ol class="breadcrumb">
+         <li class="breadcrumb-item"><a href="../../../index.html">/var/www/html/src</a></li>
+         <li class="breadcrumb-item"><a href="../../index.html">Context</a></li>
+         <li class="breadcrumb-item"><a href="../index.html">Slip</a></li>
+         <li class="breadcrumb-item"><a href="index.html">Application</a></li>
+         <li class="breadcrumb-item active">(Dashboard)</li>
+
+       </ol>
+      </nav>
+     </div>
+    </div>
+   </div>
+  </header>
+  <div class="container-fluid">
+   <div class="row">
+    <div class="col-md-12">
+     <h2>Classes</h2>
+    </div>
+   </div>
+   <div class="row">
+    <div class="col-md-6">
+     <h3>Coverage Distribution</h3>
+     <div id="classesCoverageDistribution" style="height: 300px;">
+       <svg></svg>
+     </div>
+    </div>
+    <div class="col-md-6">
+     <h3>Complexity</h3>
+     <div id="classComplexity" style="height: 300px;">
+       <svg></svg>
+     </div>
+    </div>
+   </div>
+   <div class="row">
+    <div class="col-md-6">
+     <h3 style="margin-top: 2rem;">Insufficient Coverage</h3>
+     <div class="scrollbox">
+      <table class="table">
+       <thead>
+        <tr>
+         <th>Class</th>
+         <th class="text-right">Coverage</th>
+        </tr>
+       </thead>
+       <tbody>
+       <tr><td><a href="Message/SendSlipNotificationHandler.php.html#13">App\Context\Slip\Application\Message\SendSlipNotificationHandler</a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Service/SlipWorkflowService.php.html#13">App\Context\Slip\Application\Service\SlipWorkflowService</a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="SlipStateSync.php.html#11">App\Context\Slip\Application\SlipStateSync</a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Dto/SlipEmailDto.php.html#9">App\Context\Slip\Application\Dto\SlipEmailDto</a></td><td class="text-right">12%</td></tr>
+       <tr><td><a href="UseCase/PaySlip/PaySlipCommand.php.html#9">App\Context\Slip\Application\UseCase\PaySlip\PaySlipCommand</a></td><td class="text-right">50%</td></tr>
+       <tr><td><a href="UseCase/SendSlip/SlipSendCommand.php.html#9">App\Context\Slip\Application\UseCase\SendSlip\SlipSendCommand</a></td><td class="text-right">50%</td></tr>
+
+       </tbody>
+      </table>
+     </div>
+    </div>
+    <div class="col-md-6">
+     <h3 style="margin-top: 2rem;">Project Risks</h3>
+     <div class="scrollbox">
+      <table class="table">
+       <thead>
+        <tr>
+         <th>Class</th>
+         <th class="text-right">Coverage</th>
+         <th class="text-right">Complexity</th>
+         <th class="text-right"><abbr title="Change Risk Anti-Patterns (CRAP) Index">CRAP</abbr></th>
+        </tr>
+       </thead>
+       <tbody>
+       <tr><td><a href="Service/SlipWorkflowService.php.html#13">App\Context\Slip\Application\Service\SlipWorkflowService</a></td><td class="text-right">0.0%</td><td class="text-right">10</td><td class="text-right">110</td></tr>
+
+       </tbody>
+      </table>
+     </div>
+    </div>
+   </div>
+   <div class="row">
+    <div class="col-md-12">
+     <h2 style="margin-top: 3rem;">Methods</h2>
+    </div>
+   </div>
+   <div class="row">
+    <div class="col-md-6">
+     <h3>Coverage Distribution</h3>
+     <div id="methodsCoverageDistribution" style="height: 300px;">
+       <svg></svg>
+     </div>
+    </div>
+    <div class="col-md-6">
+     <h3>Complexity</h3>
+     <div id="methodComplexity" style="height: 300px;">
+       <svg></svg>
+     </div>
+    </div>
+   </div>
+   <div class="row">
+    <div class="col-md-6">
+     <h3 style="margin-top: 2rem;">Insufficient Coverage</h3>
+     <div class="scrollbox">
+      <table class="table">
+       <thead>
+        <tr>
+         <th>Method</th>
+         <th class="text-right">Coverage</th>
+        </tr>
+       </thead>
+       <tbody>
+       <tr><td><a href="Dto/SlipEmailDto.php.html#15"><abbr title="App\Context\Slip\Application\Dto\SlipEmailDto::slipId">slipId</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Dto/SlipEmailDto.php.html#20"><abbr title="App\Context\Slip\Application\Dto\SlipEmailDto::amount">amount</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Dto/SlipEmailDto.php.html#25"><abbr title="App\Context\Slip\Application\Dto\SlipEmailDto::dueDate">dueDate</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Dto/SlipEmailDto.php.html#30"><abbr title="App\Context\Slip\Application\Dto\SlipEmailDto::monthDueDate">monthDueDate</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Dto/SlipEmailDto.php.html#35"><abbr title="App\Context\Slip\Application\Dto\SlipEmailDto::description">description</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Dto/SlipEmailDto.php.html#40"><abbr title="App\Context\Slip\Application\Dto\SlipEmailDto::unitNumber">unitNumber</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Dto/SlipEmailDto.php.html#50"><abbr title="App\Context\Slip\Application\Dto\SlipEmailDto::toArray">toArray</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Message/SendSlipNotificationHandler.php.html#16"><abbr title="App\Context\Slip\Application\Message\SendSlipNotificationHandler::__construct">__construct</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Message/SendSlipNotificationHandler.php.html#18"><abbr title="App\Context\Slip\Application\Message\SendSlipNotificationHandler::__invoke">__invoke</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Service/SlipWorkflowService.php.html#15"><abbr title="App\Context\Slip\Application\Service\SlipWorkflowService::__construct">__construct</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Service/SlipWorkflowService.php.html#20"><abbr title="App\Context\Slip\Application\Service\SlipWorkflowService::send">send</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Service/SlipWorkflowService.php.html#25"><abbr title="App\Context\Slip\Application\Service\SlipWorkflowService::pay">pay</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Service/SlipWorkflowService.php.html#32"><abbr title="App\Context\Slip\Application\Service\SlipWorkflowService::expire">expire</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Service/SlipWorkflowService.php.html#37"><abbr title="App\Context\Slip\Application\Service\SlipWorkflowService::cancel">cancel</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Service/SlipWorkflowService.php.html#50"><abbr title="App\Context\Slip\Application\Service\SlipWorkflowService::apply">apply</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="SlipStateSync.php.html#13"><abbr title="App\Context\Slip\Application\SlipStateSync::syncEnum">syncEnum</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="UseCase/PaySlip/PaySlipCommand.php.html#13"><abbr title="App\Context\Slip\Application\UseCase\PaySlip\PaySlipCommand::id">id</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="UseCase/SendSlip/SlipSendCommand.php.html#13"><abbr title="App\Context\Slip\Application\UseCase\SendSlip\SlipSendCommand::id">id</abbr></a></td><td class="text-right">0%</td></tr>
+
+       </tbody>
+      </table>
+     </div>
+    </div>
+    <div class="col-md-6">
+     <h3 style="margin-top: 2rem;">Project Risks</h3>
+     <div class="scrollbox">
+      <table class="table">
+       <thead>
+        <tr>
+         <th>Method</th>
+         <th class="text-right">Coverage</th>
+         <th class="text-right">Complexity</th>
+         <th class="text-right"><abbr title="Change Risk Anti-Patterns (CRAP) Index">CRAP</abbr></th>
+        </tr>
+       </thead>
+       <tbody>
+       <tr><td><a href="Service/SlipWorkflowService.php.html#37"><abbr title="App\Context\Slip\Application\Service\SlipWorkflowService::cancel">cancel</abbr></a></td><td class="text-right">0.0%</td><td class="text-right">3</td><td class="text-right">12</td></tr>
+       <tr><td><a href="Service/SlipWorkflowService.php.html#25"><abbr title="App\Context\Slip\Application\Service\SlipWorkflowService::pay">pay</abbr></a></td><td class="text-right">0.0%</td><td class="text-right">2</td><td class="text-right">6</td></tr>
+       <tr><td><a href="Service/SlipWorkflowService.php.html#50"><abbr title="App\Context\Slip\Application\Service\SlipWorkflowService::apply">apply</abbr></a></td><td class="text-right">0.0%</td><td class="text-right">2</td><td class="text-right">6</td></tr>
+
+       </tbody>
+      </table>
+     </div>
+    </div>
+   </div>
+   <footer>
+    <hr/>
+    <p>
+     <small>Generated by <a href="https://github.com/sebastianbergmann/php-code-coverage" target="_top">php-code-coverage 12.3.4</a> using <a href="https://www.php.net/" target="_top">PHP 8.3.25</a> and <a href="https://phpunit.de/">PHPUnit 12.3.7</a> at Sat Sep 6 14:41:36 UTC 2025.</small>
+    </p>
+   </footer>
+  </div>
+  <script src="../../../_js/billboard.pkgd.min.js?v=12.3.4" type="text/javascript"></script>
+  <script type="application/json" id="complexity_class">[[0,2,"Message\/SendSlipNotificationHandler.php.html#13","App\\Context\\Slip\\Application\\Message\\SendSlipNotificationHandler","6"],[0,10,"Service\/SlipWorkflowService.php.html#13","App\\Context\\Slip\\Application\\Service\\SlipWorkflowService","110"],[0,1,"SlipStateSync.php.html#11","App\\Context\\Slip\\Application\\SlipStateSync","2"],[12.5,9,"Dto\/SlipEmailDto.php.html#9","App\\Context\\Slip\\Application\\Dto\\SlipEmailDto","63.26"],[50,2,"UseCase\/PaySlip\/PaySlipCommand.php.html#9","App\\Context\\Slip\\Application\\UseCase\\PaySlip\\PaySlipCommand","2.50"],[50,2,"UseCase\/SendSlip\/SlipSendCommand.php.html#9","App\\Context\\Slip\\Application\\UseCase\\SendSlip\\SlipSendCommand","2.50"],[100,1,"Message\/SendSlipNotification.php.html#9","App\\Context\\Slip\\Application\\Message\\SendSlipNotification","1"],[100,3,"Subscriber\/EnqueueSlipNotificationOnSlipWasSubmitted.php.html#12","App\\Context\\Slip\\Application\\Subscriber\\EnqueueSlipNotificationOnSlipWasSubmitted","3"],[100,2,"UseCase\/PaySlip\/PaySlipCommandHandler.php.html#14","App\\Context\\Slip\\Application\\UseCase\\PaySlip\\PaySlipCommandHandler","2"],[100,1,"UseCase\/SendBulkSlips\/SendBulkSlipsCommand.php.html#9","App\\Context\\Slip\\Application\\UseCase\\SendBulkSlips\\SendBulkSlipsCommand","1"],[100,4,"UseCase\/SendBulkSlips\/SendBulkSlipsCommandHandler.php.html#15","App\\Context\\Slip\\Application\\UseCase\\SendBulkSlips\\SendBulkSlipsCommandHandler","4"],[100,2,"UseCase\/SendSlip\/SlipSendCommandHandler.php.html#14","App\\Context\\Slip\\Application\\UseCase\\SendSlip\\SlipSendCommandHandler","2"],[100,4,"UseCase\/SlipGeneration\/SlipGenerationCommand.php.html#9","App\\Context\\Slip\\Application\\UseCase\\SlipGeneration\\SlipGenerationCommand","4"],[100,4,"UseCase\/SlipGeneration\/SlipGenerationCommandHandler.php.html#22","App\\Context\\Slip\\Application\\UseCase\\SlipGeneration\\SlipGenerationCommandHandler","4"]]</script>
+  <script type="application/json" id="complexity_method">[[0,1,"Dto\/SlipEmailDto.php.html#15","App\\Context\\Slip\\Application\\Dto\\SlipEmailDto::slipId","2"],[0,1,"Dto\/SlipEmailDto.php.html#20","App\\Context\\Slip\\Application\\Dto\\SlipEmailDto::amount","2"],[0,1,"Dto\/SlipEmailDto.php.html#25","App\\Context\\Slip\\Application\\Dto\\SlipEmailDto::dueDate","2"],[0,1,"Dto\/SlipEmailDto.php.html#30","App\\Context\\Slip\\Application\\Dto\\SlipEmailDto::monthDueDate","2"],[0,1,"Dto\/SlipEmailDto.php.html#35","App\\Context\\Slip\\Application\\Dto\\SlipEmailDto::description","2"],[0,1,"Dto\/SlipEmailDto.php.html#40","App\\Context\\Slip\\Application\\Dto\\SlipEmailDto::unitNumber","2"],[0,1,"Dto\/SlipEmailDto.php.html#50","App\\Context\\Slip\\Application\\Dto\\SlipEmailDto::toArray","2"],[0,1,"Message\/SendSlipNotificationHandler.php.html#16","App\\Context\\Slip\\Application\\Message\\SendSlipNotificationHandler::__construct","2"],[0,1,"Message\/SendSlipNotificationHandler.php.html#18","App\\Context\\Slip\\Application\\Message\\SendSlipNotificationHandler::__invoke","2"],[0,1,"Service\/SlipWorkflowService.php.html#15","App\\Context\\Slip\\Application\\Service\\SlipWorkflowService::__construct","2"],[0,1,"Service\/SlipWorkflowService.php.html#20","App\\Context\\Slip\\Application\\Service\\SlipWorkflowService::send","2"],[0,2,"Service\/SlipWorkflowService.php.html#25","App\\Context\\Slip\\Application\\Service\\SlipWorkflowService::pay","6"],[0,1,"Service\/SlipWorkflowService.php.html#32","App\\Context\\Slip\\Application\\Service\\SlipWorkflowService::expire","2"],[0,3,"Service\/SlipWorkflowService.php.html#37","App\\Context\\Slip\\Application\\Service\\SlipWorkflowService::cancel","12"],[0,2,"Service\/SlipWorkflowService.php.html#50","App\\Context\\Slip\\Application\\Service\\SlipWorkflowService::apply","6"],[0,1,"SlipStateSync.php.html#13","App\\Context\\Slip\\Application\\SlipStateSync::syncEnum","2"],[0,1,"UseCase\/PaySlip\/PaySlipCommand.php.html#13","App\\Context\\Slip\\Application\\UseCase\\PaySlip\\PaySlipCommand::id","2"],[0,1,"UseCase\/SendSlip\/SlipSendCommand.php.html#13","App\\Context\\Slip\\Application\\UseCase\\SendSlip\\SlipSendCommand::id","2"],[100,1,"Dto\/SlipEmailDto.php.html#11","App\\Context\\Slip\\Application\\Dto\\SlipEmailDto::__construct","1"],[100,1,"Dto\/SlipEmailDto.php.html#45","App\\Context\\Slip\\Application\\Dto\\SlipEmailDto::recipients","1"],[100,1,"Message\/SendSlipNotification.php.html#11","App\\Context\\Slip\\Application\\Message\\SendSlipNotification::__construct","1"],[100,1,"Subscriber\/EnqueueSlipNotificationOnSlipWasSubmitted.php.html#14","App\\Context\\Slip\\Application\\Subscriber\\EnqueueSlipNotificationOnSlipWasSubmitted::__construct","1"],[100,1,"Subscriber\/EnqueueSlipNotificationOnSlipWasSubmitted.php.html#16","App\\Context\\Slip\\Application\\Subscriber\\EnqueueSlipNotificationOnSlipWasSubmitted::__invoke","1"],[100,1,"Subscriber\/EnqueueSlipNotificationOnSlipWasSubmitted.php.html#26","App\\Context\\Slip\\Application\\Subscriber\\EnqueueSlipNotificationOnSlipWasSubmitted::subscribedTo","1"],[100,1,"UseCase\/PaySlip\/PaySlipCommand.php.html#11","App\\Context\\Slip\\Application\\UseCase\\PaySlip\\PaySlipCommand::__construct","1"],[100,1,"UseCase\/PaySlip\/PaySlipCommandHandler.php.html#17","App\\Context\\Slip\\Application\\UseCase\\PaySlip\\PaySlipCommandHandler::__construct","1"],[100,1,"UseCase\/PaySlip\/PaySlipCommandHandler.php.html#23","App\\Context\\Slip\\Application\\UseCase\\PaySlip\\PaySlipCommandHandler::__invoke","1"],[100,1,"UseCase\/SendBulkSlips\/SendBulkSlipsCommand.php.html#14","App\\Context\\Slip\\Application\\UseCase\\SendBulkSlips\\SendBulkSlipsCommand::__construct","1"],[100,1,"UseCase\/SendBulkSlips\/SendBulkSlipsCommandHandler.php.html#18","App\\Context\\Slip\\Application\\UseCase\\SendBulkSlips\\SendBulkSlipsCommandHandler::__construct","1"],[100,3,"UseCase\/SendBulkSlips\/SendBulkSlipsCommandHandler.php.html#24","App\\Context\\Slip\\Application\\UseCase\\SendBulkSlips\\SendBulkSlipsCommandHandler::__invoke","3"],[100,1,"UseCase\/SendSlip\/SlipSendCommand.php.html#11","App\\Context\\Slip\\Application\\UseCase\\SendSlip\\SlipSendCommand::__construct","1"],[100,1,"UseCase\/SendSlip\/SlipSendCommandHandler.php.html#17","App\\Context\\Slip\\Application\\UseCase\\SendSlip\\SlipSendCommandHandler::__construct","1"],[100,1,"UseCase\/SendSlip\/SlipSendCommandHandler.php.html#23","App\\Context\\Slip\\Application\\UseCase\\SendSlip\\SlipSendCommandHandler::__invoke","1"],[100,1,"UseCase\/SlipGeneration\/SlipGenerationCommand.php.html#11","App\\Context\\Slip\\Application\\UseCase\\SlipGeneration\\SlipGenerationCommand::__construct","1"],[100,1,"UseCase\/SlipGeneration\/SlipGenerationCommand.php.html#17","App\\Context\\Slip\\Application\\UseCase\\SlipGeneration\\SlipGenerationCommand::year","1"],[100,1,"UseCase\/SlipGeneration\/SlipGenerationCommand.php.html#22","App\\Context\\Slip\\Application\\UseCase\\SlipGeneration\\SlipGenerationCommand::month","1"],[100,1,"UseCase\/SlipGeneration\/SlipGenerationCommand.php.html#27","App\\Context\\Slip\\Application\\UseCase\\SlipGeneration\\SlipGenerationCommand::isForced","1"],[100,1,"UseCase\/SlipGeneration\/SlipGenerationCommandHandler.php.html#25","App\\Context\\Slip\\Application\\UseCase\\SlipGeneration\\SlipGenerationCommandHandler::__construct","1"],[100,3,"UseCase\/SlipGeneration\/SlipGenerationCommandHandler.php.html#37","App\\Context\\Slip\\Application\\UseCase\\SlipGeneration\\SlipGenerationCommandHandler::__invoke","3"]]</script>
+  <script type="text/javascript" defer>
+  const barLabels = [
+    '0%',
+    '0-10%',
+    '10-20%',
+    '20-30%',
+    '30-40%',
+    '40-50%',
+    '50-60%',
+    '60-70%',
+    '70-80%',
+    '80-90%',
+    '90-100%',
+    '100%'
+  ];
+  const barConfig = (name, fullName, values) => ({
+    axis: {
+      x: {
+        type: "category",
+        categories: barLabels,
+      },
+      y: {
+        label: {
+          text: `#${name}`,
+          position: 'outer-top',
+        },
+      },
+    },
+    bindto: `#${name}CoverageDistribution`,
+    data: {
+      columns: [
+        [fullName].concat(values),
+      ],
+      colors: {
+        [fullName]: "rgba(69, 114, 167, 0.75)",
+      },
+      type: "bar",
+    },
+    bar: {
+      width: {
+        ratio: 0.9,
+      },
+    },
+    grid: {
+      focus: {
+        show: false,
+      },
+      x: {
+        show: true,
+      },
+      y: {
+        show: true,
+      },
+    },
+    legend: {
+      show: false,
+    },
+    tooltip: {
+      contents: function (data) {
+        return `<table class="bb-tooltip"><tbody>
+            <tr><th colspan="2">Coverage ${barLabels[data[0].x]}</th></tr>
+            <tr><td class="value">${data[0].value} ${name}</td></tr>
+          </tbody></table>`;
+      },
+      grouped: false,
+    },
+  });
+  bb.generate(
+    barConfig('classes', "Class Coverage", [3,0,1,0,0,0,2,0,0,0,0,8])
+  );
+  bb.generate(
+    barConfig('methods', "Method Coverage", [18,0,0,0,0,0,0,0,0,0,0,21])
+  );
+
+  const scatterConfig = (name, complexityData) => ({
+    axis: {
+      x: {
+        label: {
+          text: 'Code Coverage (in percent)',
+          position: 'outer-right',
+        },
+        tick: {
+          values: [0, 20, 40, 60, 80, 100],
+        },
+      },
+      y: {
+        label: {
+          text: 'Cyclomatic Complexity',
+          position: 'outer-top',
+        },
+        min: 0,
+        padding: {
+          bottom: 0,
+          top: 5,
+        },
+      },
+    },
+    bindto: `#${name}Complexity`,
+    data: {
+      columns: [
+        ["complexity_x"].concat(complexityData.map(d => d[0])),
+        ["complexity"].concat(complexityData.map(d => d[1])),
+      ],
+      onclick: function(data, element) {
+        window.location = complexityData[data.index][2];
+      },
+      type: "scatter",
+      xs: {
+        "complexity": "complexity_x",
+      },
+    },
+    grid: {
+      focus: {
+        show: true,
+        y: true,
+      },
+      x: {
+        show: true,
+      },
+      y: {
+        show: true,
+      },
+    },
+    legend: {
+      show: false,
+    },
+    tooltip: {
+      contents: function (data) {
+        const coverage = Math.round(data[0].x);
+        const complexity = data[0].value;
+        const targetName = complexityData[data[0].index][3];
+        const crap = complexityData[data[0].index][4];
+        return `<table class="bb-tooltip"><tbody>
+            <tr><th colspan="2">${targetName}</th></tr>
+            <tr class="bb-tooltip-name-complexity"><td>Coverage</td><td class="name">${coverage}%</td></tr>
+            <tr class="bb-tooltip-name-complexity"><td>Complexity</td><td class="value">${complexity}</td></tr>
+            <tr class="bb-tooltip-name-complexity"><td>Crap</td><td class="value">${crap}</td></tr>
+          </tbody></table>`;
+      },
+      grouped: false,
+    },
+  });
+  const classComplexityData = JSON.parse(document.getElementById('complexity_class').textContent);
+  bb.generate(
+    scatterConfig("class", classComplexityData)
+  );
+  const methodComplexityData = JSON.parse(document.getElementById('complexity_method').textContent);
+  bb.generate(
+    scatterConfig("method", methodComplexityData),
+  );
+  </script>
+ </body>
+</html>

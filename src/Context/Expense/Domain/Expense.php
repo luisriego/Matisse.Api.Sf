@@ -53,6 +53,9 @@ class Expense extends AggregateRoot
         $this->createdAt = new DateTimeImmutable();
     }
 
+    /**
+     * @throws \DateMalformedStringException
+     */
     public static function create(
         ExpenseId $id,
         ExpenseAmount $amount,
@@ -86,6 +89,9 @@ class Expense extends AggregateRoot
         return $expense;
     }
 
+    /**
+     * @throws \DateMalformedStringException
+     */
     public static function createWithDescription(
         ExpenseId $id,
         ExpenseAmount $amount,

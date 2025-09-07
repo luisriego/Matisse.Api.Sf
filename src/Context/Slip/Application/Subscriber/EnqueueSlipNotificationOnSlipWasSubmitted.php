@@ -8,12 +8,13 @@ use App\Context\Slip\Application\Message\SendSlipNotification;
 use App\Context\Slip\Domain\Event\SlipWasSubmitted;
 use App\Shared\Domain\Event\EventSubscriber;
 use Symfony\Component\Messenger\MessageBusInterface;
+use App\Shared\Domain\Event\DomainEvent;
 
 final readonly class EnqueueSlipNotificationOnSlipWasSubmitted implements EventSubscriber
 {
     public function __construct(private MessageBusInterface $bus) {}
 
-    public function __invoke(SlipWasSubmitted $event): void
+    public function __invoke(DomainEvent $event): void
     {
         $this->bus->dispatch(new SendSlipNotification(
             $event->aggregateId(),

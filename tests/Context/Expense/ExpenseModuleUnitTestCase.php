@@ -6,7 +6,7 @@ namespace App\Tests\Context\Expense;
 
 use App\Context\Expense\Domain\Expense;
 use App\Context\Expense\Domain\ExpenseRepository;
-use App\Shared\Application\EventBus;
+use App\Shared\Domain\Event\EventBus;
 use Mockery\Adapter\Phpunit\MockeryTestCase;
 use Mockery\MockInterface;
 use PHPUnit\Framework\MockObject\Exception;
