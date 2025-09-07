@@ -54,7 +54,7 @@ class Income extends AggregateRoot
             residentUnitId: $residentUnit->id(),
             type: $type->id(),
             dueDate: $dueDate->toDateTime()->format('Y-m-d'),
-            description: $description
+            description: $description,
         ));
 
         return $income;

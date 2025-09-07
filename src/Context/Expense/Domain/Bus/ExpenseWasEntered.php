@@ -5,15 +5,14 @@ declare(strict_types=1);
 namespace App\Context\Expense\Domain\Bus;
 
 use App\Shared\Domain\Event\DomainEvent;
+use DateMalformedStringException;
 use DateTimeImmutable;
 use Symfony\Component\Uid\Uuid as SfUuid;
-
-use function date;
 
 final readonly class ExpenseWasEntered extends DomainEvent
 {
     /**
-     * @throws \DateMalformedStringException
+     * @throws DateMalformedStringException
      */
     public function __construct(
         string $aggregateId,
@@ -25,6 +24,7 @@ final readonly class ExpenseWasEntered extends DomainEvent
         ?string $occurredOn = null,
     ) {
         $occurredOnObject = null;
+
         if ($occurredOn === null) {
             $occurredOnObject = new DateTimeImmutable();
         } else {

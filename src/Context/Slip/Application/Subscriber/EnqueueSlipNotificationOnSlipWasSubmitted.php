@@ -6,9 +6,9 @@ namespace App\Context\Slip\Application\Subscriber;
 
 use App\Context\Slip\Application\Message\SendSlipNotification;
 use App\Context\Slip\Domain\Event\SlipWasSubmitted;
+use App\Shared\Domain\Event\DomainEvent;
 use App\Shared\Domain\Event\EventSubscriber;
 use Symfony\Component\Messenger\MessageBusInterface;
-use App\Shared\Domain\Event\DomainEvent;
 
 final readonly class EnqueueSlipNotificationOnSlipWasSubmitted implements EventSubscriber
 {

@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Context\Income\Domain\Bus;
 
 use App\Shared\Domain\Event\DomainEvent;
+use DateMalformedStringException;
 use DateTimeImmutable;
 use Symfony\Component\Uid\Uuid as SfUuid;
 
@@ -28,7 +29,7 @@ final readonly class IncomeWasEntered extends DomainEvent
     }
 
     /**
-     * @throws \DateMalformedStringException
+     * @throws DateMalformedStringException
      */
     public static function fromPrimitives(
         string $aggregateId,
