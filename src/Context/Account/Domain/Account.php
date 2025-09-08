@@ -133,12 +133,7 @@ class Account extends AggregateRoot
 
     public function removeExpense(Expense $expense): void
     {
-        if ($this->expenses->removeElement($expense)) {
-            // set the owning side to null (unless you want to delete it)
-            if ($expense->account() === $this) {
-                $expense->setAccount(null);
-            }
-        }
+        $this->expenses->removeElement($expense);
     }
 
     public function markAsUpdated(): void

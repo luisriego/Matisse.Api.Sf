@@ -44,7 +44,7 @@ class IncomeType
         return $this->id;
     }
 
-    public function name(): string
+    public function name(): ?string
     {
         return $this->name;
     }
@@ -54,7 +54,7 @@ class IncomeType
         return $this->code;
     }
 
-    public function description(): string
+    public function description(): ?string
     {
         return $this->description;
     }

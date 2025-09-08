@@ -31,15 +31,15 @@ class DoctrineExpenseRepository extends ServiceEntityRepository implements Expen
             $this->getEntityManager()->flush();
         }
     }
-    //
-    //    public function remove(Expense $expense, bool $flush = true): void
-    //    {
-    //        $this->getEntityManager()->remove($expense);
-    //
-    //        if ($flush) {
-    //            $this->getEntityManager()->flush();
-    //        }
-    //    }
+
+    public function remove(Expense $expense, bool $flush = true): void
+    {
+        $this->getEntityManager()->remove($expense);
+
+        if ($flush) {
+            $this->getEntityManager()->flush();
+        }
+    }
 
     public function findOneByIdOrFail(string $id): Expense
     {

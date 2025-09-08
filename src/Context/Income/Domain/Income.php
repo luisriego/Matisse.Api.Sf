@@ -23,7 +23,7 @@ class Income extends AggregateRoot
         private readonly string $id,
         private int $amount,
         private ResidentUnit $residentUnit,
-        private IncomeType $incomeType,
+        private ?IncomeType $incomeType,
         private DateTime $dueDate,
         private ?string $description = null,
     ) {
@@ -70,7 +70,7 @@ class Income extends AggregateRoot
         return $this->amount;
     }
 
-    public function incomeType(): IncomeType
+    public function incomeType(): ?IncomeType
     {
         return $this->incomeType;
     }
@@ -105,7 +105,7 @@ class Income extends AggregateRoot
         return $this->createdAt;
     }
 
-    public function setIncomeType(IncomeType $incomeType): void
+    public function setIncomeType(?IncomeType $incomeType): void
     {
         $this->incomeType = $incomeType;
     }

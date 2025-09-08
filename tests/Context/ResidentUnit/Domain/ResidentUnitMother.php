@@ -22,4 +22,18 @@ final class ResidentUnitMother
             $idealFraction ?? ResidentUnitIdealFractionMother::create()
         );
     }
+
+    public static function createWithRecipients(
+        ?ResidentUnitId $id = null,
+        ?ResidentUnitVO $unit = null,
+        ?ResidentUnitIdealFraction $idealFraction = null,
+        array $notificationRecipients = []
+    ): ResidentUnit {
+        return ResidentUnit::createWithRecipients(
+            $id ?? ResidentUnitIdMother::create(),
+            $unit ?? ResidentUnitVOMother::create(),
+            $idealFraction ?? ResidentUnitIdealFractionMother::create(),
+            $notificationRecipients
+        );
+    }
 }

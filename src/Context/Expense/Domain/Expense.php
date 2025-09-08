@@ -27,13 +27,10 @@ class Expense extends AggregateRoot
 
     private bool $isActive = true;
 
-    private Account $account;
+    private ?Account $account;
 
     private ?ExpenseType $type = null;
     private ?RecurringExpense $recurringExpense = null;
-
-    //    #[ORM\ManyToOne(targetEntity: RecurringExpense::class, inversedBy: 'expenses')]
-    //    #[ORM\JoinColumn(name: "recurring_id", referencedColumnName: "id", nullable: true, onDelete: "SET NULL")]
 
     public function __construct(
         string $id,
@@ -76,7 +73,7 @@ class Expense extends AggregateRoot
             description: $description?->value(),
         );
 
-        if ($expense->isActive()) {
+        if ($expense->isActive() && null !== $account) {
             $expense->record(new ExpenseWasEntered(
                 $id->value(),
                 $amount->value(),
@@ -90,36 +87,12 @@ class Expense extends AggregateRoot
         return $expense;
     }
 
-    /**
-     * @throws DateMalformedStringException
-     */
-    public static function createWithDescription(
-        ExpenseId $id,
-        ExpenseAmount $amount,
-        ExpenseType $type,
-        ?Account $account,
-        ExpenseDueDate $dueDate,
-        ExpenseDescription $description,
-    ): self {
-        $expense = new self($id->value(), $amount->value(), $type, $account, $dueDate->toDateTime());
-        $expense->updateDescription($description->value());
-
-        if ($expense->isActive()) {
-            $expense->record(new ExpenseWasEntered(
-                $id->value(),
-                $amount->value(),
-                $type->id(),
-                $account->id(),
-                $dueDate->value(),
-            ));
-        }
-
-        return $expense;
-    }
-
-    // Compensate means that a new instance of Expense replaces an older one.
     public function compensate(): void
     {
+        if (null === $this->account) {
+            return;
+        }
+
         $event = new ExpenseWasCompensated(
             aggregateId: $this->id,
             amount: -$this->amount,
@@ -142,7 +115,7 @@ class Expense extends AggregateRoot
         return $this->amount;
     }
 
-    public function type(): ExpenseType
+    public function type(): ?ExpenseType
     {
         return $this->type;
     }
@@ -167,19 +140,21 @@ class Expense extends AggregateRoot
         return $this->createdAt;
     }
 
-    public function account(): Account
+    public function account(): ?Account
     {
         return $this->account;
     }
 
-    public function setAccount(Account $account): void
+    public function setAccount(?Account $account): void
     {
         $this->account = $account;
     }
 
     public function markAsPaid(): void
     {
-        $this->paidAt = new DateTimeImmutable();
+        if (null === $this->paidAt) {
+            $this->paidAt = new DateTimeImmutable();
+        }
     }
 
     public function updateAmount(int $amount): void
@@ -240,6 +215,6 @@ class Expense extends AggregateRoot
 
     private function applyExpenseWasCompensated(ExpenseWasCompensated $event): void
     {
-        $this->amount -= $event->toPrimitives()['amount'];
+        $this->amount += $event->toPrimitives()['amount'];
     }
 }

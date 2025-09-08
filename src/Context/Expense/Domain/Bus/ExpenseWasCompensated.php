@@ -5,9 +5,9 @@ declare(strict_types=1);
 namespace App\Context\Expense\Domain\Bus;
 
 use App\Shared\Domain\Event\DomainEvent;
+use DateTimeImmutable;
+use Exception;
 use Symfony\Component\Uid\Uuid as SfUuid;
-
-use function date;
 
 final readonly class ExpenseWasCompensated extends DomainEvent
 {
@@ -18,15 +18,18 @@ final readonly class ExpenseWasCompensated extends DomainEvent
         private string $accountId,
         private string $dueDate,
         ?string $eventId = null,
-        ?string $occurredOn = null,
+        ?DateTimeImmutable $occurredOn = null,
     ) {
         parent::__construct(
             $aggregateId,
             $eventId ?? SfUuid::v4()->toRfc4122(),
-            $occurredOn ?? date('Y-m-d H:i:s'),
+            $occurredOn ?? new DateTimeImmutable(),
         );
     }
 
+    /**
+     * @throws Exception
+     */
     public static function fromPrimitives(
         string $aggregateId,
         array $body,
@@ -40,7 +43,7 @@ final readonly class ExpenseWasCompensated extends DomainEvent
             $body['accountId'],
             $body['dueDate'],
             $eventId,
-            $occurredOn,
+            new DateTimeImmutable($occurredOn),
         );
     }
 

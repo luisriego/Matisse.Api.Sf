@@ -38,7 +38,7 @@ readonly class EnterExpenseWithDescriptionCommandHandler implements CommandHandl
         $dueDate = new ExpenseDueDate(new DateTime($command->dueDate()));
         $description = new ExpenseDescription($command->description());
 
-        $expense = Expense::createWithDescription($id, $amount, $type, $account, $dueDate, $description);
+        $expense = Expense::create($id, $amount, $type, $account, $dueDate, true, $description);
 
         $this->expenseRepository->save($expense, true);
         $this->bus->publish(...$expense->pullDomainEvents());

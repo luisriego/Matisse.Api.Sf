@@ -14,8 +14,11 @@ readonly class ExpensePayedCommandHandler implements CommandHandler
     public function __invoke(PayedAtExpenseCommand $command): void
     {
         $expense = $this->repository->findOneByIdOrFail($command->id());
-        $expense->markAsPaid();
 
-        $this->repository->save($expense, true);
+        // Only mark as paid and save if it's not already paid
+        if (null === $expense->paidAt()) {
+            $expense->markAsPaid();
+            $this->repository->save($expense, true);
+        }
     }
 }
