@@ -12,13 +12,17 @@ use App\Context\Slip\Domain\ValueObject\SlipId;
 use App\Shared\Domain\ValueObject\Uuid;
 use DateMalformedStringException;
 use DateTimeImmutable;
+use Psr\Log\LoggerInterface;
 
+use function count;
 use function sprintf;
 
 readonly class SlipFactory
 {
     public function __construct(
-        private ExpenseDistributor $expenseDistributor,
+        private MonthlyExpenseAggregatorService $monthlyExpenseAggregator,
+        private SlipAmountCalculatorService $slipAmountCalculator,
+        private LoggerInterface $logger,
     ) {}
 
     /**
@@ -34,26 +38,50 @@ readonly class SlipFactory
             return [];
         }
 
-        $distribution = $this->expenseDistributor->distribute($allExpenses, $residentUnits);
+        // 1. Aggregate expenses using the dedicated service
+        $expenseTotals = $this->monthlyExpenseAggregator->aggregateTotals($allExpenses);
+        $totalEquallyDividedExpenses = $expenseTotals['equal'];
+        $totalFractionBasedExpenses = $expenseTotals['fraction'];
+        $numberOfPayingResidents = count($residentUnits);
 
+        $this->logger->info(sprintf(
+            'Aggregated totals for %d-%d: Equal: %.2f, Fraction: %.2f, Individual: %.2f',
+            $expenseYear,
+            $expenseMonth,
+            $expenseTotals['equal'] / 100,
+            $expenseTotals['fraction'] / 100,
+            $expenseTotals['individual'] / 100,
+        ));
+
+        // 2. Prepare Due Date (logic remains the same)
         $dueDateContext = (new DateTimeImmutable(sprintf('%d-%d-01', $expenseYear, $expenseMonth)))->modify('+1 month');
         $dueYear = (int) $dueDateContext->format('Y');
         $dueMonth = (int) $dueDateContext->format('m');
         $dueDateTime = SlipDueDate::selectDueDate($dueYear, $dueMonth);
         $dueDate = new SlipDueDate($dueDateTime);
 
-        $unitMap = [];
-
-        foreach ($residentUnits as $unit) {
-            $unitMap[$unit->id()] = $unit;
-        }
-
         $slips = [];
 
-        foreach ($distribution as $unitId => $amount) {
+        // 3. Iterate over residents, calculate amount for each, and create Slip
+        foreach ($residentUnits as $residentUnit) {
+            $amountInCents = $this->slipAmountCalculator->calculate(
+                $residentUnit,
+                $totalEquallyDividedExpenses,
+                $totalFractionBasedExpenses,
+                $numberOfPayingResidents,
+            );
+
+            if ($amountInCents <= 0) {
+                $this->logger->info(sprintf(
+                    'Calculated amount for unit %s is zero or negative. Skipping slip creation.',
+                    $residentUnit->unit(),
+                ));
+
+                continue;
+            }
+
             $id = new SlipId(Uuid::random()->value());
-            $residentUnit = $unitMap[$unitId];
-            $slipAmount = new SlipAmount($amount);
+            $slipAmount = new SlipAmount($amountInCents);
             $slips[] = Slip::createForUnit($id, $slipAmount, $residentUnit, $dueDate);
         }
 

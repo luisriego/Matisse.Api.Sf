@@ -1,0 +1,25 @@
+services:
+    _defaults:
+        autowire: true
+        autoconfigure: true
+
+    App\Context\User\Infrastructure\Http\Controller\:
+        public: true
+        resource: './Infrastructure/Http/Controller/'
+        tags: ['controller.service_arguments']
+
+    App\Context\User\:
+        resource: './'
+        exclude:
+            - './Domain/Entity/'
+            - './Infrastructure/Persistence/Entity/'
+            - './Infrastructure/Http/Controller/'
+            - './user.yaml'
+
+    # Mailer Service Configuration
+    App\Context\User\Application\Service\UserMailerInterface:
+        alias: App\Context\User\Infrastructure\Mailer\UserMailer
+
+    App\Context\User\Infrastructure\Mailer\UserMailer:
+        arguments:
+            - '@Symfony\Component\Mailer\MailerInterface'

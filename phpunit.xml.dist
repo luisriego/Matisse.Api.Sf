@@ -27,7 +27,13 @@
             <directory>tests/Context/*/Domain</directory>
         </testsuite>
 
-        <testsuite name="integration">
+        <!-- Suite for tests that require authentication -->
+        <testsuite name="authenticated_integration">
+            <directory>tests/Context/*/Infrastructure</directory>
+        </testsuite>
+
+        <!-- Suite for tests that should run WITHOUT authentication -->
+        <testsuite name="unauthenticated_integration">
             <directory>tests/Context/*/Infrastructure</directory>
         </testsuite>
     </testsuites>

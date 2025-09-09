@@ -4,32 +4,38 @@ declare(strict_types=1);
 
 namespace App\Context\User\Domain;
 
+use App\Context\User\Domain\Event\CreateUserDomainEvent;
+use App\Context\User\Domain\ValueObject\Email;
+use App\Context\User\Domain\ValueObject\Password;
+use App\Context\User\Domain\ValueObject\UserId;
+use App\Context\User\Domain\ValueObject\UserName;
 use App\Shared\Domain\AggregateRoot;
 use App\Shared\Domain\Exception\InvalidArgumentException;
+use App\Shared\Domain\ValueObject\Uuid as CustomUuid; // <--- Añadida esta línea para nuestro Uuid
 use DateTime;
 use DateTimeImmutable;
 use DateTimeInterface;
 use Doctrine\ORM\Mapping as ORM;
-use Symfony\Component\PasswordHasher\PasswordHasherInterface;
+use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
 use Symfony\Component\Security\Core\User\UserInterface;
-use Symfony\Component\Uid\Uuid;
+use Symfony\Component\Uid\Uuid; // Mantener este use si se usa en otro lugar
 
 use function array_unique;
-use function in_array;
 use function sha1;
 use function uniqid;
 
 #[ORM\Entity(repositoryClass: UserRepository::class)]
 #[ORM\HasLifecycleCallbacks]
+#[ORM\Table(name: 'users')]
 class User extends AggregateRoot implements UserInterface, PasswordAuthenticatedUserInterface
 {
-    public const MIN_AGE = 18;
-    public const NAME_MIN_LENGTH = 2;
-    public const NAME_MAX_LENGTH = 80;
-    public const MIN_PASSWORD_LENGTH = 6;
-    public const MAX_PASSWORD_LENGTH = 55;
-    public const ID_LENGTH = 36;
+    public const int MIN_AGE = 18;
+    public const int NAME_MIN_LENGTH = 2;
+    public const int NAME_MAX_LENGTH = 80;
+    public const int MIN_PASSWORD_LENGTH = 6;
+    public const int MAX_PASSWORD_LENGTH = 55;
+    public const int ID_LENGTH = 36;
 
     #[ORM\Id]
     #[ORM\Column(type: 'string', length: 36, options: ['fixed' => true])]
@@ -53,7 +59,7 @@ class User extends AggregateRoot implements UserInterface, PasswordAuthenticated
     private ?string $password;
 
     #[ORM\Column(type: 'smallint')]
-    private ?int $age;
+    private int $age;
 
     #[ORM\Column(type: 'boolean')]
     private ?bool $isActive = false;
@@ -64,43 +70,40 @@ class User extends AggregateRoot implements UserInterface, PasswordAuthenticated
     #[ORM\Column(type: 'datetime', nullable: true)]
     private ?DateTime $updatedAt = null;
 
-    //    #[ORM\ManyToOne(targetEntity: Company::class, inversedBy: 'users')]
-    //    #[ORM\JoinColumn(nullable: true)]
-    //    private ?Company $company = null;
-
-    public function __construct(
-        string $id,
-        string $name,
-        string $email,
-        string $password,
+    private function __construct(
+        UserId $id,
+        UserName $name,
+        Email $email,
+        int $age,
     ) {
-        $this->id = UserId::fromString(id: $id)->value();
-        $this->name = UserName::fromString(name: $name)->value();
-        $this->email = Email::fromString(email: $email)->value();
-        $this->password = Password::fromString(password: $password)->value();
+        $this->id = (string) $id->value();
+        $this->name = $name->value();
+        $this->email = $email->value();
         $this->token = sha1(uniqid('', true));
-        $this->age = 18;
+        $this->age = $age;
         $this->isActive = false;
         $this->createdAt = new DateTimeImmutable();
         $this->markAsUpdated();
     }
 
-    public static function create(UserId $id, UserName $name, Email $email, Password $password): self
-    {
-        $user = new self(
-            $id->value(),
-            $name->value(),
-            $email->value(),
-            $password->value(),
-        );
+    public static function create(
+        UserId $id,
+        UserName $name,
+        Email $email,
+        Password $password,
+        UserPasswordHasherInterface $passwordHasher,
+        int $age,
+    ): self {
+        $user = new self($id, $name, $email, $age);
+        $user->hashPassword($password->value(), $passwordHasher);
 
         $user->record(
             new CreateUserDomainEvent(
-                $user->id(),
-                $user->getName(),
-                $user->getEmail(),
+                $user->id,
+                $user->name,
+                $user->email,
                 $user->getPassword(),
-                Uuid::random()->value(),
+                CustomUuid::random()->value(), // <--- Cambiado a CustomUuid::random()
                 (new DateTimeImmutable())->format(DateTimeInterface::ATOM),
             ),
         );
@@ -120,11 +123,8 @@ class User extends AggregateRoot implements UserInterface, PasswordAuthenticated
 
     public function setName(?string $name): void
     {
-        if (!$this->isValueRangeLengthValid($name, self::NAME_MIN_LENGTH, self::NAME_MAX_LENGTH)) {
-            throw InvalidArgumentException::createFromMinAndMaxLength(self::NAME_MIN_LENGTH, self::NAME_MAX_LENGTH);
-        }
-
-        $this->name = $name;
+        $userName = UserName::fromString($name);
+        $this->name = $userName->value();
     }
 
     public function getAge(): int
@@ -150,61 +150,24 @@ class User extends AggregateRoot implements UserInterface, PasswordAuthenticated
         $this->token = $token;
     }
 
-    public function getCompany(): ?Company
-    {
-        return $this->company;
-    }
-
-    public function assignToCompany(?Company $company): void
-    {
-        $this->company = $company;
-    }
-    //
-    //    // for Nelmio\Alice\Fixtures\Fixture purposes
-    //    public function setCompany(?Company $company): void
-    //    {
-    //        $this->company = $company;
-    //    }
-
     public function getEmail(): ?string
     {
         return $this->email;
     }
 
-    public function belongsToCompany(string $companyId): bool
-    {
-        if ($this->company === null) {
-            return false;
-        }
-
-        return $this->company->getId() === $companyId;
-    }
-
-    /**
-     * A visual identifier that represents this user.
-     *
-     * @see UserInterface
-     */
     public function getUserIdentifier(): string
     {
         return (string) $this->email;
     }
 
-    /**
-     * @deprecated since Symfony 5.3, use getUserIdentifier instead
-     */
     public function getUsername(): string
     {
         return (string) $this->email;
     }
 
-    /**
-     * @see UserInterface
-     */
     public function getRoles(): array
     {
         $roles = $this->roles;
-        // guarantee every user at least has ROLE_USER
         $roles[] = 'ROLE_USER';
 
         return array_unique($roles);
@@ -217,58 +180,38 @@ class User extends AggregateRoot implements UserInterface, PasswordAuthenticated
         return $this;
     }
 
-    public function hasRole(UserRole $role): bool
-    {
-        return in_array($role->value, $this->getRoles(), true);
-    }
-
-    /**
-     * @see PasswordAuthenticatedUserInterface
-     */
     public function getPassword(): string
     {
         return $this->password;
     }
 
-    public function setPassword(string $password, PasswordHasherInterface $hasher): self
+    public function hashPassword(string $plainPassword, UserPasswordHasherInterface $hasher): self
     {
-        if (!$this->assertPassword($password)) {
-            throw InvalidArgumentException::createFromArgument('password');
-        }
-
-        $hashed = $hasher->hashPasswordForUser($this, $password);
-
-        $this->password = $hashed;
+        $this->password = $hasher->hashPassword($this, $plainPassword);
 
         return $this;
     }
 
-    public function changePassword(string $newPassword, PasswordHasherInterface $hasher): void
+    public function hashedPassword(string $hashedPassword): self
     {
-        $this->setPassword($newPassword, $hasher);
+        $this->password = $hashedPassword;
 
-        $this->markAsUpdated(); // I think this is already doing in a Doctrine listener, see it later
+        return $this;
     }
 
-    /**
-     * Returning a salt is only needed, if you are not using a modern
-     * hashing algorithm (e.g. bcrypt or sodium) in your security.yaml.
-     *
-     * @see UserInterface
-     */
+    public function changePassword(string $newPassword, UserPasswordHasherInterface $hasher): void
+    {
+        $this->hashPassword($newPassword, $hasher);
+
+        $this->markAsUpdated();
+    }
+
     public function getSalt(): ?string
     {
         return null;
     }
 
-    /**
-     * @see UserInterface
-     */
-    public function eraseCredentials(): void
-    {
-        // If you store any temporary, sensitive data on the user, clear it here
-        // $this->plainPassword = null;
-    }
+    public function eraseCredentials(): void {}
 
     public function toArray(): array
     {
@@ -287,5 +230,10 @@ class User extends AggregateRoot implements UserInterface, PasswordAuthenticated
     public function equals(User $user): bool
     {
         return $this->getId() === $user->getId();
+    }
+
+    private function markAsUpdated(): void
+    {
+        $this->updatedAt = new DateTime();
     }
 }

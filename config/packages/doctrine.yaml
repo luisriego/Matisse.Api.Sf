@@ -19,8 +19,8 @@ doctrine:
             # Mapeo por contexto (Vertical Slice)
             User:
                 is_bundle: false
-                type: attribute
-                dir: '%kernel.project_dir%/src/Context/User/Domain'
+                type: xml # Changed from attribute to xml
+                dir: '%kernel.project_dir%/src/Context/User/Infrastructure/Persistence/Doctrine' # Adjusted directory
                 prefix: 'App\Context\User\Domain'
                 alias: User
 

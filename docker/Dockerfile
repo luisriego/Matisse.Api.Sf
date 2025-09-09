@@ -10,7 +10,8 @@ RUN echo "StrictHostKeyChecking no" >> /home/appuser/.ssh/config
 RUN echo "alias sf=bin/console" >> /home/appuser/.bashrc
 RUN echo "alias test='bin/phpunit --colors=always'" >> /home/appuser/.bashrc
 RUN echo "alias utest='bin/phpunit --colors=always --testsuite=unit'" >> /home/appuser/.bashrc
-RUN echo "alias itest='bin/phpunit --colors=always --testsuite=integration'" >> /home/appuser/.bashrc
+RUN echo "alias aitest='bin/phpunit --colors=always --testsuite=authenticated_integration'" >> /home/appuser/.bashrc
+RUN echo "alias uitest='API_ACCESS_ROLE=PUBLIC_ACCESS php bin/phpunit --testsuite unauthenticated_integration'" >> /home/appuser/.bashrc
 RUN echo "alias tf='bin/phpunit --colors=always --filter'" >> /home/appuser/.bashrc
 RUN echo "alias tc='bin/phpunit --coverage-html coverage/'" >> /home/appuser/.bashrc
 RUN echo "alias tcf='bin/phpunit --coverage-html coverage/ --colors=always --filter'" >> /home/appuser/.bashrc

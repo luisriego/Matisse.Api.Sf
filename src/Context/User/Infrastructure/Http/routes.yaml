@@ -1,0 +1,4 @@
+user_register:
+    path: /api/v1/users/register
+    controller: App\Context\User\Infrastructure\Http\Controller\RegisterController
+    methods: ['POST']

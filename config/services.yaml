@@ -7,7 +7,7 @@ imports:
     - { resource: '../src/Context/Income/Income.yaml'}
     - { resource: '../src/Context/Slip/Slip.yaml'}
     - { resource: '../src/Context/EventStore/event.yaml'}
-    # - { resource: '../src/Context/User/user.yaml' }
+    - { resource: '../src/Context/User/user.yaml' }
 
 services:
     _defaults:
@@ -67,3 +67,7 @@ services:
     App\Context\Slip\Infrastructure\Mailer\SlipMailer:
         arguments:
             - '@Symfony\Component\Mailer\MailerInterface'
+
+    # Explicitly define RegisterUserCommandHandler to ensure Messenger tag is applied
+    App\Context\User\Application\UseCase\Registration\RegisterUserCommandHandler:
+        tags: ['messenger.message_handler']
