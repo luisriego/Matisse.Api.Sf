@@ -39,18 +39,18 @@ final class LoginControllerTest extends ApiTestCase
 
     public function test_it_should_return_a_jwt_token_for_valid_credentials(): void
     {
-        // 1. Arrange: Create a user in the database
+        // 1. Arrange: Create an ACTIVE user in the database
         $plainPassword = 'my-strong-password-123';
         
-        // Use User::create() to instantiate the user
         $user = User::create(
             UserIdMother::create(),
             UserNameMother::create(),
             EmailMother::create('test@example.com'),
             PasswordMother::create($plainPassword),
-            $this->passwordHasher,
-            18
+            $this->passwordHasher
         );
+        
+        $user->activate(); // Activate the user before login
 
         $this->entityManager->persist($user);
         $this->entityManager->flush();
@@ -78,6 +78,44 @@ final class LoginControllerTest extends ApiTestCase
         $this->assertArrayHasKey('token', $responseData, 'Response should contain a JWT token.');
         $this->assertArrayHasKey('user', $responseData, 'Response should contain user data.');
         $this->assertSame('test@example.com', $responseData['user']);
+    }
+
+    public function test_it_should_deny_login_for_inactive_user(): void
+    {
+        // 1. Arrange: Create an INACTIVE user in the database
+        $plainPassword = 'my-strong-password-123';
+        
+        $user = User::create(
+            UserIdMother::create(),
+            UserNameMother::create(),
+            EmailMother::create('inactive@example.com'),
+            PasswordMother::create($plainPassword),
+            $this->passwordHasher
+        );
+        // By default, the user is created as inactive, so we don't call activate()
+
+        $this->entityManager->persist($user);
+        $this->entityManager->flush();
+
+        // 2. Act: Make the login request
+        $this->client->request(
+            'POST',
+            '/api/login_check',
+            [],
+            [],
+            ['CONTENT_TYPE' => 'application/json'],
+            json_encode([
+                'email' => 'inactive@example.com',
+                'password' => $plainPassword,
+            ])
+        );
+
+        // 3. Assert
+        $response = $this->client->getResponse();
+        $this->assertSame(Response::HTTP_UNAUTHORIZED, $response->getStatusCode());
+
+        $responseData = json_decode($response->getContent(), true);
+        $this->assertSame('Tu cuenta no ha sido activada. Por favor, revisa tu email para el enlace de confirmación.', $responseData['message']);
     }
 
     protected function tearDown(): void

@@ -68,6 +68,9 @@ services:
         arguments:
             - '@Symfony\Component\Mailer\MailerInterface'
 
-    # Explicitly define RegisterUserCommandHandler to ensure Messenger tag is applied
+    # Explicitly define Command Handlers to ensure Messenger tags are applied
     App\Context\User\Application\UseCase\Registration\RegisterUserCommandHandler:
+        tags: ['messenger.message_handler']
+
+    App\Context\User\Application\UseCase\Activation\ActivateUserCommandHandler:
         tags: ['messenger.message_handler']

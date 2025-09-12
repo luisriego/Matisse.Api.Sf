@@ -17,4 +17,5 @@ framework:
         routing:
             'App\Shared\Application\Query': sync
             'App\Shared\Application\AsyncMessage': async
-            'App\Context\User\Application\UseCase\Registration\RegisterUserCommand': sync # <--- Añadir esta línea
+            'App\Context\User\Application\UseCase\Registration\RegisterUserCommand': sync
+            'App\Context\User\Application\UseCase\Activation\ActivateUserCommand': sync # <--- Añadida esta línea

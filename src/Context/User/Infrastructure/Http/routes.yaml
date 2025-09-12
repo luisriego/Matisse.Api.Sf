@@ -7,3 +7,8 @@ api_login_check:
     path: /api/login_check
     controller: App\Context\User\Infrastructure\Http\Controller\LoginController
     methods: ['POST']
+
+user_activate:
+    path: /api/v1/users/activate/{userId}/{token}
+    controller: App\Context\User\Infrastructure\Http\Controller\ActivateUserController
+    methods: ['GET']

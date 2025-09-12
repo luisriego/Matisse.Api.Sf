@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace App\Tests\Context\User\Domain;
 
 use App\Context\User\Domain\Event\CreateUserDomainEvent;
-use App\Shared\Domain\Exception\InvalidArgumentException; // <--- Corregido el namespace de la excepción
 use App\Context\User\Domain\User;
 use App\Tests\Context\User\Domain\ValueObject\EmailMother;
 use App\Tests\Context\User\Domain\ValueObject\PasswordMother;
@@ -22,17 +21,15 @@ final class UserTest extends TestCase
         $name = UserNameMother::create();
         $email = EmailMother::create();
         $password = PasswordMother::create();
-        $age = 25;
 
         $hasher = $this->createMock(UserPasswordHasherInterface::class);
         $hasher->method('hashPassword')->willReturn('hashed_password');
 
-        $user = User::create($id, $name, $email, $password, $hasher, $age);
+        $user = User::create($id, $name, $email, $password, $hasher);
 
         $this->assertSame($id->value(), $user->getId());
         $this->assertSame($name->value(), $user->getName());
         $this->assertSame($email->value(), $user->getEmail());
-        $this->assertSame($age, $user->getAge());
         $this->assertSame('hashed_password', $user->getPassword());
         $this->assertContains('ROLE_USER', $user->getRoles());
     }
@@ -44,13 +41,5 @@ final class UserTest extends TestCase
 
         $this->assertCount(1, $events);
         $this->assertInstanceOf(CreateUserDomainEvent::class, $events[0]);
-    }
-
-    public function test_it_should_throw_exception_for_invalid_age(): void
-    {
-        $this->expectException(InvalidArgumentException::class);
-
-        $user = UserMother::createRandom();
-        $user->setAge(17); // Under the minimum age of 18
     }
 }

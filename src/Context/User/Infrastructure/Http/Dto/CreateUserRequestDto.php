@@ -9,13 +9,12 @@ use JsonException;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
 
-use function is_int;
-use function is_string;
 use function json_decode;
+use function is_string;
 
 use const JSON_THROW_ON_ERROR;
 
-final class RegisterUserRequestDto implements RequestDto
+final class CreateUserRequestDto implements RequestDto
 {
     private string $id;
     private string $name;

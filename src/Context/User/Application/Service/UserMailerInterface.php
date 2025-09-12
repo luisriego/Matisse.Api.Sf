@@ -6,5 +6,5 @@ namespace App\Context\User\Application\Service;
 
 interface UserMailerInterface
 {
-    public function sendWelcomeEmail(string $userEmail, string $userName): void;
+    public function sendConfirmationEmail(string $userEmail, string $userName, string $userId, string $confirmationToken): void;
 }

@@ -10,8 +10,7 @@ use App\Context\User\Domain\ValueObject\Password;
 use App\Context\User\Domain\ValueObject\UserId;
 use App\Context\User\Domain\ValueObject\UserName;
 use App\Shared\Domain\AggregateRoot;
-use App\Shared\Domain\Exception\InvalidArgumentException;
-use App\Shared\Domain\ValueObject\Uuid as CustomUuid; // <--- Añadida esta línea para nuestro Uuid
+use App\Shared\Domain\ValueObject\Uuid as CustomUuid;
 use DateTime;
 use DateTimeImmutable;
 use DateTimeInterface;
@@ -19,7 +18,6 @@ use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
 use Symfony\Component\Security\Core\User\UserInterface;
-use Symfony\Component\Uid\Uuid; // Mantener este use si se usa en otro lugar
 
 use function array_unique;
 use function sha1;
@@ -30,7 +28,6 @@ use function uniqid;
 #[ORM\Table(name: 'users')]
 class User extends AggregateRoot implements UserInterface, PasswordAuthenticatedUserInterface
 {
-    public const int MIN_AGE = 18;
     public const int NAME_MIN_LENGTH = 2;
     public const int NAME_MAX_LENGTH = 80;
     public const int MIN_PASSWORD_LENGTH = 6;
@@ -51,15 +48,10 @@ class User extends AggregateRoot implements UserInterface, PasswordAuthenticated
     private $roles = [];
 
     #[ORM\Column(type: 'string', length: 40, nullable: true)]
-    private ?string $token;
+    private ?string $confirmationToken;
 
-    #[ORM\Column(type: 'string', length: 255, options: [
-        'comment' => 'The hashed password',
-    ])]
+    #[ORM\Column(type: 'string', length: 255, options: ['comment' => 'The hashed password'])]
     private ?string $password;
-
-    #[ORM\Column(type: 'smallint')]
-    private int $age;
 
     #[ORM\Column(type: 'boolean')]
     private ?bool $isActive = false;
@@ -73,14 +65,12 @@ class User extends AggregateRoot implements UserInterface, PasswordAuthenticated
     private function __construct(
         UserId $id,
         UserName $name,
-        Email $email,
-        int $age,
+        Email $email
     ) {
         $this->id = (string) $id->value();
         $this->name = $name->value();
         $this->email = $email->value();
-        $this->token = sha1(uniqid('', true));
-        $this->age = $age;
+        $this->confirmationToken = sha1(uniqid('', true));
         $this->isActive = false;
         $this->createdAt = new DateTimeImmutable();
         $this->markAsUpdated();
@@ -91,10 +81,9 @@ class User extends AggregateRoot implements UserInterface, PasswordAuthenticated
         UserName $name,
         Email $email,
         Password $password,
-        UserPasswordHasherInterface $passwordHasher,
-        int $age,
+        UserPasswordHasherInterface $passwordHasher
     ): self {
-        $user = new self($id, $name, $email, $age);
+        $user = new self($id, $name, $email);
         $user->hashPassword($password->value(), $passwordHasher);
 
         $user->record(
@@ -103,12 +92,29 @@ class User extends AggregateRoot implements UserInterface, PasswordAuthenticated
                 $user->name,
                 $user->email,
                 $user->getPassword(),
-                CustomUuid::random()->value(), // <--- Cambiado a CustomUuid::random()
+                CustomUuid::random()->value(),
                 (new DateTimeImmutable())->format(DateTimeInterface::ATOM),
             ),
         );
 
         return $user;
+    }
+
+    public function activate(): void
+    {
+        $this->isActive = true;
+        $this->confirmationToken = null;
+        $this->markAsUpdated();
+    }
+
+    public function isActive(): ?bool
+    {
+        return $this->isActive;
+    }
+
+    public function getConfirmationToken(): ?string
+    {
+        return $this->confirmationToken;
     }
 
     public function getId(): ?string
@@ -125,29 +131,6 @@ class User extends AggregateRoot implements UserInterface, PasswordAuthenticated
     {
         $userName = UserName::fromString($name);
         $this->name = $userName->value();
-    }
-
-    public function getAge(): int
-    {
-        return $this->age;
-    }
-
-    public function setAge(int $age): void
-    {
-        if ($age < self::MIN_AGE) {
-            throw InvalidArgumentException::createFromMin(self::MIN_AGE);
-        }
-        $this->age = $age;
-    }
-
-    public function getToken(): ?string
-    {
-        return $this->token;
-    }
-
-    public function setToken(?string $token): void
-    {
-        $this->token = $token;
     }
 
     public function getEmail(): ?string
@@ -219,7 +202,6 @@ class User extends AggregateRoot implements UserInterface, PasswordAuthenticated
             'id' => $this->id,
             'email' => $this->email,
             'name' => $this->name,
-            'age' => $this->age,
             'roles' => $this->roles,
             'isActive' => $this->isActive,
             'createdOn' => $this->createdAt,

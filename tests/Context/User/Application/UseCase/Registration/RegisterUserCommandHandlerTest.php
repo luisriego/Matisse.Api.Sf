@@ -39,7 +39,7 @@ final class RegisterUserCommandHandlerTest extends TestCase
         );
     }
 
-    public function test_it_should_register_a_user_and_send_welcome_email(): void
+    public function test_it_should_register_a_user_and_send_confirmation_email(): void
     {
         // 1. Prepare test data
         $command = $this->createRegisterUserCommand();
@@ -63,8 +63,13 @@ final class RegisterUserCommandHandlerTest extends TestCase
 
         $this->userMailer
             ->expects($this->once())
-            ->method('sendWelcomeEmail')
-            ->with($command->email(), $command->name());
+            ->method('sendConfirmationEmail')
+            ->with(
+                $command->email(),
+                $command->name(),
+                $this->isType('string'), // userId
+                $this->isType('string')  // confirmationToken
+            );
 
         // 3. Invoke the handler
         ($this->handler)($command);
@@ -77,7 +82,7 @@ final class RegisterUserCommandHandlerTest extends TestCase
 
         // 2. Prepare test data
         $command = $this->createRegisterUserCommand();
-        $existingUser = $this->createMock(User::class); // <--- ¡Cambiado a un mock simple!
+        $existingUser = $this->createMock(User::class);
 
         // 3. Set mock expectations
         $this->userRepository
@@ -87,7 +92,7 @@ final class RegisterUserCommandHandlerTest extends TestCase
             ->willReturn($existingUser);
 
         $this->userRepository->expects($this->never())->method('save');
-        $this->userMailer->expects($this->never())->method('sendWelcomeEmail');
+        $this->userMailer->expects($this->never())->method('sendConfirmationEmail');
 
         // 4. Invoke the handler
         ($this->handler)($command);
@@ -117,8 +122,7 @@ final class RegisterUserCommandHandlerTest extends TestCase
 
         $this->userMailer
             ->expects($this->once())
-            ->method('sendWelcomeEmail')
-            ->with($command->email(), $command->name())
+            ->method('sendConfirmationEmail')
             ->willThrowException(new Exception('Email service is down'));
 
         try {
@@ -134,8 +138,7 @@ final class RegisterUserCommandHandlerTest extends TestCase
             UserIdMother::create()->value(),
             UserNameMother::create()->value(),
             EmailMother::create()->value(),
-            PasswordMother::create()->value(),
-            18
+            PasswordMother::create()->value()
         );
     }
 }
