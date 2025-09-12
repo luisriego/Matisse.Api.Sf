@@ -22,7 +22,7 @@ final class RegisterUserCommandHandler implements CommandHandler
     public function __construct(
         private readonly UserRepository $userRepository,
         private readonly UserPasswordHasherInterface $userPasswordHasher,
-        private readonly UserMailerInterface $userMailer
+        private readonly UserMailerInterface $userMailer,
     ) {}
 
     /**
@@ -41,7 +41,7 @@ final class RegisterUserCommandHandler implements CommandHandler
             UserName::fromString($command->name()),
             Email::fromString($command->email()),
             Password::fromString($command->password()),
-            $this->userPasswordHasher
+            $this->userPasswordHasher,
         );
 
         $this->userRepository->save($user, true);
@@ -51,7 +51,7 @@ final class RegisterUserCommandHandler implements CommandHandler
             $user->getEmail(),
             $user->getName(),
             $user->getId(),
-            $user->getConfirmationToken()
+            $user->getConfirmationToken(),
         );
     }
 }

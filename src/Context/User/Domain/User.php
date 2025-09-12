@@ -65,7 +65,7 @@ class User extends AggregateRoot implements UserInterface, PasswordAuthenticated
     private function __construct(
         UserId $id,
         UserName $name,
-        Email $email
+        Email $email,
     ) {
         $this->id = (string) $id->value();
         $this->name = $name->value();
@@ -81,7 +81,7 @@ class User extends AggregateRoot implements UserInterface, PasswordAuthenticated
         UserName $name,
         Email $email,
         Password $password,
-        UserPasswordHasherInterface $passwordHasher
+        UserPasswordHasherInterface $passwordHasher,
     ): self {
         $user = new self($id, $name, $email);
         $user->hashPassword($password->value(), $passwordHasher);

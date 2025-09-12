@@ -12,7 +12,7 @@ final readonly class RegisterUserCommand implements Command
         private string $id,
         private string $name,
         private string $email,
-        private string $password
+        private string $password,
     ) {}
 
     public function id(): string

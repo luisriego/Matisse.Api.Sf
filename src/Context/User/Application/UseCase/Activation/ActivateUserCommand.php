@@ -10,9 +10,8 @@ final readonly class ActivateUserCommand implements Command
 {
     public function __construct(
         private string $userId,
-        private string $token
-    ) {
-    }
+        private string $token,
+    ) {}
 
     public function userId(): string
     {

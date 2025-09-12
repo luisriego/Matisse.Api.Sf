@@ -12,3 +12,8 @@ user_activate:
     path: /api/v1/users/activate/{userId}/{token}
     controller: App\Context\User\Infrastructure\Http\Controller\ActivateUserController
     methods: ['GET']
+
+user_change_password:
+    path: /api/v1/users/me/password
+    controller: App\Context\User\Infrastructure\Http\Controller\ChangePasswordController
+    methods: ['PATCH']

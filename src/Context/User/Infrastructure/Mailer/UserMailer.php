@@ -30,7 +30,7 @@ final class UserMailer implements UserMailerInterface
             ->html(sprintf(
                 '<p>Hola %s,</p><p>Gracias por registrarte. Por favor, confirma tu cuenta haciendo clic en el siguiente enlace:</p><p><a href="%s">Confirmar cuenta</a></p>',
                 $userName,
-                $activationUrl
+                $activationUrl,
             ));
 
         $this->mailer->send($email);

@@ -4,38 +4,44 @@ declare(strict_types=1);
 
 namespace App\Context\User\Infrastructure\Http\Controller;
 
-use App\Context\User\Application\UseCase\Activation\ActivateUserCommand;
+use App\Context\User\Application\UseCase\ChangePassword\ChangePasswordCommand;
+use App\Context\User\Infrastructure\Http\Dto\ChangePasswordRequestDto;
 use App\Shared\Domain\Exception\InvalidArgumentException;
-use App\Shared\Domain\Exception\ResourceNotFoundException;
 use App\Shared\Infrastructure\Symfony\ApiController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Messenger\Exception\HandlerFailedException;
+use Symfony\Component\Security\Core\User\UserInterface;
+use Symfony\Component\Security\Http\Attribute\CurrentUser;
 use Throwable;
 
-final class ActivateUserController extends ApiController
+final class ChangePasswordController extends ApiController
 {
     /**
      * @throws Throwable
      */
-    public function __invoke(string $userId, string $token): JsonResponse
+    public function __invoke(ChangePasswordRequestDto $requestDto, #[CurrentUser] ?UserInterface $user): JsonResponse
     {
+        if (null === $user) {
+            return new JsonResponse(['message' => 'User not authenticated.'], Response::HTTP_UNAUTHORIZED);
+        }
+
         try {
-            $this->dispatch(new ActivateUserCommand($userId, $token));
+            $this->dispatch(new ChangePasswordCommand(
+                $user->getUserIdentifier(), // The email
+                $requestDto->oldPassword(),
+                $requestDto->newPassword(),
+            ));
         } catch (HandlerFailedException $e) {
             throw $this->unwrap($e);
         }
 
-        return new JsonResponse(
-            ['message' => 'Tu cuenta ha sido activada correctamente. Ya puedes iniciar sesión.'],
-            Response::HTTP_OK,
-        );
+        return new JsonResponse(['message' => 'Password changed successfully.'], Response::HTTP_OK);
     }
 
     protected function exceptions(): array
     {
         return [
-            ResourceNotFoundException::class => Response::HTTP_NOT_FOUND,
             InvalidArgumentException::class => Response::HTTP_BAD_REQUEST,
         ];
     }

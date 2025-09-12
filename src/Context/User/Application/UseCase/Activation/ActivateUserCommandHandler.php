@@ -11,9 +11,7 @@ use App\Shared\Domain\Exception\ResourceNotFoundException;
 
 final class ActivateUserCommandHandler implements CommandHandler
 {
-    public function __construct(private readonly UserRepository $userRepository)
-    {
-    }
+    public function __construct(private readonly UserRepository $userRepository) {}
 
     public function __invoke(ActivateUserCommand $command): void
     {

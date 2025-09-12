@@ -9,8 +9,8 @@ use JsonException;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
 
-use function json_decode;
 use function is_string;
+use function json_decode;
 
 use const JSON_THROW_ON_ERROR;
 

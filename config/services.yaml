@@ -74,3 +74,6 @@ services:
 
     App\Context\User\Application\UseCase\Activation\ActivateUserCommandHandler:
         tags: ['messenger.message_handler']
+
+    App\Context\User\Application\UseCase\ChangePassword\ChangePasswordCommandHandler:
+        tags: ['messenger.message_handler']

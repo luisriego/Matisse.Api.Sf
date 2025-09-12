@@ -8,9 +8,9 @@ use App\Shared\Infrastructure\Symfony\ApiController;
 use Lexik\Bundle\JWTAuthenticationBundle\Services\JWTTokenManagerInterface; // Importar la interfaz
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\Messenger\MessageBusInterface;
 use Symfony\Component\Security\Core\User\UserInterface;
-use Symfony\Component\Security\Http\Attribute\CurrentUser;
-use Symfony\Component\Messenger\MessageBusInterface; // Importar MessageBusInterface
+use Symfony\Component\Security\Http\Attribute\CurrentUser; // Importar MessageBusInterface
 use Throwable;
 
 final class LoginController extends ApiController
@@ -20,7 +20,7 @@ final class LoginController extends ApiController
     public function __construct(
         MessageBusInterface $commandBus, // Inyectar dependencias de ApiController
         MessageBusInterface $queryBus,   // Inyectar dependencias de ApiController
-        JWTTokenManagerInterface $jwtManager // Inyectar el JWTTokenManagerInterface
+        JWTTokenManagerInterface $jwtManager, // Inyectar el JWTTokenManagerInterface
     ) {
         parent::__construct($commandBus, $queryBus); // Llamar al constructor del padre
         $this->jwtManager = $jwtManager;

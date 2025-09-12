@@ -9,7 +9,6 @@ use JsonException;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
 
-use function is_int;
 use function is_string;
 use function json_decode;
 
