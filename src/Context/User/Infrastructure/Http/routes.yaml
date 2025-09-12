@@ -2,3 +2,8 @@ user_register:
     path: /api/v1/users/register
     controller: App\Context\User\Infrastructure\Http\Controller\RegisterController
     methods: ['POST']
+
+api_login_check:
+    path: /api/login_check
+    controller: App\Context\User\Infrastructure\Http\Controller\LoginController
+    methods: ['POST']

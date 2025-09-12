@@ -11,7 +11,7 @@ security:
             stateless: true
             json_login:
                 check_path: /api/login_check
-                success_handler: lexik_jwt_authentication.handler.authentication_success
+                # success_handler: lexik_jwt_authentication.handler.authentication_success # <--- Eliminada esta línea
                 failure_handler: lexik_jwt_authentication.handler.authentication_failure
                 username_path: email
 
