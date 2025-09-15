@@ -10,12 +10,6 @@ use App\Shared\Domain\Exception\ResourceNotFoundException;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
 
-/**
- * @method User|null find($id, $lockMode = null, $lockVersion = null)
- * @method User|null findOneBy(array $criteria, array $orderBy = null)
- * @method User[]    findAll()
- * @method User[]    findBy(array $criteria, array @orderBy = null, $limit = null, $offset = null)
- */
 class DoctrineUserRepository extends ServiceEntityRepository implements UserRepository
 {
     public function __construct(ManagerRegistry $registry)
@@ -41,8 +35,14 @@ class DoctrineUserRepository extends ServiceEntityRepository implements UserRepo
         return $user;
     }
 
+    public function findOneById(string $id): ?User
+    {
+        return $this->findOneBy(['id' => $id]);
+    }
+
     public function findByEmail(string $email): ?User // Changed return type to ?User
     {
         return $this->findOneBy(['email' => $email]);
     }
+
 }

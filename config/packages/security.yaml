@@ -7,11 +7,11 @@ security:
             id: App\Shared\Infrastructure\Security\Core\User\UserProvider
     firewalls:
         login:
-            pattern: ^/api/login
+            pattern: ^/api/v1/login_check
             stateless: true
             user_checker: App\Context\User\Infrastructure\Security\UserIsActiveChecker # <--- Añadida esta línea
             json_login:
-                check_path: /api/login_check
+                check_path: /api/v1/login_check
                 # success_handler: lexik_jwt_authentication.handler.authentication_success # <--- Eliminada esta línea
                 failure_handler: lexik_jwt_authentication.handler.authentication_failure
                 username_path: email
@@ -27,7 +27,7 @@ security:
 
     access_control:
         - { path: ^/.*/health-check,        roles: PUBLIC_ACCESS }
-        - { path: ^/api/login,              roles: PUBLIC_ACCESS }
+        - { path: ^/api/v1/login_check,     roles: PUBLIC_ACCESS }
         - { path: ^/api/v1/users/register,      roles: PUBLIC_ACCESS }
         - { path: ^/api/v1/users/activate,      roles: PUBLIC_ACCESS }
         - { path: ^/api,                    roles: '%env(API_ACCESS_ROLE)%' }

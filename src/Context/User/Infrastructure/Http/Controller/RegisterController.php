@@ -36,6 +36,7 @@ final class RegisterController extends ApiController
                 $requestDto->name(),
                 $requestDto->email(),
                 $requestDto->password(),
+                $requestDto->residentUnitId(),
             );
             $this->dispatch($command);
 

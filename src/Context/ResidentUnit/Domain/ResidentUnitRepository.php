@@ -10,6 +10,8 @@ interface ResidentUnitRepository
 
     public function findOneByIdOrFail(string $id): ResidentUnit;
 
+    public function findOneById(string $id): ?ResidentUnit;
+
     public function calculateTotalIdealFraction(): float;
 
     public function findAllActive(): array;

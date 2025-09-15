@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Context\User\Infrastructure\Http\Controller;
 
+use App\Context\User\Domain\User;
 use App\Shared\Infrastructure\Symfony\ApiController;
 use Lexik\Bundle\JWTAuthenticationBundle\Services\JWTTokenManagerInterface; // Importar la interfaz
 use Symfony\Component\HttpFoundation\JsonResponse;
@@ -35,14 +36,21 @@ final class LoginController extends ApiController
             return new JsonResponse(['message' => 'Invalid credentials.'], Response::HTTP_UNAUTHORIZED);
         }
 
+        // Asegurarse de que el usuario es una instancia de nuestra entidad User
+        if (!$user instanceof User) {
+            return new JsonResponse(['message' => 'Invalid user type.'], Response::HTTP_INTERNAL_SERVER_ERROR);
+        }
+
         // Generar el token JWT
         $token = $this->jwtManager->create($user);
 
         return new JsonResponse([
             'message' => 'Login successful.',
-            'token'   => $token, // Incluir el token en la respuesta
+            'token'   => $token,
             'user'    => $user->getUserIdentifier(),
-            'roles'   => $user->getRoles(),
+            'name'    => $user->getName(),
+            'unit'    => $user->getResidentUnit()?->id(),
+            'roles'   => $user->getRoles()[0],
         ]);
     }
 

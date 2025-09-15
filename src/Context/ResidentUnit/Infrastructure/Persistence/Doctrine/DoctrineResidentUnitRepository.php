@@ -35,6 +35,11 @@ class DoctrineResidentUnitRepository extends ServiceEntityRepository implements 
         return $residentUnit;
     }
 
+    public function findOneById(string $id): ?ResidentUnit
+    {
+        return $this->findOneBy(['id' => $id]);
+    }
+
     public function calculateTotalIdealFraction(): float
     {
         $queryBuilder = $this->createQueryBuilder('ru')

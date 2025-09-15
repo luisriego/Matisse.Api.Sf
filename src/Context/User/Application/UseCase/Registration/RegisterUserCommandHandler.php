@@ -13,7 +13,10 @@ use App\Context\User\Domain\ValueObject\UserId;
 use App\Context\User\Domain\ValueObject\UserName;
 use App\Shared\Application\CommandHandler;
 use App\Shared\Domain\Exception\ResourceAlreadyExistException;
+use App\Shared\Domain\Exception\ResourceNotFoundException;
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
+use App\Context\ResidentUnit\Domain\ResidentUnitRepository; // Importar ResidentUnitRepository
+use App\Context\ResidentUnit\Domain\ResidentUnit; // Importar ResidentUnit
 
 use function sprintf;
 
@@ -23,10 +26,12 @@ final class RegisterUserCommandHandler implements CommandHandler
         private readonly UserRepository $userRepository,
         private readonly UserPasswordHasherInterface $userPasswordHasher,
         private readonly UserMailerInterface $userMailer,
+        private readonly ResidentUnitRepository $residentUnitRepository,
     ) {}
 
     /**
      * @throws ResourceAlreadyExistException
+     * @throws ResourceNotFoundException
      */
     public function __invoke(RegisterUserCommand $command): void
     {
@@ -36,12 +41,21 @@ final class RegisterUserCommandHandler implements CommandHandler
             throw new ResourceAlreadyExistException(sprintf('User with email <%s> already exists.', $email->value()));
         }
 
+        $residentUnit = null;
+        if (null !== $command->residentUnitId()) {
+            $residentUnit = $this->residentUnitRepository->find($command->residentUnitId());
+            if (null === $residentUnit) {
+                throw new ResourceNotFoundException(sprintf('ResidentUnit with ID <%s> not found.', $command->residentUnitId()));
+            }
+        }
+
         $user = User::create(
             UserId::fromString($command->id()),
             UserName::fromString($command->name()),
             Email::fromString($command->email()),
             Password::fromString($command->password()),
             $this->userPasswordHasher,
+            $residentUnit // Pasar la ResidentUnit (o null)
         );
 
         $this->userRepository->save($user, true);

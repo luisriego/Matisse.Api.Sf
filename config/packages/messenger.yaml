@@ -15,8 +15,8 @@ framework:
             failed: 'doctrine://default?queue_name=failed'
 
         routing:
-            'App\Shared\Application\Query': sync
+            # 'App\Shared\Application\Query': messenger.bus.query.bus # Eliminado: Esta línea era incorrecta
             'App\Shared\Application\AsyncMessage': async
             'App\Context\User\Application\UseCase\Registration\RegisterUserCommand': sync
             'App\Context\User\Application\UseCase\Activation\ActivateUserCommand': sync
-            'App\Context\User\Application\UseCase\ChangePassword\ChangePasswordCommand': sync # <--- Añadida esta línea
+            'App\Context\User\Application\UseCase\ChangePassword\ChangePasswordCommand': sync

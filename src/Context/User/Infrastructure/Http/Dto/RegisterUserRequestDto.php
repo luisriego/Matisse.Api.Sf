@@ -20,6 +20,7 @@ final class RegisterUserRequestDto implements RequestDto
     private string $name;
     private string $email;
     private string $password;
+    private ?string $residentUnitId;
 
     public function __construct(Request $request)
     {
@@ -48,6 +49,9 @@ final class RegisterUserRequestDto implements RequestDto
             throw new BadRequestHttpException('Missing or invalid "password" field. Must be a string.');
         }
         $this->password = $data['password'];
+
+        // Añadido: Obtener residentUnitId si está presente
+        $this->residentUnitId = isset($data['residentUnitId']) && is_string($data['residentUnitId']) ? $data['residentUnitId'] : null;
     }
 
     public function id(): string
@@ -68,5 +72,11 @@ final class RegisterUserRequestDto implements RequestDto
     public function password(): string
     {
         return $this->password;
+    }
+
+    // Añadido: Getter para residentUnitId
+    public function residentUnitId(): ?string
+    {
+        return $this->residentUnitId;
     }
 }

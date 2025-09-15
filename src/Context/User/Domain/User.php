@@ -14,18 +14,15 @@ use App\Shared\Domain\ValueObject\Uuid as CustomUuid;
 use DateTime;
 use DateTimeImmutable;
 use DateTimeInterface;
-use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
 use Symfony\Component\Security\Core\User\UserInterface;
+use App\Context\ResidentUnit\Domain\ResidentUnit; // Importar ResidentUnit
 
 use function array_unique;
 use function sha1;
 use function uniqid;
 
-#[ORM\Entity(repositoryClass: UserRepository::class)]
-#[ORM\HasLifecycleCallbacks]
-#[ORM\Table(name: 'users')]
 class User extends AggregateRoot implements UserInterface, PasswordAuthenticatedUserInterface
 {
     public const int NAME_MIN_LENGTH = 2;
@@ -34,33 +31,16 @@ class User extends AggregateRoot implements UserInterface, PasswordAuthenticated
     public const int MAX_PASSWORD_LENGTH = 55;
     public const int ID_LENGTH = 36;
 
-    #[ORM\Id]
-    #[ORM\Column(type: 'string', length: 36, options: ['fixed' => true])]
     private string $id;
-
-    #[ORM\Column(type: 'string', length: 80)]
     private ?string $name;
-
-    #[ORM\Column(type: 'string', length: 180, unique: true)]
     private readonly ?string $email;
-
-    #[ORM\Column(type: 'json')]
     private $roles = [];
-
-    #[ORM\Column(type: 'string', length: 40, nullable: true)]
     private ?string $confirmationToken;
-
-    #[ORM\Column(type: 'string', length: 255, options: ['comment' => 'The hashed password'])]
     private ?string $password;
-
-    #[ORM\Column(type: 'boolean')]
     private ?bool $isActive = false;
-
-    #[ORM\Column(type: 'datetime_immutable')]
     private ?DateTimeImmutable $createdAt = null;
-
-    #[ORM\Column(type: 'datetime', nullable: true)]
     private ?DateTime $updatedAt = null;
+    private ?ResidentUnit $residentUnit = null; // Propiedad para la relación
 
     private function __construct(
         UserId $id,
@@ -82,9 +62,11 @@ class User extends AggregateRoot implements UserInterface, PasswordAuthenticated
         Email $email,
         Password $password,
         UserPasswordHasherInterface $passwordHasher,
+        ?ResidentUnit $residentUnit = null // Añadir ResidentUnit como parámetro opcional
     ): self {
         $user = new self($id, $name, $email);
         $user->hashPassword($password->value(), $passwordHasher);
+        $user->setResidentUnit($residentUnit); // Asignar la unidad residencial
 
         $user->record(
             new CreateUserDomainEvent(
@@ -196,6 +178,18 @@ class User extends AggregateRoot implements UserInterface, PasswordAuthenticated
 
     public function eraseCredentials(): void {}
 
+    public function getResidentUnit(): ?ResidentUnit
+    {
+        return $this->residentUnit;
+    }
+
+    public function setResidentUnit(?ResidentUnit $residentUnit): self
+    {
+        $this->residentUnit = $residentUnit;
+
+        return $this;
+    }
+
     public function toArray(): array
     {
         return [
@@ -204,8 +198,9 @@ class User extends AggregateRoot implements UserInterface, PasswordAuthenticated
             'name' => $this->name,
             'roles' => $this->roles,
             'isActive' => $this->isActive,
-            'createdOn' => $this->createdAt,
-            'updatedOn' => $this->updatedAt,
+            'createdAt' => $this->createdAt,
+            'updatedAt' => $this->updatedAt,
+            'residentUnitId' => $this->residentUnit?->id(), // Incluir el ID de la unidad residencial
         ];
     }
 

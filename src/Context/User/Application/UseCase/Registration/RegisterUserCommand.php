@@ -13,6 +13,7 @@ final readonly class RegisterUserCommand implements Command
         private string $name,
         private string $email,
         private string $password,
+        private ?string $residentUnitId = null,
     ) {}
 
     public function id(): string
@@ -33,5 +34,10 @@ final readonly class RegisterUserCommand implements Command
     public function password(): string
     {
         return $this->password;
+    }
+
+    public function residentUnitId(): ?string
+    {
+        return $this->residentUnitId;
     }
 }

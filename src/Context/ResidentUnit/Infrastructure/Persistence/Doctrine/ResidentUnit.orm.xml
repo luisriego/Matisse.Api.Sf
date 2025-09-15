@@ -15,5 +15,7 @@
         <field name="createdAt" column="created_at" type="datetime_immutable" />
         <field name="updatedAt" column="updated_at" type="datetime" nullable="true" />
         <field name="notificationRecipients" column="notification_recipients" type="json" />
+
+        <one-to-many target-entity="App\Context\User\Domain\User" field="users" mapped-by="residentUnit" />
     </entity>
 </doctrine-mapping>

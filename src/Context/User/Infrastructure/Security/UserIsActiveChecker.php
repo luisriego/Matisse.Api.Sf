@@ -19,7 +19,7 @@ final class UserIsActiveChecker implements UserCheckerInterface
 
         if (!$user->isActive()) {
             throw new CustomUserMessageAuthenticationException(
-                'Tu cuenta no ha sido activada. Por favor, revisa tu email para el enlace de confirmación.',
+                'Sua conta não foi ativada. Por favor, verifique seu e-mail para o link de confirmação.',
             );
         }
     }

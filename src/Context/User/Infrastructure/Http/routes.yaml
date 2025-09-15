@@ -4,7 +4,7 @@ user_register:
     methods: ['POST']
 
 api_login_check:
-    path: /api/login_check
+    path: /api/v1/login_check
     controller: App\Context\User\Infrastructure\Http\Controller\LoginController
     methods: ['POST']
 
@@ -14,6 +14,17 @@ user_activate:
     methods: ['GET']
 
 user_change_password:
-    path: /api/v1/users/me/password
+    path: /api/v1/users/change-password
     controller: App\Context\User\Infrastructure\Http\Controller\ChangePasswordController
     methods: ['PATCH']
+
+user_link_resident_unit_put:
+    path: /api/v1/users/{id}/resident-unit
+    controller: App\Context\User\Infrastructure\Http\Controller\LinkResidentUnitToUserPutController
+    methods: ['PUT']
+
+user_unlink_resident_unit_delete:
+    path: /api/v1/users/{id}/resident-unit
+    controller: App\Context\User\Infrastructure\Http\Controller\UnlinkResidentUnitFromUserDeleteController
+    methods: ['DELETE']
+

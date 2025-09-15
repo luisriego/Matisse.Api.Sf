@@ -58,7 +58,7 @@ final class LoginControllerTest extends ApiTestCase
         // 2. Act: Make the login request
         $this->client->request(
             'POST',
-            '/api/login_check',
+            '/api/v1/login_check',
             [],
             [],
             ['CONTENT_TYPE' => 'application/json'],
@@ -100,7 +100,7 @@ final class LoginControllerTest extends ApiTestCase
         // 2. Act: Make the login request
         $this->client->request(
             'POST',
-            '/api/login_check',
+            '/api/v1/login_check',
             [],
             [],
             ['CONTENT_TYPE' => 'application/json'],
@@ -115,7 +115,7 @@ final class LoginControllerTest extends ApiTestCase
         $this->assertSame(Response::HTTP_UNAUTHORIZED, $response->getStatusCode());
 
         $responseData = json_decode($response->getContent(), true);
-        $this->assertSame('Tu cuenta no ha sido activada. Por favor, revisa tu email para el enlace de confirmación.', $responseData['message']);
+        $this->assertSame('Sua conta não foi ativada. Por favor, verifique seu e-mail para o link de confirmação.', $responseData['message']);
     }
 
     protected function tearDown(): void

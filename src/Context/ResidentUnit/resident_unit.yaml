@@ -16,6 +16,10 @@ services:
             - './Infrastructure/Http/Controller/'
             - './resident_unit.yaml'
 
+    # Explicitly alias the ResidentUnitRepository interface to its Doctrine implementation
+    App\Context\ResidentUnit\Domain\ResidentUnitRepository:
+        alias: App\Context\ResidentUnit\Infrastructure\Persistence\Doctrine\DoctrineResidentUnitRepository
+
     App\Shared\Application\EventBus:
         alias: App\Shared\Infrastructure\Bus\SymfonyEventBus
 

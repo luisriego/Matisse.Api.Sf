@@ -9,26 +9,32 @@ use DateTime;
 use DateTimeImmutable;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
+use App\Context\User\Domain\User; // Importar User
 
+// Eliminadas todas las anotaciones #[ORM\...] (se asume que el mapeo se hace por XML)
 class ResidentUnit extends AggregateRoot
 {
-    private string $id;
-    private string $unit;
-    private bool $isActive;
+    private ?string $id = null; // Inicializado en la declaración
+    private string $unit = ''; // Inicializado en la declaración
+    private bool $isActive = false; // Inicializado en la declaración
     private DateTimeImmutable $createdAt;
-    private DateTime $updatedAt;
-    private float $idealFraction = 0.0;
-    private array $notificationRecipients = [];
+    private ?DateTime $updatedAt = null; // Inicializado en la declaración
+    private array $notificationRecipients;
+    private float $idealFraction = 0.0; // Inicializado en la declaración
     private Collection $incomes;
     private Collection $slips;
+    private Collection $users;
 
     private function __construct(string $id, string $unit, float $idealFraction)
     {
         $this->id = $id;
         $this->unit = $unit;
         $this->idealFraction = $idealFraction;
+        $this->createdAt = new DateTimeImmutable();
         $this->incomes = new ArrayCollection();
         $this->slips = new ArrayCollection();
+        $this->users = new ArrayCollection();
+        $this->notificationRecipients = []; // Explicitly initialize here
     }
 
     public static function create(
@@ -38,7 +44,6 @@ class ResidentUnit extends AggregateRoot
     ): self {
         $residentUnit = new self($id->value(), $unit->value(), $idealFraction->value());
         $residentUnit->isActive = true;
-        $residentUnit->createdAt = new DateTimeImmutable();
         $residentUnit->markAsUpdated();
 
         return $residentUnit;
@@ -52,7 +57,6 @@ class ResidentUnit extends AggregateRoot
     ): self {
         $residentUnit = new self($id->value(), $unit->value(), $idealFraction->value());
         $residentUnit->isActive = true;
-        $residentUnit->createdAt = new DateTimeImmutable();
         $residentUnit->markAsUpdated();
 
         $residentUnit->notificationRecipients = $recipients;
@@ -60,7 +64,7 @@ class ResidentUnit extends AggregateRoot
         return $residentUnit;
     }
 
-    public function id(): string
+    public function id(): ?string
     {
         return $this->id;
     }
@@ -85,7 +89,7 @@ class ResidentUnit extends AggregateRoot
         return $this->createdAt;
     }
 
-    public function updatedAt(): DateTime
+    public function updatedAt(): ?DateTime
     {
         return $this->updatedAt;
     }
@@ -117,15 +121,49 @@ class ResidentUnit extends AggregateRoot
         $this->markAsUpdated();
     }
 
+    /**
+     * @return Collection<int, User>
+     */
+    public function getUsers(): Collection
+    {
+        return $this->users;
+    }
+
+    public function addUser(User $user): self
+    {
+        if (!$this->users->contains($user)) {
+            $this->users[] = $user;
+            // Asegurarse de que el lado propietario de la relación también se actualice
+            if ($user->getResidentUnit() !== $this) {
+                $user->setResidentUnit($this);
+            }
+        }
+
+        return $this;
+    }
+
+    public function removeUser(User $user): self
+    {
+        if ($this->users->removeElement($user)) {
+            // set the owning side to null (unless already changed)
+            if ($user->getResidentUnit() === $this) {
+                $user->setResidentUnit(null);
+            }
+        }
+
+        return $this;
+    }
+
     public function toArray(): array
     {
         return [
             'id' => $this->id,
             'unit' => $this->unit,
             'idealFraction' => $this->idealFraction,
-            'createdAt' => $this->createdAt,
-            'updatedAt' => $this->updatedAt,
-            'notificationRecipients' => $this->notificationRecipients,
+            'isActive' => $this->isActive(),
+            'createdAt' => $this->createdAt()->format('Y-m-d H:i:s'),
+            'updatedAt' => $this->updatedAt() ? $this->updatedAt()->format('Y-m-d H:i:s') : null,
+            'notificationRecipients' => $this->notificationRecipients(),
         ];
     }
 }
