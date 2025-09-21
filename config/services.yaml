@@ -83,3 +83,7 @@ services:
         class: App\Context\ResidentUnit\Application\UseCase\ListActive\ListActiveResidentUnitsQueryHandler
         public: true
         tags: [{ name: 'messenger.message_handler', bus: 'query.bus' }]
+
+    App\Security\JWTCreatedListener:
+        tags:
+            - { name: kernel.event_listener, event: lexik_jwt_authentication.on_jwt_created, method: onJWTCreated }

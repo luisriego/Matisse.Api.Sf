@@ -99,6 +99,11 @@ class User extends AggregateRoot implements UserInterface, PasswordAuthenticated
         return $this->confirmationToken;
     }
 
+    public function id(): ?string
+    {
+        return $this->id;
+    }
+
     public function getId(): ?string
     {
         return $this->id;

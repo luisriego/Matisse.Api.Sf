@@ -47,10 +47,6 @@ final class LoginController extends ApiController
         return new JsonResponse([
             'message' => 'Login successful.',
             'token'   => $token,
-            'user'    => $user->getUserIdentifier(),
-            'name'    => $user->getName(),
-            'unit'    => $user->getResidentUnit()?->id(),
-            'roles'   => $user->getRoles()[0],
         ]);
     }
 

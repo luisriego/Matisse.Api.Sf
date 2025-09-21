@@ -72,6 +72,7 @@ class EnterIncomeCommandHandlerTest extends TestCase
         );
 
         $residentUnitMock = $this->createMock(ResidentUnit::class);
+        $residentUnitMock->method('id')->willReturn($residentUnitId);
         $incomeTypeMock = $this->createMock(IncomeType::class);
 
         $this->residentUnitRepository
@@ -129,6 +130,7 @@ class EnterIncomeCommandHandlerTest extends TestCase
         );
 
         $residentUnitMock = $this->createMock(ResidentUnit::class);
+        $residentUnitMock->method('id')->willReturn($residentUnitId);
         $incomeTypeMock = $this->createMock(IncomeType::class);
 
         $this->residentUnitRepository
@@ -315,6 +317,7 @@ class EnterIncomeCommandHandlerTest extends TestCase
         );
 
         $residentUnitMock = $this->createMock(ResidentUnit::class);
+        $residentUnitMock->method('id')->willReturn($residentUnitId);
         $incomeTypeMock = $this->createMock(IncomeType::class);
 
         $this->residentUnitRepository
@@ -360,6 +363,7 @@ class EnterIncomeCommandHandlerTest extends TestCase
         );
 
         $residentUnitMock = $this->createMock(ResidentUnit::class);
+        $residentUnitMock->method('id')->willReturn($residentUnitId);
         $incomeTypeMock = $this->createMock(IncomeType::class);
 
         $this->residentUnitRepository

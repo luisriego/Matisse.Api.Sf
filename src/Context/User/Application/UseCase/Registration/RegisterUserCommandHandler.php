@@ -43,7 +43,7 @@ final class RegisterUserCommandHandler implements CommandHandler
 
         $residentUnit = null;
         if (null !== $command->residentUnitId()) {
-            $residentUnit = $this->residentUnitRepository->find($command->residentUnitId());
+            $residentUnit = $this->residentUnitRepository->findOneById($command->residentUnitId());
             if (null === $residentUnit) {
                 throw new ResourceNotFoundException(sprintf('ResidentUnit with ID <%s> not found.', $command->residentUnitId()));
             }

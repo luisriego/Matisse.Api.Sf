@@ -78,7 +78,7 @@ final class RegisterUserCommandHandlerTest extends TestCase
             );
 
         // Si el comando no tiene residentUnitId, el repositorio no debería ser llamado para buscar
-        $this->residentUnitRepository->expects($this->never())->method('findOneByIdOrFail');
+        $this->residentUnitRepository->expects($this->never())->method('findOneById');
 
         // 3. Invoke the handler
         ($this->handler)($command);
@@ -100,7 +100,7 @@ final class RegisterUserCommandHandlerTest extends TestCase
 
         $this->residentUnitRepository
             ->expects($this->once())
-            ->method('findOneByIdOrFail')
+            ->method('findOneById')
             ->with($residentUnitId)
             ->willReturn($residentUnit);
 
@@ -146,7 +146,7 @@ final class RegisterUserCommandHandlerTest extends TestCase
 
         $this->userRepository->expects($this->never())->method('save');
         $this->userMailer->expects($this->never())->method('sendConfirmationEmail');
-        $this->residentUnitRepository->expects($this->never())->method('findOneByIdOrFail'); // No debería buscar ResidentUnit si el usuario ya existe
+        $this->residentUnitRepository->expects($this->never())->method('findOneById'); // No debería buscar ResidentUnit si el usuario ya existe
 
         // 4. Invoke the handler
         ($this->handler)($command);
@@ -170,9 +170,9 @@ final class RegisterUserCommandHandlerTest extends TestCase
 
         $this->residentUnitRepository
             ->expects($this->once())
-            ->method('findOneByIdOrFail')
+            ->method('findOneById')
             ->with($residentUnitId)
-            ->willThrowException(ResourceNotFoundException::createFromClassAndId(ResidentUnit::class, $residentUnitId));
+            ->willReturn(null);
 
         $this->userRepository->expects($this->never())->method('save');
         $this->userMailer->expects($this->never())->method('sendConfirmationEmail');
@@ -208,7 +208,7 @@ final class RegisterUserCommandHandlerTest extends TestCase
             ->method('sendConfirmationEmail')
             ->willThrowException(new Exception('Email service is down'));
 
-        $this->residentUnitRepository->expects($this->never())->method('findOneByIdOrFail'); // No debería buscar ResidentUnit si el comando no tiene residentUnitId
+        $this->residentUnitRepository->expects($this->never())->method('findOneById'); // No debería buscar ResidentUnit si el comando no tiene residentUnitId
 
         try {
             ($this->handler)($command);

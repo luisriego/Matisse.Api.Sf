@@ -145,8 +145,8 @@ final class ResidentUnitTest extends UnitTestCase
         self::assertSame($residentUnit->id(), $residentUnitArray['id']);
         self::assertSame($residentUnit->unit(), $residentUnitArray['unit']);
         self::assertSame($residentUnit->idealFraction(), $residentUnitArray['idealFraction']);
-        self::assertSame($residentUnit->createdAt(), $residentUnitArray['createdAt']);
-        self::assertSame($residentUnit->updatedAt(), $residentUnitArray['updatedAt']);
+        self::assertSame($residentUnit->createdAt()->format('Y-m-d H:i:s'), $residentUnitArray['createdAt']);
+        self::assertSame($residentUnit->updatedAt() ? $residentUnit->updatedAt()->format('Y-m-d H:i:s') : null, $residentUnitArray['updatedAt']);
         self::assertSame($residentUnit->notificationRecipients(), $residentUnitArray['notificationRecipients']);
     }
 }
