@@ -33,6 +33,9 @@ class User extends AggregateRoot implements UserInterface, PasswordAuthenticated
 
     private string $id;
     private ?string $name;
+    private ?string $lastName = null;
+    private ?string $gender = null;
+    private ?string $phoneNumber = null;
     private readonly ?string $email;
     private $roles = [];
     private ?string $confirmationToken;
@@ -82,6 +85,19 @@ class User extends AggregateRoot implements UserInterface, PasswordAuthenticated
         return $user;
     }
 
+    public function update(
+        string $name,
+        string $lastName,
+        string $gender,
+        string $phoneNumber
+    ): void {
+        $this->updateName($name);
+        $this->lastName = $lastName;
+        $this->gender = $gender;
+        $this->phoneNumber = $phoneNumber;
+        $this->markAsUpdated();
+    }
+
     public function activate(): void
     {
         $this->isActive = true;
@@ -109,15 +125,30 @@ class User extends AggregateRoot implements UserInterface, PasswordAuthenticated
         return $this->id;
     }
 
-    public function getName(): ?string
+    public function name(): ?string
     {
         return $this->name;
     }
 
-    public function setName(?string $name): void
+    public function updateName(?string $name): void
     {
         $userName = UserName::fromString($name);
         $this->name = $userName->value();
+    }
+
+    public function lastName(): ?string
+    {
+        return $this->lastName;
+    }
+
+    public function gender(): ?string
+    {
+        return $this->gender;
+    }
+
+    public function phoneNumber(): ?string
+    {
+        return $this->phoneNumber;
     }
 
     public function getEmail(): ?string
@@ -201,11 +232,14 @@ class User extends AggregateRoot implements UserInterface, PasswordAuthenticated
             'id' => $this->id,
             'email' => $this->email,
             'name' => $this->name,
+            'lastName' => $this->lastName,
+            'gender' => $this->gender,
+            'phoneNumber' => $this->phoneNumber,
             'roles' => $this->roles,
             'isActive' => $this->isActive,
             'createdAt' => $this->createdAt,
             'updatedAt' => $this->updatedAt,
-            'residentUnitId' => $this->residentUnit?->id(), // Incluir el ID de la unidad residencial
+            'residentUnit' => $this->residentUnit?->toArray(),
         ];
     }
 

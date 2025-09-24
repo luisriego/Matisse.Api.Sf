@@ -28,3 +28,12 @@ user_unlink_resident_unit_delete:
     controller: App\Context\User\Infrastructure\Http\Controller\UnlinkResidentUnitFromUserDeleteController
     methods: ['DELETE']
 
+user_update:
+    path: /api/v1/users/{id}
+    controller: App\Context\User\Infrastructure\Http\Controller\UpdateUserController
+    methods: ['PUT']
+
+user_find:
+    path: /api/v1/users/{id}
+    controller: App\Context\User\Infrastructure\Http\Controller\FindUserController
+    methods: ['GET']

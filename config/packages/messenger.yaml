@@ -20,3 +20,4 @@ framework:
             'App\Context\User\Application\UseCase\Registration\RegisterUserCommand': sync
             'App\Context\User\Application\UseCase\Activation\ActivateUserCommand': sync
             'App\Context\User\Application\UseCase\ChangePassword\ChangePasswordCommand': sync
+            'App\Context\User\Application\UseCase\Update\UpdateUserCommand': sync

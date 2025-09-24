@@ -78,6 +78,12 @@ services:
     App\Context\User\Application\UseCase\ChangePassword\ChangePasswordCommandHandler:
         tags: ['messenger.message_handler']
 
+    App\Context\User\Application\UseCase\Update\UpdateUserCommandHandler:
+        tags: [{ name: 'messenger.message_handler', bus: 'command.bus' }]
+
+    App\Context\User\Application\UseCase\FindUser\FindUserQueryHandler:
+        tags: [{ name: 'messenger.message_handler', bus: 'query.bus' }]
+
     # Explicitly define the query handler service for ListActiveResidentUnitsQuery
     App\Context\ResidentUnit\Application\UseCase\ListActive\ListActiveResidentUnitsQueryHandler:
         class: App\Context\ResidentUnit\Application\UseCase\ListActive\ListActiveResidentUnitsQueryHandler

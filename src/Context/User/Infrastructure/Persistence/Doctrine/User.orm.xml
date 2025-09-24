@@ -9,7 +9,10 @@
             <generator strategy="NONE"/>
         </id>
         <field name="name" column="name" type="string" length="80" nullable="true" />
+        <field name="lastName" column="last_name" type="string" length="80" nullable="true" />
         <field name="email" column="email" type="string" length="180" unique="true" />
+        <field name="gender" column="gender" type="string" length="1" nullable="true" />
+        <field name="phoneNumber" column="phone" type="string" length="20" nullable="true" />
         <field name="roles" column="roles" type="json" />
         <field name="confirmationToken" column="confirmation_token" type="string" length="40" nullable="true" />
         <field name="password" column="password" type="string" length="255" />
