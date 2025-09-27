@@ -37,3 +37,8 @@ user_find:
     path: /api/v1/users/{id}
     controller: App\Context\User\Infrastructure\Http\Controller\FindUserController
     methods: ['GET']
+
+user_find_all:
+    path: /api/v1/users
+    controller: App\Context\User\Infrastructure\Http\Controller\FindUsersController
+    methods: ['GET']

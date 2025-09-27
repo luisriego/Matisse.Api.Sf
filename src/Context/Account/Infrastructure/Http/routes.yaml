@@ -7,3 +7,28 @@ account_create:
     path: /api/v1/accounts/create
     controller: App\Context\Account\Infrastructure\Http\Controller\AccountCreatorPutController
     methods: ['PUT']
+
+account_find_all:
+    path: /api/v1/accounts
+    controller: App\Context\Account\Infrastructure\Http\Controller\GetAllAccountsController
+    methods: ['GET']
+
+account_find:
+    path: /api/v1/accounts/{id}
+    controller: App\Context\Account\Infrastructure\Http\Controller\GetAccountController
+    methods: ['GET']
+
+account_update:
+    path: /api/v1/accounts/{id}
+    controller: App\Context\Account\Infrastructure\Http\Controller\AccountUpdaterPatchController
+    methods: ['PATCH']
+
+account_enable:
+    path: /api/v1/accounts/enable/{id}
+    controller: App\Context\Account\Infrastructure\Http\Controller\AccountEnablerPatchController
+    methods: ['PATCH']
+
+account_disable:
+    path: /api/v1/accounts/disable/{id}
+    controller: App\Context\Account\Infrastructure\Http\Controller\AccountDisablerPatchController
+    methods: ['PATCH']
