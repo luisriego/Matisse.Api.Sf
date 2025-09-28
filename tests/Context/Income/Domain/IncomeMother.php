@@ -20,7 +20,11 @@ final class IncomeMother
         ?ResidentUnit $residentUnit = null,
         ?IncomeType $type = null,
         ?IncomeDueDate $dueDate = null,
-        ?string $description = null
+        ?string $description = null,
+        int $mainAccountAmount = 0, // Nuevo parámetro con valor por defecto
+        int $gasAmount = 0, // Nuevo parámetro con valor por defecto
+        int $reserveFundAmount = 0, // Nuevo parámetro con valor por defecto
+        int $constructionFundAmount = 0, // Nuevo parámetro con valor por defecto
     ): Income {
         return Income::create(
             $id ?? IncomeIdMother::create(),
@@ -28,6 +32,10 @@ final class IncomeMother
             $residentUnit ?? ResidentUnitMother::create(),
             $type ?? IncomeTypeMother::create(),
             $dueDate ?? IncomeDueDateMother::create(),
+            $mainAccountAmount, // Pasar al método
+            $gasAmount, // Pasar al método
+            $reserveFundAmount, // Pasar al método
+            $constructionFundAmount, // Pasar al método
             $description
         );
     }

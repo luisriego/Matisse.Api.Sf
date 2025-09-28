@@ -23,15 +23,29 @@ class Slip extends AggregateRoot
 
     private SlipStatus $status;
 
+    // Nuevas propiedades para el desglose de montos
+    private readonly int $mainAccountAmount;
+    private readonly int $gasAmount;
+    private readonly int $reserveFundAmount;
+    private readonly int $constructionFundAmount;
+
     private function __construct(
         private readonly string $id,
         private readonly int $amount,
         private readonly ResidentUnit $residentUnit,
         private readonly DateTimeImmutable $dueDate,
+        int $mainAccountAmount, // Nuevo parámetro
+        int $gasAmount, // Nuevo parámetro
+        int $reserveFundAmount, // Nuevo parámetro
+        int $constructionFundAmount, // Nuevo parámetro
         private readonly ?string $description = null,
     ) {
         $this->status = SlipStatus::PENDING;
         $this->createdAt = new DateTimeImmutable();
+        $this->mainAccountAmount = $mainAccountAmount; // Asignar
+        $this->gasAmount = $gasAmount; // Asignar
+        $this->reserveFundAmount = $reserveFundAmount; // Asignar
+        $this->constructionFundAmount = $constructionFundAmount; // Asignar
     }
 
     /**
@@ -42,6 +56,10 @@ class Slip extends AggregateRoot
         SlipAmount $amount,
         ResidentUnit $residentUnit,
         SlipDueDate $dueDate,
+        int $mainAccountAmount, // Nuevo parámetro
+        int $gasAmount, // Nuevo parámetro
+        int $reserveFundAmount, // Nuevo parámetro
+        int $constructionFundAmount, // Nuevo parámetro
         ?string $description = 'Cuota de mantenimiento',
     ): self {
         return new self(
@@ -49,6 +67,10 @@ class Slip extends AggregateRoot
             $amount->value(),
             $residentUnit,
             $dueDate->toDateTimeImmutable(),
+            $mainAccountAmount, // Pasar al constructor
+            $gasAmount, // Pasar al constructor
+            $reserveFundAmount, // Pasar al constructor
+            $constructionFundAmount, // Pasar al constructor
             $description,
         );
     }
@@ -61,6 +83,27 @@ class Slip extends AggregateRoot
     public function amount(): int
     {
         return $this->amount;
+    }
+
+    // Nuevos getters para las propiedades de desglose
+    public function mainAccountAmount(): int
+    {
+        return $this->mainAccountAmount;
+    }
+
+    public function gasAmount(): int
+    {
+        return $this->gasAmount;
+    }
+
+    public function reserveFundAmount(): int
+    {
+        return $this->reserveFundAmount;
+    }
+
+    public function constructionFundAmount(): int
+    {
+        return $this->constructionFundAmount;
     }
 
     public function getStatus(): string
@@ -97,6 +140,10 @@ class Slip extends AggregateRoot
                 $this->residentUnit->id(),
                 $this->amount,
                 $this->dueDate->format(DATE_ATOM),
+                $this->mainAccountAmount, // Incluir en el evento
+                $this->gasAmount, // Incluir en el evento
+                $this->reserveFundAmount, // Incluir en el evento
+                $this->constructionFundAmount, // Incluir en el evento
             ),
         );
     }

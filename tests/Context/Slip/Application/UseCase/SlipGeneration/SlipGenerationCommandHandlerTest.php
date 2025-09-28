@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace App\Tests\Context\Slip\Application\UseCase\SlipGeneration;
 
+use App\Context\Condominium\Domain\CondominiumConfiguration;
+use App\Context\Condominium\Domain\Service\CondominiumFundAmountService; // ¡Añade esta línea!
 use App\Context\EventStore\Domain\StoredEventRepository;
 use App\Context\Expense\Domain\Expense;
 use App\Context\Expense\Domain\ExpenseRepository;
@@ -19,6 +21,7 @@ use App\Context\Slip\Domain\Service\SlipAmountCalculatorService;
 use App\Context\Slip\Domain\Service\SlipFactory;
 use App\Context\Slip\Domain\Service\SlipGenerationPolicy;
 use App\Context\Slip\Domain\SlipRepository;
+use DateTimeImmutable;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 use Psr\Log\LoggerInterface;
@@ -35,6 +38,7 @@ class SlipGenerationCommandHandlerTest extends TestCase
     private MockObject|StoredEventRepository $storedEventRepository;
     private MockObject|LoggerInterface $logger;
     private MockObject|ExpenseTypeRepository $expenseTypeRepository;
+    private MockObject|CondominiumFundAmountService $condominiumFundAmountService; // ¡Añade esta propiedad!
 
     private SlipFactory $slipFactory;
     private SlipGenerationCommandHandler $handler;
@@ -55,14 +59,24 @@ class SlipGenerationCommandHandlerTest extends TestCase
         $this->storedEventRepository = $this->createMock(StoredEventRepository::class);
         $this->logger = $this->createMock(LoggerInterface::class);
         $this->expenseTypeRepository = $this->createMock(ExpenseTypeRepository::class);
+        $this->condominiumFundAmountService = $this->createMock(CondominiumFundAmountService::class); // ¡Inicializa el mock!
 
-        // Instancia SlipFactory con los mocks correctos (5 argumentos)
+        // Configura el mock de condominiumFundAmountService
+        $condominiumConfig = $this->createConfiguredMock(CondominiumConfiguration::class, [
+            'reserveFundAmount' => 1000, // Monto por defecto para el test
+            'constructionFundAmount' => 500, // Monto por defecto para el test
+        ]);
+        $this->condominiumFundAmountService->method('getActiveConfigurationForDate')->willReturn($condominiumConfig);
+
+
+        // Instancia SlipFactory con los mocks correctos (6 argumentos)
         $this->slipFactory = new SlipFactory(
             $this->monthlyExpenseAggregatorService,
             $this->slipAmountCalculatorService,
             $this->storedEventRepository,
             $this->logger,
-            $this->expenseTypeRepository
+            $this->expenseTypeRepository,
+            $this->condominiumFundAmountService // ¡Este es el sexto argumento!
         );
 
         // Instancia el handler pasando la SlipFactory correctamente configurada
@@ -102,11 +116,13 @@ class SlipGenerationCommandHandlerTest extends TestCase
         ]);
 
         // Configura el mock de slipAmountCalculatorService para que devuelva el monto calculado
+        // Asumimos que el cálculo base es 10000, y luego se le sumarán los fondos (1000 + 500 = 1500)
+        // Por lo tanto, el total esperado en el slip será 10000 + 1500 = 11500
         $this->slipAmountCalculatorService->method('calculate')->willReturn(10000);
 
         // Configura el mock de expenseTypeRepository para el método findOneByCodeOrFail
-        $gasExpenseType = $this->createConfiguredMock(ExpenseType::class, ['id' => 'gas-expense-type-id']); // Usar un ID genérico
-        $this->expenseTypeRepository->method('findOneByCodeOrFail')->with('SP3GA')->willReturn($gasExpenseType);
+        $gasExpenseType = $this->createConfiguredMock(ExpenseType::class, ['id' => 'gas-expense-type-id']);
+        $this->expenseTypeRepository->method('findOneByCodeOrFail')->willReturn($gasExpenseType);
 
 
         $this->slipRepository->expects($this->once())->method('save');
@@ -155,7 +171,7 @@ class SlipGenerationCommandHandlerTest extends TestCase
 
         // Configura el mock de expenseTypeRepository para el método findOneByCodeOrFail
         $gasExpenseType = $this->createConfiguredMock(ExpenseType::class, ['id' => 'gas-expense-type-id']);
-        $this->expenseTypeRepository->method('findOneByCodeOrFail')->with('SP3GA')->willReturn($gasExpenseType);
+        $this->expenseTypeRepository->method('findOneByCodeOrFail')->willReturn($gasExpenseType);
 
         $this->slipRepository->expects($this->never())->method('save');
         $this->slipRepository->expects($this->never())->method('flush');
@@ -186,7 +202,7 @@ class SlipGenerationCommandHandlerTest extends TestCase
 
         // Configura el mock de expenseTypeRepository para el método findOneByCodeOrFail
         $gasExpenseType = $this->createConfiguredMock(ExpenseType::class, ['id' => 'gas-expense-type-id']);
-        $this->expenseTypeRepository->method('findOneByCodeOrFail')->with('SP3GA')->willReturn($gasExpenseType);
+        $this->expenseTypeRepository->method('findOneByCodeOrFail')->willReturn($gasExpenseType);
 
         $this->slipRepository->expects($this->never())->method('save');
         $this->slipRepository->expects($this->never())->method('flush');

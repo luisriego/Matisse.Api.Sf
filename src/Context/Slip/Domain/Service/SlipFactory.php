@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Context\Slip\Domain\Service;
 
+use App\Context\Condominium\Domain\Service\CondominiumFundAmountService;
 use App\Context\EventStore\Domain\StoredEventRepository;
 use App\Context\Expense\Domain\ExpenseType;
 use App\Context\Expense\Domain\ValueObject\ExpenseTypeRepository;
@@ -27,7 +28,8 @@ readonly class SlipFactory
         private SlipAmountCalculatorService $slipAmountCalculator,
         private StoredEventRepository $storedEventRepository,
         private LoggerInterface $logger,
-        private ExpenseTypeRepository $expenseTypeRepository
+        private ExpenseTypeRepository $expenseTypeRepository,
+        private CondominiumFundAmountService $condominiumFundAmountService
     ) {}
 
     /**
@@ -68,8 +70,15 @@ readonly class SlipFactory
         $previousMonth = (new DateTimeImmutable(sprintf('%d-%d-01', $expenseYear, $expenseMonth)))->modify('-1 month');
         $gasExpensesByUnit = $this->getGasExpensesForMonth($previousMonth->format('Y'), $previousMonth->format('m'));
 
+        // Obtener la configuración de fondos para la fecha de generación del slip (o mes anterior)
+        $fundConfigurationDate = new DateTimeImmutable(sprintf('%d-%d-01', $expenseYear, $expenseMonth));
+        $condominiumConfiguration = $this->condominiumFundAmountService->getActiveConfigurationForDate($fundConfigurationDate);
+        $reserveFundAmount = $condominiumConfiguration->reserveFundAmount();
+        $constructionFundAmount = $condominiumConfiguration->constructionFundAmount();
+
+
         foreach ($residentUnits as $residentUnit) {
-            $amountInCents = $this->slipAmountCalculator->calculate(
+            $mainAccountAmount = $this->slipAmountCalculator->calculate(
                 $residentUnit,
                 $totalEquallyDividedExpenses,
                 $totalFractionBasedExpenses,
@@ -79,9 +88,9 @@ readonly class SlipFactory
             $residentUnitId = $residentUnit->id();
             $gasAmount = $gasExpensesByUnit[$residentUnitId] ?? 0;
 
-            $amountInCents += $gasAmount;
+            $totalAmountInCents = $mainAccountAmount + $gasAmount + $reserveFundAmount + $constructionFundAmount;
 
-            if ($amountInCents <= 0) {
+            if ($totalAmountInCents <= 0) {
                 $this->logger->info(sprintf(
                     'Calculated amount for unit %s is zero or negative. Skipping slip creation.',
                     $residentUnit->unit(),
@@ -90,8 +99,17 @@ readonly class SlipFactory
             }
 
             $id = new SlipId(Uuid::random()->value());
-            $slipAmount = new SlipAmount($amountInCents);
-            $slips[] = Slip::createForUnit($id, $slipAmount, $residentUnit, $dueDate);
+            $slipAmount = new SlipAmount($totalAmountInCents);
+            $slips[] = Slip::createForUnit(
+                $id,
+                $slipAmount,
+                $residentUnit,
+                $dueDate,
+                $mainAccountAmount,
+                $gasAmount,
+                $reserveFundAmount,
+                $constructionFundAmount
+            );
         }
 
         return $slips;

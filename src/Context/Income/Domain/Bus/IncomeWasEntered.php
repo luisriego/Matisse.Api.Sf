@@ -18,6 +18,10 @@ final readonly class IncomeWasEntered extends DomainEvent
         private string $type,
         private string $dueDate,
         private ?string $description,
+        private readonly int $mainAccountAmount,
+        private readonly int $gasAmount,
+        private readonly int $reserveFundAmount,
+        private readonly int $constructionFundAmount,
         ?string $eventId = null,
         ?DateTimeImmutable $occurredOn = null,
     ) {
@@ -44,6 +48,10 @@ final readonly class IncomeWasEntered extends DomainEvent
             $body['type'],
             $body['dueDate'],
             $body['description'] ?? null,
+            $body['mainAccountAmount'] ?? 0,
+            $body['gasAmount'] ?? 0,
+            $body['reserveFundAmount'] ?? 0,
+            $body['constructionFundAmount'] ?? 0,
             $eventId,
             new DateTimeImmutable($occurredOn),
         );
@@ -62,6 +70,45 @@ final readonly class IncomeWasEntered extends DomainEvent
             'type' => $this->type,
             'dueDate' => $this->dueDate,
             'description' => $this->description,
+            'mainAccountAmount' => $this->mainAccountAmount,
+            'gasAmount' => $this->gasAmount,
+            'reserveFundAmount' => $this->reserveFundAmount,
+            'constructionFundAmount' => $this->constructionFundAmount,
         ];
+    }
+
+    public function residentUnitId(): string
+    {
+        return $this->residentUnitId;
+    }
+
+    public function amount(): int
+    {
+        return $this->amount;
+    }
+
+    public function dueDate(): string
+    {
+        return $this->dueDate;
+    }
+
+    public function mainAccountAmount(): int
+    {
+        return $this->mainAccountAmount;
+    }
+
+    public function gasAmount(): int
+    {
+        return $this->gasAmount;
+    }
+
+    public function reserveFundAmount(): int
+    {
+        return $this->reserveFundAmount;
+    }
+
+    public function constructionFundAmount(): int
+    {
+        return $this->constructionFundAmount;
     }
 }

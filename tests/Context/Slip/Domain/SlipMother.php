@@ -26,12 +26,20 @@ final class SlipMother
         ?ResidentUnit $residentUnit = null,
         ?SlipDueDate $dueDate = null,
         ?string $description = null,
+        int $mainAccountAmount = 0, // Nuevo parámetro con valor por defecto
+        int $gasAmount = 0, // Nuevo parámetro con valor por defecto
+        int $reserveFundAmount = 0, // Nuevo parámetro con valor por defecto
+        int $constructionFundAmount = 0, // Nuevo parámetro con valor por defecto
     ): Slip {
         return Slip::createForUnit(
             $id ?? SlipIdMother::create(),
             $amount ?? SlipAmountMother::create(),
             $residentUnit ?? ResidentUnitMother::create(),
             $dueDate ?? SlipDueDateMother::create(),
+            $mainAccountAmount, // Pasar al método
+            $gasAmount, // Pasar al método
+            $reserveFundAmount, // Pasar al método
+            $constructionFundAmount, // Pasar al método
             $description ?? 'Concepto de prueba',
         );
     }

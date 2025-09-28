@@ -73,6 +73,13 @@ doctrine:
                 prefix: 'App\Context\Slip\Domain'
                 alias: Slip
 
+            Condominium:
+                is_bundle: false
+                type: xml
+                dir: '%kernel.project_dir%/src/Context/Condominium/Infrastructure/Persistence/Doctrine'
+                prefix: 'App\Context\Condominium\Domain'
+                alias: Condominium
+
 when@test:
     doctrine:
         dbal:

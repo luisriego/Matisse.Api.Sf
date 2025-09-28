@@ -19,16 +19,30 @@ class Income extends AggregateRoot
     private bool $isActive;
     private ?DateTimeImmutable $paidAt = null;
 
+    // Nuevas propiedades para el desglose de montos
+    private readonly int $mainAccountAmount;
+    private readonly int $gasAmount;
+    private readonly int $reserveFundAmount;
+    private readonly int $constructionFundAmount;
+
     public function __construct(
         private readonly string $id,
         private int $amount,
         private ResidentUnit $residentUnit,
         private ?IncomeType $incomeType,
         private DateTime $dueDate,
+        int $mainAccountAmount, // Nuevo parámetro
+        int $gasAmount, // Nuevo parámetro
+        int $reserveFundAmount, // Nuevo parámetro
+        int $constructionFundAmount, // Nuevo parámetro
         private ?string $description = null,
     ) {
         $this->createdAt = new DateTimeImmutable();
         $this->isActive = true;
+        $this->mainAccountAmount = $mainAccountAmount; // Asignar
+        $this->gasAmount = $gasAmount; // Asignar
+        $this->reserveFundAmount = $reserveFundAmount; // Asignar
+        $this->constructionFundAmount = $constructionFundAmount; // Asignar
     }
 
     public static function create(
@@ -37,6 +51,10 @@ class Income extends AggregateRoot
         ResidentUnit $residentUnit,
         IncomeType $type,
         IncomeDueDate $dueDate,
+        int $mainAccountAmount, // Nuevo parámetro
+        int $gasAmount, // Nuevo parámetro
+        int $reserveFundAmount, // Nuevo parámetro
+        int $constructionFundAmount, // Nuevo parámetro
         ?string $description = null,
     ): self {
         $income =  new self(
@@ -45,6 +63,10 @@ class Income extends AggregateRoot
             $residentUnit,
             $type,
             $dueDate->toDateTime(),
+            $mainAccountAmount, // Pasar al constructor
+            $gasAmount, // Pasar al constructor
+            $reserveFundAmount, // Pasar al constructor
+            $constructionFundAmount, // Pasar al constructor
             $description,
         );
 
@@ -55,6 +77,10 @@ class Income extends AggregateRoot
             type: $type->id(),
             dueDate: $dueDate->toDateTime()->format('Y-m-d'),
             description: $description,
+            mainAccountAmount: $mainAccountAmount, // Pasar al evento
+            gasAmount: $gasAmount, // Pasar al evento
+            reserveFundAmount: $reserveFundAmount, // Pasar al evento
+            constructionFundAmount: $constructionFundAmount, // Pasar al evento
         ));
 
         return $income;
@@ -68,6 +94,27 @@ class Income extends AggregateRoot
     public function amount(): int
     {
         return $this->amount;
+    }
+
+    // Nuevos getters para las propiedades de desglose
+    public function mainAccountAmount(): int
+    {
+        return $this->mainAccountAmount;
+    }
+
+    public function gasAmount(): int
+    {
+        return $this->gasAmount;
+    }
+
+    public function reserveFundAmount(): int
+    {
+        return $this->reserveFundAmount;
+    }
+
+    public function constructionFundAmount(): int
+    {
+        return $this->constructionFundAmount;
     }
 
     public function incomeType(): ?IncomeType
@@ -129,6 +176,10 @@ class Income extends AggregateRoot
             'paidAt' => $this->paidAt,
             'residentUnit' => $this->residentUnit?->unit(),
             'description' => $this->description,
+            'mainAccountAmount' => $this->mainAccountAmount,
+            'gasAmount' => $this->gasAmount,
+            'reserveFundAmount' => $this->reserveFundAmount,
+            'constructionFundAmount' => $this->constructionFundAmount,
         ];
     }
 }
