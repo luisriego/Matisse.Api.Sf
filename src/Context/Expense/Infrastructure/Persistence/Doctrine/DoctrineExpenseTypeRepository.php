@@ -34,4 +34,13 @@ class DoctrineExpenseTypeRepository extends ServiceEntityRepository implements E
 
         return $type;
     }
+
+    public function findOneByCodeOrFail(string $code): ExpenseType
+    {
+        if (null === $type = $this->findOneBy(['code' => $code])) {
+            throw ResourceNotFoundException::createFromClassAndId(ExpenseType::class, $code);
+        }
+
+        return $type;
+    }
 }

@@ -4,6 +4,9 @@ declare(strict_types=1);
 
 namespace App\Context\Slip\Domain\Service;
 
+use App\Context\EventStore\Domain\StoredEventRepository;
+use App\Context\Expense\Domain\ExpenseType;
+use App\Context\Expense\Domain\ValueObject\ExpenseTypeRepository;
 use App\Context\ResidentUnit\Domain\ResidentUnit;
 use App\Context\Slip\Domain\Slip;
 use App\Context\Slip\Domain\ValueObject\SlipAmount;
@@ -22,7 +25,9 @@ readonly class SlipFactory
     public function __construct(
         private MonthlyExpenseAggregatorService $monthlyExpenseAggregator,
         private SlipAmountCalculatorService $slipAmountCalculator,
+        private StoredEventRepository $storedEventRepository,
         private LoggerInterface $logger,
+        private ExpenseTypeRepository $expenseTypeRepository
     ) {}
 
     /**
@@ -38,7 +43,6 @@ readonly class SlipFactory
             return [];
         }
 
-        // 1. Aggregate expenses using the dedicated service
         $expenseTotals = $this->monthlyExpenseAggregator->aggregateTotals($allExpenses);
         $totalEquallyDividedExpenses = $expenseTotals['equal'];
         $totalFractionBasedExpenses = $expenseTotals['fraction'];
@@ -53,7 +57,6 @@ readonly class SlipFactory
             $expenseTotals['individual'] / 100,
         ));
 
-        // 2. Prepare Due Date (logic remains the same)
         $dueDateContext = (new DateTimeImmutable(sprintf('%d-%d-01', $expenseYear, $expenseMonth)))->modify('+1 month');
         $dueYear = (int) $dueDateContext->format('Y');
         $dueMonth = (int) $dueDateContext->format('m');
@@ -62,7 +65,9 @@ readonly class SlipFactory
 
         $slips = [];
 
-        // 3. Iterate over residents, calculate amount for each, and create Slip
+        $previousMonth = (new DateTimeImmutable(sprintf('%d-%d-01', $expenseYear, $expenseMonth)))->modify('-1 month');
+        $gasExpensesByUnit = $this->getGasExpensesForMonth($previousMonth->format('Y'), $previousMonth->format('m'));
+
         foreach ($residentUnits as $residentUnit) {
             $amountInCents = $this->slipAmountCalculator->calculate(
                 $residentUnit,
@@ -71,12 +76,16 @@ readonly class SlipFactory
                 $numberOfPayingResidents,
             );
 
+            $residentUnitId = $residentUnit->id();
+            $gasAmount = $gasExpensesByUnit[$residentUnitId] ?? 0;
+
+            $amountInCents += $gasAmount;
+
             if ($amountInCents <= 0) {
                 $this->logger->info(sprintf(
                     'Calculated amount for unit %s is zero or negative. Skipping slip creation.',
                     $residentUnit->unit(),
                 ));
-
                 continue;
             }
 
@@ -86,5 +95,48 @@ readonly class SlipFactory
         }
 
         return $slips;
+    }
+
+    /**
+     * @throws DateMalformedStringException
+     */
+    private function getGasExpensesForMonth(string $year, string $month): array
+    {
+        $gasExpenses = [];
+
+        $startDate = new DateTimeImmutable(sprintf('%s-%s-01 00:00:00', $year, $month));
+        $endDate = $startDate->modify('last day of this month 23:59:59');
+
+        $events = $this->storedEventRepository->findByEventNamesAndOccurredBetween(
+            ['expense.entered', 'expense.compensated'],
+            $startDate,
+            $endDate
+        );
+
+        $gasTypeId = $this->resolveGasExpenseTypeId();
+
+        foreach ($events as $event) {
+            $payload = $event->toPrimitives();
+            if (isset($payload['body']['type']) && $payload['body']['type'] === $gasTypeId) {
+                $residentUnitId = $payload['body']['residentUnitId'] ?? null;
+                $amount = $payload['body']['amount'] ?? 0;
+
+                if ($residentUnitId) {
+                    if (!isset($gasExpenses[$residentUnitId])) {
+                        $gasExpenses[$residentUnitId] = 0;
+                    }
+                    $gasExpenses[$residentUnitId] += $amount;
+                }
+            }
+        }
+
+        return $gasExpenses;
+    }
+
+    private function resolveGasExpenseTypeId(): string
+    {
+        /** @var ExpenseType $type */
+        $type = $this->expenseTypeRepository->findOneByCodeOrFail('SP3GA');
+        return $type->id();
     }
 }

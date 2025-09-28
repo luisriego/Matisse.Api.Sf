@@ -11,4 +11,6 @@ interface ExpenseTypeRepository
     public function save(ExpenseType $type, bool $flush = true): void;
 
     public function findOneByIdOrFail(string $id): ExpenseType;
+
+    public function findOneByCodeOrFail(string $code): ExpenseType;
 }
