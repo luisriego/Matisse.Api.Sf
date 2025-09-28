@@ -147,6 +147,7 @@ class Account extends AggregateRoot
             'id' => $this->id,
             'code' => $this->code,
             'name' => $this->name,
+            'description' => $this->description,
             'isActive' => $this->isActive,
         ];
     }

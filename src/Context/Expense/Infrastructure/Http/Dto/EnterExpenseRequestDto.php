@@ -16,6 +16,7 @@ class EnterExpenseRequestDto implements RequestDto
     public string $dueDate;
     public ?bool $isActive;
     public ?string $description;
+    public ?string $residentUnitId;
 
     public function __construct(Request $request)
     {
@@ -26,5 +27,6 @@ class EnterExpenseRequestDto implements RequestDto
         $this->dueDate = $request->get('dueDate');
         $this->isActive = $request->get('isActive');
         $this->description = $request->get('description');
+        $this->residentUnitId = $request->get('residentUnitId');
     }
 }

@@ -28,6 +28,7 @@ class Expense extends AggregateRoot
     private bool $isActive = true;
 
     private ?Account $account;
+    private ?string $residentUnitId = null; // Added property
 
     private ?ExpenseType $type = null;
     private ?RecurringExpense $recurringExpense = null;
@@ -40,6 +41,7 @@ class Expense extends AggregateRoot
         DateTime $dueDate,
         ?bool $isActive = true,
         ?string $description = null,
+        ?string $residentUnitId = null, // Added parameter
     ) {
         $this->id = $id;
         $this->amount = $amount;
@@ -49,6 +51,7 @@ class Expense extends AggregateRoot
         $this->isActive = $isActive;
         $this->description = $description;
         $this->createdAt = new DateTimeImmutable();
+        $this->residentUnitId = $residentUnitId; // Assigned property
     }
 
     /**
@@ -62,6 +65,7 @@ class Expense extends AggregateRoot
         ExpenseDueDate $dueDate,
         ?bool $isActive,
         ?ExpenseDescription $description,
+        ?string $residentUnitId = null,
     ): self {
         $expense = new self(
             id: $id->value(),
@@ -71,6 +75,7 @@ class Expense extends AggregateRoot
             dueDate: $dueDate->toDateTime(),
             isActive: $isActive,
             description: $description?->value(),
+            residentUnitId: $residentUnitId,
         );
 
         if ($expense->isActive() && null !== $account) {
@@ -81,6 +86,7 @@ class Expense extends AggregateRoot
                 $account->id(),
                 $dueDate->value(),
                 $description?->value(),
+                $residentUnitId, // Passed parameter to event
             ));
         }
 
@@ -99,6 +105,7 @@ class Expense extends AggregateRoot
             type: $this->type->id(),
             accountId: $this->account->id(),
             dueDate: $this->dueDate->format('Y-m-d'),
+            residentUnitId: $this->residentUnitId, // Passed parameter to event
         );
 
         $this->record($event);
@@ -148,6 +155,16 @@ class Expense extends AggregateRoot
     public function setAccount(?Account $account): void
     {
         $this->account = $account;
+    }
+
+    public function residentUnitId(): ?string // Added getter
+    {
+        return $this->residentUnitId;
+    }
+
+    public function setResidentUnitId(?string $residentUnitId): void // Added setter
+    {
+        $this->residentUnitId = $residentUnitId;
     }
 
     public function markAsPaid(): void
@@ -200,6 +217,7 @@ class Expense extends AggregateRoot
             'dueDate' => $this->dueDate,
             'paidAt' => $this->paidAt,
             'createdAt' => $this->createdAt,
+            'residentUnitId' => $this->residentUnitId, // Added to array representation
         ];
     }
 

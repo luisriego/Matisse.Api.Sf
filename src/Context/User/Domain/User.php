@@ -39,6 +39,8 @@ class User extends AggregateRoot implements UserInterface, PasswordAuthenticated
     private readonly ?string $email;
     private $roles = [];
     private ?string $confirmationToken;
+    private ?string $passwordResetToken = null;
+    private ?DateTime $passwordResetRequestedAt = null;
     private ?string $password;
     private ?bool $isActive = false;
     private ?DateTimeImmutable $createdAt = null;
@@ -65,11 +67,11 @@ class User extends AggregateRoot implements UserInterface, PasswordAuthenticated
         Email $email,
         Password $password,
         UserPasswordHasherInterface $passwordHasher,
-        ?ResidentUnit $residentUnit = null // Añadir ResidentUnit como parámetro opcional
+        ?ResidentUnit $residentUnit = null
     ): self {
         $user = new self($id, $name, $email);
         $user->hashPassword($password->value(), $passwordHasher);
-        $user->setResidentUnit($residentUnit); // Asignar la unidad residencial
+        $user->setResidentUnit($residentUnit);
 
         $user->record(
             new CreateUserDomainEvent(
@@ -115,6 +117,26 @@ class User extends AggregateRoot implements UserInterface, PasswordAuthenticated
         return $this->confirmationToken;
     }
 
+    public function getPasswordResetToken(): ?string
+    {
+        return $this->passwordResetToken;
+    }
+
+    public function requestPasswordReset(): void
+    {
+        $this->passwordResetToken = sha1(uniqid('', true));
+        $this->passwordResetRequestedAt = new DateTime();
+        $this->markAsUpdated();
+    }
+
+    public function resetPassword(string $newPassword, UserPasswordHasherInterface $hasher): void
+    {
+        $this->hashPassword($newPassword, $hasher);
+        $this->passwordResetToken = null;
+        $this->passwordResetRequestedAt = null;
+        $this->markAsUpdated();
+    }
+
     public function id(): ?string
     {
         return $this->id;
@@ -126,6 +148,11 @@ class User extends AggregateRoot implements UserInterface, PasswordAuthenticated
     }
 
     public function name(): ?string
+    {
+        return $this->name;
+    }
+
+    public function getName(): ?string
     {
         return $this->name;
     }
@@ -237,6 +264,8 @@ class User extends AggregateRoot implements UserInterface, PasswordAuthenticated
             'phoneNumber' => $this->phoneNumber,
             'roles' => $this->roles,
             'isActive' => $this->isActive,
+            'passwordResetToken' => $this->passwordResetToken,
+            'passwordResetRequestedAt' => $this->passwordResetRequestedAt,
             'createdAt' => $this->createdAt,
             'updatedAt' => $this->updatedAt,
             'residentUnit' => $this->residentUnit?->toArray(),

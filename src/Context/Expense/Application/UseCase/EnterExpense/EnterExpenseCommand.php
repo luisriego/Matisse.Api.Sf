@@ -16,6 +16,7 @@ final readonly class EnterExpenseCommand implements Command
         private string $dueDate,
         private ?bool $isActive,
         private ?string $description = null,
+        private ?string $residentUnitId = null,
     ) {}
 
     public function id(): string
@@ -51,5 +52,10 @@ final readonly class EnterExpenseCommand implements Command
     public function description(): ?string
     {
         return $this->description;
+    }
+
+    public function residentUnitId(): ?string // Added
+    {
+        return $this->residentUnitId;
     }
 }

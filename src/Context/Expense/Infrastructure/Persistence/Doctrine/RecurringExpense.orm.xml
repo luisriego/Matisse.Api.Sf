@@ -11,7 +11,7 @@
             table="recurring_expense"
             repository-class="App\Context\Expense\Infrastructure\Persistence\Doctrine\DoctrineRecurringExpenseRepository">
 
-        <id name="id" type="string" column="id">
+        <id name="id" type="uuid" column="id">
             <generator strategy="NONE"/>
         </id>
 

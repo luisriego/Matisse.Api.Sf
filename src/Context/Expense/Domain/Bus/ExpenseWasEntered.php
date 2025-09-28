@@ -20,6 +20,8 @@ final readonly class ExpenseWasEntered extends DomainEvent
         private string $type,
         private string $accountId,
         private string $dueDate,
+        private ?string $description,
+        private ?string $residentUnitId = null,
         ?string $eventId = null,
         ?string $occurredOn = null,
     ) {
@@ -50,6 +52,8 @@ final readonly class ExpenseWasEntered extends DomainEvent
             $body['type'],
             $body['accountId'],
             $body['dueDate'],
+            $body['description'] ?? null,
+            $body['residentUnitId'] ?? null,
             $eventId,
             $occurredOn,
         );
@@ -67,6 +71,8 @@ final readonly class ExpenseWasEntered extends DomainEvent
             'type' => $this->type,
             'accountId' => $this->accountId,
             'dueDate' => $this->dueDate,
+            'description' => $this->description,
+            'residentUnitId' => $this->residentUnitId,
         ];
     }
 }

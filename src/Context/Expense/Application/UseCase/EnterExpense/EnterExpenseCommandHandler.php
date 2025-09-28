@@ -43,8 +43,10 @@ readonly class EnterExpenseCommandHandler implements CommandHandler
         $description = ($descriptionValue !== null && trim($descriptionValue) !== '')
             ? new ExpenseDescription($descriptionValue)
             : null;
+        $residentUnitId = $command->residentUnitId();
 
-        $expense = Expense::create($id, $amount, $type, $account, $dueDate, $isActive, $description);
+
+        $expense = Expense::create($id, $amount, $type, $account, $dueDate, $isActive, $description, $residentUnitId);
 
         if ($expense->hasDomainEvents()) {
             $this->expenseRepo->save($expense, true);

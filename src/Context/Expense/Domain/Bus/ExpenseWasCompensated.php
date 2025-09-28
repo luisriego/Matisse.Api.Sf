@@ -17,6 +17,7 @@ final readonly class ExpenseWasCompensated extends DomainEvent
         private string $type,
         private string $accountId,
         private string $dueDate,
+        private ?string $residentUnitId = null, // Added parameter
         ?string $eventId = null,
         ?DateTimeImmutable $occurredOn = null,
     ) {
@@ -42,6 +43,7 @@ final readonly class ExpenseWasCompensated extends DomainEvent
             $body['type'],
             $body['accountId'],
             $body['dueDate'],
+            $body['residentUnitId'] ?? null, // Added parameter
             $eventId,
             new DateTimeImmutable($occurredOn),
         );
@@ -59,6 +61,7 @@ final readonly class ExpenseWasCompensated extends DomainEvent
             'type' => $this->type,
             'accountId' => $this->accountId,
             'dueDate' => $this->dueDate,
+            'residentUnitId' => $this->residentUnitId, // Added to primitives
         ];
     }
 }

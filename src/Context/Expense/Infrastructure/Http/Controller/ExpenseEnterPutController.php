@@ -27,6 +27,7 @@ final readonly class ExpenseEnterPutController
             $request->dueDate,
             $request->isActive,
             $request->description,
+            $request->residentUnitId
         );
 
         $this->commandHandler->__invoke($command);
