@@ -16,9 +16,8 @@ final class ResetPasswordCommandHandler implements CommandHandler
         private readonly UserRepository $userRepository,
         private readonly UserPasswordHasherInterface $passwordHasher,
         private readonly Clock $clock, // Inyectar Clock
-        private readonly int $passwordResetTokenLifetime // Inyectar vida útil del token
-    ) {
-    }
+        private readonly int $passwordResetTokenLifetime, // Inyectar vida útil del token
+    ) {}
 
     public function __invoke(ResetPasswordCommand $command): void
     {

@@ -1,7 +1,8 @@
 <?php
 
-namespace App\Context\User\Application\UseCase\Update;
+declare(strict_types=1);
 
+namespace App\Context\User\Application\UseCase\Update;
 
 use App\Shared\Application\Command;
 
@@ -12,9 +13,8 @@ final readonly class UpdateUserCommand implements Command
         private string $name,
         private string $lastName,
         private string $gender,
-        private string $phoneNumber
-    ) {
-    }
+        private string $phoneNumber,
+    ) {}
 
     public function getId(): string
     {

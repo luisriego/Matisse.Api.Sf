@@ -12,7 +12,7 @@ use DateTimeImmutable;
 class CondominiumFundAmountService
 {
     public function __construct(
-        private CondominiumConfigurationRepository $repository
+        private CondominiumConfigurationRepository $repository,
     ) {}
 
     /**

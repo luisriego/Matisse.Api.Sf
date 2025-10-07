@@ -4,8 +4,10 @@ declare(strict_types=1);
 
 namespace App\Context\User\Application\UseCase\ResidentUnit;
 
-use App\Context\User\Domain\UserRepository;
 use App\Context\ResidentUnit\Domain\ResidentUnitRepository;
+use App\Context\User\Domain\UserRepository;
+use InvalidArgumentException;
+use RuntimeException;
 
 final readonly class LinkResidentUnitToUserCommandHandler
 {
@@ -17,13 +19,15 @@ final readonly class LinkResidentUnitToUserCommandHandler
     public function __invoke(LinkResidentUnitToUserCommand $command): void
     {
         $user = $this->userRepository->findOneById($command->userId());
+
         if (!$user) {
-            throw new \RuntimeException('User not found');
+            throw new RuntimeException('User not found');
         }
 
         $residentUnit = $this->residentUnitRepository->findOneById($command->residentUnitId());
+
         if (!$residentUnit) {
-            throw new \InvalidArgumentException('Resident unit not found');
+            throw new InvalidArgumentException('Resident unit not found');
         }
 
         // Idempotencia: si ya está vinculada la misma unidad, no persistir cambios

@@ -12,6 +12,7 @@ final readonly class CreateAccountCommand implements Command
         private string $id,
         private string $code,
         private string $name,
+        private ?string $description,
     ) {}
 
     public function id(): string
@@ -27,5 +28,10 @@ final readonly class CreateAccountCommand implements Command
     public function name(): string
     {
         return $this->name;
+    }
+
+    public function description(): ?string
+    {
+        return $this->description;
     }
 }

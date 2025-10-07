@@ -13,10 +13,12 @@ use Symfony\Component\Messenger\MessageBusInterface;
 use Symfony\Component\Messenger\Stamp\HandledStamp;
 use Throwable;
 
+use function array_map;
+
 final class ListActiveResidentUnitsController extends ApiController
 {
     public function __construct(
-        MessageBusInterface                  $commandBus,
+        MessageBusInterface $commandBus,
         private readonly MessageBusInterface $queryBus,
     ) {
         parent::__construct($commandBus, $queryBus);
@@ -33,11 +35,11 @@ final class ListActiveResidentUnitsController extends ApiController
         $expensesData = $envelope->last(HandledStamp::class)->getResult();
 
         $residentUnits = (array) $this->ask($query);
-//
+
         $data = array_map(static fn (ResidentUnit $residentUnit) => [
             'id' => $residentUnit->id(),
             'unit' => $residentUnit->unit(),
-            'idealFraction' => $residentUnit->idealFraction()
+            'idealFraction' => $residentUnit->idealFraction(),
         ], $expensesData);
 
         return new JsonResponse($data, Response::HTTP_OK);

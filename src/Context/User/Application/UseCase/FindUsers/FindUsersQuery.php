@@ -8,7 +8,5 @@ use App\Shared\Application\Query;
 
 final readonly class FindUsersQuery implements Query
 {
-    public function __construct()
-    {
-    }
+    public function __construct() {}
 }

@@ -10,8 +10,7 @@ final readonly class PasswordResetRequestCommand implements Command
 {
     public function __construct(
         private string $email,
-    ) {
-    }
+    ) {}
 
     public function email(): string
     {

@@ -11,13 +11,6 @@ final class AccountDescriptionMother
 {
     public static function create(?string $value = null): AccountDescription
     {
-        if (null !== $value) {
-            return new AccountDescription($value);
-        }
-
-        $faker = MotherCreator::random();
-        $description = $faker->realText(mt_rand(10, 255));
-
-        return new AccountDescription($description);
+        return new AccountDescription($value ?? MotherCreator::random()->text(50));
     }
 }

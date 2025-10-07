@@ -23,7 +23,7 @@ class CondominiumConfiguration extends AggregateRoot
         int $reserveFundAmount,
         int $constructionFundAmount,
         DateTimeImmutable $effectiveDate,
-        ?string $userId = null
+        ?string $userId = null,
     ) {
         $this->id = $id;
         $this->reserveFundAmount = $reserveFundAmount;
@@ -37,14 +37,14 @@ class CondominiumConfiguration extends AggregateRoot
         int $reserveFundAmount,
         int $constructionFundAmount,
         DateTimeImmutable $effectiveDate,
-        ?Uuid $userId = null
+        ?Uuid $userId = null,
     ): self {
         $instance = new self(
             $id->value(),
             $reserveFundAmount,
             $constructionFundAmount,
             $effectiveDate,
-            $userId?->value()
+            $userId?->value(),
         );
 
         return $instance;
@@ -79,14 +79,14 @@ class CondominiumConfiguration extends AggregateRoot
         int $newReserveFundAmount,
         int $newConstructionFundAmount,
         DateTimeImmutable $newEffectiveDate,
-        ?string $userId = null
+        ?string $userId = null,
     ): void {
         if ($this->reserveFundAmount !== $newReserveFundAmount) {
             $this->record(new ReserveFundAmountSet(
                 $this->id,
                 $newReserveFundAmount,
                 $newEffectiveDate->format('Y-m-d'),
-                $userId
+                $userId,
             ));
             $this->reserveFundAmount = $newReserveFundAmount;
         }
@@ -97,7 +97,7 @@ class CondominiumConfiguration extends AggregateRoot
                 $this->id,
                 $newConstructionFundAmount,
                 $newEffectiveDate->format('Y-m-d'),
-                $userId
+                $userId,
             ));
             $this->constructionFundAmount = $newConstructionFundAmount;
         }
@@ -106,6 +106,7 @@ class CondominiumConfiguration extends AggregateRoot
         if ($this->effectiveDate !== $newEffectiveDate) {
             $this->effectiveDate = $newEffectiveDate;
         }
+
         if ($this->userId !== $userId) {
             $this->userId = $userId;
         }

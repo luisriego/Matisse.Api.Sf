@@ -11,10 +11,8 @@ final readonly class ResetPasswordCommand implements Command
     public function __construct(
         private string $userId,
         private string $token,
-        private string $newPassword
-    ) {
-
-    }
+        private string $newPassword,
+    ) {}
 
     public function userId(): string
     {

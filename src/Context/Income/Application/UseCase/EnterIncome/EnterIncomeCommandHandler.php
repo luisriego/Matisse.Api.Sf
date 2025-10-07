@@ -48,7 +48,7 @@ readonly class EnterIncomeCommandHandler implements CommandHandler
             0, // gasAmount por defecto
             0, // reserveFundAmount por defecto
             0, // constructionFundAmount por defecto
-            $descriptionValue
+            $descriptionValue,
         );
 
         if ($income->hasDomainEvents()) {

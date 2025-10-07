@@ -29,7 +29,7 @@ readonly class SlipFactory
         private StoredEventRepository $storedEventRepository,
         private LoggerInterface $logger,
         private ExpenseTypeRepository $expenseTypeRepository,
-        private CondominiumFundAmountService $condominiumFundAmountService
+        private CondominiumFundAmountService $condominiumFundAmountService,
     ) {}
 
     /**
@@ -76,7 +76,6 @@ readonly class SlipFactory
         $reserveFundAmount = $condominiumConfiguration->reserveFundAmount();
         $constructionFundAmount = $condominiumConfiguration->constructionFundAmount();
 
-
         foreach ($residentUnits as $residentUnit) {
             $mainAccountAmount = $this->slipAmountCalculator->calculate(
                 $residentUnit,
@@ -95,6 +94,7 @@ readonly class SlipFactory
                     'Calculated amount for unit %s is zero or negative. Skipping slip creation.',
                     $residentUnit->unit(),
                 ));
+
                 continue;
             }
 
@@ -108,7 +108,7 @@ readonly class SlipFactory
                 $mainAccountAmount,
                 $gasAmount,
                 $reserveFundAmount,
-                $constructionFundAmount
+                $constructionFundAmount,
             );
         }
 
@@ -128,13 +128,14 @@ readonly class SlipFactory
         $events = $this->storedEventRepository->findByEventNamesAndOccurredBetween(
             ['expense.entered', 'expense.compensated'],
             $startDate,
-            $endDate
+            $endDate,
         );
 
         $gasTypeId = $this->resolveGasExpenseTypeId();
 
         foreach ($events as $event) {
             $payload = $event->toPrimitives();
+
             if (isset($payload['body']['type']) && $payload['body']['type'] === $gasTypeId) {
                 $residentUnitId = $payload['body']['residentUnitId'] ?? null;
                 $amount = $payload['body']['amount'] ?? 0;
@@ -155,6 +156,7 @@ readonly class SlipFactory
     {
         /** @var ExpenseType $type */
         $type = $this->expenseTypeRepository->findOneByCodeOrFail('SP3GA');
+
         return $type->id();
     }
 }

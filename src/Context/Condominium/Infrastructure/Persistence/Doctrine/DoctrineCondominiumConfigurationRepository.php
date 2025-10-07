@@ -7,6 +7,7 @@ namespace App\Context\Condominium\Infrastructure\Persistence\Doctrine;
 use App\Context\Condominium\Domain\CondominiumConfiguration;
 use App\Context\Condominium\Domain\CondominiumConfigurationRepository;
 use App\Shared\Domain\Exception\ResourceNotFoundException;
+use DateTimeImmutable;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
 
@@ -40,5 +41,15 @@ class DoctrineCondominiumConfigurationRepository extends ServiceEntityRepository
         }
 
         return $configuration;
+    }
+
+    public function findActiveConfigurationForDate(DateTimeImmutable $date): ?CondominiumConfiguration
+    {
+        return $this->createQueryBuilder('c')
+            ->andWhere('c.startDate <= :date')
+            ->andWhere('c.endDate IS NULL OR c.endDate >= :date')
+            ->setParameter('date', $date)
+            ->getQuery()
+            ->getOneOrNullResult();
     }
 }

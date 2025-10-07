@@ -32,17 +32,11 @@ RUN apt update \
     && docker-php-ext-install pdo_mysql \
     # common libraries and extensions
     && apt install -y git acl openssl openssh-client wget zip dos2unix \
-#    # XDEBUG and APCu
-#    && pecl install xdebug \
-#    && pecl install apcu \
-#    && docker-php-ext-enable --ini-name 05-opcache.ini opcache \
-#    && docker-php-ext-enable xdebug \
-#    && docker-php-ext-enable apcu
     # XDEBUG y APCu - usando estrategia alternativa
     && pecl channel-update pecl.php.net \
     && pecl install -f xdebug-3.3.1 \
     && pecl install -f apcu \
-    && docker-php-ext-enable --ini-name 05-opcache.ini opcache \
+    && docker-php-ext-enable --ini-name \
     && docker-php-ext-enable xdebug \
     && docker-php-ext-enable apcu
 

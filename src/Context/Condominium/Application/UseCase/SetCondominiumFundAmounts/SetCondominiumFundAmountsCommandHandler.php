@@ -8,7 +8,9 @@ use App\Context\Condominium\Domain\CondominiumConfiguration;
 use App\Context\Condominium\Domain\CondominiumConfigurationRepository;
 use App\Shared\Application\CommandHandler;
 use App\Shared\Domain\Event\EventBus;
+use App\Shared\Domain\Exception\ResourceNotFoundException;
 use App\Shared\Domain\ValueObject\Uuid;
+use DateMalformedStringException;
 use DateTimeImmutable;
 use Symfony\Component\Messenger\Attribute\AsMessageHandler;
 
@@ -21,7 +23,7 @@ final readonly class SetCondominiumFundAmountsCommandHandler implements CommandH
     ) {}
 
     /**
-     * @throws \DateMalformedStringException
+     * @throws DateMalformedStringException
      */
     public function __invoke(SetCondominiumFundAmountsCommand $command): void
     {
@@ -31,14 +33,14 @@ final readonly class SetCondominiumFundAmountsCommandHandler implements CommandH
 
         try {
             $configuration = $this->condominiumConfigurationRepository->findOrFail();
-        } catch (\App\Shared\Domain\Exception\ResourceNotFoundException) {
+        } catch (ResourceNotFoundException) {
             // If no configuration exists, create a new one
             $configuration = CondominiumConfiguration::create(
                 $configurationId,
                 $command->reserveFundAmount(),
                 $command->constructionFundAmount(),
                 $effectiveDate,
-                $userId
+                $userId,
             );
         }
 
@@ -46,7 +48,7 @@ final readonly class SetCondominiumFundAmountsCommandHandler implements CommandH
             $command->reserveFundAmount(),
             $command->constructionFundAmount(),
             $effectiveDate,
-            $userId?->value()
+            $userId?->value(),
         );
 
         $this->condominiumConfigurationRepository->save($configuration, true);

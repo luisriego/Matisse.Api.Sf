@@ -23,6 +23,7 @@ final readonly class AccountCreatorPutController
             $requestDto->id,
             $requestDto->code,
             $requestDto->name,
+            $requestDto->description,
         );
 
         $this->commandHandler->__invoke($command);

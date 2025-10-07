@@ -25,7 +25,7 @@ final class CreateAccountCommandHandlerTest extends AccountModuleUnitTestCase
     {
         parent::setUp();
 
-        $this->creator = new AccountCreator($this->repository(), $this->eventBus());
+        $this->creator = new AccountCreator($this->repository());
         $this->handler = new CreateAccountCommandHandler($this->creator);
     }
 
@@ -39,7 +39,8 @@ final class CreateAccountCommandHandlerTest extends AccountModuleUnitTestCase
         $command = new CreateAccountCommand(
             $id->value(),
             $code->value(),
-            $name->value()
+            $name->value(),
+            null
         );
 
         // Create actual Account object

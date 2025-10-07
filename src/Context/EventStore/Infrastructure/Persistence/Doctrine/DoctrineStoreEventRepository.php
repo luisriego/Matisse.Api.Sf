@@ -39,7 +39,7 @@ class DoctrineStoreEventRepository extends ServiceEntityRepository implements St
     public function findByEventNamesAndOccurredBetween(
         array $eventNames,
         DateTimeImmutable $startDate,
-        DateTimeImmutable|false $endDate
+        DateTimeImmutable|false $endDate,
     ): array {
         $qb = $this->createQueryBuilder('e');
 

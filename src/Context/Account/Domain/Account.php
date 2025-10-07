@@ -24,31 +24,20 @@ class Account extends AggregateRoot
     private ?DateTime $updatedAt = null;
     private Collection $expenses;
 
-    public function __construct(string $id, string $code, string $name)
+    public function __construct(string $id, string $code, string $name, ?string $description = null)
     {
         $this->id = $id;
         $this->code = $code;
         $this->name = $name;
+        $this->description = $description;
         $this->isActive = false;
         $this->createdAt = new DateTimeImmutable();
         $this->expenses = new ArrayCollection();
     }
 
-    public static function create(AccountId $id, AccountCode $code, AccountName $name): self
+    public static function create(AccountId $id, AccountCode $code, AccountName $name, ?AccountDescription $description): self
     {
-        return new self($id->value(), $code->value(), $name->value());
-    }
-
-    public static function createWithDescription(
-        AccountId $id,
-        AccountCode $code,
-        AccountName $name,
-        AccountDescription $description,
-    ): self {
-        $account =  new self($id->value(), $code->value(), $name->value());
-        $account->updateDescription($description);
-
-        return $account;
+        return new self($id->value(), $code->value(), $name->value(), $description?->value());
     }
 
     public function id(): string
