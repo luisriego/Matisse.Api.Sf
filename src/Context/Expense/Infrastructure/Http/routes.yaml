@@ -62,3 +62,8 @@ recurring_expense_update:
     path: /api/v1/recurring-expenses/{id}
     controller: App\Context\Expense\Infrastructure\Http\Controller\UpdateRecurrentExpensePatchController
     methods: ['PATCH']
+
+expense_types_get:
+    path: /api/v1/expense-types
+    controller: App\Context\Expense\Infrastructure\Http\Controller\GetExpenseTypesController
+    methods: ['GET']

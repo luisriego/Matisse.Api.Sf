@@ -16,7 +16,7 @@ use App\Context\Expense\Domain\ValueObject\ExpenseDueDay;
 use App\Context\Expense\Domain\ValueObject\ExpenseEndDate;
 use App\Context\Expense\Domain\ValueObject\ExpenseId;
 use App\Context\Expense\Domain\ValueObject\ExpenseStartDate;
-use App\Context\Expense\Domain\ValueObject\ExpenseTypeRepository;
+use App\Context\Expense\Domain\ExpenseTypeRepository;
 use App\Shared\Application\CommandHandler;
 use App\Shared\Domain\Event\EventBus;
 use App\Shared\Domain\ValueObject\Uuid;

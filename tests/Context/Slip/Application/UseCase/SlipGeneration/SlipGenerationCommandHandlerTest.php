@@ -9,7 +9,7 @@ use App\Context\Expense\Domain\Expense;
 use App\Context\Expense\Domain\ExpenseRepository;
 use App\Context\Expense\Domain\ExpenseType;
 use App\Context\Expense\Domain\RecurringExpenseRepository;
-use App\Context\Expense\Domain\ValueObject\ExpenseTypeRepository;
+use App\Context\Expense\Domain\ExpenseTypeRepository;
 use App\Context\ResidentUnit\Domain\ResidentUnit;
 use App\Context\ResidentUnit\Domain\ResidentUnitRepository;
 use App\Context\Slip\Application\UseCase\SlipGeneration\SlipGenerationCommand;

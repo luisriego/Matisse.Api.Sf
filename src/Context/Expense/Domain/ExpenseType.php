@@ -118,4 +118,15 @@ class ExpenseType
 
         return $this;
     }
+
+    public function toArray(): array
+    {
+        return [
+            'id' => $this->id,
+            'code' => $this->code,
+            'name' => $this->name,
+            'distributionMethod' => $this->distributionMethod,
+            'description' => $this->description,
+        ];
+    }
 }

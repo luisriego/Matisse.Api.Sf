@@ -10,7 +10,7 @@ use App\Context\Expense\Domain\ValueObject\ExpenseTypeDescription;
 use App\Context\Expense\Domain\ValueObject\ExpenseTypeDistributionMethod;
 use App\Context\Expense\Domain\ValueObject\ExpenseTypeId;
 use App\Context\Expense\Domain\ValueObject\ExpenseTypeName;
-use App\Context\Expense\Domain\ValueObject\ExpenseTypeRepository;
+use App\Context\Expense\Domain\ExpenseTypeRepository;
 use App\Shared\Domain\Exception\InvalidArgumentException;
 use App\Shared\Domain\ValueObject\Uuid;
 use http\Exception\RuntimeException;

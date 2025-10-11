@@ -6,7 +6,7 @@ namespace App\Context\Slip\Domain\Service;
 
 use App\Context\EventStore\Domain\StoredEventRepository;
 use App\Context\Expense\Domain\ExpenseType;
-use App\Context\Expense\Domain\ValueObject\ExpenseTypeRepository;
+use App\Context\Expense\Domain\ExpenseTypeRepository;
 use App\Context\ResidentUnit\Domain\ResidentUnit;
 use App\Context\Slip\Domain\Slip;
 use App\Context\Slip\Domain\ValueObject\SlipAmount;

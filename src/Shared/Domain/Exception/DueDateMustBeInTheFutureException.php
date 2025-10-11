@@ -10,6 +10,6 @@ class DueDateMustBeInTheFutureException extends InvalidArgumentException
 {
     public function __construct()
     {
-        parent::__construct('O ingresso de ter vencimento hoje ou em uma data futura');
+        parent::__construct('O ingresso deve ter vencimento hoje ou em uma data futura');
     }
 }

@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace App\Context\Expense\Infrastructure\Persistence\Doctrine;
 
 use App\Context\Expense\Domain\ExpenseType;
-use App\Context\Expense\Domain\ValueObject\ExpenseTypeRepository;
+use App\Context\Expense\Domain\ExpenseTypeRepository;
 use App\Shared\Domain\Exception\ResourceNotFoundException;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
