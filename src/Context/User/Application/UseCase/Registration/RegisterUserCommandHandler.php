@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace App\Context\User\Application\UseCase\Registration;
 
+use App\Context\ResidentUnit\Domain\ResidentUnit;
+use App\Context\ResidentUnit\Domain\ResidentUnitRepository;
 use App\Context\User\Application\Service\UserMailerInterface;
 use App\Context\User\Domain\User;
 use App\Context\User\Domain\UserRepository;
@@ -13,10 +15,8 @@ use App\Context\User\Domain\ValueObject\UserId;
 use App\Context\User\Domain\ValueObject\UserName;
 use App\Shared\Application\CommandHandler;
 use App\Shared\Domain\Exception\ResourceAlreadyExistException;
-use App\Shared\Domain\Exception\ResourceNotFoundException;
-use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
-use App\Context\ResidentUnit\Domain\ResidentUnitRepository; // Importar ResidentUnitRepository
-use App\Context\ResidentUnit\Domain\ResidentUnit; // Importar ResidentUnit
+use App\Shared\Domain\Exception\ResourceNotFoundException; // Importar ResidentUnitRepository
+use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface; // Importar ResidentUnit
 
 use function sprintf;
 
@@ -42,8 +42,10 @@ final class RegisterUserCommandHandler implements CommandHandler
         }
 
         $residentUnit = null;
+
         if (null !== $command->residentUnitId()) {
             $residentUnit = $this->residentUnitRepository->findOneById($command->residentUnitId());
+
             if (null === $residentUnit) {
                 throw new ResourceNotFoundException(sprintf('ResidentUnit with ID <%s> not found.', $command->residentUnitId()));
             }
@@ -55,7 +57,7 @@ final class RegisterUserCommandHandler implements CommandHandler
             Email::fromString($command->email()),
             Password::fromString($command->password()),
             $this->userPasswordHasher,
-            $residentUnit // Pasar la ResidentUnit (o null)
+            $residentUnit, // Pasar la ResidentUnit (o null)
         );
 
         $this->userRepository->save($user, true);

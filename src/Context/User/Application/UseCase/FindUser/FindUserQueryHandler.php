@@ -10,9 +10,7 @@ use App\Shared\Application\QueryHandler;
 
 final class FindUserQueryHandler implements QueryHandler
 {
-    public function __construct(private readonly UserRepository $userRepository)
-    {
-    }
+    public function __construct(private readonly UserRepository $userRepository) {}
 
     public function __invoke(FindUserQuery $query): ?User
     {

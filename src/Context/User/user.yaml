@@ -23,3 +23,6 @@ services:
     App\Context\User\Infrastructure\Mailer\UserMailer:
         arguments:
             - '@Symfony\Component\Mailer\MailerInterface'
+
+    App\Context\Expense\Domain\ExpenseTypeRepository:
+        class: App\Context\Expense\Infrastructure\Persistence\Doctrine\DoctrineExpenseTypeRepository

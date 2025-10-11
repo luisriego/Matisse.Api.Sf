@@ -4,12 +4,14 @@ declare(strict_types=1);
 
 namespace App\Context\ResidentUnit\Domain;
 
+use App\Context\User\Domain\User;
 use App\Shared\Domain\AggregateRoot;
 use DateTime;
 use DateTimeImmutable;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
-use App\Context\User\Domain\User; // Importar User
+
+ // Importar User
 
 // Eliminadas todas las anotaciones #[ORM\...] (se asume que el mapeo se hace por XML)
 class ResidentUnit extends AggregateRoot
@@ -133,6 +135,7 @@ class ResidentUnit extends AggregateRoot
     {
         if (!$this->users->contains($user)) {
             $this->users[] = $user;
+
             // Asegurarse de que el lado propietario de la relación también se actualice
             if ($user->getResidentUnit() !== $this) {
                 $user->setResidentUnit($this);

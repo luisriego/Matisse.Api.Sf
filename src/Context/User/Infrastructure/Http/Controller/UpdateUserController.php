@@ -1,18 +1,18 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Context\User\Infrastructure\Http\Controller;
 
 use App\Context\User\Application\UseCase\Update\UpdateUserCommand;
+use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Messenger\MessageBusInterface;
-use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 
 final class UpdateUserController extends AbstractController
 {
-    public function __construct(private readonly MessageBusInterface $commandBus)
-    {
-    }
+    public function __construct(private readonly MessageBusInterface $commandBus) {}
 
     public function __invoke(Request $request, string $id): Response
     {
@@ -23,7 +23,7 @@ final class UpdateUserController extends AbstractController
             $data['name'],
             $data['lastName'],
             $data['gender'],
-            $data['phoneNumber']
+            $data['phoneNumber'],
         );
 
         $this->commandBus->dispatch($command);

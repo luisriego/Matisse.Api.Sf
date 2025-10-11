@@ -6,17 +6,15 @@ namespace App\Context\User\Infrastructure\Http\Controller;
 
 use App\Context\User\Application\UseCase\FindUser\FindUserQuery;
 use App\Context\User\Domain\User;
+use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Response;
-use Symfony\Component\Messenger\MessageBusInterface;
-use Symfony\Component\Messenger\Stamp\HandledStamp; // Importar HandledStamp
-use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\Messenger\MessageBusInterface; // Importar HandledStamp
+use Symfony\Component\Messenger\Stamp\HandledStamp;
 
 final class FindUserController extends AbstractController
 {
-    public function __construct(private readonly MessageBusInterface $queryBus)
-    {
-    }
+    public function __construct(private readonly MessageBusInterface $queryBus) {}
 
     public function __invoke(string $id): JsonResponse
     {

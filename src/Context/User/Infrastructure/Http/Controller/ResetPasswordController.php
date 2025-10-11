@@ -25,7 +25,7 @@ final class ResetPasswordController extends ApiController
             $this->dispatch(new ResetPasswordCommand(
                 $userId,
                 $token,
-                $requestDto->newPassword()
+                $requestDto->newPassword(),
             ));
         } catch (HandlerFailedException $e) {
             throw $this->unwrap($e);
@@ -33,7 +33,7 @@ final class ResetPasswordController extends ApiController
 
         return new JsonResponse(
             ['message' => 'Sua senha foi redefinida com sucesso. Você já pode fazer login.'],
-            Response::HTTP_OK
+            Response::HTTP_OK,
         );
     }
 

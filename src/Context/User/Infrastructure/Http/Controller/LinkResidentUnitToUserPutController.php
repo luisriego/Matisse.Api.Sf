@@ -7,6 +7,7 @@ namespace App\Context\User\Infrastructure\Http\Controller;
 use App\Context\User\Application\UseCase\ResidentUnit\LinkResidentUnitToUserCommand;
 use App\Context\User\Application\UseCase\ResidentUnit\LinkResidentUnitToUserCommandHandler;
 use App\Context\User\Infrastructure\Http\Dto\LinkResidentUnitToUserRequestDto;
+use InvalidArgumentException;
 use Symfony\Component\HttpFoundation\Response;
 
 final readonly class LinkResidentUnitToUserPutController
@@ -16,7 +17,7 @@ final readonly class LinkResidentUnitToUserPutController
     public function __invoke(string $id, LinkResidentUnitToUserRequestDto $request): Response
     {
         if ($request->residentUnitId === null || $request->residentUnitId === '') {
-            throw new \InvalidArgumentException('residentUnitId is required');
+            throw new InvalidArgumentException('residentUnitId is required');
         }
 
         $command = new LinkResidentUnitToUserCommand(

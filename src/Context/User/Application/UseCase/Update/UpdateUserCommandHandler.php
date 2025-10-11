@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Context\User\Application\UseCase\Update;
 
 use App\Context\User\Domain\UserRepository;
@@ -8,9 +10,7 @@ use Symfony\Component\Security\Core\Exception\UserNotFoundException;
 
 final class UpdateUserCommandHandler implements CommandHandler
 {
-    public function __construct(private readonly UserRepository $userRepository)
-    {
-    }
+    public function __construct(private readonly UserRepository $userRepository) {}
 
     public function __invoke(UpdateUserCommand $command): void
     {
@@ -24,7 +24,7 @@ final class UpdateUserCommandHandler implements CommandHandler
             $command->getName(),
             $command->getLastName(),
             $command->getGender(),
-            $command->getPhoneNumber()
+            $command->getPhoneNumber(),
         );
 
         $this->userRepository->save($user, true);

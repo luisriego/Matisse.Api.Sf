@@ -25,7 +25,7 @@ final class PasswordResetRequestController extends ApiController
 
         return new JsonResponse(
             ['message' => 'Se o seu endereço de e-mail estiver registrado, você receberá um link para redefinir sua senha.'], // <--- Mensaje en pt-br
-            Response::HTTP_OK
+            Response::HTTP_OK,
         );
     }
 

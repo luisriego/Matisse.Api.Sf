@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Context\User\Domain;
 
+use App\Context\ResidentUnit\Domain\ResidentUnit;
 use App\Context\User\Domain\Event\CreateUserDomainEvent;
 use App\Context\User\Domain\ValueObject\Email;
 use App\Context\User\Domain\ValueObject\Password;
@@ -16,8 +17,7 @@ use DateTimeImmutable;
 use DateTimeInterface;
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
-use Symfony\Component\Security\Core\User\UserInterface;
-use App\Context\ResidentUnit\Domain\ResidentUnit; // Importar ResidentUnit
+use Symfony\Component\Security\Core\User\UserInterface; // Importar ResidentUnit
 
 use function array_unique;
 use function sha1;
@@ -67,7 +67,7 @@ class User extends AggregateRoot implements UserInterface, PasswordAuthenticated
         Email $email,
         Password $password,
         UserPasswordHasherInterface $passwordHasher,
-        ?ResidentUnit $residentUnit = null
+        ?ResidentUnit $residentUnit = null,
     ): self {
         $user = new self($id, $name, $email);
         $user->hashPassword($password->value(), $passwordHasher);
@@ -91,7 +91,7 @@ class User extends AggregateRoot implements UserInterface, PasswordAuthenticated
         string $name,
         string $lastName,
         string $gender,
-        string $phoneNumber
+        string $phoneNumber,
     ): void {
         $this->updateName($name);
         $this->lastName = $lastName;

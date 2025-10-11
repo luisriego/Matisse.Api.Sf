@@ -45,7 +45,6 @@ readonly class EnterExpenseCommandHandler implements CommandHandler
             : null;
         $residentUnitId = $command->residentUnitId();
 
-
         $expense = Expense::create($id, $amount, $type, $account, $dueDate, $isActive, $description, $residentUnitId);
 
         if ($expense->hasDomainEvents()) {

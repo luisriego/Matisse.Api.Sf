@@ -44,5 +44,4 @@ class DoctrineUserRepository extends ServiceEntityRepository implements UserRepo
     {
         return $this->findOneBy(['email' => $email]);
     }
-
 }

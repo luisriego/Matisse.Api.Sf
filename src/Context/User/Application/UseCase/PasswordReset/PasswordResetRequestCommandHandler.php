@@ -13,9 +13,8 @@ final class PasswordResetRequestCommandHandler implements CommandHandler
 {
     public function __construct(
         private readonly UserRepository $userRepository,
-        private readonly UserMailerInterface $userMailer
-    ) {
-    }
+        private readonly UserMailerInterface $userMailer,
+    ) {}
 
     /**
      * @throws TransportExceptionInterface
@@ -39,7 +38,7 @@ final class PasswordResetRequestCommandHandler implements CommandHandler
             $user->getEmail(),
             $user->getName(),
             $user->getId(),
-            $user->getPasswordResetToken()
+            $user->getPasswordResetToken(),
         );
     }
 }
