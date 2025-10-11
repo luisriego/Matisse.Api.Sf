@@ -9,7 +9,7 @@ use App\Context\Expense\Application\UseCase\UpdateRecurringExpense\UpdateRecurre
 use App\Context\Expense\Domain\RecurringExpense;
 use App\Context\Expense\Domain\RecurringExpenseRepository;
 use App\Context\Expense\Domain\ValueObject\ExpenseTypeId;
-use App\Context\Expense\Domain\ValueObject\ExpenseTypeRepository;
+use App\Context\Expense\Domain\ExpenseTypeRepository;
 use App\Shared\Domain\Exception\InvalidArgumentException;
 use App\Tests\Context\Expense\Domain\ExpenseIdMother;
 use App\Tests\Context\Expense\Domain\ExpenseTypeMother;

@@ -11,7 +11,7 @@ use App\Context\Expense\Application\UseCase\EnterExpense\CreateRecurringExpenseC
 use App\Context\Expense\Domain\ExpenseRepository;
 use App\Context\Expense\Domain\RecurringExpense;
 use App\Context\Expense\Domain\RecurringExpenseRepository;
-use App\Context\Expense\Domain\ValueObject\ExpenseTypeRepository;
+use App\Context\Expense\Domain\ExpenseTypeRepository;
 use App\Shared\Domain\Event\EventBus;
 use App\Shared\Domain\Exception\ResourceNotFoundException;
 use App\Tests\Context\Expense\Domain\ExpenseAmountMother;
@@ -675,7 +675,7 @@ class CreateRecurringExpenseCommandHandlerTest extends TestCase
             $idMother->value(),
             $amountMother->value(),
             $typeMother->id(),
-            'account-123',
+            'account-122',
             15,
             [1, 6, 12],
             '2025-01-15',

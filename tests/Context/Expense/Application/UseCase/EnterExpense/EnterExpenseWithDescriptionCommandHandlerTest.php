@@ -10,7 +10,7 @@ use App\Context\Expense\Application\UseCase\EnterExpense\EnterExpenseWithDescrip
 use App\Context\Expense\Domain\Bus\ExpenseWasEntered;
 use App\Context\Expense\Domain\ExpenseRepository;
 use App\Context\Expense\Domain\ExpenseType;
-use App\Context\Expense\Domain\ValueObject\ExpenseTypeRepository;
+use App\Context\Expense\Domain\ExpenseTypeRepository;
 use App\Shared\Domain\Event\EventBus;
 use App\Tests\Context\Account\Domain\AccountMother;
 use App\Tests\Context\Expense\Domain\ExpenseMother;
