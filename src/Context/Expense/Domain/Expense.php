@@ -208,19 +208,6 @@ class Expense extends AggregateRoot
         $this->description = $description;
     }
 
-    public function toArray(): array
-    {
-        return [
-            'id' => $this->id,
-            'amount' => $this->amount,
-            'description' => $this->description,
-            'dueDate' => $this->dueDate,
-            'paidAt' => $this->paidAt,
-            'createdAt' => $this->createdAt,
-            'residentUnitId' => $this->residentUnitId, // Added to array representation
-        ];
-    }
-
     public function setRecurringExpense(?RecurringExpense $recurringExpense): void
     {
         $this->recurringExpense = $recurringExpense;
@@ -234,5 +221,19 @@ class Expense extends AggregateRoot
     private function applyExpenseWasCompensated(ExpenseWasCompensated $event): void
     {
         $this->amount += $event->toPrimitives()['amount'];
+    }
+
+    public function toArray(): array
+    {
+        return [
+            'id' => $this->id,
+            'amount' => $this->amount,
+            'description' => $this->description,
+            'dueDate' => $this->dueDate,
+            'paidAt' => $this->paidAt,
+            'createdAt' => $this->createdAt,
+            'residentUnitId' => $this->residentUnitId,
+            'type' => $this->type?->toArray(),
+        ];
     }
 }

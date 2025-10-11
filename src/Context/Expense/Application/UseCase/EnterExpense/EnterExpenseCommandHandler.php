@@ -31,7 +31,7 @@ readonly class EnterExpenseCommandHandler implements CommandHandler
     /**
      * @throws DateMalformedStringException
      */
-    public function __invoke(EnterExpenseCommand $command): void
+    public function __invoke(EnterExpenseCommand $command): Expense
     {
         $id      = new ExpenseId($command->id());
         $amount  = new ExpenseAmount($command->amount());
@@ -53,5 +53,7 @@ readonly class EnterExpenseCommandHandler implements CommandHandler
         }
 
         $this->expenseRepo->save($expense, true);
+
+        return $expense;
     }
 }
