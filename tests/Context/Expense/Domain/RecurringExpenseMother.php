@@ -32,8 +32,8 @@ final class RecurringExpenseMother
         $expenseType   = $expenseType   ?? ExpenseTypeMother::create();
         $dueDay        = $dueDay        ?? new ExpenseDueDay(15);
         $monthsOfYear  = $monthsOfYear  ?? [1, 4, 7, 10];
-        $startDate     = $startDate     ?? new ExpenseStartDate(new \DateTime("2025-01-01 12:00:00"));
-        $endDate       = $endDate       ?? new ExpenseEndDate(new \DateTime("2025-12-31 12:00:00"));
+        $startDate     = $startDate     ?? new ExpenseStartDate((new \DateTime())->modify('+1 day'));
+        $endDate       = $endDate       ?? new ExpenseEndDate((new \DateTime())->modify('+1 year'));
         $description   = $description   ?? 'Default recurring description';
 
         return RecurringExpense::create(
@@ -48,4 +48,3 @@ final class RecurringExpenseMother
         );
     }
 }
-

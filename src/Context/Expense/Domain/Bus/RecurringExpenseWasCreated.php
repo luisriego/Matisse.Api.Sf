@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Context\Expense\Domain\Bus;
 
 use App\Shared\Domain\Event\DomainEvent;
+use DateMalformedStringException;
 use DateTimeImmutable;
 
 final readonly class RecurringExpenseWasCreated extends DomainEvent
@@ -45,15 +46,14 @@ final readonly class RecurringExpenseWasCreated extends DomainEvent
     }
 
     /**
-     * @throws \DateMalformedStringException
+     * @throws DateMalformedStringException
      */
     public static function fromPrimitives(
         string $aggregateId,
         array $body,
         string $eventId,
-        string $occurredOn
-    ): DomainEvent
-    {
+        string $occurredOn,
+    ): DomainEvent {
         return new self(
             $aggregateId,
             $body['amount'],

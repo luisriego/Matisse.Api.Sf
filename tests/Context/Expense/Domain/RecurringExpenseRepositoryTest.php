@@ -48,27 +48,30 @@ final class RecurringExpenseRepositoryTest extends TestCase
     public function test_it_filters_active_for_date_range_correctly(): void
     {
         // Arrange
-        $dateRange = DateRange::fromMonth(2025, 7); // July 2025
+        $currentYear = (int) (new DateTime())->format('Y');
+        $testYear = $currentYear > 2025 ? $currentYear + 1 : 2025; // Ensure testYear is always in the future or 2025
+
+        $dateRange = DateRange::fromMonth($testYear, 7); // July of the testYear
 
         // This expense should be returned: applies to July, due day is valid.
         $expenseInJuly = RecurringExpenseMother::create(
             dueDay: new ExpenseDueDay(15),
             monthsOfYear: [7],
-            startDate: new ExpenseStartDate(new DateTime('2025-01-01'))
+            startDate: new ExpenseStartDate((new DateTime())->modify('+1 day')) // Corrected to ensure future date
         );
 
         // This expense should NOT be returned: applies to August.
         $expenseInAugust = RecurringExpenseMother::create(
             dueDay: new ExpenseDueDay(15),
             monthsOfYear: [8],
-            startDate: new ExpenseStartDate(new DateTime('2025-01-01'))
+            startDate: new ExpenseStartDate((new DateTime())->modify('+1 day')) // Corrected to ensure future date
         );
 
         // This expense should be returned: applies to all months (null).
         $expenseEveryMonth = RecurringExpenseMother::create(
             dueDay: new ExpenseDueDay(20),
             monthsOfYear: null,
-            startDate: new ExpenseStartDate(new DateTime('2025-01-01'))
+            startDate: new ExpenseStartDate((new DateTime())->modify('+1 day')) // Corrected to ensure future date
         );
 
         // This expense should NOT be returned: its due day (32) is > days in July (31).

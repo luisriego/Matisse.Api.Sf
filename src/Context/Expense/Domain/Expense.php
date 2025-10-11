@@ -218,11 +218,6 @@ class Expense extends AggregateRoot
         return $this->recurringExpense;
     }
 
-    private function applyExpenseWasCompensated(ExpenseWasCompensated $event): void
-    {
-        $this->amount += $event->toPrimitives()['amount'];
-    }
-
     public function toArray(): array
     {
         return [
@@ -235,5 +230,10 @@ class Expense extends AggregateRoot
             'residentUnitId' => $this->residentUnitId,
             'type' => $this->type?->toArray(),
         ];
+    }
+
+    private function applyExpenseWasCompensated(ExpenseWasCompensated $event): void
+    {
+        $this->amount += $event->toPrimitives()['amount'];
     }
 }

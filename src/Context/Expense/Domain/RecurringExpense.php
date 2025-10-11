@@ -10,6 +10,7 @@ use App\Context\Expense\Domain\ValueObject\ExpenseEndDate;
 use App\Context\Expense\Domain\ValueObject\ExpenseId;
 use App\Context\Expense\Domain\ValueObject\ExpenseStartDate;
 use App\Shared\Domain\AggregateRoot;
+use App\Shared\Domain\Exception\InvalidDataException;
 use DateMalformedStringException;
 use DateTimeImmutable;
 use DateTimeInterface;
@@ -54,6 +55,8 @@ class RecurringExpense extends AggregateRoot
     ): self {
         $start = $startDate ?? ExpenseStartDate::from();
         $end = $endDate   ?? ExpenseEndDate::from();
+
+        self::ensureStartDateIsNotInThePast($start);
 
         return new self(
             $id->value(),
@@ -201,8 +204,12 @@ class RecurringExpense extends AggregateRoot
         }
     }
 
-    //    public function activate(): void
-    //    {
-    //        $this->isActive = true;
-    //    }
+    private static function ensureStartDateIsNotInThePast(ExpenseStartDate $startDate): void
+    {
+        $now = new DateTimeImmutable('today');
+
+        if ($startDate->toDateTime() < $now) {
+            throw InvalidDataException::because('O gasto recurrente não pode começar no passado');
+        }
+    }
 }

@@ -5,12 +5,12 @@ declare(strict_types=1);
 namespace App\Shared\Command;
 
 use App\Context\Expense\Domain\ExpenseType;
+use App\Context\Expense\Domain\ExpenseTypeRepository;
 use App\Context\Expense\Domain\ValueObject\ExpenseTypeCode;
 use App\Context\Expense\Domain\ValueObject\ExpenseTypeDescription;
 use App\Context\Expense\Domain\ValueObject\ExpenseTypeDistributionMethod;
 use App\Context\Expense\Domain\ValueObject\ExpenseTypeId;
 use App\Context\Expense\Domain\ValueObject\ExpenseTypeName;
-use App\Context\Expense\Domain\ExpenseTypeRepository;
 use App\Shared\Domain\Exception\InvalidArgumentException;
 use App\Shared\Domain\ValueObject\Uuid;
 use http\Exception\RuntimeException;

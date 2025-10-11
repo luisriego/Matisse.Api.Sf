@@ -4,10 +4,10 @@ declare(strict_types=1);
 
 namespace App\Context\Expense\Application\UseCase\UpdateRecurringExpense;
 
+use App\Context\Expense\Domain\ExpenseTypeRepository;
 use App\Context\Expense\Domain\RecurringExpenseRepository;
 use App\Context\Expense\Domain\ValueObject\ExpenseId;
 use App\Context\Expense\Domain\ValueObject\ExpenseTypeId;
-use App\Context\Expense\Domain\ExpenseTypeRepository;
 use App\Shared\Application\CommandHandler;
 use DateMalformedStringException;
 use DateTime;

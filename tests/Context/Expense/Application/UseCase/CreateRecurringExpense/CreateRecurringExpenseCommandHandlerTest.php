@@ -18,6 +18,7 @@ use App\Tests\Context\Expense\Domain\ExpenseAmountMother;
 use App\Tests\Context\Expense\Domain\ExpenseIdMother;
 use App\Tests\Context\Expense\Domain\ExpenseTypeMother;
 use DateMalformedStringException;
+use DateTime;
 use Exception;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
@@ -64,8 +65,8 @@ class CreateRecurringExpenseCommandHandlerTest extends TestCase
         $dueDayMother = 15;
 
         $monthsOfYear = [1, 6, 12];
-        $startDateString = '2025-01-15';
-        $endDateString = '2025-12-15';
+        $startDateString = (new DateTime())->modify('+1 day')->format('Y-m-d');
+        $endDateString = (new DateTime())->modify('+1 year')->format('Y-m-d');
         $description = 'Monthly subscription';
         $notes = 'Auto-generated';
         $accountId = 'account-123';
@@ -134,6 +135,9 @@ class CreateRecurringExpenseCommandHandlerTest extends TestCase
         $amountMother = ExpenseAmountMother::create();
         $nonExistentTypeId = 'non-existent-type-id';
 
+        $startDateString = (new DateTime())->modify('+1 day')->format('Y-m-d');
+        $endDateString = (new DateTime())->modify('+1 year')->format('Y-m-d');
+
         $command = new CreateRecurringExpenseCommand(
             $idMother->value(),
             $amountMother->value(),
@@ -141,8 +145,8 @@ class CreateRecurringExpenseCommandHandlerTest extends TestCase
             'account-123',
             15,
             [1, 6, 12],
-            '2025-01-15',
-            '2025-12-15',
+            $startDateString,
+            $endDateString,
             'description',
             'notes'
         );
@@ -170,6 +174,9 @@ class CreateRecurringExpenseCommandHandlerTest extends TestCase
         $typeMother = ExpenseTypeMother::create();
         $nonExistentAccountId = 'non-existent-account-id';
 
+        $startDateString = (new DateTime())->modify('+1 day')->format('Y-m-d');
+        $endDateString = (new DateTime())->modify('+1 year')->format('Y-m-d');
+
         $command = new CreateRecurringExpenseCommand(
             $idMother->value(),
             $amountMother->value(),
@@ -177,8 +184,8 @@ class CreateRecurringExpenseCommandHandlerTest extends TestCase
             $nonExistentAccountId,
             15,
             [1, 6, 12],
-            '2025-01-15',
-            '2025-12-15',
+            $startDateString,
+            $endDateString,
             'description',
             'notes'
         );
@@ -213,6 +220,9 @@ class CreateRecurringExpenseCommandHandlerTest extends TestCase
         $accountMother = $this->createMock(Account::class);
 
         $singleMonth = [6]; // Only June
+        $startDateString = (new DateTime())->modify('+1 day')->format('Y-m-d');
+        $endDateString = (new DateTime())->modify('+1 year')->format('Y-m-d');
+
         $command = new CreateRecurringExpenseCommand(
             $idMother->value(),
             $amountMother->value(),
@@ -220,8 +230,8 @@ class CreateRecurringExpenseCommandHandlerTest extends TestCase
             'account-123',
             15,
             $singleMonth,
-            '2025-01-15',
-            '2025-12-15',
+            $startDateString,
+            $endDateString,
             'Single month expense',
             'notes'
         );
@@ -267,6 +277,9 @@ class CreateRecurringExpenseCommandHandlerTest extends TestCase
         $accountMother = $this->createMock(Account::class);
 
         $allMonths = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12];
+        $startDateString = (new DateTime())->modify('+1 day')->format('Y-m-d');
+        $endDateString = (new DateTime())->modify('+1 year')->format('Y-m-d');
+
         $command = new CreateRecurringExpenseCommand(
             $idMother->value(),
             $amountMother->value(),
@@ -274,8 +287,8 @@ class CreateRecurringExpenseCommandHandlerTest extends TestCase
             'account-123',
             15,
             $allMonths,
-            '2025-01-15',
-            '2025-12-15',
+            $startDateString,
+            $endDateString,
             'Monthly expense',
             'notes'
         );
@@ -321,6 +334,9 @@ class CreateRecurringExpenseCommandHandlerTest extends TestCase
         $accountMother = $this->createMock(Account::class);
 
         $emptyMonths = [];
+        $startDateString = (new DateTime())->modify('+1 day')->format('Y-m-d');
+        $endDateString = (new DateTime())->modify('+1 year')->format('Y-m-d');
+
         $command = new CreateRecurringExpenseCommand(
             $idMother->value(),
             $amountMother->value(),
@@ -328,8 +344,8 @@ class CreateRecurringExpenseCommandHandlerTest extends TestCase
             'account-123',
             15,
             $emptyMonths,
-            '2025-01-15',
-            '2025-12-15',
+            $startDateString,
+            $endDateString,
             'No months expense',
             'notes'
         );
@@ -373,6 +389,8 @@ class CreateRecurringExpenseCommandHandlerTest extends TestCase
         $amountMother = ExpenseAmountMother::create();
         $typeMother = ExpenseTypeMother::create();
 
+        $endDateString = (new DateTime())->modify('+1 year')->format('Y-m-d');
+
         $command = new CreateRecurringExpenseCommand(
             $idMother->value(),
             $amountMother->value(),
@@ -381,7 +399,7 @@ class CreateRecurringExpenseCommandHandlerTest extends TestCase
             15,
             [1, 6, 12],
             'invalid-date-format',
-            '2025-12-15',
+            $endDateString,
             'description',
             'notes'
         );
@@ -407,6 +425,9 @@ class CreateRecurringExpenseCommandHandlerTest extends TestCase
         $typeMother = ExpenseTypeMother::create();
         $accountMother = $this->createMock(Account::class);
 
+        $startDateString = (new DateTime())->modify('+1 day')->format('Y-m-d');
+        $endDateString = (new DateTime())->modify('+1 year')->format('Y-m-d');
+
         // Test with day 31 (which doesn't exist in all months)
         $command = new CreateRecurringExpenseCommand(
             $idMother->value(),
@@ -415,8 +436,8 @@ class CreateRecurringExpenseCommandHandlerTest extends TestCase
             'account-123',
             31, // Edge case: day 31
             [2, 4, 6], // February, April, June (shorter months)
-            '2025-01-15',
-            '2025-12-15',
+            $startDateString,
+            $endDateString,
             'Edge case due day',
             'notes'
         );
@@ -461,6 +482,9 @@ class CreateRecurringExpenseCommandHandlerTest extends TestCase
         $typeMother = ExpenseTypeMother::create();
         $accountMother = $this->createMock(Account::class);
 
+        $startDateString = (new DateTime())->modify('+1 day')->format('Y-m-d');
+        $endDateString = (new DateTime())->modify('+1 year')->format('Y-m-d');
+
         $command = new CreateRecurringExpenseCommand(
             $idMother->value(),
             $amountMother->value(),
@@ -468,8 +492,8 @@ class CreateRecurringExpenseCommandHandlerTest extends TestCase
             'account-123',
             1, // Minimum due day
             [1, 6, 12],
-            '2025-01-15',
-            '2025-12-15',
+            $startDateString,
+            $endDateString,
             'Minimum due day',
             'notes'
         );
@@ -513,6 +537,9 @@ class CreateRecurringExpenseCommandHandlerTest extends TestCase
         $typeMother = ExpenseTypeMother::create();
         $accountMother = $this->createMock(Account::class);
 
+        $startDateString = (new DateTime())->modify('+1 day')->format('Y-m-d');
+        $endDateString = (new DateTime())->modify('+1 year')->format('Y-m-d');
+
         $command = new CreateRecurringExpenseCommand(
             $idMother->value(),
             0, // Zero amount
@@ -520,8 +547,8 @@ class CreateRecurringExpenseCommandHandlerTest extends TestCase
             'account-123',
             15,
             [1, 6, 12],
-            '2025-01-15',
-            '2025-12-15',
+            $startDateString,
+            $endDateString,
             'Zero amount expense',
             'notes'
         );
@@ -566,6 +593,9 @@ class CreateRecurringExpenseCommandHandlerTest extends TestCase
         $typeMother = ExpenseTypeMother::create();
         $accountMother = $this->createMock(Account::class);
 
+        $startDateString = (new DateTime())->modify('+1 day')->format('Y-m-d');
+        $endDateString = (new DateTime())->modify('+1 year')->format('Y-m-d');
+
         $command = new CreateRecurringExpenseCommand(
             $idMother->value(),
             $amountMother->value(),
@@ -573,8 +603,8 @@ class CreateRecurringExpenseCommandHandlerTest extends TestCase
             'account-123',
             15,
             [1, 6, 12],
-            '2025-01-15',
-            '2025-12-15',
+            $startDateString,
+            $endDateString,
             '', // Empty description
             '' // Empty notes
         );
@@ -619,6 +649,15 @@ class CreateRecurringExpenseCommandHandlerTest extends TestCase
         $typeMother = ExpenseTypeMother::create();
         $accountMother = $this->createMock(Account::class);
 
+        $currentYear = (int) (new DateTime())->format('Y');
+        $leapYear = $currentYear;
+        while (!((new DateTime())->setDate($leapYear, 1, 1)->format('L'))) {
+            $leapYear++;
+        }
+
+        $startDateString = (new DateTime())->setDate($leapYear, 1, 1)->format('Y-m-d');
+        $endDateString = (new DateTime())->setDate($leapYear, 12, 31)->format('Y-m-d');
+
         $command = new CreateRecurringExpenseCommand(
             $idMother->value(),
             $amountMother->value(),
@@ -626,8 +665,8 @@ class CreateRecurringExpenseCommandHandlerTest extends TestCase
             'account-123',
             29, // February 29th
             [2], // February only
-            '2024-01-15', // 2024 is a leap year
-            '2024-12-15',
+            $startDateString,
+            $endDateString,
             'Leap year test',
             'notes'
         );
@@ -671,6 +710,9 @@ class CreateRecurringExpenseCommandHandlerTest extends TestCase
         $amountMother = ExpenseAmountMother::create();
         $typeMother = ExpenseTypeMother::create();
 
+        $startDateString = (new DateTime())->modify('+1 day')->format('Y-m-d');
+        $endDateString = (new DateTime())->modify('+1 year')->format('Y-m-d');
+
         $command = new CreateRecurringExpenseCommand(
             $idMother->value(),
             $amountMother->value(),
@@ -678,8 +720,8 @@ class CreateRecurringExpenseCommandHandlerTest extends TestCase
             'account-122',
             15,
             [1, 6, 12],
-            '2025-01-15',
-            '2025-12-15',
+            $startDateString,
+            $endDateString,
             'description',
             'notes'
         );
@@ -716,6 +758,9 @@ class CreateRecurringExpenseCommandHandlerTest extends TestCase
         $typeMother = ExpenseTypeMother::create();
         $accountMother = $this->createMock(Account::class);
 
+        $startDateString = (new DateTime())->modify('+1 day')->format('Y-m-d');
+        $endDateString = (new DateTime())->modify('+1 year')->format('Y-m-d');
+
         $command = new CreateRecurringExpenseCommand(
             $idMother->value(),
             $amountMother->value(),
@@ -723,8 +768,8 @@ class CreateRecurringExpenseCommandHandlerTest extends TestCase
             'account-123',
             15,
             [1, 6, 12],
-            '2025-01-15',
-            '2025-12-15',
+            $startDateString,
+            $endDateString,
             'description',
             'notes'
         );
