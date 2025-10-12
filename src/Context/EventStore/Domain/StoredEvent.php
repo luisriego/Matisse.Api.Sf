@@ -4,8 +4,12 @@ declare(strict_types=1);
 
 namespace App\Context\EventStore\Domain;
 
+use App\Shared\Domain\Event\DomainEvent;
 use App\Shared\Domain\ValueObject\Uuid;
 use DateTimeImmutable;
+use App\Context\Income\Domain\Bus\IncomeWasEntered;
+use App\Context\Expense\Domain\Bus\ExpenseWasEntered;
+use App\Context\Account\Domain\Bus\InitialBalanceSet; // Importar el nuevo evento
 
 class StoredEvent
 {
@@ -33,13 +37,14 @@ class StoredEvent
         string $aggregateId,
         string $eventType,
         array $payload,
+        ?DateTimeImmutable $occurredAt = null
     ): self {
         return new self(
             Uuid::random()->value(),
             $aggregateId,
             $eventType,
             $payload,
-            new DateTimeImmutable(),
+            $occurredAt ?? new DateTimeImmutable(),
         );
     }
 
@@ -66,5 +71,30 @@ class StoredEvent
     public function occurredAt(): DateTimeImmutable
     {
         return $this->occurredAt;
+    }
+
+    public function toDomainEvent(): DomainEvent
+    {
+        $eventClassMap = [
+            IncomeWasEntered::eventName() => IncomeWasEntered::class,
+            ExpenseWasEntered::eventName() => ExpenseWasEntered::class,
+            InitialBalanceSet::eventName() => InitialBalanceSet::class, // Añadir el mapeo para InitialBalanceSet
+        ];
+
+        $eventClassName = $eventClassMap[$this->eventType()] ?? null;
+
+        if ($eventClassName === null || !class_exists($eventClassName)) {
+            throw new \RuntimeException(sprintf('Event class for type "%s" not found or not mapped.', $this->eventType()));
+        }
+
+        /** @var DomainEvent $eventClass */
+        $eventClass = $eventClassName;
+
+        return $eventClass::fromPrimitives(
+            $this->aggregateId(),
+            $this->payload(),
+            $this->id(),
+            $this->occurredAt()->format(DATE_ATOM)
+        );
     }
 }
