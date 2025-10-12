@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Context\Expense\Domain;
 
+use App\Context\Expense\Domain\Bus\RecurringExpenseWasCreated;
 use App\Context\Expense\Domain\ValueObject\ExpenseAmount;
 use App\Context\Expense\Domain\ValueObject\ExpenseDueDay;
 use App\Context\Expense\Domain\ValueObject\ExpenseEndDate;
@@ -56,9 +57,7 @@ class RecurringExpense extends AggregateRoot
         $start = $startDate ?? ExpenseStartDate::from();
         $end = $endDate   ?? ExpenseEndDate::from();
 
-        // self::ensureStartDateIsNotInThePast($start);
-
-        return new self(
+        $recurringExpense = new self(
             $id->value(),
             $amount->value(),
             $expenseType,
@@ -69,6 +68,20 @@ class RecurringExpense extends AggregateRoot
             $description,
             $notes,
         );
+
+        $recurringExpense->record(new RecurringExpenseWasCreated(
+            $id->value(),
+            $amount->value(),
+            $expenseType->id(),
+            $dueDay->value(),
+            $monthsOfYear,
+            $start->toDateTime()->format('Y-m-d H:i:s'),
+            $end->toDateTime()?->format('Y-m-d H:i:s'),
+            $description,
+            $notes
+        ));
+
+        return $recurringExpense;
     }
 
     // getters...
@@ -201,15 +214,6 @@ class RecurringExpense extends AggregateRoot
     {
         if (null !== $notes) {
             $this->notes = $notes;
-        }
-    }
-
-    private static function ensureStartDateIsNotInThePast(ExpenseStartDate $startDate): void
-    {
-        $now = new DateTimeImmutable('today');
-
-        if ($startDate->toDateTime() < $now) {
-            throw InvalidDataException::because('O gasto recurrente não pode começar no passado');
         }
     }
 }

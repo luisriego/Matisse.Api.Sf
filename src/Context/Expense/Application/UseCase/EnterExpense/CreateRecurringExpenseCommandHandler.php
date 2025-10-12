@@ -116,7 +116,10 @@ readonly class CreateRecurringExpenseCommandHandler implements CommandHandler
 
             $expense->setRecurringExpense($recurringExpense);
 
-            $this->expenseRepository->save($expense, false);
+            if ($expense->hasDomainEvents()) {
+                $this->expenseRepository->save($expense, true);
+                $this->eventBus->publish(...$expense->pullDomainEvents());
+            }
 
             $expenses[] = $expense;
         }

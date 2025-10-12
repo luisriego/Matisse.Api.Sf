@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Context\Expense\Domain\Bus;
 
 use App\Shared\Domain\Event\DomainEvent;
+use App\Shared\Domain\ValueObject\Uuid;
 use DateMalformedStringException;
 use DateTimeImmutable;
 
@@ -23,7 +24,7 @@ final readonly class RecurringExpenseWasCreated extends DomainEvent
         ?string $eventId = null,
         ?DateTimeImmutable $occurredOn = null,
     ) {
-        parent::__construct($id, $eventId, $occurredOn);
+        parent::__construct($id, $eventId ?? Uuid::random()->value(), $occurredOn ?? new DateTimeImmutable());
     }
 
     public static function eventName(): string
