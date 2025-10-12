@@ -11,7 +11,6 @@ use App\Context\Expense\Domain\ValueObject\ExpenseEndDate;
 use App\Context\Expense\Domain\ValueObject\ExpenseId;
 use App\Context\Expense\Domain\ValueObject\ExpenseStartDate;
 use App\Shared\Domain\AggregateRoot;
-use App\Shared\Domain\Exception\InvalidDataException;
 use DateMalformedStringException;
 use DateTimeImmutable;
 use DateTimeInterface;
@@ -78,7 +77,7 @@ class RecurringExpense extends AggregateRoot
             $start->toDateTime()->format('Y-m-d H:i:s'),
             $end->toDateTime()?->format('Y-m-d H:i:s'),
             $description,
-            $notes
+            $notes,
         ));
 
         return $recurringExpense;
