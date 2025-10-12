@@ -56,7 +56,7 @@ class RecurringExpense extends AggregateRoot
         $start = $startDate ?? ExpenseStartDate::from();
         $end = $endDate   ?? ExpenseEndDate::from();
 
-        self::ensureStartDateIsNotInThePast($start);
+        // self::ensureStartDateIsNotInThePast($start);
 
         return new self(
             $id->value(),

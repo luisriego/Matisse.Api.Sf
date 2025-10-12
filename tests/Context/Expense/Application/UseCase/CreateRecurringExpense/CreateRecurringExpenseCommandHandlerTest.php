@@ -14,7 +14,6 @@ use App\Context\Expense\Domain\RecurringExpenseRepository;
 use App\Context\Expense\Domain\ExpenseTypeRepository;
 use App\Shared\Domain\Event\EventBus;
 use App\Shared\Domain\Exception\ResourceNotFoundException;
-use App\Shared\Domain\Exception\InvalidDataException;
 use App\Tests\Context\Expense\Domain\ExpenseAmountMother;
 use App\Tests\Context\Expense\Domain\ExpenseIdMother;
 use App\Tests\Context\Expense\Domain\ExpenseTypeMother;
@@ -66,7 +65,7 @@ class CreateRecurringExpenseCommandHandlerTest extends TestCase
         $dueDayMother = 15;
 
         $monthsOfYear = [1, 6, 12];
-        $startDateString = (new DateTime())->modify('+1 day')->format('Y-m-d');
+        $startDateString = (new DateTime())->format('Y-m-d');
         $endDateString = (new DateTime())->modify('+1 year')->format('Y-m-d');
         $description = 'Monthly subscription';
         $notes = 'Auto-generated';
@@ -84,6 +83,8 @@ class CreateRecurringExpenseCommandHandlerTest extends TestCase
             $description,
             $notes
         );
+
+        $expectedCount = $this->getExpectedExpenseCount($monthsOfYear, $startDateString);
 
         // Mock expectations
         $this->typeRepo
@@ -109,7 +110,7 @@ class CreateRecurringExpenseCommandHandlerTest extends TestCase
             );
 
         $this->expenseRepo
-            ->expects(self::exactly(count($monthsOfYear)))
+            ->expects(self::exactly($expectedCount))
             ->method('save')
             ->with(
                 self::anything(),
@@ -136,7 +137,7 @@ class CreateRecurringExpenseCommandHandlerTest extends TestCase
         $amountMother = ExpenseAmountMother::create();
         $nonExistentTypeId = 'non-existent-type-id';
 
-        $startDateString = (new DateTime())->modify('+1 day')->format('Y-m-d');
+        $startDateString = (new DateTime())->format('Y-m-d');
         $endDateString = (new DateTime())->modify('+1 year')->format('Y-m-d');
 
         $command = new CreateRecurringExpenseCommand(
@@ -175,7 +176,7 @@ class CreateRecurringExpenseCommandHandlerTest extends TestCase
         $typeMother = ExpenseTypeMother::create();
         $nonExistentAccountId = 'non-existent-account-id';
 
-        $startDateString = (new DateTime())->modify('+1 day')->format('Y-m-d');
+        $startDateString = (new DateTime())->format('Y-m-d');
         $endDateString = (new DateTime())->modify('+1 year')->format('Y-m-d');
 
         $command = new CreateRecurringExpenseCommand(
@@ -221,7 +222,7 @@ class CreateRecurringExpenseCommandHandlerTest extends TestCase
         $accountMother = $this->createMock(Account::class);
 
         $singleMonth = [6]; // Only June
-        $startDateString = (new DateTime())->modify('+1 day')->format('Y-m-d');
+        $startDateString = (new DateTime())->format('Y-m-d');
         $endDateString = (new DateTime())->modify('+1 year')->format('Y-m-d');
 
         $command = new CreateRecurringExpenseCommand(
@@ -236,6 +237,8 @@ class CreateRecurringExpenseCommandHandlerTest extends TestCase
             'Single month expense',
             'notes'
         );
+
+        $expectedCount = $this->getExpectedExpenseCount($singleMonth, $startDateString);
 
         // Mock expectations
         $this->typeRepo
@@ -253,7 +256,7 @@ class CreateRecurringExpenseCommandHandlerTest extends TestCase
             ->method('save');
 
         $this->expenseRepo
-            ->expects(self::exactly(1)) // Only one expense for single month
+            ->expects(self::exactly($expectedCount))
             ->method('save');
 
         $this->recurringExpenseRepo
@@ -278,7 +281,7 @@ class CreateRecurringExpenseCommandHandlerTest extends TestCase
         $accountMother = $this->createMock(Account::class);
 
         $allMonths = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12];
-        $startDateString = (new DateTime())->modify('+1 day')->format('Y-m-d');
+        $startDateString = (new DateTime())->format('Y-m-d');
         $endDateString = (new DateTime())->modify('+1 year')->format('Y-m-d');
 
         $command = new CreateRecurringExpenseCommand(
@@ -293,6 +296,8 @@ class CreateRecurringExpenseCommandHandlerTest extends TestCase
             'Monthly expense',
             'notes'
         );
+
+        $expectedCount = $this->getExpectedExpenseCount($allMonths, $startDateString);
 
         // Mock expectations
         $this->typeRepo
@@ -310,7 +315,7 @@ class CreateRecurringExpenseCommandHandlerTest extends TestCase
             ->method('save');
 
         $this->expenseRepo
-            ->expects(self::exactly(12)) // 12 individual expenses
+            ->expects(self::exactly($expectedCount))
             ->method('save');
 
         $this->recurringExpenseRepo
@@ -335,7 +340,7 @@ class CreateRecurringExpenseCommandHandlerTest extends TestCase
         $accountMother = $this->createMock(Account::class);
 
         $emptyMonths = [];
-        $startDateString = (new DateTime())->modify('+1 day')->format('Y-m-d');
+        $startDateString = (new DateTime())->format('Y-m-d');
         $endDateString = (new DateTime())->modify('+1 year')->format('Y-m-d');
 
         $command = new CreateRecurringExpenseCommand(
@@ -426,8 +431,9 @@ class CreateRecurringExpenseCommandHandlerTest extends TestCase
         $typeMother = ExpenseTypeMother::create();
         $accountMother = $this->createMock(Account::class);
 
-        $startDateString = (new DateTime())->modify('+1 day')->format('Y-m-d');
+        $startDateString = (new DateTime())->format('Y-m-d');
         $endDateString = (new DateTime())->modify('+1 year')->format('Y-m-d');
+        $months = [2, 4, 6]; // February, April, June (shorter months)
 
         // Test with day 31 (which doesn't exist in all months)
         $command = new CreateRecurringExpenseCommand(
@@ -436,12 +442,14 @@ class CreateRecurringExpenseCommandHandlerTest extends TestCase
             $typeMother->id(),
             'account-123',
             31, // Edge case: day 31
-            [2, 4, 6], // February, April, June (shorter months)
+            $months,
             $startDateString,
             $endDateString,
             'Edge case due day',
             'notes'
         );
+
+        $expectedCount = $this->getExpectedExpenseCount($months, $startDateString);
 
         // Mock expectations
         $this->typeRepo
@@ -459,7 +467,7 @@ class CreateRecurringExpenseCommandHandlerTest extends TestCase
             ->method('save');
 
         $this->expenseRepo
-            ->expects(self::exactly(3))
+            ->expects(self::exactly($expectedCount))
             ->method('save');
 
         $this->recurringExpenseRepo
@@ -483,8 +491,9 @@ class CreateRecurringExpenseCommandHandlerTest extends TestCase
         $typeMother = ExpenseTypeMother::create();
         $accountMother = $this->createMock(Account::class);
 
-        $startDateString = (new DateTime())->modify('+1 day')->format('Y-m-d');
+        $startDateString = (new DateTime())->format('Y-m-d');
         $endDateString = (new DateTime())->modify('+1 year')->format('Y-m-d');
+        $months = [1, 6, 12];
 
         $command = new CreateRecurringExpenseCommand(
             $idMother->value(),
@@ -492,12 +501,14 @@ class CreateRecurringExpenseCommandHandlerTest extends TestCase
             $typeMother->id(),
             'account-123',
             1, // Minimum due day
-            [1, 6, 12],
+            $months,
             $startDateString,
             $endDateString,
             'Minimum due day',
             'notes'
         );
+
+        $expectedCount = $this->getExpectedExpenseCount($months, $startDateString);
 
         // Mock expectations
         $this->typeRepo
@@ -515,7 +526,7 @@ class CreateRecurringExpenseCommandHandlerTest extends TestCase
             ->method('save');
 
         $this->expenseRepo
-            ->expects(self::exactly(3))
+            ->expects(self::exactly($expectedCount))
             ->method('save');
 
         $this->recurringExpenseRepo
@@ -538,8 +549,9 @@ class CreateRecurringExpenseCommandHandlerTest extends TestCase
         $typeMother = ExpenseTypeMother::create();
         $accountMother = $this->createMock(Account::class);
 
-        $startDateString = (new DateTime())->modify('+1 day')->format('Y-m-d');
+        $startDateString = (new DateTime())->format('Y-m-d');
         $endDateString = (new DateTime())->modify('+1 year')->format('Y-m-d');
+        $months = [1, 6, 12];
 
         $command = new CreateRecurringExpenseCommand(
             $idMother->value(),
@@ -547,12 +559,14 @@ class CreateRecurringExpenseCommandHandlerTest extends TestCase
             $typeMother->id(),
             'account-123',
             15,
-            [1, 6, 12],
+            $months,
             $startDateString,
             $endDateString,
             'Zero amount expense',
             'notes'
         );
+
+        $expectedCount = $this->getExpectedExpenseCount($months, $startDateString);
 
         // Mock expectations
         $this->typeRepo
@@ -570,7 +584,7 @@ class CreateRecurringExpenseCommandHandlerTest extends TestCase
             ->method('save');
 
         $this->expenseRepo
-            ->expects(self::exactly(3))
+            ->expects(self::exactly($expectedCount))
             ->method('save');
 
         $this->recurringExpenseRepo
@@ -594,8 +608,9 @@ class CreateRecurringExpenseCommandHandlerTest extends TestCase
         $typeMother = ExpenseTypeMother::create();
         $accountMother = $this->createMock(Account::class);
 
-        $startDateString = (new DateTime())->modify('+1 day')->format('Y-m-d');
+        $startDateString = (new DateTime())->format('Y-m-d');
         $endDateString = (new DateTime())->modify('+1 year')->format('Y-m-d');
+        $months = [1, 6, 12];
 
         $command = new CreateRecurringExpenseCommand(
             $idMother->value(),
@@ -603,12 +618,14 @@ class CreateRecurringExpenseCommandHandlerTest extends TestCase
             $typeMother->id(),
             'account-123',
             15,
-            [1, 6, 12],
+            $months,
             $startDateString,
             $endDateString,
             '', // Empty description
             '' // Empty notes
         );
+
+        $expectedCount = $this->getExpectedExpenseCount($months, $startDateString);
 
         // Mock expectations
         $this->typeRepo
@@ -626,7 +643,7 @@ class CreateRecurringExpenseCommandHandlerTest extends TestCase
             ->method('save');
 
         $this->expenseRepo
-            ->expects(self::exactly(3))
+            ->expects(self::exactly($expectedCount))
             ->method('save');
 
         $this->recurringExpenseRepo
@@ -658,6 +675,7 @@ class CreateRecurringExpenseCommandHandlerTest extends TestCase
 
         $startDateString = (new DateTime())->setDate($leapYear, 1, 1)->format('Y-m-d');
         $endDateString = (new DateTime())->setDate($leapYear, 12, 31)->format('Y-m-d');
+        $months = [2]; // February only
 
         $command = new CreateRecurringExpenseCommand(
             $idMother->value(),
@@ -665,12 +683,14 @@ class CreateRecurringExpenseCommandHandlerTest extends TestCase
             $typeMother->id(),
             'account-123',
             29, // February 29th
-            [2], // February only
+            $months,
             $startDateString,
             $endDateString,
             'Leap year test',
             'notes'
         );
+
+        $expectedCount = $this->getExpectedExpenseCount($months, $startDateString);
 
         // Mock expectations
         $this->typeRepo
@@ -688,7 +708,7 @@ class CreateRecurringExpenseCommandHandlerTest extends TestCase
             ->method('save');
 
         $this->expenseRepo
-            ->expects(self::exactly(1))
+            ->expects(self::exactly($expectedCount))
             ->method('save');
 
         $this->recurringExpenseRepo
@@ -711,7 +731,7 @@ class CreateRecurringExpenseCommandHandlerTest extends TestCase
         $amountMother = ExpenseAmountMother::create();
         $typeMother = ExpenseTypeMother::create();
 
-        $startDateString = (new DateTime())->modify('+1 day')->format('Y-m-d');
+        $startDateString = (new DateTime())->format('Y-m-d');
         $endDateString = (new DateTime())->modify('+1 year')->format('Y-m-d');
 
         $command = new CreateRecurringExpenseCommand(
@@ -759,8 +779,9 @@ class CreateRecurringExpenseCommandHandlerTest extends TestCase
         $typeMother = ExpenseTypeMother::create();
         $accountMother = $this->createMock(Account::class);
 
-        $startDateString = (new DateTime())->modify('+1 day')->format('Y-m-d');
+        $startDateString = (new DateTime())->format('Y-m-d');
         $endDateString = (new DateTime())->modify('+1 year')->format('Y-m-d');
+        $months = [1, 6, 12];
 
         $command = new CreateRecurringExpenseCommand(
             $idMother->value(),
@@ -768,12 +789,14 @@ class CreateRecurringExpenseCommandHandlerTest extends TestCase
             $typeMother->id(),
             'account-123',
             15,
-            [1, 6, 12],
+            $months,
             $startDateString,
             $endDateString,
             'description',
             'notes'
         );
+
+        $expectedCount = $this->getExpectedExpenseCount($months, $startDateString);
 
         $this->typeRepo
             ->expects(self::exactly(2))
@@ -790,7 +813,7 @@ class CreateRecurringExpenseCommandHandlerTest extends TestCase
             ->method('save');
 
         $this->expenseRepo
-            ->expects(self::exactly(3))
+            ->expects(self::exactly($expectedCount))
             ->method('save');
 
         $this->recurringExpenseRepo
@@ -807,14 +830,16 @@ class CreateRecurringExpenseCommandHandlerTest extends TestCase
     }
 
     /** @test */
-    public function test_it_should_throw_exception_when_recurring_expense_start_date_is_in_the_past(): void
+    public function test_it_should_not_create_expenses_for_past_months_when_date_is_in_the_past(): void
     {
         // Arrange
         $idMother = ExpenseIdMother::create();
         $amountMother = ExpenseAmountMother::create();
         $typeMother = ExpenseTypeMother::create();
+        $accountMother = $this->createMock(Account::class);
 
         $pastDateString = (new DateTime())->modify('-1 day')->format('Y-m-d'); // Date in the past
+        $months = [1, 6, 12];
 
         $command = new CreateRecurringExpenseCommand(
             $idMother->value(),
@@ -822,23 +847,157 @@ class CreateRecurringExpenseCommandHandlerTest extends TestCase
             $typeMother->id(),
             'account-123',
             15,
-            [1, 6, 12],
+            $months,
             $pastDateString,
             (new DateTime())->modify('+1 year')->format('Y-m-d'),
             'Past recurring expense',
             'notes'
         );
 
+        $expectedCount = $this->getExpectedExpenseCount($months, $pastDateString);
+
         $this->typeRepo
-            ->expects(self::once())
+            ->expects(self::exactly(2))
             ->method('findOneByIdOrFail')
             ->willReturn($typeMother);
 
-        // Assert
-        $this->expectException(InvalidDataException::class);
-        $this->expectExceptionMessage('O gasto recurrente não pode começar no passado');
+        $this->accountRepo
+            ->expects(self::atLeastOnce())
+            ->method('findOneByIdOrFail')
+            ->willReturn($accountMother);
+
+        $this->recurringExpenseRepo
+            ->expects(self::once())
+            ->method('save');
+
+        $this->expenseRepo
+            ->expects(self::exactly($expectedCount))
+            ->method('save');
+
+        $this->recurringExpenseRepo
+            ->expects(self::once())
+            ->method('flush');
+
+        $this->eventBus
+            ->expects(self::once())
+            ->method('publish');
 
         // Act
         $this->handler->__invoke($command);
+    }
+
+    /** @test */
+    public function test_it_should_not_create_expenses_for_past_months(): void
+    {
+        // Arrange
+        $idMother = ExpenseIdMother::create();
+        $amountMother = ExpenseAmountMother::create();
+        $typeMother = ExpenseTypeMother::create();
+        $accountMother = $this->createMock(Account::class);
+        $dueDayMother = 15;
+
+        $now = new DateTime();
+        $currentMonth = (int) $now->format('n');
+
+        // Create a list of months including past, current, and future months
+        $monthsOfYear = [];
+        for ($i = -2; $i <= 2; $i++) {
+            $month = $currentMonth + $i;
+            if ($month >= 1 && $month <= 12) {
+                $monthsOfYear[] = $month;
+            }
+        }
+        sort($monthsOfYear);
+
+        $startDateString = $now->format('Y-m-d');
+        $endDateString = (new DateTime())->modify('+1 year')->format('Y-m-d');
+        $description = 'Recurring expense with past months';
+        $notes = 'Auto-generated';
+        $accountId = 'account-123';
+
+        $command = new CreateRecurringExpenseCommand(
+            $idMother->value(),
+            $amountMother->value(),
+            $typeMother->id(),
+            $accountId,
+            $dueDayMother,
+            $monthsOfYear,
+            $startDateString,
+            $endDateString,
+            $description,
+            $notes
+        );
+
+        $expectedExpenseCount = $this->getExpectedExpenseCount($monthsOfYear, $startDateString);
+
+        // Mock expectations
+        $this->typeRepo
+            ->expects(self::exactly(2))
+            ->method('findOneByIdOrFail')
+            ->with($typeMother->id())
+            ->willReturn($typeMother);
+
+        $this->accountRepo
+            ->expects(self::atLeastOnce())
+            ->method('findOneByIdOrFail')
+            ->with($accountId)
+            ->willReturn($accountMother);
+
+        $this->recurringExpenseRepo
+            ->expects(self::once())
+            ->method('save')
+            ->with(
+                self::callback(function (RecurringExpense $re): bool {
+                    return $re instanceof RecurringExpense;
+                }),
+                false
+            );
+
+        $this->expenseRepo
+            ->expects(self::exactly($expectedExpenseCount)) // <-- The important assertion
+            ->method('save')
+            ->with(
+                self::anything(),
+                false
+            );
+
+        $this->recurringExpenseRepo
+            ->expects(self::once())
+            ->method('flush');
+
+        $this->eventBus
+            ->expects(self::once())
+            ->method('publish');
+
+        // Act
+        $this->handler->__invoke($command);
+    }
+
+    /**
+     * @throws Exception
+     */
+    private function getExpectedExpenseCount(array $monthsOfYear, string $startDateString): int
+    {
+        $startDate = new DateTime($startDateString);
+        $startYear = (int)$startDate->format('Y');
+        $currentYear = (int)(new DateTime())->format('Y');
+        $currentMonth = (int)(new DateTime())->format('n');
+
+        if ($startYear < $currentYear) {
+            return 0;
+        }
+
+        if ($startYear > $currentYear) {
+            return count($monthsOfYear);
+        }
+
+        $expectedExpenseCount = 0;
+        foreach ($monthsOfYear as $month) {
+            if ($month >= $currentMonth) {
+                $expectedExpenseCount++;
+            }
+        }
+
+        return $expectedExpenseCount;
     }
 }

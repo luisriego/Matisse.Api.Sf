@@ -92,10 +92,16 @@ readonly class CreateRecurringExpenseCommandHandler implements CommandHandler
 
         $startDate = new DateTime($command->startDate());
         $year = $startDate->format('Y');
+        $currentMonth = (new DateTime())->format('n');
+        $currentYear = (new DateTime())->format('Y');
 
         $expenses = [];
 
         foreach ($command->monthsOfYear() as $month) {
+            if ($year === $currentYear && $month < $currentMonth) {
+                continue;
+            }
+
             $dueDate = (new DateTime())->setDate((int) $year, $month, $command->dueDay())->setTime(0, 30);
 
             $expense = Expense::create(
@@ -104,7 +110,7 @@ readonly class CreateRecurringExpenseCommandHandler implements CommandHandler
                 $expenseType,
                 $account,
                 new ExpenseDueDate($dueDate),
-                false,
+                true,
                 new ExpenseDescription(sprintf('%s (%s)', $command->description() ?? 'Recurring expense', $dueDate->format('F'))),
             );
 
