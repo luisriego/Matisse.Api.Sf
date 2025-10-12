@@ -5,10 +5,22 @@ declare(strict_types=1);
 namespace App\Shared\Domain\ValueObject;
 
 use DateTime;
+use DateTimeImmutable;
 
 class DateTimeValueObject
 {
-    public function __construct(protected DateTime $value) {}
+    protected DateTime $value;
+
+    public function __construct(DateTime|DateTimeImmutable $value)
+    {
+        if ($value instanceof DateTimeImmutable) {
+            $this->value = DateTime::createFromImmutable($value);
+
+            return;
+        }
+
+        $this->value = $value;
+    }
 
     public function value(): string
     {

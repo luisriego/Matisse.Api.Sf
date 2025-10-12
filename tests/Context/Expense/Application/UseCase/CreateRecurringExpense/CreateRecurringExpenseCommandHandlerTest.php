@@ -14,6 +14,7 @@ use App\Context\Expense\Domain\RecurringExpenseRepository;
 use App\Context\Expense\Domain\ExpenseTypeRepository;
 use App\Shared\Domain\Event\EventBus;
 use App\Shared\Domain\Exception\ResourceNotFoundException;
+use App\Shared\Domain\Exception\InvalidDataException;
 use App\Tests\Context\Expense\Domain\ExpenseAmountMother;
 use App\Tests\Context\Expense\Domain\ExpenseIdMother;
 use App\Tests\Context\Expense\Domain\ExpenseTypeMother;
@@ -800,6 +801,42 @@ class CreateRecurringExpenseCommandHandlerTest extends TestCase
         // Assert
         $this->expectException(Exception::class);
         $this->expectExceptionMessage('Flush failed');
+
+        // Act
+        $this->handler->__invoke($command);
+    }
+
+    /** @test */
+    public function test_it_should_throw_exception_when_recurring_expense_start_date_is_in_the_past(): void
+    {
+        // Arrange
+        $idMother = ExpenseIdMother::create();
+        $amountMother = ExpenseAmountMother::create();
+        $typeMother = ExpenseTypeMother::create();
+
+        $pastDateString = (new DateTime())->modify('-1 day')->format('Y-m-d'); // Date in the past
+
+        $command = new CreateRecurringExpenseCommand(
+            $idMother->value(),
+            $amountMother->value(),
+            $typeMother->id(),
+            'account-123',
+            15,
+            [1, 6, 12],
+            $pastDateString,
+            (new DateTime())->modify('+1 year')->format('Y-m-d'),
+            'Past recurring expense',
+            'notes'
+        );
+
+        $this->typeRepo
+            ->expects(self::once())
+            ->method('findOneByIdOrFail')
+            ->willReturn($typeMother);
+
+        // Assert
+        $this->expectException(InvalidDataException::class);
+        $this->expectExceptionMessage('O gasto recurrente não pode começar no passado');
 
         // Act
         $this->handler->__invoke($command);

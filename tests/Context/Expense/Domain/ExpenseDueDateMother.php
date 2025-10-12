@@ -10,6 +10,6 @@ final class ExpenseDueDateMother
 {
     public static function create(?\DateTimeImmutable $value = null): ExpenseDueDate
     {
-        return new ExpenseDueDate($value ?? new \DateTime('now'));
+        return new ExpenseDueDate($value ?? new \DateTimeImmutable('now'));
     }
 }
