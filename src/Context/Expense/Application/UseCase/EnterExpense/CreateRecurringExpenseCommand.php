@@ -19,6 +19,7 @@ final readonly class CreateRecurringExpenseCommand implements Command
         private string $endDate,
         private string $description,
         private string $notes,
+        private bool $hasPredefinedAmount = true,
     ) {}
 
     public function id(): string
@@ -69,5 +70,10 @@ final readonly class CreateRecurringExpenseCommand implements Command
     public function notes(): string
     {
         return $this->notes;
+    }
+
+    public function hasPredefinedAmount(): bool
+    {
+        return $this->hasPredefinedAmount;
     }
 }

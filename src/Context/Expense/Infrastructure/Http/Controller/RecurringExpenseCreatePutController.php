@@ -30,6 +30,7 @@ readonly class RecurringExpenseCreatePutController
             $request->endDate,
             $request->description,
             $request->notes,
+            $request->hasPredefinedAmount, // Pass the new field to the command
         );
 
         $this->commandHandler->__invoke($command);

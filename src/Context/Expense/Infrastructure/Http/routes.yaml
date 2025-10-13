@@ -67,3 +67,8 @@ expense_types_get:
     path: /api/v1/expense-types
     controller: App\Context\Expense\Infrastructure\Http\Controller\GetExpenseTypesController
     methods: ['GET']
+
+recurring_expense_enter_monthly:
+    path: /api/v1/recurring-expenses/enter-monthly
+    controller: App\Context\Expense\Infrastructure\Http\Controller\EnterMonthlyRecurringExpenseController
+    methods: ['PUT']

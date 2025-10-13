@@ -4,4 +4,6 @@ declare(strict_types=1);
 
 namespace App\Context\Expense\Domain\ValueObject;
 
-class RecurringExpenseId {}
+use App\Shared\Domain\ValueObject\Uuid;
+
+final readonly class RecurringExpenseId extends Uuid {}
