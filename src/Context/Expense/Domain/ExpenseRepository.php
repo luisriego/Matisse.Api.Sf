@@ -21,4 +21,6 @@ interface ExpenseRepository
     public function findActiveByDateRange(DateRange $dateRange): array;
 
     public function findInactiveByDateRange(DateRange $dateRange): array;
+
+    public function findByRecurringExpenseAndMonthYear(string $recurringExpenseId, int $month, int $year): ?Expense;
 }

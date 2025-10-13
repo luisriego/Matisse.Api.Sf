@@ -22,6 +22,7 @@ class RecurringExpense extends AggregateRoot
     private Collection $expenses;
     private readonly DateTimeImmutable $createdAt;
     private bool $isActive;
+    private bool $hasPredefinedAmount;
 
     public function __construct(
         private readonly string $id,
@@ -33,10 +34,12 @@ class RecurringExpense extends AggregateRoot
         private ?DateTimeInterface $endDate = null,
         private ?string $description = null,
         private ?string $notes = null,
+        bool $hasPredefinedAmount = true,
     ) {
         $this->expenses   = new ArrayCollection();
         $this->createdAt  = new DateTimeImmutable();
         $this->isActive   = true;
+        $this->hasPredefinedAmount = $hasPredefinedAmount;
     }
 
     /**
@@ -52,6 +55,7 @@ class RecurringExpense extends AggregateRoot
         ?ExpenseEndDate $endDate   = null,
         ?string $description      = null,
         ?string $notes            = null,
+        bool $hasPredefinedAmount = true,
     ): self {
         $start = $startDate ?? ExpenseStartDate::from();
         $end = $endDate   ?? ExpenseEndDate::from();
@@ -66,6 +70,7 @@ class RecurringExpense extends AggregateRoot
             $end->toDateTime(),
             $description,
             $notes,
+            $hasPredefinedAmount,
         );
 
         $recurringExpense->record(new RecurringExpenseWasCreated(
@@ -78,6 +83,7 @@ class RecurringExpense extends AggregateRoot
             $end->toDateTime()?->format('Y-m-d H:i:s'),
             $description,
             $notes,
+            null, // Pass null for eventId
         ));
 
         return $recurringExpense;
@@ -137,6 +143,11 @@ class RecurringExpense extends AggregateRoot
     public function notes(): ?string
     {
         return $this->notes;
+    }
+
+    public function hasPredefinedAmount(): bool
+    {
+        return $this->hasPredefinedAmount;
     }
 
     /**

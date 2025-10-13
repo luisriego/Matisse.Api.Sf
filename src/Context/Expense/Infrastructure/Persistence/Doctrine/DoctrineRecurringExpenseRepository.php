@@ -110,6 +110,15 @@ class DoctrineRecurringExpenseRepository extends ServiceEntityRepository impleme
         return $result;
     }
 
+    public function findByHasPredefinedAmount(bool $hasPredefinedAmount): array
+    {
+        return $this->createQueryBuilder('r')
+            ->where('r.hasPredefinedAmount = :hasPredefinedAmount')
+            ->setParameter('hasPredefinedAmount', $hasPredefinedAmount)
+            ->getQuery()
+            ->getResult();
+    }
+
     private function findAllActives(): array
     {
         return $this->createQueryBuilder('r')

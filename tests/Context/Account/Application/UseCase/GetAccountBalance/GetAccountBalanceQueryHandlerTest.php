@@ -11,6 +11,7 @@ use App\Context\EventStore\Domain\StoredEvent;
 use App\Context\EventStore\Domain\StoredEventRepository;
 use App\Context\Expense\Domain\Bus\ExpenseWasEntered;
 use App\Context\Income\Domain\Bus\IncomeWasEntered;
+use App\Shared\Domain\Event\DomainEvent;
 use App\Shared\Domain\ValueObject\Uuid;
 use App\Tests\Context\Account\Domain\AccountIdMother;
 use App\Tests\Context\Expense\Domain\ExpenseAmountMother;
@@ -21,17 +22,93 @@ use DateTimeImmutable;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 
+// Fake In-Memory StoredEventRepository for testing
+class InMemoryStoredEventRepository implements StoredEventRepository
+{
+    /**
+     * @var StoredEvent[]
+     */
+    private array $events = [];
+
+    public function save(StoredEvent $event, bool $flush = true): void
+    {
+        $this->events[] = $event;
+        usort($this->events, fn(StoredEvent $a, StoredEvent $b) => $a->occurredAt() <=> $b->occurredAt());
+    }
+
+    public function findByAggregateId(string $aggregateId): array
+    {
+        return array_filter($this->events, fn(StoredEvent $event) => $event->aggregateId() === $aggregateId);
+    }
+
+    public function findByEventNamesAndOccurredBetween(
+        array $eventNames,
+        DateTimeImmutable $startDate,
+        ?DateTimeImmutable $endDate
+    ): array {
+        return array_filter(
+            $this->events,
+            function (StoredEvent $event) use ($eventNames, $startDate, $endDate) {
+                $isEventNameMatch = in_array($event->eventType(), $eventNames);
+                $isAfterStartDate = $event->occurredAt() >= $startDate;
+                $isBeforeEndDate = ($endDate === null) || ($event->occurredAt() <= $endDate);
+
+                return $isEventNameMatch && $isAfterStartDate && $isBeforeEndDate;
+            }
+        );
+    }
+
+    public function findByEventNamesAndOccurredBetweenAndAggregateId(
+        array $eventNames,
+        DateTimeImmutable $startDate,
+        ?DateTimeImmutable $endDate,
+        string $aggregateId
+    ): array {
+        return array_filter(
+            $this->events,
+            function (StoredEvent $event) use ($eventNames, $startDate, $endDate, $aggregateId) {
+                $isEventNameMatch = in_array($event->eventType(), $eventNames);
+                $isAfterStartDate = $event->occurredAt() >= $startDate;
+                $isBeforeEndDate = ($endDate === null) || ($event->occurredAt() <= $endDate);
+                $isAggregateIdMatch = $event->aggregateId() === $aggregateId;
+
+                return $isEventNameMatch && $isAfterStartDate && $isBeforeEndDate && $isAggregateIdMatch;
+            }
+        );
+    }
+
+    public function append(DomainEvent $event): void
+    {
+        $this->save(StoredEvent::create(
+            $event->aggregateId(),
+            $event::eventName(),
+            $event->toPrimitives(),
+        ));
+    }
+
+    public function clear(): void
+    {
+        $this->events = [];
+    }
+}
+
 class GetAccountBalanceQueryHandlerTest extends TestCase
 {
-    private StoredEventRepository&MockObject $storedEventRepository;
+    private InMemoryStoredEventRepository $storedEventRepository;
     private GetAccountBalanceQueryHandler $handler;
 
     protected function setUp(): void
     {
         parent::setUp();
 
-        $this->storedEventRepository = $this->createMock(StoredEventRepository::class);
+        $this->storedEventRepository = new InMemoryStoredEventRepository();
         $this->handler = new GetAccountBalanceQueryHandler($this->storedEventRepository);
+    }
+
+    protected function tearDown(): void
+    {
+        $this->storedEventRepository->clear();
+        parent::tearDown();
     }
 
     /** @test */
@@ -41,33 +118,28 @@ class GetAccountBalanceQueryHandlerTest extends TestCase
         $accountId = AccountIdMother::create()->value();
         $upToDate = new DateTimeImmutable('2025-10-31');
 
-        // Simulate stored transaction events
-        $transactionEvents = [
+        // Populate the in-memory repository with events
+        $this->storedEventRepository->save(
             $this->createStoredIncomeEvent(
                 $accountId,
                 IncomeAmountMother::create(100000)->value(),
                 '2025-10-01'
-            ),
+            )
+        );
+        $this->storedEventRepository->save(
             $this->createStoredExpenseEvent(
                 $accountId,
                 ExpenseAmountMother::create(20000)->value(),
                 '2025-10-15'
-            ),
+            )
+        );
+        $this->storedEventRepository->save(
             $this->createStoredIncomeEvent(
                 $accountId,
                 IncomeAmountMother::create(50000)->value(),
                 '2025-10-20'
-            ),
-        ];
-
-        // Configure consecutive calls for findByEventNamesAndOccurredBetween
-        $this->storedEventRepository
-            ->expects(self::exactly(2))
-            ->method('findByEventNamesAndOccurredBetween')
-            ->willReturnOnConsecutiveCalls(
-                [], // First call for InitialBalanceSet events
-                $transactionEvents // Second call for transaction events
-            );
+            )
+        );
 
         $query = new GetAccountBalanceQuery($accountId, $upToDate);
 
@@ -86,14 +158,7 @@ class GetAccountBalanceQueryHandlerTest extends TestCase
         $accountId = AccountIdMother::create()->value();
         $upToDate = new DateTimeImmutable('2025-10-31');
 
-        // Configure consecutive calls for findByEventNamesAndOccurredBetween
-        $this->storedEventRepository
-            ->expects(self::exactly(2))
-            ->method('findByEventNamesAndOccurredBetween')
-            ->willReturnOnConsecutiveCalls(
-                [], // First call for InitialBalanceSet events
-                [] // Second call for transaction events
-            );
+        // No events saved in the repository
 
         $query = new GetAccountBalanceQuery($accountId, $upToDate);
 
@@ -111,32 +176,29 @@ class GetAccountBalanceQueryHandlerTest extends TestCase
         $accountId = AccountIdMother::create()->value();
         $upToDate = new DateTimeImmutable('2025-09-30');
 
-        $transactionEvents = [
+        // Populate the in-memory repository with events
+        $this->storedEventRepository->save(
             $this->createStoredIncomeEvent(
                 $accountId,
                 IncomeAmountMother::create(100000)->value(),
                 '2025-09-01'
-            ),
+            )
+        );
+        $this->storedEventRepository->save(
             $this->createStoredExpenseEvent(
                 $accountId,
                 ExpenseAmountMother::create(30000)->value(),
                 '2025-09-15'
-            ),
+            )
+        );
+        // This event should be ignored by the handler as its dueDate is after upToDate
+        $this->storedEventRepository->save(
             $this->createStoredIncomeEvent(
                 $accountId,
                 IncomeAmountMother::create(20000)->value(),
                 '2025-10-01'
-            ), // This one should be ignored by the handler as its dueDate is after upToDate
-        ];
-
-        // Configure consecutive calls for findByEventNamesAndOccurredBetween
-        $this->storedEventRepository
-            ->expects(self::exactly(2))
-            ->method('findByEventNamesAndOccurredBetween')
-            ->willReturnOnConsecutiveCalls(
-                [], // First call for InitialBalanceSet events
-                $transactionEvents // Second call for transaction events
-            );
+            )
+        );
 
         $query = new GetAccountBalanceQuery($accountId, $upToDate);
 
@@ -157,48 +219,43 @@ class GetAccountBalanceQueryHandlerTest extends TestCase
         $initialBalanceAmount = 500000;
         $initialBalanceDate = '2025-01-01';
 
-        // Mock for InitialBalanceSet events (first call)
-        $initialBalanceEvents = [
+        // Populate the in-memory repository with events
+        $this->storedEventRepository->save(
             $this->createStoredInitialBalanceEvent(
                 $accountId,
                 $initialBalanceAmount,
                 $initialBalanceDate
-            ),
-        ];
-
-        // Simulate stored transaction events after initial balance date
-        $transactionEvents = [
+            )
+        );
+        $this->storedEventRepository->save(
             $this->createStoredIncomeEvent(
                 $accountId,
                 IncomeAmountMother::create(100000)->value(),
                 '2025-02-01'
-            ),
+            )
+        );
+        $this->storedEventRepository->save(
             $this->createStoredExpenseEvent(
                 $accountId,
                 ExpenseAmountMother::create(20000)->value(),
                 '2025-03-15'
-            ),
+            )
+        );
+        $this->storedEventRepository->save(
             $this->createStoredIncomeEvent(
                 $accountId,
                 IncomeAmountMother::create(50000)->value(),
                 '2025-10-20'
-            ),
-            // Event after upToDate (should be ignored by the handler)
+            )
+        );
+        // Event after upToDate (should be ignored by the handler)
+        $this->storedEventRepository->save(
             $this->createStoredExpenseEvent(
                 $accountId,
                 ExpenseAmountMother::create(10000)->value(),
                 '2025-11-05'
-            ),
-        ];
-
-        // Configure consecutive calls for findByEventNamesAndOccurredBetween
-        $this->storedEventRepository
-            ->expects(self::exactly(2))
-            ->method('findByEventNamesAndOccurredBetween')
-            ->willReturnOnConsecutiveCalls(
-                $initialBalanceEvents, // First call for InitialBalanceSet events
-                $transactionEvents // Second call for transaction events
-            );
+            )
+        );
 
         $query = new GetAccountBalanceQuery($accountId, $upToDate);
 
@@ -208,6 +265,49 @@ class GetAccountBalanceQueryHandlerTest extends TestCase
         // Assert
         // Expected balance: 500000 (Initial) + 100000 (Income) - 20000 (Expense) + 50000 (Income) = 630000
         self::assertEquals(630000, $result);
+    }
+
+    /** @test */
+    public function test_it_should_not_include_events_from_other_accounts(): void
+    {
+        // Arrange
+        $accountId = AccountIdMother::create()->value();
+        $otherAccountId = AccountIdMother::create()->value();
+        $upToDate = new DateTimeImmutable('2025-10-31');
+
+        // Events for the target account
+        $this->storedEventRepository->save(
+            $this->createStoredIncomeEvent(
+                $accountId,
+                IncomeAmountMother::create(100000)->value(),
+                '2025-10-01'
+            )
+        );
+
+        // Events for another account (should be ignored)
+        $this->storedEventRepository->save(
+            $this->createStoredIncomeEvent(
+                $otherAccountId,
+                IncomeAmountMother::create(500000)->value(),
+                '2025-10-05'
+            )
+        );
+        $this->storedEventRepository->save(
+            $this->createStoredExpenseEvent(
+                $otherAccountId,
+                ExpenseAmountMother::create(100000)->value(),
+                '2025-10-10'
+            )
+        );
+
+        $query = new GetAccountBalanceQuery($accountId, $upToDate);
+
+        // Act
+        $result = $this->handler->__invoke($query);
+
+        // Assert
+        // Only events from $accountId should be considered. Expected: 100000
+        self::assertEquals(100000, $result);
     }
 
     private function createStoredIncomeEvent(string $accountId, int $amount, string $dueDate): StoredEvent

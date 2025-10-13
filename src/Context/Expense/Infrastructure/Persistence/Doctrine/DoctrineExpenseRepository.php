@@ -8,8 +8,11 @@ use App\Context\Expense\Domain\Expense;
 use App\Context\Expense\Domain\ExpenseRepository;
 use App\Shared\Domain\Exception\ResourceNotFoundException;
 use App\Shared\Domain\ValueObject\DateRange;
+use DateTimeImmutable;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
+
+use function sprintf;
 
 class DoctrineExpenseRepository extends ServiceEntityRepository implements ExpenseRepository
 {
@@ -50,6 +53,11 @@ class DoctrineExpenseRepository extends ServiceEntityRepository implements Expen
         return $expense;
     }
 
+    public function findAll(): array
+    {
+        return $this->findAll();
+    }
+
     public function findActiveByDateRange(DateRange $dateRange): array
     {
         return $this->getEntityManager()
@@ -78,5 +86,22 @@ class DoctrineExpenseRepository extends ServiceEntityRepository implements Expen
             ->setParameter('startDate', $dateRange->startDate())
             ->setParameter('endDate', $dateRange->endDate())
             ->getResult();
+    }
+
+    public function findByRecurringExpenseAndMonthYear(string $recurringExpenseId, int $month, int $year): ?Expense
+    {
+        $startDate = new DateTimeImmutable(sprintf('%d-%02d-01 00:00:00', $year, $month));
+        $endDate = $startDate->modify('last day of this month')->setTime(23, 59, 59);
+
+        return $this->createQueryBuilder('e')
+            ->join('e.recurringExpense', 're')
+            ->where('re.id = :recurringExpenseId')
+            ->andWhere('e.dueDate >= :startDate')
+            ->andWhere('e.dueDate <= :endDate')
+            ->setParameter('recurringExpenseId', $recurringExpenseId)
+            ->setParameter('startDate', $startDate)
+            ->setParameter('endDate', $endDate)
+            ->getQuery()
+            ->getOneOrNullResult();
     }
 }

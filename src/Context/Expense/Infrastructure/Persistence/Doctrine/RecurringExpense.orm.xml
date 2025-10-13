@@ -24,6 +24,9 @@
         <field name="createdAt"     column="created_at"      type="datetime_immutable"/>
         <field name="isActive"      column="is_active"       type="boolean"/>
         <field name="notes"         column="notes"           type="text"    nullable="true"/>
+        <field name="hasPredefinedAmount" column="has_predefined_amount" type="boolean" nullable="true"/>
+
+
 
         <many-to-one field="expenseType"
                      target-entity="App\Context\Expense\Domain\ExpenseType"
