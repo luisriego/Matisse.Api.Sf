@@ -44,15 +44,15 @@ class DoctrineStoreEventRepository extends ServiceEntityRepository implements St
     ): array {
         $qb = $this->createQueryBuilder('e');
 
-        $qb->where($qb->expr()->in('e.name', ':names'))
-           ->andWhere('e.occurredAt >= :start')
-           ->setParameter('names', $eventNames)
-           ->setParameter('start', $startDate)
-           ->orderBy('e.occurredAt', 'ASC');
+        $qb->where($qb->expr()->in('e.eventType', ':names')) // Corregido: e.name a e.eventType
+            ->andWhere('e.occurredAt >= :start')
+            ->setParameter('names', $eventNames)
+            ->setParameter('start', $startDate)
+            ->orderBy('e.occurredAt', 'ASC');
 
         if ($endDate !== null) {
             $qb->andWhere('e.occurredAt <= :end')
-               ->setParameter('end', $endDate);
+                ->setParameter('end', $endDate);
         }
 
         return $qb->getQuery()->getResult();

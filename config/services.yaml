@@ -1,5 +1,6 @@
 parameters:
-    
+    password_reset_token_lifetime: 86400 # 1 day in seconds
+
 imports:
     - { resource: '../src/Context/Account/account.yaml' }
     - { resource: '../src/Context/ResidentUnit/resident_unit.yaml'}
@@ -13,6 +14,8 @@ services:
     _defaults:
         autowire: true      
         autoconfigure: true
+        bind:
+            $passwordResetTokenLifetime: '%password_reset_token_lifetime%'
 
     App\Context\User\Infrastructure\Http\Controller\:
         public: true
@@ -52,6 +55,12 @@ services:
     _instanceof:
         App\Shared\Domain\Event\EventSubscriber:
             tags: [ 'app.event_subscriber' ]
+        
+        App\Shared\Application\QueryHandler:
+            tags: [{ name: 'messenger.message_handler', bus: 'query.bus' }]
+
+        App\Shared\Application\CommandHandler: # Added autoconfiguration for Command Handlers
+            tags: [{ name: 'messenger.message_handler', bus: 'command.bus' }]
 
     App\Shared\Domain\Event\EventBus:
         alias: App\Shared\Infrastructure\InMemorySymfonyEventBus
@@ -80,18 +89,6 @@ services:
 
     App\Context\User\Application\UseCase\Update\UpdateUserCommandHandler:
         tags: [{ name: 'messenger.message_handler', bus: 'command.bus' }]
-
-    App\Context\User\Application\UseCase\FindUser\FindUserQueryHandler:
-        tags: [{ name: 'messenger.message_handler', bus: 'query.bus' }]
-
-    App\Context\User\Application\UseCase\FindUsers\FindUsersQueryHandler:
-        tags: [{ name: 'messenger.message_handler', bus: 'query.bus' }]
-
-    # Explicitly define the query handler service for ListActiveResidentUnitsQuery
-    App\Context\ResidentUnit\Application\UseCase\ListActive\ListActiveResidentUnitsQueryHandler:
-        class: App\Context\ResidentUnit\Application\UseCase\ListActive\ListActiveResidentUnitsQueryHandler
-        public: true
-        tags: [{ name: 'messenger.message_handler', bus: 'query.bus' }]
 
     App\Security\JWTCreatedListener:
         tags:

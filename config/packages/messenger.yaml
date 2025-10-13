@@ -2,7 +2,9 @@ framework:
     messenger:
         default_bus: command.bus
         buses:
-            command.bus: ~
+            command.bus:
+                middleware:
+                    - doctrine_transaction
             query.bus: ~
             event.bus:
                 default_middleware: allow_no_handlers
@@ -15,9 +17,9 @@ framework:
             failed: 'doctrine://default?queue_name=failed'
 
         routing:
-            # 'App\Shared\Application\Query': messenger.bus.query.bus # Eliminado: Esta línea era incorrecta
             'App\Shared\Application\AsyncMessage': async
             'App\Context\User\Application\UseCase\Registration\RegisterUserCommand': sync
             'App\Context\User\Application\UseCase\Activation\ActivateUserCommand': sync
             'App\Context\User\Application\UseCase\ChangePassword\ChangePasswordCommand': sync
             'App\Context\User\Application\UseCase\Update\UpdateUserCommand': sync
+            'App\Context\Account\Application\UseCase\SetInitialBalance\SetInitialBalanceCommand': sync

@@ -4,12 +4,20 @@ declare(strict_types=1);
 
 namespace App\Context\EventStore\Domain;
 
+use App\Context\Account\Domain\Bus\InitialBalanceSet;
+use App\Context\Expense\Domain\Bus\ExpenseWasEntered;
+use App\Context\Income\Domain\Bus\IncomeWasEntered;
 use App\Shared\Domain\Event\DomainEvent;
 use App\Shared\Domain\ValueObject\Uuid;
 use DateTimeImmutable;
-use App\Context\Income\Domain\Bus\IncomeWasEntered;
-use App\Context\Expense\Domain\Bus\ExpenseWasEntered;
-use App\Context\Account\Domain\Bus\InitialBalanceSet; // Importar el nuevo evento
+use RuntimeException;
+
+use function class_exists;
+use function sprintf;
+
+use const DATE_ATOM;
+
+ // Importar el nuevo evento
 
 class StoredEvent
 {
@@ -37,7 +45,7 @@ class StoredEvent
         string $aggregateId,
         string $eventType,
         array $payload,
-        ?DateTimeImmutable $occurredAt = null
+        ?DateTimeImmutable $occurredAt = null,
     ): self {
         return new self(
             Uuid::random()->value(),
@@ -84,7 +92,7 @@ class StoredEvent
         $eventClassName = $eventClassMap[$this->eventType()] ?? null;
 
         if ($eventClassName === null || !class_exists($eventClassName)) {
-            throw new \RuntimeException(sprintf('Event class for type "%s" not found or not mapped.', $this->eventType()));
+            throw new RuntimeException(sprintf('Event class for type "%s" not found or not mapped.', $this->eventType()));
         }
 
         /** @var DomainEvent $eventClass */
@@ -94,7 +102,7 @@ class StoredEvent
             $this->aggregateId(),
             $this->payload(),
             $this->id(),
-            $this->occurredAt()->format(DATE_ATOM)
+            $this->occurredAt()->format(DATE_ATOM),
         );
     }
 }

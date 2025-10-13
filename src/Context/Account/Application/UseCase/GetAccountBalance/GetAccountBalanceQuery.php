@@ -12,8 +12,7 @@ readonly class GetAccountBalanceQuery implements Query
     public function __construct(
         private string $accountId,
         private ?DateTimeImmutable $upToDate = null,
-    ) {
-    }
+    ) {}
 
     public function accountId(): string
     {

@@ -12,8 +12,7 @@ readonly class SetInitialBalanceCommand implements Command
         private string $accountId,
         private int $amount,
         private string $date,
-    ) {
-    }
+    ) {}
 
     public function accountId(): string
     {

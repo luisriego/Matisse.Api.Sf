@@ -12,6 +12,8 @@ use App\Context\Income\Domain\Bus\IncomeWasEntered;
 use App\Shared\Application\QueryHandler;
 use DateTimeImmutable;
 
+use function end;
+
 readonly class GetAccountBalanceQueryHandler implements QueryHandler
 {
     public function __construct(
@@ -30,7 +32,7 @@ readonly class GetAccountBalanceQueryHandler implements QueryHandler
         $initialBalanceEvents = $this->eventRepository->findByEventNamesAndOccurredBetween(
             [InitialBalanceSet::eventName()],
             new DateTimeImmutable('1900-01-01'),
-            $upToDate
+            $upToDate,
         );
 
         if (!empty($initialBalanceEvents)) {
@@ -50,16 +52,17 @@ readonly class GetAccountBalanceQueryHandler implements QueryHandler
                 IncomeWasEntered::eventName(),
             ],
             $eventsStartDate,
-            $upToDate
+            $upToDate,
         );
 
-        /** @var StoredEvent $event */
+        // @var StoredEvent $event
         foreach ($transactionEvents as $storedEvent) {
             $domainEvent = $storedEvent->toDomainEvent();
 
             // Ensure the event's dueDate is also within the upToDate limit
             // This is important because findByEventNamesAndOccurredBetween filters by occurredAt, not dueDate
             $eventDueDate = new DateTimeImmutable($domainEvent->toPrimitives()['dueDate']);
+
             if ($eventDueDate > $upToDate) {
                 continue;
             }

@@ -6,12 +6,11 @@ namespace App\Tests\Context\Account\Application\UseCase\SetInitialBalance;
 
 use App\Context\Account\Application\UseCase\SetInitialBalance\SetInitialBalanceCommand;
 use App\Context\Account\Application\UseCase\SetInitialBalance\SetInitialBalanceCommandHandler;
-use App\Context\Account\Domain\Account;
 use App\Context\Account\Domain\AccountRepository;
 use App\Context\Account\Domain\Bus\InitialBalanceSet;
+use App\Shared\Application\EventStore; // Changed from EventBus
 use App\Tests\Context\Account\Domain\AccountIdMother;
 use App\Tests\Context\Account\Domain\AccountMother;
-use App\Shared\Domain\Event\EventBus;
 use DateTimeImmutable;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
@@ -19,7 +18,7 @@ use PHPUnit\Framework\TestCase;
 class SetInitialBalanceCommandHandlerTest extends TestCase
 {
     private AccountRepository&MockObject $accountRepository;
-    private EventBus&MockObject $eventBus;
+    private EventStore&MockObject $eventStore; // Changed from EventBus
     private SetInitialBalanceCommandHandler $handler;
 
     protected function setUp(): void
@@ -27,15 +26,15 @@ class SetInitialBalanceCommandHandlerTest extends TestCase
         parent::setUp();
 
         $this->accountRepository = $this->createMock(AccountRepository::class);
-        $this->eventBus = $this->createMock(EventBus::class);
+        $this->eventStore = $this->createMock(EventStore::class); // Changed from EventBus
         $this->handler = new SetInitialBalanceCommandHandler(
             $this->accountRepository,
-            $this->eventBus
+            $this->eventStore // Changed from eventBus
         );
     }
 
     /** @test */
-    public function test_it_should_set_initial_balance_and_publish_event(): void
+    public function test_it_should_set_initial_balance_and_append_event(): void // Renamed test method
     {
         // Arrange
         $accountId = AccountIdMother::create();
@@ -56,9 +55,10 @@ class SetInitialBalanceCommandHandlerTest extends TestCase
             ->with($accountId->value())
             ->willReturn($account);
 
-        $this->eventBus
+        // Expect that the append method is called on the EventStore
+        $this->eventStore
             ->expects(self::once())
-            ->method('publish')
+            ->method('append') // Changed from 'publish'
             ->with(self::callback(function (InitialBalanceSet $event) use ($accountId, $amount, $date): bool {
                 return $event->aggregateId() === $accountId->value()
                     && $event->amount() === $amount

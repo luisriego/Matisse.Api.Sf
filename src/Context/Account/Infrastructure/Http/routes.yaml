@@ -32,3 +32,13 @@ account_disable:
     path: /api/v1/accounts/disable/{id}
     controller: App\Context\Account\Infrastructure\Http\Controller\AccountDisablerPatchController
     methods: ['PATCH']
+
+account_get_balance:
+    path: /api/v1/accounts/{id}/balance
+    controller: App\Context\Account\Infrastructure\Http\Controller\GetAccountBalanceController
+    methods: ['GET']
+
+account_set_initial_balance:
+    path: /api/v1/accounts/{id}/initial-balance
+    controller: App\Context\Account\Infrastructure\Http\Controller\SetInitialBalanceController
+    methods: ['PUT']
