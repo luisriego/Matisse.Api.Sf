@@ -1,14 +1,25 @@
 # Rutas por contexto (Vertical Slice)
-user_routes:
-    resource:
-        path: ../src/Context/User/Infrastructure/Http/Controller/
-        namespace: App\Context\User\Infrastructure\Http\Controller
-    type: attribute
-    prefix: /api/v1/users
+#user_routes:
+#    resource:
+#        path: ../src/Context/User/Infrastructure/Http/Controller/
+#        namespace: App\Context\User\Infrastructure\Http\Controller
+#    type: attribute
+#    prefix: /api/v1/users
 
-account_routes:
-    resource:
-        path: ../src/Context/Account/Infrastructure/Http/Controller/
-        namespace: App\Context\Account\Infrastructure\Http\Controller
-    type: attribute
-    prefix: /api/v1/accounts
+account-routes:
+    resource: '../src/Context/Account/Infrastructure/Http/routes.yaml'
+
+resident_unit_routes:
+    resource: '../src/Context/ResidentUnit/Infrastructure/Http/routes.yaml'
+
+expense_routes:
+    resource: '../src/Context/Expense/Infrastructure/Http/routes.yaml'
+
+income_routes:
+    resource: '../src/Context/Income/Infrastructure/Http/routes.yaml'
+
+slip_routes:
+    resource: '../src/Context/Slip/Infrastructure/Http/routes.yaml'
+
+user_routes:
+    resource: '../src/Context/User/Infrastructure/Http/routes.yaml'

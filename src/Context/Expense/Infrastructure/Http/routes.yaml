@@ -1,0 +1,69 @@
+expense_health_check:
+    path: /api/v1/expenses/health-check
+    controller: App\Context\Expense\Infrastructure\Http\Controller\HealthCheckController
+    methods: ['GET']
+
+expense_enter_description:
+    path: /api/v1/expenses/enter-description
+    controller: App\Context\Expense\Infrastructure\Http\Controller\ExpenseEnterWithDescriptionPutController
+    methods: ['PUT']
+
+expense_enter:
+    path: /api/v1/expenses/enter
+    controller: App\Context\Expense\Infrastructure\Http\Controller\ExpenseEnterPutController
+    methods: ['PUT']
+
+expense_compensate:
+    path: /api/v1/expenses/compensate/{id}
+    controller: App\Context\Expense\Infrastructure\Http\Controller\CompensateExpensePatchController
+    methods: ['PATCH']
+
+expense_update:
+    path: /api/v1/expenses/update/{id}
+    controller: App\Context\Expense\Infrastructure\Http\Controller\UpdateExpensePatchController
+    methods: ['PATCH']
+
+expense_payed:
+    path: /api/v1/expenses/payed/{id}
+    controller: App\Context\Expense\Infrastructure\Http\Controller\ExpensePayedPatchController
+    methods: ['PATCH']
+
+expenses_get:
+    path: /api/v1/expenses
+    controller: App\Context\Expense\Infrastructure\Http\Controller\GetAllExpensesController
+    methods: ['GET']
+
+expense_get:
+    path: /api/v1/expenses/{id}
+    controller: App\Context\Expense\Infrastructure\Http\Controller\GetExpenseByIdController
+    methods: ['GET']
+
+expense_get_date_range_recurring:
+    path: /api/v1/expenses/date-range-recurring/{year}/{month}
+    controller: App\Context\Expense\Infrastructure\Http\Controller\GetInactiveExpensesByDateRangeController
+    methods: ['GET']
+
+expense_get_date_range:
+    path: /api/v1/expenses/date-range/{year}/{month}
+    controller: App\Context\Expense\Infrastructure\Http\Controller\GetActiveExpensesByDateRangeController
+    methods: ['GET']
+
+recurring_expense_create:
+    path: /api/v1/recurring-expenses/create
+    controller: App\Context\Expense\Infrastructure\Http\Controller\RecurringExpenseCreatePutController
+    methods: ['PUT']
+
+recurring_expense_remove:
+    path: /api/v1/recurring-expenses/{id}
+    controller: App\Context\Expense\Infrastructure\Http\Controller\RecurringExpenseRemoveDeleteController
+    methods: ['DELETE']
+
+recurring_expense_update:
+    path: /api/v1/recurring-expenses/{id}
+    controller: App\Context\Expense\Infrastructure\Http\Controller\UpdateRecurrentExpensePatchController
+    methods: ['PATCH']
+
+expense_types_get:
+    path: /api/v1/expense-types
+    controller: App\Context\Expense\Infrastructure\Http\Controller\GetExpenseTypesController
+    methods: ['GET']

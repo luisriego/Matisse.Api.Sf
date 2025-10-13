@@ -6,39 +6,23 @@ namespace App\Context\Account\Domain;
 
 use App\Context\Account\Domain\Bus\AccountWasDisabled;
 use App\Context\Account\Domain\Bus\AccountWasEnabled;
+use App\Context\Expense\Domain\Expense;
 use App\Shared\Domain\AggregateRoot;
 use DateTime;
 use DateTimeImmutable;
-use Doctrine\ORM\Mapping as ORM;
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 
-#[ORM\Entity(repositoryClass: AccountRepository::class)]
-#[ORM\HasLifecycleCallbacks]
 class Account extends AggregateRoot
 {
-    #[ORM\Id]
-    #[ORM\Column(type: 'string', length: 36, options: ['fixed' => true])]
     private string $id;
-
-    #[ORM\Column(length: 16, unique: true)]
     private string $code;
-
-    #[ORM\Column(length: 100)]
     private ?string $name = null;
-
-    #[ORM\Column(type: 'text', nullable: true)]
     private ?string $description = null;
-
-    #[ORM\Column(type: 'boolean')]
     private ?bool $isActive = false;
-
-    #[ORM\Column(type: 'datetime_immutable')]
     private ?DateTimeImmutable $createdAt = null;
-
-    #[ORM\Column(type: 'datetime', nullable: true)]
     private ?DateTime $updatedAt = null;
-
-    //    #[ORM\OneToMany(targetEntity: Expense::class, mappedBy: 'account')]
-    //    private Collection $expenses;
+    private Collection $expenses;
 
     public function __construct(string $id, string $code, string $name)
     {
@@ -47,12 +31,24 @@ class Account extends AggregateRoot
         $this->name = $name;
         $this->isActive = false;
         $this->createdAt = new DateTimeImmutable();
-        //        $this->expenses = new ArrayCollection();
+        $this->expenses = new ArrayCollection();
     }
 
     public static function create(AccountId $id, AccountCode $code, AccountName $name): self
     {
         return new self($id->value(), $code->value(), $name->value());
+    }
+
+    public static function createWithDescription(
+        AccountId $id,
+        AccountCode $code,
+        AccountName $name,
+        AccountDescription $description,
+    ): self {
+        $account =  new self($id->value(), $code->value(), $name->value());
+        $account->updateDescription($description);
+
+        return $account;
     }
 
     public function id(): string
@@ -90,28 +86,59 @@ class Account extends AggregateRoot
         return $this->updatedAt;
     }
 
+    public function expenses(): Collection
+    {
+        return $this->expenses;
+    }
+
     public function updateCode(AccountCode $code): void
     {
         $this->code = $code->value();
+        $this->markAsUpdated();
     }
 
     public function updateName(AccountName $name): void
     {
         $this->name = $name->value();
+        $this->markAsUpdated();
+    }
+
+    public function updateDescription(AccountDescription $description): void
+    {
+        $this->description = $description->value();
+        $this->markAsUpdated();
     }
 
     public function enable(): void
     {
         $this->isActive = true;
-
+        $this->markAsUpdated();
         $this->record(new AccountWasEnabled($this->id()));
     }
 
     public function disable(): void
     {
         $this->isActive = false;
-
+        $this->markAsUpdated();
         $this->record(new AccountWasDisabled($this->id()));
+    }
+
+    public function addExpense(Expense $expense): void
+    {
+        if (!$this->expenses->contains($expense)) {
+            $this->expenses[] = $expense;
+            $expense->setAccount($this);
+        }
+    }
+
+    public function removeExpense(Expense $expense): void
+    {
+        $this->expenses->removeElement($expense);
+    }
+
+    public function markAsUpdated(): void
+    {
+        $this->updatedAt = new DateTime();
     }
 
     public function toArray(): array
@@ -120,6 +147,7 @@ class Account extends AggregateRoot
             'id' => $this->id,
             'code' => $this->code,
             'name' => $this->name,
+            'description' => $this->description,
             'isActive' => $this->isActive,
         ];
     }

@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\Context\Account\Domain;
 
-use App\Shared\Domain\StringValueObject;
+use App\Shared\Domain\ValueObject\StringValueObject;
 use InvalidArgumentException;
 
 use function mb_strlen;
@@ -12,7 +12,7 @@ use function mb_strtoupper;
 use function preg_match;
 use function sprintf;
 
-final class AccountCode extends StringValueObject
+final readonly class AccountCode extends StringValueObject
 {
     public function __construct(string $value)
     {

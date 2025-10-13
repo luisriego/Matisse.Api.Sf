@@ -6,11 +6,13 @@ namespace App\Context\Account\Application\UseCase\FindAllAccounts;
 
 use App\Context\Account\Domain\AccountRepository;
 use App\Shared\Application\QueryHandler;
+use Symfony\Component\Messenger\Attribute\AsMessageHandler;
 
 use function array_map;
 use function count;
 
-class FindAllAccountsQueryHandler implements QueryHandler
+#[AsMessageHandler(bus: 'query.bus')]
+readonly class FindAllAccountsQueryHandler implements QueryHandler
 {
     public function __construct(private AccountRepository $repository) {}
 

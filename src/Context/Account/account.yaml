@@ -3,13 +3,11 @@ services:
         autowire: true
         autoconfigure: true
 
-    # Controladores de Account
     App\Context\Account\Infrastructure\Http\Controller\:
         public: true
         resource: './Infrastructure/Http/Controller/'
         tags: ['controller.service_arguments']
 
-    # Servicios específicos de Account
     App\Context\Account\:
         resource: './'
         exclude:
@@ -18,42 +16,15 @@ services:
             - './Infrastructure/Http/Controller/'
             - './account.yaml'
 
-    # Alias para EventBus
-    App\Shared\Application\EventBus:
-        alias: App\Shared\Infrastructure\Bus\SymfonyEventBus
-
-    # Implementación de EventBus
-    App\Shared\Infrastructure\Bus\SymfonyEventBus:
-        arguments:
-            - '@event.bus'
-
     App\Context\Account\Application\UseCase\FindAccount\FindAccountQueryHandler:
         tags:
             - { name: 'messenger.message_handler', bus: 'query.bus' }
 
+    App\Context\Account\Application\UseCase\GetAccountBalance\GetAccountBalanceQueryHandler:
+        tags:
+            - { name: 'messenger.message_handler', bus: 'query.bus' }
 
+    App\Context\Account\Application\UseCase\SetInitialBalance\SetInitialBalanceCommandHandler:
+        tags:
+            - { name: 'messenger.message_handler', bus: 'command.bus' }
 
-
-
-
-    # Comentado porque los directorios no existen todavía
-    # Command handlers específicos de Account
-    # command_handlers:
-    #     namespace: App\Context\Account\Application\Command\
-    #     resource: './Application/Command/**/*Handler.php'
-    #     tags:
-    #         - { name: messenger.message_handler, bus: command.bus }
-
-    # Query handlers específicos de Account
-    # query_handlers:
-    #     namespace: App\Context\Account\Application\Query\
-    #     resource: './Application/Query/**/*Handler.php'
-    #     tags:
-    #         - { name: messenger.message_handler, bus: query.bus }
-
-    # Event subscribers específicos de Account
-    # event_subscribers:
-    #     namespace: App\Context\Account\Application\EventSubscriber\
-    #     resource: './Application/EventSubscriber/**/*Subscriber.php'
-    #     tags:
-    #         - { name: messenger.message_handler, bus: event.bus }

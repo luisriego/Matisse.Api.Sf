@@ -9,4 +9,8 @@ interface UserRepository
     public function save(User $user, bool $flush): void;
 
     public function findOneByIdOrFail(string $id): User;
+
+    public function findOneById(string $id): ?User;
+
+    public function findByEmail(string $email): ?User;
 }

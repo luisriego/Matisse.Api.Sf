@@ -1,0 +1,349 @@
+<!DOCTYPE html>
+<html lang="en">
+ <head>
+  <meta charset="UTF-8">
+  <title>Dashboard for /var/www/html/src/Context/Account/Domain</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link href="../../../_css/bootstrap.min.css?v=12.3.4" rel="stylesheet" type="text/css">
+  <link href="../../../_css/billboard.min.css?v=12.3.4" rel="stylesheet" type="text/css">
+  <link href="../../../_css/style.css?v=12.3.4" rel="stylesheet" type="text/css">
+  <link href="../../../_css/custom.css" rel="stylesheet" type="text/css">
+ </head>
+ <body>
+  <header>
+   <div class="container-fluid">
+    <div class="row">
+     <div class="col-md-12">
+      <nav aria-label="breadcrumb">
+       <ol class="breadcrumb">
+         <li class="breadcrumb-item"><a href="../../../index.html">/var/www/html/src</a></li>
+         <li class="breadcrumb-item"><a href="../../index.html">Context</a></li>
+         <li class="breadcrumb-item"><a href="../index.html">Account</a></li>
+         <li class="breadcrumb-item"><a href="index.html">Domain</a></li>
+         <li class="breadcrumb-item active">(Dashboard)</li>
+
+       </ol>
+      </nav>
+     </div>
+    </div>
+   </div>
+  </header>
+  <div class="container-fluid">
+   <div class="row">
+    <div class="col-md-12">
+     <h2>Classes</h2>
+    </div>
+   </div>
+   <div class="row">
+    <div class="col-md-6">
+     <h3>Coverage Distribution</h3>
+     <div id="classesCoverageDistribution" style="height: 300px;">
+       <svg></svg>
+     </div>
+    </div>
+    <div class="col-md-6">
+     <h3>Complexity</h3>
+     <div id="classComplexity" style="height: 300px;">
+       <svg></svg>
+     </div>
+    </div>
+   </div>
+   <div class="row">
+    <div class="col-md-6">
+     <h3 style="margin-top: 2rem;">Insufficient Coverage</h3>
+     <div class="scrollbox">
+      <table class="table">
+       <thead>
+        <tr>
+         <th>Class</th>
+         <th class="text-right">Coverage</th>
+        </tr>
+       </thead>
+       <tbody>
+       <tr><td><a href="AccountDescription.php.html#13">App\Context\Account\Domain\AccountDescription</a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Bus/AccountWasCreated.php.html#9">App\Context\Account\Domain\Bus\AccountWasCreated</a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Bus/AccountWasUpdated.php.html#9">App\Context\Account\Domain\Bus\AccountWasUpdated</a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Exception/ExpenseNotFoundException.php.html#9">App\Context\Account\Domain\Exception\ExpenseNotFoundException</a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="AccountCode.php.html#15">App\Context\Account\Domain\AccountCode</a></td><td class="text-right">36%</td></tr>
+       <tr><td><a href="AccountName.php.html#13">App\Context\Account\Domain\AccountName</a></td><td class="text-right">45%</td></tr>
+       <tr><td><a href="Bus/AccountWasDisabled.php.html#11">App\Context\Account\Domain\Bus\AccountWasDisabled</a></td><td class="text-right">50%</td></tr>
+       <tr><td><a href="Bus/AccountWasEnabled.php.html#12">App\Context\Account\Domain\Bus\AccountWasEnabled</a></td><td class="text-right">50%</td></tr>
+       <tr><td><a href="Account.php.html#16">App\Context\Account\Domain\Account</a></td><td class="text-right">55%</td></tr>
+
+       </tbody>
+      </table>
+     </div>
+    </div>
+    <div class="col-md-6">
+     <h3 style="margin-top: 2rem;">Project Risks</h3>
+     <div class="scrollbox">
+      <table class="table">
+       <thead>
+        <tr>
+         <th>Class</th>
+         <th class="text-right">Coverage</th>
+         <th class="text-right">Complexity</th>
+         <th class="text-right"><abbr title="Change Risk Anti-Patterns (CRAP) Index">CRAP</abbr></th>
+        </tr>
+       </thead>
+       <tbody>
+       <tr><td><a href="Account.php.html#16">App\Context\Account\Domain\Account</a></td><td class="text-right">55.8%</td><td class="text-right">23</td><td class="text-right">68</td></tr>
+       <tr><td><a href="AccountDescription.php.html#13">App\Context\Account\Domain\AccountDescription</a></td><td class="text-right">0.0%</td><td class="text-right">4</td><td class="text-right">20</td></tr>
+       <tr><td><a href="AccountCode.php.html#15">App\Context\Account\Domain\AccountCode</a></td><td class="text-right">36.8%</td><td class="text-right">6</td><td class="text-right">15</td></tr>
+       <tr><td><a href="AccountName.php.html#13">App\Context\Account\Domain\AccountName</a></td><td class="text-right">45.5%</td><td class="text-right">4</td><td class="text-right">6</td></tr>
+
+       </tbody>
+      </table>
+     </div>
+    </div>
+   </div>
+   <div class="row">
+    <div class="col-md-12">
+     <h2 style="margin-top: 3rem;">Methods</h2>
+    </div>
+   </div>
+   <div class="row">
+    <div class="col-md-6">
+     <h3>Coverage Distribution</h3>
+     <div id="methodsCoverageDistribution" style="height: 300px;">
+       <svg></svg>
+     </div>
+    </div>
+    <div class="col-md-6">
+     <h3>Complexity</h3>
+     <div id="methodComplexity" style="height: 300px;">
+       <svg></svg>
+     </div>
+    </div>
+   </div>
+   <div class="row">
+    <div class="col-md-6">
+     <h3 style="margin-top: 2rem;">Insufficient Coverage</h3>
+     <div class="scrollbox">
+      <table class="table">
+       <thead>
+        <tr>
+         <th>Method</th>
+         <th class="text-right">Coverage</th>
+        </tr>
+       </thead>
+       <tbody>
+       <tr><td><a href="Account.php.html#42"><abbr title="App\Context\Account\Domain\Account::createWithDescription">createWithDescription</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Account.php.html#69"><abbr title="App\Context\Account\Domain\Account::description">description</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Account.php.html#79"><abbr title="App\Context\Account\Domain\Account::createdAt">createdAt</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Account.php.html#84"><abbr title="App\Context\Account\Domain\Account::updatedAt">updatedAt</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Account.php.html#89"><abbr title="App\Context\Account\Domain\Account::expenses">expenses</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Account.php.html#94"><abbr title="App\Context\Account\Domain\Account::updateCode">updateCode</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Account.php.html#100"><abbr title="App\Context\Account\Domain\Account::updateName">updateName</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Account.php.html#106"><abbr title="App\Context\Account\Domain\Account::updateDescription">updateDescription</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Account.php.html#126"><abbr title="App\Context\Account\Domain\Account::addExpense">addExpense</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Account.php.html#134"><abbr title="App\Context\Account\Domain\Account::removeExpense">removeExpense</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="AccountDescription.php.html#15"><abbr title="App\Context\Account\Domain\AccountDescription::__construct">__construct</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="AccountDescription.php.html#21"><abbr title="App\Context\Account\Domain\AccountDescription::ensureIsValidDescription">ensureIsValidDescription</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Bus/AccountWasCreated.php.html#11"><abbr title="App\Context\Account\Domain\Bus\AccountWasCreated::__construct">__construct</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Bus/AccountWasCreated.php.html#19"><abbr title="App\Context\Account\Domain\Bus\AccountWasCreated::eventName">eventName</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Bus/AccountWasCreated.php.html#24"><abbr title="App\Context\Account\Domain\Bus\AccountWasCreated::toPrimitives">toPrimitives</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Bus/AccountWasCreated.php.html#29"><abbr title="App\Context\Account\Domain\Bus\AccountWasCreated::fromPrimitives">fromPrimitives</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Bus/AccountWasDisabled.php.html#30"><abbr title="App\Context\Account\Domain\Bus\AccountWasDisabled::toPrimitives">toPrimitives</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Bus/AccountWasDisabled.php.html#35"><abbr title="App\Context\Account\Domain\Bus\AccountWasDisabled::fromPrimitives">fromPrimitives</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Bus/AccountWasEnabled.php.html#31"><abbr title="App\Context\Account\Domain\Bus\AccountWasEnabled::toPrimitives">toPrimitives</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Bus/AccountWasEnabled.php.html#39"><abbr title="App\Context\Account\Domain\Bus\AccountWasEnabled::fromPrimitives">fromPrimitives</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Bus/AccountWasUpdated.php.html#11"><abbr title="App\Context\Account\Domain\Bus\AccountWasUpdated::__construct">__construct</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Bus/AccountWasUpdated.php.html#19"><abbr title="App\Context\Account\Domain\Bus\AccountWasUpdated::eventName">eventName</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Bus/AccountWasUpdated.php.html#24"><abbr title="App\Context\Account\Domain\Bus\AccountWasUpdated::toPrimitives">toPrimitives</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Bus/AccountWasUpdated.php.html#29"><abbr title="App\Context\Account\Domain\Bus\AccountWasUpdated::fromPrimitives">fromPrimitives</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Exception/ExpenseNotFoundException.php.html#11"><abbr title="App\Context\Account\Domain\Exception\ExpenseNotFoundException::__construct">__construct</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="AccountCode.php.html#24"><abbr title="App\Context\Account\Domain\AccountCode::ensureIsValidCode">ensureIsValidCode</abbr></a></td><td class="text-right">25%</td></tr>
+       <tr><td><a href="AccountName.php.html#21"><abbr title="App\Context\Account\Domain\AccountName::ensureIsValidName">ensureIsValidName</abbr></a></td><td class="text-right">33%</td></tr>
+
+       </tbody>
+      </table>
+     </div>
+    </div>
+    <div class="col-md-6">
+     <h3 style="margin-top: 2rem;">Project Risks</h3>
+     <div class="scrollbox">
+      <table class="table">
+       <thead>
+        <tr>
+         <th>Method</th>
+         <th class="text-right">Coverage</th>
+         <th class="text-right">Complexity</th>
+         <th class="text-right"><abbr title="Change Risk Anti-Patterns (CRAP) Index">CRAP</abbr></th>
+        </tr>
+       </thead>
+       <tbody>
+       <tr><td><a href="AccountCode.php.html#24"><abbr title="App\Context\Account\Domain\AccountCode::ensureIsValidCode">ensureIsValidCode</abbr></a></td><td class="text-right">25.0%</td><td class="text-right">5</td><td class="text-right">15</td></tr>
+       <tr><td><a href="Account.php.html#134"><abbr title="App\Context\Account\Domain\Account::removeExpense">removeExpense</abbr></a></td><td class="text-right">0.0%</td><td class="text-right">3</td><td class="text-right">12</td></tr>
+       <tr><td><a href="AccountDescription.php.html#21"><abbr title="App\Context\Account\Domain\AccountDescription::ensureIsValidDescription">ensureIsValidDescription</abbr></a></td><td class="text-right">0.0%</td><td class="text-right">3</td><td class="text-right">12</td></tr>
+       <tr><td><a href="Account.php.html#126"><abbr title="App\Context\Account\Domain\Account::addExpense">addExpense</abbr></a></td><td class="text-right">0.0%</td><td class="text-right">2</td><td class="text-right">6</td></tr>
+       <tr><td><a href="AccountName.php.html#21"><abbr title="App\Context\Account\Domain\AccountName::ensureIsValidName">ensureIsValidName</abbr></a></td><td class="text-right">33.3%</td><td class="text-right">3</td><td class="text-right">5</td></tr>
+
+       </tbody>
+      </table>
+     </div>
+    </div>
+   </div>
+   <footer>
+    <hr/>
+    <p>
+     <small>Generated by <a href="https://github.com/sebastianbergmann/php-code-coverage" target="_top">php-code-coverage 12.3.4</a> using <a href="https://www.php.net/" target="_top">PHP 8.3.25</a> and <a href="https://phpunit.de/">PHPUnit 12.3.7</a> at Sat Sep 6 14:41:36 UTC 2025.</small>
+    </p>
+   </footer>
+  </div>
+  <script src="../../../_js/billboard.pkgd.min.js?v=12.3.4" type="text/javascript"></script>
+  <script type="application/json" id="complexity_class">[[0,4,"AccountDescription.php.html#13","App\\Context\\Account\\Domain\\AccountDescription","20"],[0,4,"Bus\/AccountWasCreated.php.html#9","App\\Context\\Account\\Domain\\Bus\\AccountWasCreated","20"],[0,4,"Bus\/AccountWasUpdated.php.html#9","App\\Context\\Account\\Domain\\Bus\\AccountWasUpdated","20"],[0,1,"Exception\/ExpenseNotFoundException.php.html#9","App\\Context\\Account\\Domain\\Exception\\ExpenseNotFoundException","2"],[36.84210526315789,6,"AccountCode.php.html#15","App\\Context\\Account\\Domain\\AccountCode","15.07"],[45.45454545454545,4,"AccountName.php.html#13","App\\Context\\Account\\Domain\\AccountName","6.60"],[50,4,"Bus\/AccountWasDisabled.php.html#11","App\\Context\\Account\\Domain\\Bus\\AccountWasDisabled","6.00"],[50,4,"Bus\/AccountWasEnabled.php.html#12","App\\Context\\Account\\Domain\\Bus\\AccountWasEnabled","6.00"],[55.81395348837209,23,"Account.php.html#16","App\\Context\\Account\\Domain\\Account","68.64"],[100,0,"AccountId.php.html#9","App\\Context\\Account\\Domain\\AccountId","0"],[100,1,"Exception\/AccountNotFoundException.php.html#11","App\\Context\\Account\\Domain\\Exception\\AccountNotFoundException","1"]]</script>
+  <script type="application/json" id="complexity_method">[[0,1,"Account.php.html#42","App\\Context\\Account\\Domain\\Account::createWithDescription","2"],[0,1,"Account.php.html#69","App\\Context\\Account\\Domain\\Account::description","2"],[0,1,"Account.php.html#79","App\\Context\\Account\\Domain\\Account::createdAt","2"],[0,1,"Account.php.html#84","App\\Context\\Account\\Domain\\Account::updatedAt","2"],[0,1,"Account.php.html#89","App\\Context\\Account\\Domain\\Account::expenses","2"],[0,1,"Account.php.html#94","App\\Context\\Account\\Domain\\Account::updateCode","2"],[0,1,"Account.php.html#100","App\\Context\\Account\\Domain\\Account::updateName","2"],[0,1,"Account.php.html#106","App\\Context\\Account\\Domain\\Account::updateDescription","2"],[0,2,"Account.php.html#126","App\\Context\\Account\\Domain\\Account::addExpense","6"],[0,3,"Account.php.html#134","App\\Context\\Account\\Domain\\Account::removeExpense","12"],[0,1,"AccountDescription.php.html#15","App\\Context\\Account\\Domain\\AccountDescription::__construct","2"],[0,3,"AccountDescription.php.html#21","App\\Context\\Account\\Domain\\AccountDescription::ensureIsValidDescription","12"],[0,1,"Bus\/AccountWasCreated.php.html#11","App\\Context\\Account\\Domain\\Bus\\AccountWasCreated::__construct","2"],[0,1,"Bus\/AccountWasCreated.php.html#19","App\\Context\\Account\\Domain\\Bus\\AccountWasCreated::eventName","2"],[0,1,"Bus\/AccountWasCreated.php.html#24","App\\Context\\Account\\Domain\\Bus\\AccountWasCreated::toPrimitives","2"],[0,1,"Bus\/AccountWasCreated.php.html#29","App\\Context\\Account\\Domain\\Bus\\AccountWasCreated::fromPrimitives","2"],[0,1,"Bus\/AccountWasDisabled.php.html#30","App\\Context\\Account\\Domain\\Bus\\AccountWasDisabled::toPrimitives","2"],[0,1,"Bus\/AccountWasDisabled.php.html#35","App\\Context\\Account\\Domain\\Bus\\AccountWasDisabled::fromPrimitives","2"],[0,1,"Bus\/AccountWasEnabled.php.html#31","App\\Context\\Account\\Domain\\Bus\\AccountWasEnabled::toPrimitives","2"],[0,1,"Bus\/AccountWasEnabled.php.html#39","App\\Context\\Account\\Domain\\Bus\\AccountWasEnabled::fromPrimitives","2"],[0,1,"Bus\/AccountWasUpdated.php.html#11","App\\Context\\Account\\Domain\\Bus\\AccountWasUpdated::__construct","2"],[0,1,"Bus\/AccountWasUpdated.php.html#19","App\\Context\\Account\\Domain\\Bus\\AccountWasUpdated::eventName","2"],[0,1,"Bus\/AccountWasUpdated.php.html#24","App\\Context\\Account\\Domain\\Bus\\AccountWasUpdated::toPrimitives","2"],[0,1,"Bus\/AccountWasUpdated.php.html#29","App\\Context\\Account\\Domain\\Bus\\AccountWasUpdated::fromPrimitives","2"],[0,1,"Exception\/ExpenseNotFoundException.php.html#11","App\\Context\\Account\\Domain\\Exception\\ExpenseNotFoundException::__construct","2"],[25,5,"AccountCode.php.html#24","App\\Context\\Account\\Domain\\AccountCode::ensureIsValidCode","15.55"],[33.33333333333333,3,"AccountName.php.html#21","App\\Context\\Account\\Domain\\AccountName::ensureIsValidName","5.67"],[100,1,"Account.php.html#27","App\\Context\\Account\\Domain\\Account::__construct","1"],[100,1,"Account.php.html#37","App\\Context\\Account\\Domain\\Account::create","1"],[100,1,"Account.php.html#54","App\\Context\\Account\\Domain\\Account::id","1"],[100,1,"Account.php.html#59","App\\Context\\Account\\Domain\\Account::code","1"],[100,1,"Account.php.html#64","App\\Context\\Account\\Domain\\Account::name","1"],[100,1,"Account.php.html#74","App\\Context\\Account\\Domain\\Account::isActive","1"],[100,1,"Account.php.html#112","App\\Context\\Account\\Domain\\Account::enable","1"],[100,1,"Account.php.html#119","App\\Context\\Account\\Domain\\Account::disable","1"],[100,1,"Account.php.html#144","App\\Context\\Account\\Domain\\Account::markAsUpdated","1"],[100,1,"Account.php.html#149","App\\Context\\Account\\Domain\\Account::toArray","1"],[100,1,"AccountCode.php.html#17","App\\Context\\Account\\Domain\\AccountCode::__construct","1"],[100,1,"AccountName.php.html#15","App\\Context\\Account\\Domain\\AccountName::__construct","1"],[100,1,"Bus\/AccountWasDisabled.php.html#13","App\\Context\\Account\\Domain\\Bus\\AccountWasDisabled::__construct","1"],[100,1,"Bus\/AccountWasDisabled.php.html#25","App\\Context\\Account\\Domain\\Bus\\AccountWasDisabled::eventName","1"],[100,1,"Bus\/AccountWasEnabled.php.html#14","App\\Context\\Account\\Domain\\Bus\\AccountWasEnabled::__construct","1"],[100,1,"Bus\/AccountWasEnabled.php.html#26","App\\Context\\Account\\Domain\\Bus\\AccountWasEnabled::eventName","1"],[100,1,"Exception\/AccountNotFoundException.php.html#13","App\\Context\\Account\\Domain\\Exception\\AccountNotFoundException::__construct","1"]]</script>
+  <script type="text/javascript" defer>
+  const barLabels = [
+    '0%',
+    '0-10%',
+    '10-20%',
+    '20-30%',
+    '30-40%',
+    '40-50%',
+    '50-60%',
+    '60-70%',
+    '70-80%',
+    '80-90%',
+    '90-100%',
+    '100%'
+  ];
+  const barConfig = (name, fullName, values) => ({
+    axis: {
+      x: {
+        type: "category",
+        categories: barLabels,
+      },
+      y: {
+        label: {
+          text: `#${name}`,
+          position: 'outer-top',
+        },
+      },
+    },
+    bindto: `#${name}CoverageDistribution`,
+    data: {
+      columns: [
+        [fullName].concat(values),
+      ],
+      colors: {
+        [fullName]: "rgba(69, 114, 167, 0.75)",
+      },
+      type: "bar",
+    },
+    bar: {
+      width: {
+        ratio: 0.9,
+      },
+    },
+    grid: {
+      focus: {
+        show: false,
+      },
+      x: {
+        show: true,
+      },
+      y: {
+        show: true,
+      },
+    },
+    legend: {
+      show: false,
+    },
+    tooltip: {
+      contents: function (data) {
+        return `<table class="bb-tooltip"><tbody>
+            <tr><th colspan="2">Coverage ${barLabels[data[0].x]}</th></tr>
+            <tr><td class="value">${data[0].value} ${name}</td></tr>
+          </tbody></table>`;
+      },
+      grouped: false,
+    },
+  });
+  bb.generate(
+    barConfig('classes', "Class Coverage", [4,0,0,0,1,1,3,0,0,0,0,2])
+  );
+  bb.generate(
+    barConfig('methods', "Method Coverage", [25,0,0,1,1,0,0,0,0,0,0,17])
+  );
+
+  const scatterConfig = (name, complexityData) => ({
+    axis: {
+      x: {
+        label: {
+          text: 'Code Coverage (in percent)',
+          position: 'outer-right',
+        },
+        tick: {
+          values: [0, 20, 40, 60, 80, 100],
+        },
+      },
+      y: {
+        label: {
+          text: 'Cyclomatic Complexity',
+          position: 'outer-top',
+        },
+        min: 0,
+        padding: {
+          bottom: 0,
+          top: 5,
+        },
+      },
+    },
+    bindto: `#${name}Complexity`,
+    data: {
+      columns: [
+        ["complexity_x"].concat(complexityData.map(d => d[0])),
+        ["complexity"].concat(complexityData.map(d => d[1])),
+      ],
+      onclick: function(data, element) {
+        window.location = complexityData[data.index][2];
+      },
+      type: "scatter",
+      xs: {
+        "complexity": "complexity_x",
+      },
+    },
+    grid: {
+      focus: {
+        show: true,
+        y: true,
+      },
+      x: {
+        show: true,
+      },
+      y: {
+        show: true,
+      },
+    },
+    legend: {
+      show: false,
+    },
+    tooltip: {
+      contents: function (data) {
+        const coverage = Math.round(data[0].x);
+        const complexity = data[0].value;
+        const targetName = complexityData[data[0].index][3];
+        const crap = complexityData[data[0].index][4];
+        return `<table class="bb-tooltip"><tbody>
+            <tr><th colspan="2">${targetName}</th></tr>
+            <tr class="bb-tooltip-name-complexity"><td>Coverage</td><td class="name">${coverage}%</td></tr>
+            <tr class="bb-tooltip-name-complexity"><td>Complexity</td><td class="value">${complexity}</td></tr>
+            <tr class="bb-tooltip-name-complexity"><td>Crap</td><td class="value">${crap}</td></tr>
+          </tbody></table>`;
+      },
+      grouped: false,
+    },
+  });
+  const classComplexityData = JSON.parse(document.getElementById('complexity_class').textContent);
+  bb.generate(
+    scatterConfig("class", classComplexityData)
+  );
+  const methodComplexityData = JSON.parse(document.getElementById('complexity_method').textContent);
+  bb.generate(
+    scatterConfig("method", methodComplexityData),
+  );
+  </script>
+ </body>
+</html>

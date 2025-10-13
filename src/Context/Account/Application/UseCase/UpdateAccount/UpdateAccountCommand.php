@@ -8,7 +8,12 @@ use App\Shared\Application\Command;
 
 final readonly class UpdateAccountCommand implements Command
 {
-    public function __construct(private string $id, private string $code, private string $name) {}
+    public function __construct(
+        private string $id,
+        private string $code,
+        private string $name,
+        private string $description,
+    ) {}
 
     public function id(): string
     {
@@ -23,5 +28,10 @@ final readonly class UpdateAccountCommand implements Command
     public function name(): string
     {
         return $this->name;
+    }
+
+    public function description(): string
+    {
+        return $this->description;
     }
 }

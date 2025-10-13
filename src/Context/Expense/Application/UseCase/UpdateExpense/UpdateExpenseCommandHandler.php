@@ -1,0 +1,41 @@
+<?php
+
+declare(strict_types=1);
+
+namespace App\Context\Expense\Application\UseCase\UpdateExpense;
+
+use App\Context\Expense\Domain\ExpenseRepository;
+use App\Context\Expense\Domain\ValueObject\ExpenseDescription;
+use App\Context\Expense\Domain\ValueObject\ExpenseDueDate;
+use App\Context\Expense\Domain\ValueObject\ExpenseId;
+use App\Shared\Application\CommandHandler;
+use DateMalformedStringException;
+use DateTime;
+
+readonly class UpdateExpenseCommandHandler implements CommandHandler
+{
+    public function __construct(
+        private ExpenseRepository $repository,
+    ) {}
+
+    /**
+     * @throws DateMalformedStringException
+     */
+    public function __invoke(UpdateExpenseCommand $command): void
+    {
+        $id = new ExpenseId($command->id());
+        $expense = $this->repository->findOneByIdOrFail($id->value());
+
+        if (null !== $command->dueDate()) {
+            $dueDate = new ExpenseDueDate(new DateTime($command->dueDate()));
+            $expense->updateDueDate($dueDate->toDateTime());
+        }
+
+        if (null !== $command->description()) {
+            $description = new ExpenseDescription($command->description());
+            $expense->updateDescription($description->value());
+        }
+
+        $this->repository->save($expense, true);
+    }
+}

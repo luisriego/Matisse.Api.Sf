@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace App\Shared\Domain;
 
+use App\Shared\Domain\Event\DomainEvent;
+
 abstract class AggregateRoot
 {
     private array $domainEvents = [];
@@ -14,6 +16,11 @@ abstract class AggregateRoot
         $this->domainEvents = [];
 
         return $recordedDomainEvents;
+    }
+
+    final public function hasDomainEvents(): bool
+    {
+        return !empty($this->domainEvents);
     }
 
     final protected function record(DomainEvent $domainEvent): void

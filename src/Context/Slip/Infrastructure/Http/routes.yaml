@@ -1,0 +1,24 @@
+slip_health_check:
+    path: /api/v1/slips/health-check
+    controller: App\Context\Slip\Infrastructure\Http\Controller\HealthCheckController
+    methods: ['GET']
+
+slip_generation:
+    path: /api/v1/slips/generation
+    controller: App\Context\Slip\Infrastructure\Http\Controller\SlipGenerationPostController
+    methods: ['POST']
+
+slip_send:
+    path: /api/v1/slips/send/{id}
+    controller: App\Context\Slip\Infrastructure\Http\Controller\SlipSendPatchController
+    methods: ['PATCH']
+
+slips_bulk_send:
+    path: /api/v1/slips/bulk-send
+    controller: App\Context\Slip\Infrastructure\Http\Controller\SlipsBulkSendPostController
+    methods: ['POST']
+
+slip_pay:
+    path: /api/v1/slips/pay/{id}
+    controller: App\Context\Slip\Infrastructure\Http\Controller\SlipPayPatchController
+    methods: ['PATCH']

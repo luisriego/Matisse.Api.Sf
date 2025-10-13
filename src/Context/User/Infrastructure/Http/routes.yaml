@@ -1,0 +1,44 @@
+user_register:
+    path: /api/v1/users/register
+    controller: App\Context\User\Infrastructure\Http\Controller\RegisterController
+    methods: ['POST']
+
+api_login_check:
+    path: /api/v1/login_check
+    controller: App\Context\User\Infrastructure\Http\Controller\LoginController
+    methods: ['POST']
+
+user_activate:
+    path: /api/v1/users/activate/{userId}/{token}
+    controller: App\Context\User\Infrastructure\Http\Controller\ActivateUserController
+    methods: ['GET']
+
+user_change_password:
+    path: /api/v1/users/change-password
+    controller: App\Context\User\Infrastructure\Http\Controller\ChangePasswordController
+    methods: ['PATCH']
+
+user_link_resident_unit_put:
+    path: /api/v1/users/{id}/resident-unit
+    controller: App\Context\User\Infrastructure\Http\Controller\LinkResidentUnitToUserPutController
+    methods: ['PUT']
+
+user_unlink_resident_unit_delete:
+    path: /api/v1/users/{id}/resident-unit
+    controller: App\Context\User\Infrastructure\Http\Controller\UnlinkResidentUnitFromUserDeleteController
+    methods: ['DELETE']
+
+user_update:
+    path: /api/v1/users/{id}
+    controller: App\Context\User\Infrastructure\Http\Controller\UpdateUserController
+    methods: ['PUT']
+
+user_find:
+    path: /api/v1/users/{id}
+    controller: App\Context\User\Infrastructure\Http\Controller\FindUserController
+    methods: ['GET']
+
+user_find_all:
+    path: /api/v1/users
+    controller: App\Context\User\Infrastructure\Http\Controller\FindUsersController
+    methods: ['GET']

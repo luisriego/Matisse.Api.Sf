@@ -2,24 +2,24 @@ framework:
     messenger:
         default_bus: command.bus
         buses:
-            command.bus: ~
+            command.bus:
+                middleware:
+                    - doctrine_transaction
             query.bus: ~
             event.bus:
                 default_middleware: allow_no_handlers
 
-        # This part is important - make sure queries are handled synchronously
+        failure_transport: failed
+
         transports:
             sync: 'sync://'
+            async: '%env(MESSENGER_TRANSPORT_DSN)%'
+            failed: 'doctrine://default?queue_name=failed'
 
-        # Either remove routing section completely for default synchronous handling
-        # or add specific routing for your Query interface
         routing:
-            'App\Shared\Application\Query': sync
-
-# when@test:
-#    framework:
-#        messenger:
-#            transports:
-#                # replace with your transport name here (e.g., my_transport: 'in-memory://')
-#                # For more Messenger testing tools, see https://github.com/zenstruck/messenger-test
-#                async: 'in-memory://'
+            'App\Shared\Application\AsyncMessage': async
+            'App\Context\User\Application\UseCase\Registration\RegisterUserCommand': sync
+            'App\Context\User\Application\UseCase\Activation\ActivateUserCommand': sync
+            'App\Context\User\Application\UseCase\ChangePassword\ChangePasswordCommand': sync
+            'App\Context\User\Application\UseCase\Update\UpdateUserCommand': sync
+            'App\Context\Account\Application\UseCase\SetInitialBalance\SetInitialBalanceCommand': sync

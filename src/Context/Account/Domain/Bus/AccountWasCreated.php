@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\Context\Account\Domain\Bus;
 
-use App\Shared\Domain\DomainEvent;
+use App\Shared\Domain\Event\DomainEvent;
 
 final readonly class AccountWasCreated extends DomainEvent
 {

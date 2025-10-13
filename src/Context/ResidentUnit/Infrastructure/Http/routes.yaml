@@ -1,0 +1,24 @@
+resident_unit_health_check:
+    path: /api/v1/resident-unit/health-check
+    controller: App\Context\ResidentUnit\Infrastructure\Http\Controller\HealthCheckController
+    methods: ['GET']
+
+resident_unit_create:
+    path: /api/v1/resident-unit/create
+    controller: App\Context\ResidentUnit\Infrastructure\Http\Controller\ResidentUnitCreateController
+    methods: ['PUT']
+
+resident_unit_create_with_recipients:
+    path: /api/v1/resident-unit/create-with-recipients
+    controller: App\Context\ResidentUnit\Infrastructure\Http\Controller\ResidentUnitCreateWithRecipientsController
+    methods: ['PUT']
+
+resident_unit_patch_recipients:
+    path: /api/v1/resident-unit/{id}/recipients
+    controller: App\Context\ResidentUnit\Infrastructure\Http\Controller\ResidentUnitAppendRecipientsController
+    methods: ['PATCH']
+
+list_active_resident_units:
+    path: /api/v1/resident-unit/actives
+    controller: App\Context\ResidentUnit\Infrastructure\Http\Controller\ListActiveResidentUnitsController
+    methods: ['GET']

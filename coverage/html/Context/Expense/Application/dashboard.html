@@ -1,0 +1,352 @@
+<!DOCTYPE html>
+<html lang="en">
+ <head>
+  <meta charset="UTF-8">
+  <title>Dashboard for /var/www/html/src/Context/Expense/Application</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link href="../../../_css/bootstrap.min.css?v=12.3.4" rel="stylesheet" type="text/css">
+  <link href="../../../_css/billboard.min.css?v=12.3.4" rel="stylesheet" type="text/css">
+  <link href="../../../_css/style.css?v=12.3.4" rel="stylesheet" type="text/css">
+  <link href="../../../_css/custom.css" rel="stylesheet" type="text/css">
+ </head>
+ <body>
+  <header>
+   <div class="container-fluid">
+    <div class="row">
+     <div class="col-md-12">
+      <nav aria-label="breadcrumb">
+       <ol class="breadcrumb">
+         <li class="breadcrumb-item"><a href="../../../index.html">/var/www/html/src</a></li>
+         <li class="breadcrumb-item"><a href="../../index.html">Context</a></li>
+         <li class="breadcrumb-item"><a href="../index.html">Expense</a></li>
+         <li class="breadcrumb-item"><a href="index.html">Application</a></li>
+         <li class="breadcrumb-item active">(Dashboard)</li>
+
+       </ol>
+      </nav>
+     </div>
+    </div>
+   </div>
+  </header>
+  <div class="container-fluid">
+   <div class="row">
+    <div class="col-md-12">
+     <h2>Classes</h2>
+    </div>
+   </div>
+   <div class="row">
+    <div class="col-md-6">
+     <h3>Coverage Distribution</h3>
+     <div id="classesCoverageDistribution" style="height: 300px;">
+       <svg></svg>
+     </div>
+    </div>
+    <div class="col-md-6">
+     <h3>Complexity</h3>
+     <div id="classComplexity" style="height: 300px;">
+       <svg></svg>
+     </div>
+    </div>
+   </div>
+   <div class="row">
+    <div class="col-md-6">
+     <h3 style="margin-top: 2rem;">Insufficient Coverage</h3>
+     <div class="scrollbox">
+      <table class="table">
+       <thead>
+        <tr>
+         <th>Class</th>
+         <th class="text-right">Coverage</th>
+        </tr>
+       </thead>
+       <tbody>
+       <tr><td><a href="UseCase/CompensateExpense/CompensateExpenseCommand.php.html#9">App\Context\Expense\Application\UseCase\CompensateExpense\CompensateExpenseCommand</a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="UseCase/CompensateExpense/CompensateExpenseCommandHandler.php.html#16">App\Context\Expense\Application\UseCase\CompensateExpense\CompensateExpenseCommandHandler</a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="UseCase/EnterExpense/EnterExpenseCommandHandler.php.html#22">App\Context\Expense\Application\UseCase\EnterExpense\EnterExpenseCommandHandler</a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="UseCase/EnterExpense/EnterExpenseWithDescriptionCommand.php.html#9">App\Context\Expense\Application\UseCase\EnterExpense\EnterExpenseWithDescriptionCommand</a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="UseCase/EnterExpense/EnterExpenseWithDescriptionCommandHandler.php.html#20">App\Context\Expense\Application\UseCase\EnterExpense\EnterExpenseWithDescriptionCommandHandler</a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="UseCase/FindAllExpenses/FindAllExpensesQueryHandler.php.html#14">App\Context\Expense\Application\UseCase\FindAllExpenses\FindAllExpensesQueryHandler</a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="UseCase/FindExpense/FindExpenseQuery.php.html#9">App\Context\Expense\Application\UseCase\FindExpense\FindExpenseQuery</a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="UseCase/FindExpense/FindExpenseQueryHandler.php.html#12">App\Context\Expense\Application\UseCase\FindExpense\FindExpenseQueryHandler</a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="UseCase/PayedAtExpense/ExpensePayedCommandHandler.php.html#10">App\Context\Expense\Application\UseCase\PayedAtExpense\ExpensePayedCommandHandler</a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="UseCase/PayedAtExpense/PayedAtExpenseCommand.php.html#9">App\Context\Expense\Application\UseCase\PayedAtExpense\PayedAtExpenseCommand</a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="UseCase/EnterExpense/EnterExpenseCommand.php.html#9">App\Context\Expense\Application\UseCase\EnterExpense\EnterExpenseCommand</a></td><td class="text-right">12%</td></tr>
+       <tr><td><a href="StoreExpenseEnteredEventSubscriber.php.html#12">App\Context\Expense\Application\StoreExpenseEnteredEventSubscriber</a></td><td class="text-right">80%</td></tr>
+
+       </tbody>
+      </table>
+     </div>
+    </div>
+    <div class="col-md-6">
+     <h3 style="margin-top: 2rem;">Project Risks</h3>
+     <div class="scrollbox">
+      <table class="table">
+       <thead>
+        <tr>
+         <th>Class</th>
+         <th class="text-right">Coverage</th>
+         <th class="text-right">Complexity</th>
+         <th class="text-right"><abbr title="Change Risk Anti-Patterns (CRAP) Index">CRAP</abbr></th>
+        </tr>
+       </thead>
+       <tbody>
+       <tr><td><a href="UseCase/EnterExpense/EnterExpenseCommandHandler.php.html#22">App\Context\Expense\Application\UseCase\EnterExpense\EnterExpenseCommandHandler</a></td><td class="text-right">0.0%</td><td class="text-right">5</td><td class="text-right">30</td></tr>
+
+       </tbody>
+      </table>
+     </div>
+    </div>
+   </div>
+   <div class="row">
+    <div class="col-md-12">
+     <h2 style="margin-top: 3rem;">Methods</h2>
+    </div>
+   </div>
+   <div class="row">
+    <div class="col-md-6">
+     <h3>Coverage Distribution</h3>
+     <div id="methodsCoverageDistribution" style="height: 300px;">
+       <svg></svg>
+     </div>
+    </div>
+    <div class="col-md-6">
+     <h3>Complexity</h3>
+     <div id="methodComplexity" style="height: 300px;">
+       <svg></svg>
+     </div>
+    </div>
+   </div>
+   <div class="row">
+    <div class="col-md-6">
+     <h3 style="margin-top: 2rem;">Insufficient Coverage</h3>
+     <div class="scrollbox">
+      <table class="table">
+       <thead>
+        <tr>
+         <th>Method</th>
+         <th class="text-right">Coverage</th>
+        </tr>
+       </thead>
+       <tbody>
+       <tr><td><a href="StoreExpenseEnteredEventSubscriber.php.html#18"><abbr title="App\Context\Expense\Application\StoreExpenseEnteredEventSubscriber::__invoke">__invoke</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="UseCase/CompensateExpense/CompensateExpenseCommand.php.html#11"><abbr title="App\Context\Expense\Application\UseCase\CompensateExpense\CompensateExpenseCommand::__construct">__construct</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="UseCase/CompensateExpense/CompensateExpenseCommand.php.html#13"><abbr title="App\Context\Expense\Application\UseCase\CompensateExpense\CompensateExpenseCommand::id">id</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="UseCase/CompensateExpense/CompensateExpenseCommand.php.html#18"><abbr title="App\Context\Expense\Application\UseCase\CompensateExpense\CompensateExpenseCommand::amount">amount</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="UseCase/CompensateExpense/CompensateExpenseCommandHandler.php.html#18"><abbr title="App\Context\Expense\Application\UseCase\CompensateExpense\CompensateExpenseCommandHandler::__construct">__construct</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="UseCase/CompensateExpense/CompensateExpenseCommandHandler.php.html#23"><abbr title="App\Context\Expense\Application\UseCase\CompensateExpense\CompensateExpenseCommandHandler::__invoke">__invoke</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="UseCase/EnterExpense/EnterExpenseCommand.php.html#21"><abbr title="App\Context\Expense\Application\UseCase\EnterExpense\EnterExpenseCommand::id">id</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="UseCase/EnterExpense/EnterExpenseCommand.php.html#26"><abbr title="App\Context\Expense\Application\UseCase\EnterExpense\EnterExpenseCommand::amount">amount</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="UseCase/EnterExpense/EnterExpenseCommand.php.html#31"><abbr title="App\Context\Expense\Application\UseCase\EnterExpense\EnterExpenseCommand::type">type</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="UseCase/EnterExpense/EnterExpenseCommand.php.html#36"><abbr title="App\Context\Expense\Application\UseCase\EnterExpense\EnterExpenseCommand::accountId">accountId</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="UseCase/EnterExpense/EnterExpenseCommand.php.html#41"><abbr title="App\Context\Expense\Application\UseCase\EnterExpense\EnterExpenseCommand::dueDate">dueDate</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="UseCase/EnterExpense/EnterExpenseCommand.php.html#46"><abbr title="App\Context\Expense\Application\UseCase\EnterExpense\EnterExpenseCommand::isActive">isActive</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="UseCase/EnterExpense/EnterExpenseCommand.php.html#51"><abbr title="App\Context\Expense\Application\UseCase\EnterExpense\EnterExpenseCommand::description">description</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="UseCase/EnterExpense/EnterExpenseCommandHandler.php.html#24"><abbr title="App\Context\Expense\Application\UseCase\EnterExpense\EnterExpenseCommandHandler::__construct">__construct</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="UseCase/EnterExpense/EnterExpenseCommandHandler.php.html#34"><abbr title="App\Context\Expense\Application\UseCase\EnterExpense\EnterExpenseCommandHandler::__invoke">__invoke</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="UseCase/EnterExpense/EnterExpenseWithDescriptionCommand.php.html#11"><abbr title="App\Context\Expense\Application\UseCase\EnterExpense\EnterExpenseWithDescriptionCommand::__construct">__construct</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="UseCase/EnterExpense/EnterExpenseWithDescriptionCommand.php.html#20"><abbr title="App\Context\Expense\Application\UseCase\EnterExpense\EnterExpenseWithDescriptionCommand::id">id</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="UseCase/EnterExpense/EnterExpenseWithDescriptionCommand.php.html#25"><abbr title="App\Context\Expense\Application\UseCase\EnterExpense\EnterExpenseWithDescriptionCommand::amount">amount</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="UseCase/EnterExpense/EnterExpenseWithDescriptionCommand.php.html#30"><abbr title="App\Context\Expense\Application\UseCase\EnterExpense\EnterExpenseWithDescriptionCommand::type">type</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="UseCase/EnterExpense/EnterExpenseWithDescriptionCommand.php.html#35"><abbr title="App\Context\Expense\Application\UseCase\EnterExpense\EnterExpenseWithDescriptionCommand::accountId">accountId</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="UseCase/EnterExpense/EnterExpenseWithDescriptionCommand.php.html#40"><abbr title="App\Context\Expense\Application\UseCase\EnterExpense\EnterExpenseWithDescriptionCommand::dueDate">dueDate</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="UseCase/EnterExpense/EnterExpenseWithDescriptionCommand.php.html#45"><abbr title="App\Context\Expense\Application\UseCase\EnterExpense\EnterExpenseWithDescriptionCommand::description">description</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="UseCase/EnterExpense/EnterExpenseWithDescriptionCommandHandler.php.html#22"><abbr title="App\Context\Expense\Application\UseCase\EnterExpense\EnterExpenseWithDescriptionCommandHandler::__construct">__construct</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="UseCase/EnterExpense/EnterExpenseWithDescriptionCommandHandler.php.html#32"><abbr title="App\Context\Expense\Application\UseCase\EnterExpense\EnterExpenseWithDescriptionCommandHandler::__invoke">__invoke</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="UseCase/FindAllExpenses/FindAllExpensesQueryHandler.php.html#17"><abbr title="App\Context\Expense\Application\UseCase\FindAllExpenses\FindAllExpensesQueryHandler::__construct">__construct</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="UseCase/FindAllExpenses/FindAllExpensesQueryHandler.php.html#19"><abbr title="App\Context\Expense\Application\UseCase\FindAllExpenses\FindAllExpensesQueryHandler::__invoke">__invoke</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="UseCase/FindExpense/FindExpenseQuery.php.html#11"><abbr title="App\Context\Expense\Application\UseCase\FindExpense\FindExpenseQuery::__construct">__construct</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="UseCase/FindExpense/FindExpenseQuery.php.html#13"><abbr title="App\Context\Expense\Application\UseCase\FindExpense\FindExpenseQuery::id">id</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="UseCase/FindExpense/FindExpenseQueryHandler.php.html#15"><abbr title="App\Context\Expense\Application\UseCase\FindExpense\FindExpenseQueryHandler::__construct">__construct</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="UseCase/FindExpense/FindExpenseQueryHandler.php.html#17"><abbr title="App\Context\Expense\Application\UseCase\FindExpense\FindExpenseQueryHandler::__invoke">__invoke</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="UseCase/PayedAtExpense/ExpensePayedCommandHandler.php.html#12"><abbr title="App\Context\Expense\Application\UseCase\PayedAtExpense\ExpensePayedCommandHandler::__construct">__construct</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="UseCase/PayedAtExpense/ExpensePayedCommandHandler.php.html#14"><abbr title="App\Context\Expense\Application\UseCase\PayedAtExpense\ExpensePayedCommandHandler::__invoke">__invoke</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="UseCase/PayedAtExpense/PayedAtExpenseCommand.php.html#11"><abbr title="App\Context\Expense\Application\UseCase\PayedAtExpense\PayedAtExpenseCommand::__construct">__construct</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="UseCase/PayedAtExpense/PayedAtExpenseCommand.php.html#13"><abbr title="App\Context\Expense\Application\UseCase\PayedAtExpense\PayedAtExpenseCommand::id">id</abbr></a></td><td class="text-right">0%</td></tr>
+
+       </tbody>
+      </table>
+     </div>
+    </div>
+    <div class="col-md-6">
+     <h3 style="margin-top: 2rem;">Project Risks</h3>
+     <div class="scrollbox">
+      <table class="table">
+       <thead>
+        <tr>
+         <th>Method</th>
+         <th class="text-right">Coverage</th>
+         <th class="text-right">Complexity</th>
+         <th class="text-right"><abbr title="Change Risk Anti-Patterns (CRAP) Index">CRAP</abbr></th>
+        </tr>
+       </thead>
+       <tbody>
+       <tr><td><a href="UseCase/EnterExpense/EnterExpenseCommandHandler.php.html#34"><abbr title="App\Context\Expense\Application\UseCase\EnterExpense\EnterExpenseCommandHandler::__invoke">__invoke</abbr></a></td><td class="text-right">0.0%</td><td class="text-right">4</td><td class="text-right">20</td></tr>
+
+       </tbody>
+      </table>
+     </div>
+    </div>
+   </div>
+   <footer>
+    <hr/>
+    <p>
+     <small>Generated by <a href="https://github.com/sebastianbergmann/php-code-coverage" target="_top">php-code-coverage 12.3.4</a> using <a href="https://www.php.net/" target="_top">PHP 8.3.25</a> and <a href="https://phpunit.de/">PHPUnit 12.3.7</a> at Sat Sep 6 14:41:36 UTC 2025.</small>
+    </p>
+   </footer>
+  </div>
+  <script src="../../../_js/billboard.pkgd.min.js?v=12.3.4" type="text/javascript"></script>
+  <script type="application/json" id="complexity_class">[[0,3,"UseCase\/CompensateExpense\/CompensateExpenseCommand.php.html#9","App\\Context\\Expense\\Application\\UseCase\\CompensateExpense\\CompensateExpenseCommand","12"],[0,2,"UseCase\/CompensateExpense\/CompensateExpenseCommandHandler.php.html#16","App\\Context\\Expense\\Application\\UseCase\\CompensateExpense\\CompensateExpenseCommandHandler","6"],[0,5,"UseCase\/EnterExpense\/EnterExpenseCommandHandler.php.html#22","App\\Context\\Expense\\Application\\UseCase\\EnterExpense\\EnterExpenseCommandHandler","30"],[0,7,"UseCase\/EnterExpense\/EnterExpenseWithDescriptionCommand.php.html#9","App\\Context\\Expense\\Application\\UseCase\\EnterExpense\\EnterExpenseWithDescriptionCommand","56"],[0,2,"UseCase\/EnterExpense\/EnterExpenseWithDescriptionCommandHandler.php.html#20","App\\Context\\Expense\\Application\\UseCase\\EnterExpense\\EnterExpenseWithDescriptionCommandHandler","6"],[0,2,"UseCase\/FindAllExpenses\/FindAllExpensesQueryHandler.php.html#14","App\\Context\\Expense\\Application\\UseCase\\FindAllExpenses\\FindAllExpensesQueryHandler","6"],[0,2,"UseCase\/FindExpense\/FindExpenseQuery.php.html#9","App\\Context\\Expense\\Application\\UseCase\\FindExpense\\FindExpenseQuery","6"],[0,2,"UseCase\/FindExpense\/FindExpenseQueryHandler.php.html#12","App\\Context\\Expense\\Application\\UseCase\\FindExpense\\FindExpenseQueryHandler","6"],[0,2,"UseCase\/PayedAtExpense\/ExpensePayedCommandHandler.php.html#10","App\\Context\\Expense\\Application\\UseCase\\PayedAtExpense\\ExpensePayedCommandHandler","6"],[0,2,"UseCase\/PayedAtExpense\/PayedAtExpenseCommand.php.html#9","App\\Context\\Expense\\Application\\UseCase\\PayedAtExpense\\PayedAtExpenseCommand","6"],[12.5,8,"UseCase\/EnterExpense\/EnterExpenseCommand.php.html#9","App\\Context\\Expense\\Application\\UseCase\\EnterExpense\\EnterExpenseCommand","50.88"],[80,3,"StoreExpenseEnteredEventSubscriber.php.html#12","App\\Context\\Expense\\Application\\StoreExpenseEnteredEventSubscriber","3.07"],[100,11,"UseCase\/EnterExpense\/CreateRecurringExpenseCommand.php.html#9","App\\Context\\Expense\\Application\\UseCase\\EnterExpense\\CreateRecurringExpenseCommand","11"],[100,5,"UseCase\/EnterExpense\/CreateRecurringExpenseCommandHandler.php.html#28","App\\Context\\Expense\\Application\\UseCase\\EnterExpense\\CreateRecurringExpenseCommandHandler","5"],[100,2,"UseCase\/FindActiveExpensesByDateRange\/FindActiveExpensesByDateRangeQuery.php.html#10","App\\Context\\Expense\\Application\\UseCase\\FindActiveExpensesByDateRange\\FindActiveExpensesByDateRangeQuery","2"],[100,2,"UseCase\/FindActiveExpensesByDateRange\/FindActiveExpensesByDateRangeQueryHandler.php.html#13","App\\Context\\Expense\\Application\\UseCase\\FindActiveExpensesByDateRange\\FindActiveExpensesByDateRangeQueryHandler","2"],[100,0,"UseCase\/FindAllExpenses\/FindAllExpensesQuery.php.html#9","App\\Context\\Expense\\Application\\UseCase\\FindAllExpenses\\FindAllExpensesQuery","0"],[100,2,"UseCase\/FindInactiveExpensesByDateRange\/FindInactiveExpensesByDateRangeQuery.php.html#10","App\\Context\\Expense\\Application\\UseCase\\FindInactiveExpensesByDateRange\\FindInactiveExpensesByDateRangeQuery","2"],[100,2,"UseCase\/FindInactiveExpensesByDateRange\/FindInactiveExpensesByDateRangeQueryHandler.php.html#13","App\\Context\\Expense\\Application\\UseCase\\FindInactiveExpensesByDateRange\\FindInactiveExpensesByDateRangeQueryHandler","2"],[100,2,"UseCase\/RemoveRecurringExpense\/RemoveRecurringExpenseCommand.php.html#9","App\\Context\\Expense\\Application\\UseCase\\RemoveRecurringExpense\\RemoveRecurringExpenseCommand","2"],[100,2,"UseCase\/RemoveRecurringExpense\/RemoveRecurringExpenseCommandHandler.php.html#11","App\\Context\\Expense\\Application\\UseCase\\RemoveRecurringExpense\\RemoveRecurringExpenseCommandHandler","2"],[100,4,"UseCase\/UpdateExpense\/UpdateExpenseCommand.php.html#9","App\\Context\\Expense\\Application\\UseCase\\UpdateExpense\\UpdateExpenseCommand","4"],[100,4,"UseCase\/UpdateExpense\/UpdateExpenseCommandHandler.php.html#15","App\\Context\\Expense\\Application\\UseCase\\UpdateExpense\\UpdateExpenseCommandHandler","4"],[100,10,"UseCase\/UpdateRecurringExpense\/UpdateRecurrentExpenseCommand.php.html#9","App\\Context\\Expense\\Application\\UseCase\\UpdateRecurringExpense\\UpdateRecurrentExpenseCommand","10"],[100,11,"UseCase\/UpdateRecurringExpense\/UpdateRecurrentExpenseCommandHandler.php.html#15","App\\Context\\Expense\\Application\\UseCase\\UpdateRecurringExpense\\UpdateRecurrentExpenseCommandHandler","11"]]</script>
+  <script type="application/json" id="complexity_method">[[0,1,"StoreExpenseEnteredEventSubscriber.php.html#18","App\\Context\\Expense\\Application\\StoreExpenseEnteredEventSubscriber::__invoke","2"],[0,1,"UseCase\/CompensateExpense\/CompensateExpenseCommand.php.html#11","App\\Context\\Expense\\Application\\UseCase\\CompensateExpense\\CompensateExpenseCommand::__construct","2"],[0,1,"UseCase\/CompensateExpense\/CompensateExpenseCommand.php.html#13","App\\Context\\Expense\\Application\\UseCase\\CompensateExpense\\CompensateExpenseCommand::id","2"],[0,1,"UseCase\/CompensateExpense\/CompensateExpenseCommand.php.html#18","App\\Context\\Expense\\Application\\UseCase\\CompensateExpense\\CompensateExpenseCommand::amount","2"],[0,1,"UseCase\/CompensateExpense\/CompensateExpenseCommandHandler.php.html#18","App\\Context\\Expense\\Application\\UseCase\\CompensateExpense\\CompensateExpenseCommandHandler::__construct","2"],[0,1,"UseCase\/CompensateExpense\/CompensateExpenseCommandHandler.php.html#23","App\\Context\\Expense\\Application\\UseCase\\CompensateExpense\\CompensateExpenseCommandHandler::__invoke","2"],[0,1,"UseCase\/EnterExpense\/EnterExpenseCommand.php.html#21","App\\Context\\Expense\\Application\\UseCase\\EnterExpense\\EnterExpenseCommand::id","2"],[0,1,"UseCase\/EnterExpense\/EnterExpenseCommand.php.html#26","App\\Context\\Expense\\Application\\UseCase\\EnterExpense\\EnterExpenseCommand::amount","2"],[0,1,"UseCase\/EnterExpense\/EnterExpenseCommand.php.html#31","App\\Context\\Expense\\Application\\UseCase\\EnterExpense\\EnterExpenseCommand::type","2"],[0,1,"UseCase\/EnterExpense\/EnterExpenseCommand.php.html#36","App\\Context\\Expense\\Application\\UseCase\\EnterExpense\\EnterExpenseCommand::accountId","2"],[0,1,"UseCase\/EnterExpense\/EnterExpenseCommand.php.html#41","App\\Context\\Expense\\Application\\UseCase\\EnterExpense\\EnterExpenseCommand::dueDate","2"],[0,1,"UseCase\/EnterExpense\/EnterExpenseCommand.php.html#46","App\\Context\\Expense\\Application\\UseCase\\EnterExpense\\EnterExpenseCommand::isActive","2"],[0,1,"UseCase\/EnterExpense\/EnterExpenseCommand.php.html#51","App\\Context\\Expense\\Application\\UseCase\\EnterExpense\\EnterExpenseCommand::description","2"],[0,1,"UseCase\/EnterExpense\/EnterExpenseCommandHandler.php.html#24","App\\Context\\Expense\\Application\\UseCase\\EnterExpense\\EnterExpenseCommandHandler::__construct","2"],[0,4,"UseCase\/EnterExpense\/EnterExpenseCommandHandler.php.html#34","App\\Context\\Expense\\Application\\UseCase\\EnterExpense\\EnterExpenseCommandHandler::__invoke","20"],[0,1,"UseCase\/EnterExpense\/EnterExpenseWithDescriptionCommand.php.html#11","App\\Context\\Expense\\Application\\UseCase\\EnterExpense\\EnterExpenseWithDescriptionCommand::__construct","2"],[0,1,"UseCase\/EnterExpense\/EnterExpenseWithDescriptionCommand.php.html#20","App\\Context\\Expense\\Application\\UseCase\\EnterExpense\\EnterExpenseWithDescriptionCommand::id","2"],[0,1,"UseCase\/EnterExpense\/EnterExpenseWithDescriptionCommand.php.html#25","App\\Context\\Expense\\Application\\UseCase\\EnterExpense\\EnterExpenseWithDescriptionCommand::amount","2"],[0,1,"UseCase\/EnterExpense\/EnterExpenseWithDescriptionCommand.php.html#30","App\\Context\\Expense\\Application\\UseCase\\EnterExpense\\EnterExpenseWithDescriptionCommand::type","2"],[0,1,"UseCase\/EnterExpense\/EnterExpenseWithDescriptionCommand.php.html#35","App\\Context\\Expense\\Application\\UseCase\\EnterExpense\\EnterExpenseWithDescriptionCommand::accountId","2"],[0,1,"UseCase\/EnterExpense\/EnterExpenseWithDescriptionCommand.php.html#40","App\\Context\\Expense\\Application\\UseCase\\EnterExpense\\EnterExpenseWithDescriptionCommand::dueDate","2"],[0,1,"UseCase\/EnterExpense\/EnterExpenseWithDescriptionCommand.php.html#45","App\\Context\\Expense\\Application\\UseCase\\EnterExpense\\EnterExpenseWithDescriptionCommand::description","2"],[0,1,"UseCase\/EnterExpense\/EnterExpenseWithDescriptionCommandHandler.php.html#22","App\\Context\\Expense\\Application\\UseCase\\EnterExpense\\EnterExpenseWithDescriptionCommandHandler::__construct","2"],[0,1,"UseCase\/EnterExpense\/EnterExpenseWithDescriptionCommandHandler.php.html#32","App\\Context\\Expense\\Application\\UseCase\\EnterExpense\\EnterExpenseWithDescriptionCommandHandler::__invoke","2"],[0,1,"UseCase\/FindAllExpenses\/FindAllExpensesQueryHandler.php.html#17","App\\Context\\Expense\\Application\\UseCase\\FindAllExpenses\\FindAllExpensesQueryHandler::__construct","2"],[0,1,"UseCase\/FindAllExpenses\/FindAllExpensesQueryHandler.php.html#19","App\\Context\\Expense\\Application\\UseCase\\FindAllExpenses\\FindAllExpensesQueryHandler::__invoke","2"],[0,1,"UseCase\/FindExpense\/FindExpenseQuery.php.html#11","App\\Context\\Expense\\Application\\UseCase\\FindExpense\\FindExpenseQuery::__construct","2"],[0,1,"UseCase\/FindExpense\/FindExpenseQuery.php.html#13","App\\Context\\Expense\\Application\\UseCase\\FindExpense\\FindExpenseQuery::id","2"],[0,1,"UseCase\/FindExpense\/FindExpenseQueryHandler.php.html#15","App\\Context\\Expense\\Application\\UseCase\\FindExpense\\FindExpenseQueryHandler::__construct","2"],[0,1,"UseCase\/FindExpense\/FindExpenseQueryHandler.php.html#17","App\\Context\\Expense\\Application\\UseCase\\FindExpense\\FindExpenseQueryHandler::__invoke","2"],[0,1,"UseCase\/PayedAtExpense\/ExpensePayedCommandHandler.php.html#12","App\\Context\\Expense\\Application\\UseCase\\PayedAtExpense\\ExpensePayedCommandHandler::__construct","2"],[0,1,"UseCase\/PayedAtExpense\/ExpensePayedCommandHandler.php.html#14","App\\Context\\Expense\\Application\\UseCase\\PayedAtExpense\\ExpensePayedCommandHandler::__invoke","2"],[0,1,"UseCase\/PayedAtExpense\/PayedAtExpenseCommand.php.html#11","App\\Context\\Expense\\Application\\UseCase\\PayedAtExpense\\PayedAtExpenseCommand::__construct","2"],[0,1,"UseCase\/PayedAtExpense\/PayedAtExpenseCommand.php.html#13","App\\Context\\Expense\\Application\\UseCase\\PayedAtExpense\\PayedAtExpenseCommand::id","2"],[100,1,"StoreExpenseEnteredEventSubscriber.php.html#14","App\\Context\\Expense\\Application\\StoreExpenseEnteredEventSubscriber::__construct","1"],[100,1,"StoreExpenseEnteredEventSubscriber.php.html#23","App\\Context\\Expense\\Application\\StoreExpenseEnteredEventSubscriber::subscribedTo","1"],[100,1,"UseCase\/EnterExpense\/CreateRecurringExpenseCommand.php.html#11","App\\Context\\Expense\\Application\\UseCase\\EnterExpense\\CreateRecurringExpenseCommand::__construct","1"],[100,1,"UseCase\/EnterExpense\/CreateRecurringExpenseCommand.php.html#24","App\\Context\\Expense\\Application\\UseCase\\EnterExpense\\CreateRecurringExpenseCommand::id","1"],[100,1,"UseCase\/EnterExpense\/CreateRecurringExpenseCommand.php.html#29","App\\Context\\Expense\\Application\\UseCase\\EnterExpense\\CreateRecurringExpenseCommand::amount","1"],[100,1,"UseCase\/EnterExpense\/CreateRecurringExpenseCommand.php.html#34","App\\Context\\Expense\\Application\\UseCase\\EnterExpense\\CreateRecurringExpenseCommand::type","1"],[100,1,"UseCase\/EnterExpense\/CreateRecurringExpenseCommand.php.html#39","App\\Context\\Expense\\Application\\UseCase\\EnterExpense\\CreateRecurringExpenseCommand::accountId","1"],[100,1,"UseCase\/EnterExpense\/CreateRecurringExpenseCommand.php.html#44","App\\Context\\Expense\\Application\\UseCase\\EnterExpense\\CreateRecurringExpenseCommand::dueDay","1"],[100,1,"UseCase\/EnterExpense\/CreateRecurringExpenseCommand.php.html#49","App\\Context\\Expense\\Application\\UseCase\\EnterExpense\\CreateRecurringExpenseCommand::monthsOfYear","1"],[100,1,"UseCase\/EnterExpense\/CreateRecurringExpenseCommand.php.html#54","App\\Context\\Expense\\Application\\UseCase\\EnterExpense\\CreateRecurringExpenseCommand::startDate","1"],[100,1,"UseCase\/EnterExpense\/CreateRecurringExpenseCommand.php.html#59","App\\Context\\Expense\\Application\\UseCase\\EnterExpense\\CreateRecurringExpenseCommand::endDate","1"],[100,1,"UseCase\/EnterExpense\/CreateRecurringExpenseCommand.php.html#64","App\\Context\\Expense\\Application\\UseCase\\EnterExpense\\CreateRecurringExpenseCommand::description","1"],[100,1,"UseCase\/EnterExpense\/CreateRecurringExpenseCommand.php.html#69","App\\Context\\Expense\\Application\\UseCase\\EnterExpense\\CreateRecurringExpenseCommand::notes","1"],[100,1,"UseCase\/EnterExpense\/CreateRecurringExpenseCommandHandler.php.html#30","App\\Context\\Expense\\Application\\UseCase\\EnterExpense\\CreateRecurringExpenseCommandHandler::__construct","1"],[100,2,"UseCase\/EnterExpense\/CreateRecurringExpenseCommandHandler.php.html#41","App\\Context\\Expense\\Application\\UseCase\\EnterExpense\\CreateRecurringExpenseCommandHandler::__invoke","2"],[100,2,"UseCase\/EnterExpense\/CreateRecurringExpenseCommandHandler.php.html#88","App\\Context\\Expense\\Application\\UseCase\\EnterExpense\\CreateRecurringExpenseCommandHandler::createIndividualExpenses","2"],[100,1,"UseCase\/EnterExpense\/EnterExpenseCommand.php.html#11","App\\Context\\Expense\\Application\\UseCase\\EnterExpense\\EnterExpenseCommand::__construct","1"],[100,1,"UseCase\/FindActiveExpensesByDateRange\/FindActiveExpensesByDateRangeQuery.php.html#12","App\\Context\\Expense\\Application\\UseCase\\FindActiveExpensesByDateRange\\FindActiveExpensesByDateRangeQuery::__construct","1"],[100,1,"UseCase\/FindActiveExpensesByDateRange\/FindActiveExpensesByDateRangeQuery.php.html#14","App\\Context\\Expense\\Application\\UseCase\\FindActiveExpensesByDateRange\\FindActiveExpensesByDateRangeQuery::dateRange","1"],[100,1,"UseCase\/FindActiveExpensesByDateRange\/FindActiveExpensesByDateRangeQueryHandler.php.html#16","App\\Context\\Expense\\Application\\UseCase\\FindActiveExpensesByDateRange\\FindActiveExpensesByDateRangeQueryHandler::__construct","1"],[100,1,"UseCase\/FindActiveExpensesByDateRange\/FindActiveExpensesByDateRangeQueryHandler.php.html#18","App\\Context\\Expense\\Application\\UseCase\\FindActiveExpensesByDateRange\\FindActiveExpensesByDateRangeQueryHandler::__invoke","1"],[100,1,"UseCase\/FindInactiveExpensesByDateRange\/FindInactiveExpensesByDateRangeQuery.php.html#12","App\\Context\\Expense\\Application\\UseCase\\FindInactiveExpensesByDateRange\\FindInactiveExpensesByDateRangeQuery::__construct","1"],[100,1,"UseCase\/FindInactiveExpensesByDateRange\/FindInactiveExpensesByDateRangeQuery.php.html#14","App\\Context\\Expense\\Application\\UseCase\\FindInactiveExpensesByDateRange\\FindInactiveExpensesByDateRangeQuery::dateRange","1"],[100,1,"UseCase\/FindInactiveExpensesByDateRange\/FindInactiveExpensesByDateRangeQueryHandler.php.html#16","App\\Context\\Expense\\Application\\UseCase\\FindInactiveExpensesByDateRange\\FindInactiveExpensesByDateRangeQueryHandler::__construct","1"],[100,1,"UseCase\/FindInactiveExpensesByDateRange\/FindInactiveExpensesByDateRangeQueryHandler.php.html#18","App\\Context\\Expense\\Application\\UseCase\\FindInactiveExpensesByDateRange\\FindInactiveExpensesByDateRangeQueryHandler::__invoke","1"],[100,1,"UseCase\/RemoveRecurringExpense\/RemoveRecurringExpenseCommand.php.html#11","App\\Context\\Expense\\Application\\UseCase\\RemoveRecurringExpense\\RemoveRecurringExpenseCommand::__construct","1"],[100,1,"UseCase\/RemoveRecurringExpense\/RemoveRecurringExpenseCommand.php.html#13","App\\Context\\Expense\\Application\\UseCase\\RemoveRecurringExpense\\RemoveRecurringExpenseCommand::id","1"],[100,1,"UseCase\/RemoveRecurringExpense\/RemoveRecurringExpenseCommandHandler.php.html#13","App\\Context\\Expense\\Application\\UseCase\\RemoveRecurringExpense\\RemoveRecurringExpenseCommandHandler::__construct","1"],[100,1,"UseCase\/RemoveRecurringExpense\/RemoveRecurringExpenseCommandHandler.php.html#15","App\\Context\\Expense\\Application\\UseCase\\RemoveRecurringExpense\\RemoveRecurringExpenseCommandHandler::__invoke","1"],[100,1,"UseCase\/UpdateExpense\/UpdateExpenseCommand.php.html#11","App\\Context\\Expense\\Application\\UseCase\\UpdateExpense\\UpdateExpenseCommand::__construct","1"],[100,1,"UseCase\/UpdateExpense\/UpdateExpenseCommand.php.html#17","App\\Context\\Expense\\Application\\UseCase\\UpdateExpense\\UpdateExpenseCommand::id","1"],[100,1,"UseCase\/UpdateExpense\/UpdateExpenseCommand.php.html#22","App\\Context\\Expense\\Application\\UseCase\\UpdateExpense\\UpdateExpenseCommand::dueDate","1"],[100,1,"UseCase\/UpdateExpense\/UpdateExpenseCommand.php.html#27","App\\Context\\Expense\\Application\\UseCase\\UpdateExpense\\UpdateExpenseCommand::description","1"],[100,1,"UseCase\/UpdateExpense\/UpdateExpenseCommandHandler.php.html#17","App\\Context\\Expense\\Application\\UseCase\\UpdateExpense\\UpdateExpenseCommandHandler::__construct","1"],[100,3,"UseCase\/UpdateExpense\/UpdateExpenseCommandHandler.php.html#24","App\\Context\\Expense\\Application\\UseCase\\UpdateExpense\\UpdateExpenseCommandHandler::__invoke","3"],[100,1,"UseCase\/UpdateRecurringExpense\/UpdateRecurrentExpenseCommand.php.html#11","App\\Context\\Expense\\Application\\UseCase\\UpdateRecurringExpense\\UpdateRecurrentExpenseCommand::__construct","1"],[100,1,"UseCase\/UpdateRecurringExpense\/UpdateRecurrentExpenseCommand.php.html#23","App\\Context\\Expense\\Application\\UseCase\\UpdateRecurringExpense\\UpdateRecurrentExpenseCommand::id","1"],[100,1,"UseCase\/UpdateRecurringExpense\/UpdateRecurrentExpenseCommand.php.html#28","App\\Context\\Expense\\Application\\UseCase\\UpdateRecurringExpense\\UpdateRecurrentExpenseCommand::amount","1"],[100,1,"UseCase\/UpdateRecurringExpense\/UpdateRecurrentExpenseCommand.php.html#33","App\\Context\\Expense\\Application\\UseCase\\UpdateRecurringExpense\\UpdateRecurrentExpenseCommand::type","1"],[100,1,"UseCase\/UpdateRecurringExpense\/UpdateRecurrentExpenseCommand.php.html#38","App\\Context\\Expense\\Application\\UseCase\\UpdateRecurringExpense\\UpdateRecurrentExpenseCommand::dueDay","1"],[100,1,"UseCase\/UpdateRecurringExpense\/UpdateRecurrentExpenseCommand.php.html#43","App\\Context\\Expense\\Application\\UseCase\\UpdateRecurringExpense\\UpdateRecurrentExpenseCommand::monthsOfYear","1"],[100,1,"UseCase\/UpdateRecurringExpense\/UpdateRecurrentExpenseCommand.php.html#48","App\\Context\\Expense\\Application\\UseCase\\UpdateRecurringExpense\\UpdateRecurrentExpenseCommand::startDate","1"],[100,1,"UseCase\/UpdateRecurringExpense\/UpdateRecurrentExpenseCommand.php.html#53","App\\Context\\Expense\\Application\\UseCase\\UpdateRecurringExpense\\UpdateRecurrentExpenseCommand::endDate","1"],[100,1,"UseCase\/UpdateRecurringExpense\/UpdateRecurrentExpenseCommand.php.html#58","App\\Context\\Expense\\Application\\UseCase\\UpdateRecurringExpense\\UpdateRecurrentExpenseCommand::description","1"],[100,1,"UseCase\/UpdateRecurringExpense\/UpdateRecurrentExpenseCommand.php.html#63","App\\Context\\Expense\\Application\\UseCase\\UpdateRecurringExpense\\UpdateRecurrentExpenseCommand::notes","1"],[100,1,"UseCase\/UpdateRecurringExpense\/UpdateRecurrentExpenseCommandHandler.php.html#17","App\\Context\\Expense\\Application\\UseCase\\UpdateRecurringExpense\\UpdateRecurrentExpenseCommandHandler::__construct","1"],[100,10,"UseCase\/UpdateRecurringExpense\/UpdateRecurrentExpenseCommandHandler.php.html#25","App\\Context\\Expense\\Application\\UseCase\\UpdateRecurringExpense\\UpdateRecurrentExpenseCommandHandler::__invoke","10"]]</script>
+  <script type="text/javascript" defer>
+  const barLabels = [
+    '0%',
+    '0-10%',
+    '10-20%',
+    '20-30%',
+    '30-40%',
+    '40-50%',
+    '50-60%',
+    '60-70%',
+    '70-80%',
+    '80-90%',
+    '90-100%',
+    '100%'
+  ];
+  const barConfig = (name, fullName, values) => ({
+    axis: {
+      x: {
+        type: "category",
+        categories: barLabels,
+      },
+      y: {
+        label: {
+          text: `#${name}`,
+          position: 'outer-top',
+        },
+      },
+    },
+    bindto: `#${name}CoverageDistribution`,
+    data: {
+      columns: [
+        [fullName].concat(values),
+      ],
+      colors: {
+        [fullName]: "rgba(69, 114, 167, 0.75)",
+      },
+      type: "bar",
+    },
+    bar: {
+      width: {
+        ratio: 0.9,
+      },
+    },
+    grid: {
+      focus: {
+        show: false,
+      },
+      x: {
+        show: true,
+      },
+      y: {
+        show: true,
+      },
+    },
+    legend: {
+      show: false,
+    },
+    tooltip: {
+      contents: function (data) {
+        return `<table class="bb-tooltip"><tbody>
+            <tr><th colspan="2">Coverage ${barLabels[data[0].x]}</th></tr>
+            <tr><td class="value">${data[0].value} ${name}</td></tr>
+          </tbody></table>`;
+      },
+      grouped: false,
+    },
+  });
+  bb.generate(
+    barConfig('classes', "Class Coverage", [10,0,1,0,0,0,0,0,0,1,0,13])
+  );
+  bb.generate(
+    barConfig('methods', "Method Coverage", [34,0,0,0,0,0,0,0,0,0,0,47])
+  );
+
+  const scatterConfig = (name, complexityData) => ({
+    axis: {
+      x: {
+        label: {
+          text: 'Code Coverage (in percent)',
+          position: 'outer-right',
+        },
+        tick: {
+          values: [0, 20, 40, 60, 80, 100],
+        },
+      },
+      y: {
+        label: {
+          text: 'Cyclomatic Complexity',
+          position: 'outer-top',
+        },
+        min: 0,
+        padding: {
+          bottom: 0,
+          top: 5,
+        },
+      },
+    },
+    bindto: `#${name}Complexity`,
+    data: {
+      columns: [
+        ["complexity_x"].concat(complexityData.map(d => d[0])),
+        ["complexity"].concat(complexityData.map(d => d[1])),
+      ],
+      onclick: function(data, element) {
+        window.location = complexityData[data.index][2];
+      },
+      type: "scatter",
+      xs: {
+        "complexity": "complexity_x",
+      },
+    },
+    grid: {
+      focus: {
+        show: true,
+        y: true,
+      },
+      x: {
+        show: true,
+      },
+      y: {
+        show: true,
+      },
+    },
+    legend: {
+      show: false,
+    },
+    tooltip: {
+      contents: function (data) {
+        const coverage = Math.round(data[0].x);
+        const complexity = data[0].value;
+        const targetName = complexityData[data[0].index][3];
+        const crap = complexityData[data[0].index][4];
+        return `<table class="bb-tooltip"><tbody>
+            <tr><th colspan="2">${targetName}</th></tr>
+            <tr class="bb-tooltip-name-complexity"><td>Coverage</td><td class="name">${coverage}%</td></tr>
+            <tr class="bb-tooltip-name-complexity"><td>Complexity</td><td class="value">${complexity}</td></tr>
+            <tr class="bb-tooltip-name-complexity"><td>Crap</td><td class="value">${crap}</td></tr>
+          </tbody></table>`;
+      },
+      grouped: false,
+    },
+  });
+  const classComplexityData = JSON.parse(document.getElementById('complexity_class').textContent);
+  bb.generate(
+    scatterConfig("class", classComplexityData)
+  );
+  const methodComplexityData = JSON.parse(document.getElementById('complexity_method').textContent);
+  bb.generate(
+    scatterConfig("method", methodComplexityData),
+  );
+  </script>
+ </body>
+</html>

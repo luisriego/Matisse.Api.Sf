@@ -1,0 +1,28 @@
+services:
+    _defaults:
+        autowire: true
+        autoconfigure: true
+
+    App\Context\ResidentUnit\Infrastructure\Http\Controller\:
+        public: true
+        resource: './Infrastructure/Http/Controller/'
+        tags: ['controller.service_arguments']
+
+    App\Context\ResidentUnit\:
+        resource: './'
+        exclude:
+            - './Domain/Entity/'
+            - './Infrastructure/Persistence/Entity/'
+            - './Infrastructure/Http/Controller/'
+            - './resident_unit.yaml'
+
+    # Explicitly alias the ResidentUnitRepository interface to its Doctrine implementation
+    App\Context\ResidentUnit\Domain\ResidentUnitRepository:
+        alias: App\Context\ResidentUnit\Infrastructure\Persistence\Doctrine\DoctrineResidentUnitRepository
+
+    App\Shared\Application\EventBus:
+        alias: App\Shared\Infrastructure\Bus\SymfonyEventBus
+
+    App\Shared\Infrastructure\Bus\SymfonyEventBus:
+        arguments:
+            - '@event.bus'

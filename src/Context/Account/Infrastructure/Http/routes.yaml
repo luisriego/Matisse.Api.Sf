@@ -1,0 +1,44 @@
+account_health_check:
+    path: /api/v1/accounts/health-check
+    controller: App\Context\Account\Infrastructure\Http\Controller\HealthCheckController
+    methods: ['GET']
+
+account_create:
+    path: /api/v1/accounts/create
+    controller: App\Context\Account\Infrastructure\Http\Controller\AccountCreatorPutController
+    methods: ['PUT']
+
+account_find_all:
+    path: /api/v1/accounts
+    controller: App\Context\Account\Infrastructure\Http\Controller\GetAllAccountsController
+    methods: ['GET']
+
+account_find:
+    path: /api/v1/accounts/{id}
+    controller: App\Context\Account\Infrastructure\Http\Controller\GetAccountController
+    methods: ['GET']
+
+account_update:
+    path: /api/v1/accounts/{id}
+    controller: App\Context\Account\Infrastructure\Http\Controller\AccountUpdaterPatchController
+    methods: ['PATCH']
+
+account_enable:
+    path: /api/v1/accounts/enable/{id}
+    controller: App\Context\Account\Infrastructure\Http\Controller\AccountEnablerPatchController
+    methods: ['PATCH']
+
+account_disable:
+    path: /api/v1/accounts/disable/{id}
+    controller: App\Context\Account\Infrastructure\Http\Controller\AccountDisablerPatchController
+    methods: ['PATCH']
+
+account_get_balance:
+    path: /api/v1/accounts/{id}/balance
+    controller: App\Context\Account\Infrastructure\Http\Controller\GetAccountBalanceController
+    methods: ['GET']
+
+account_set_initial_balance:
+    path: /api/v1/accounts/{id}/initial-balance
+    controller: App\Context\Account\Infrastructure\Http\Controller\SetInitialBalanceController
+    methods: ['PUT']

@@ -1,33 +1,27 @@
 parameters:
-    
+    password_reset_token_lifetime: 86400 # 1 day in seconds
+
 imports:
     - { resource: '../src/Context/Account/account.yaml' }
-    # - { resource: '../src/Context/User/user.yaml' }
+    - { resource: '../src/Context/ResidentUnit/resident_unit.yaml'}
+    - { resource: '../src/Context/Expense/expense.yaml'}
+    - { resource: '../src/Context/Income/Income.yaml'}
+    - { resource: '../src/Context/Slip/Slip.yaml'}
+    - { resource: '../src/Context/EventStore/event.yaml'}
+    - { resource: '../src/Context/User/user.yaml' }
 
 services:
     _defaults:
         autowire: true      
-        autoconfigure: true 
-
-    _instanceof:
-        App\Shared\Application\QueryHandler:
-            tags:
-                - { name: 'messenger.message_handler', bus: 'query.bus' }
-
-#
-#    # Configuración para Vertical Slice Architecture
-#    # Controladores por contexto
-#    App\Context\Account\Infrastructure\Http\Controller\:
-#        public: true
-#        resource: '../src/Context/Account/Infrastructure/Http/Controller/'
-#        tags: ['controller.service_arguments']
+        autoconfigure: true
+        bind:
+            $passwordResetTokenLifetime: '%password_reset_token_lifetime%'
 
     App\Context\User\Infrastructure\Http\Controller\:
         public: true
         resource: '../src/Context/User/Infrastructure/Http/Controller/'
         tags: ['controller.service_arguments']
 
-    # Servicios de dominio y aplicación por contexto
     App\Context\:
         resource: '../src/Context/'
         exclude:
@@ -35,12 +29,16 @@ services:
             - '../src/Context/*/Infrastructure/Persistence/Entity/'
             - '../src/Context/*/Infrastructure/Http/Controller/'
 
-    # Servicios compartidos
     App\Shared\:
         resource: '../src/Shared/'
         exclude:
             - '../src/Shared/Domain/Entity/'
             - '../src/Shared/Infrastructure/Persistence/Entity/'
+
+    # Listener to unwrap HandlerFailedException from Messenger component
+    App\Shared\Infrastructure\Symfony\UnwrapHandlerFailedExceptionListener:
+        tags:
+            - { name: kernel.event_listener, event: kernel.exception, method: onKernelException, priority: 200 }
 
     # Event Listeners used to transform the exception into a JSON response
     App\Shared\Infrastructure\JsonTransformerExceptionListener:
@@ -51,3 +49,47 @@ services:
         tags:
             - { name: controller.argument_value_resolver, priority: 50 }
 
+    # Alias the Clock interface to the concrete implementation for autowiring
+    App\Shared\Domain\Clock: '@App\Shared\Infrastructure\SystemClock'
+
+    _instanceof:
+        App\Shared\Domain\Event\EventSubscriber:
+            tags: [ 'app.event_subscriber' ]
+        
+        App\Shared\Application\QueryHandler:
+            tags: [{ name: 'messenger.message_handler', bus: 'query.bus' }]
+
+        App\Shared\Application\CommandHandler: # Added autoconfiguration for Command Handlers
+            tags: [{ name: 'messenger.message_handler', bus: 'command.bus' }]
+
+    App\Shared\Domain\Event\EventBus:
+        alias: App\Shared\Infrastructure\InMemorySymfonyEventBus
+
+    App\Shared\Infrastructure\InMemorySymfonyEventBus:
+        arguments:
+            $subscribers: !tagged_iterator app.event_subscriber
+
+    # Mailer Service Configuration
+    App\Context\Slip\Application\Service\SlipMailerInterface:
+        alias: App\Context\Slip\Infrastructure\Mailer\SlipMailer
+
+    App\Context\Slip\Infrastructure\Mailer\SlipMailer:
+        arguments:
+            - '@Symfony\Component\Mailer\MailerInterface'
+
+    # Explicitly define Command Handlers to ensure Messenger tags are applied
+    App\Context\User\Application\UseCase\Registration\RegisterUserCommandHandler:
+        tags: ['messenger.message_handler']
+
+    App\Context\User\Application\UseCase\Activation\ActivateUserCommandHandler:
+        tags: ['messenger.message_handler']
+
+    App\Context\User\Application\UseCase\ChangePassword\ChangePasswordCommandHandler:
+        tags: ['messenger.message_handler']
+
+    App\Context\User\Application\UseCase\Update\UpdateUserCommandHandler:
+        tags: [{ name: 'messenger.message_handler', bus: 'command.bus' }]
+
+    App\Security\JWTCreatedListener:
+        tags:
+            - { name: kernel.event_listener, event: lexik_jwt_authentication.on_jwt_created, method: onJWTCreated }

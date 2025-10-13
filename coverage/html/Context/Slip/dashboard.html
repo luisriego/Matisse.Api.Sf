@@ -1,0 +1,437 @@
+<!DOCTYPE html>
+<html lang="en">
+ <head>
+  <meta charset="UTF-8">
+  <title>Dashboard for /var/www/html/src/Context/Slip</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link href="../../_css/bootstrap.min.css?v=12.3.4" rel="stylesheet" type="text/css">
+  <link href="../../_css/billboard.min.css?v=12.3.4" rel="stylesheet" type="text/css">
+  <link href="../../_css/style.css?v=12.3.4" rel="stylesheet" type="text/css">
+  <link href="../../_css/custom.css" rel="stylesheet" type="text/css">
+ </head>
+ <body>
+  <header>
+   <div class="container-fluid">
+    <div class="row">
+     <div class="col-md-12">
+      <nav aria-label="breadcrumb">
+       <ol class="breadcrumb">
+         <li class="breadcrumb-item"><a href="../../index.html">/var/www/html/src</a></li>
+         <li class="breadcrumb-item"><a href="../index.html">Context</a></li>
+         <li class="breadcrumb-item"><a href="index.html">Slip</a></li>
+         <li class="breadcrumb-item active">(Dashboard)</li>
+
+       </ol>
+      </nav>
+     </div>
+    </div>
+   </div>
+  </header>
+  <div class="container-fluid">
+   <div class="row">
+    <div class="col-md-12">
+     <h2>Classes</h2>
+    </div>
+   </div>
+   <div class="row">
+    <div class="col-md-6">
+     <h3>Coverage Distribution</h3>
+     <div id="classesCoverageDistribution" style="height: 300px;">
+       <svg></svg>
+     </div>
+    </div>
+    <div class="col-md-6">
+     <h3>Complexity</h3>
+     <div id="classComplexity" style="height: 300px;">
+       <svg></svg>
+     </div>
+    </div>
+   </div>
+   <div class="row">
+    <div class="col-md-6">
+     <h3 style="margin-top: 2rem;">Insufficient Coverage</h3>
+     <div class="scrollbox">
+      <table class="table">
+       <thead>
+        <tr>
+         <th>Class</th>
+         <th class="text-right">Coverage</th>
+        </tr>
+       </thead>
+       <tbody>
+       <tr><td><a href="Application/Message/SendSlipNotificationHandler.php.html#13">App\Context\Slip\Application\Message\SendSlipNotificationHandler</a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Application/Service/SlipWorkflowService.php.html#13">App\Context\Slip\Application\Service\SlipWorkflowService</a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Application/SlipStateSync.php.html#11">App\Context\Slip\Application\SlipStateSync</a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Domain/Service/ExpenseDistributor.php.html#20">App\Context\Slip\Domain\Service\ExpenseDistributor</a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Domain/SlipStatus.php.html#7">App\Context\Slip\Domain\SlipStatus</a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Infrastructure/Http/Dto/SlipGenerationRequestDto.php.html#19">App\Context\Slip\Infrastructure\Http\Dto\SlipGenerationRequestDto</a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Infrastructure/Messaging/SendSlipEmailMessage.php.html#9">App\Context\Slip\Infrastructure\Messaging\SendSlipEmailMessage</a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Infrastructure/Messaging/SendSlipNotificationHandler.php.html#11">App\Context\Slip\Infrastructure\Messaging\SendSlipNotificationHandler</a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Domain/ValueObject/SlipDueDate.php.html#15">App\Context\Slip\Domain\ValueObject\SlipDueDate</a></td><td class="text-right">7%</td></tr>
+       <tr><td><a href="Infrastructure/Http/Controller/SlipPayPatchController.php.html#19">App\Context\Slip\Infrastructure\Http\Controller\SlipPayPatchController</a></td><td class="text-right">8%</td></tr>
+       <tr><td><a href="Infrastructure/Http/Controller/SlipSendPatchController.php.html#19">App\Context\Slip\Infrastructure\Http\Controller\SlipSendPatchController</a></td><td class="text-right">8%</td></tr>
+       <tr><td><a href="Infrastructure/Mailer/SlipMailer.php.html#17">App\Context\Slip\Infrastructure\Mailer\SlipMailer</a></td><td class="text-right">12%</td></tr>
+       <tr><td><a href="Application/Dto/SlipEmailDto.php.html#9">App\Context\Slip\Application\Dto\SlipEmailDto</a></td><td class="text-right">12%</td></tr>
+       <tr><td><a href="Domain/Service/SlipFactory.php.html#18">App\Context\Slip\Domain\Service\SlipFactory</a></td><td class="text-right">15%</td></tr>
+       <tr><td><a href="Domain/Event/SlipWasSubmitted.php.html#12">App\Context\Slip\Domain\Event\SlipWasSubmitted</a></td><td class="text-right">30%</td></tr>
+       <tr><td><a href="Infrastructure/Http/Controller/SlipGenerationPostController.php.html#28">App\Context\Slip\Infrastructure\Http\Controller\SlipGenerationPostController</a></td><td class="text-right">42%</td></tr>
+       <tr><td><a href="Infrastructure/Workflow/SlipWorkflowCompletedSubscriber.php.html#24">App\Context\Slip\Infrastructure\Workflow\SlipWorkflowCompletedSubscriber</a></td><td class="text-right">45%</td></tr>
+       <tr><td><a href="Application/UseCase/PaySlip/PaySlipCommand.php.html#9">App\Context\Slip\Application\UseCase\PaySlip\PaySlipCommand</a></td><td class="text-right">50%</td></tr>
+       <tr><td><a href="Application/UseCase/SendSlip/SlipSendCommand.php.html#9">App\Context\Slip\Application\UseCase\SendSlip\SlipSendCommand</a></td><td class="text-right">50%</td></tr>
+       <tr><td><a href="Infrastructure/Persistence/Doctrine/DoctrineSlipRepository.php.html#16">App\Context\Slip\Infrastructure\Persistence\Doctrine\DoctrineSlipRepository</a></td><td class="text-right">60%</td></tr>
+       <tr><td><a href="Infrastructure/Http/Controller/SlipsBulkSendPostController.php.html#15">App\Context\Slip\Infrastructure\Http\Controller\SlipsBulkSendPostController</a></td><td class="text-right">71%</td></tr>
+       <tr><td><a href="Domain/ValueObject/SlipAmount.php.html#10">App\Context\Slip\Domain\ValueObject\SlipAmount</a></td><td class="text-right">75%</td></tr>
+       <tr><td><a href="Domain/Slip.php.html#18">App\Context\Slip\Domain\Slip</a></td><td class="text-right">80%</td></tr>
+
+       </tbody>
+      </table>
+     </div>
+    </div>
+    <div class="col-md-6">
+     <h3 style="margin-top: 2rem;">Project Risks</h3>
+     <div class="scrollbox">
+      <table class="table">
+       <thead>
+        <tr>
+         <th>Class</th>
+         <th class="text-right">Coverage</th>
+         <th class="text-right">Complexity</th>
+         <th class="text-right"><abbr title="Change Risk Anti-Patterns (CRAP) Index">CRAP</abbr></th>
+        </tr>
+       </thead>
+       <tbody>
+       <tr><td><a href="Domain/ValueObject/SlipDueDate.php.html#15">App\Context\Slip\Domain\ValueObject\SlipDueDate</a></td><td class="text-right">7.3%</td><td class="text-right">27</td><td class="text-right">607</td></tr>
+       <tr><td><a href="Domain/Service/ExpenseDistributor.php.html#20">App\Context\Slip\Domain\Service\ExpenseDistributor</a></td><td class="text-right">0.0%</td><td class="text-right">15</td><td class="text-right">240</td></tr>
+       <tr><td><a href="Infrastructure/Http/Controller/SlipPayPatchController.php.html#19">App\Context\Slip\Infrastructure\Http\Controller\SlipPayPatchController</a></td><td class="text-right">8.0%</td><td class="text-right">13</td><td class="text-right">144</td></tr>
+       <tr><td><a href="Infrastructure/Http/Controller/SlipSendPatchController.php.html#19">App\Context\Slip\Infrastructure\Http\Controller\SlipSendPatchController</a></td><td class="text-right">8.0%</td><td class="text-right">13</td><td class="text-right">144</td></tr>
+       <tr><td><a href="Application/Service/SlipWorkflowService.php.html#13">App\Context\Slip\Application\Service\SlipWorkflowService</a></td><td class="text-right">0.0%</td><td class="text-right">10</td><td class="text-right">110</td></tr>
+       <tr><td><a href="Infrastructure/Http/Controller/SlipGenerationPostController.php.html#28">App\Context\Slip\Infrastructure\Http\Controller\SlipGenerationPostController</a></td><td class="text-right">42.9%</td><td class="text-right">19</td><td class="text-right">86</td></tr>
+       <tr><td><a href="Infrastructure/Workflow/SlipWorkflowCompletedSubscriber.php.html#24">App\Context\Slip\Infrastructure\Workflow\SlipWorkflowCompletedSubscriber</a></td><td class="text-right">45.5%</td><td class="text-right">15</td><td class="text-right">51</td></tr>
+       <tr><td><a href="Domain/Service/SlipFactory.php.html#18">App\Context\Slip\Domain\Service\SlipFactory</a></td><td class="text-right">15.8%</td><td class="text-right">6</td><td class="text-right">27</td></tr>
+       <tr><td><a href="Infrastructure/Mailer/SlipMailer.php.html#17">App\Context\Slip\Infrastructure\Mailer\SlipMailer</a></td><td class="text-right">12.1%</td><td class="text-right">5</td><td class="text-right">21</td></tr>
+       <tr><td><a href="Infrastructure/Persistence/Doctrine/DoctrineSlipRepository.php.html#16">App\Context\Slip\Infrastructure\Persistence\Doctrine\DoctrineSlipRepository</a></td><td class="text-right">60.6%</td><td class="text-right">10</td><td class="text-right">16</td></tr>
+       <tr><td><a href="Infrastructure/Http/Dto/SlipGenerationRequestDto.php.html#19">App\Context\Slip\Infrastructure\Http\Dto\SlipGenerationRequestDto</a></td><td class="text-right">0.0%</td><td class="text-right">3</td><td class="text-right">12</td></tr>
+       <tr><td><a href="Domain/SlipStatus.php.html#7">App\Context\Slip\Domain\SlipStatus</a></td><td class="text-right">0.0%</td><td class="text-right">2</td><td class="text-right">6</td></tr>
+       <tr><td><a href="Infrastructure/Http/Controller/SlipsBulkSendPostController.php.html#15">App\Context\Slip\Infrastructure\Http\Controller\SlipsBulkSendPostController</a></td><td class="text-right">71.4%</td><td class="text-right">4</td><td class="text-right">4</td></tr>
+       <tr><td><a href="Domain/ValueObject/SlipAmount.php.html#10">App\Context\Slip\Domain\ValueObject\SlipAmount</a></td><td class="text-right">75.0%</td><td class="text-right">3</td><td class="text-right">3</td></tr>
+
+       </tbody>
+      </table>
+     </div>
+    </div>
+   </div>
+   <div class="row">
+    <div class="col-md-12">
+     <h2 style="margin-top: 3rem;">Methods</h2>
+    </div>
+   </div>
+   <div class="row">
+    <div class="col-md-6">
+     <h3>Coverage Distribution</h3>
+     <div id="methodsCoverageDistribution" style="height: 300px;">
+       <svg></svg>
+     </div>
+    </div>
+    <div class="col-md-6">
+     <h3>Complexity</h3>
+     <div id="methodComplexity" style="height: 300px;">
+       <svg></svg>
+     </div>
+    </div>
+   </div>
+   <div class="row">
+    <div class="col-md-6">
+     <h3 style="margin-top: 2rem;">Insufficient Coverage</h3>
+     <div class="scrollbox">
+      <table class="table">
+       <thead>
+        <tr>
+         <th>Method</th>
+         <th class="text-right">Coverage</th>
+        </tr>
+       </thead>
+       <tbody>
+       <tr><td><a href="Application/Dto/SlipEmailDto.php.html#15"><abbr title="App\Context\Slip\Application\Dto\SlipEmailDto::slipId">slipId</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Application/Dto/SlipEmailDto.php.html#20"><abbr title="App\Context\Slip\Application\Dto\SlipEmailDto::amount">amount</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Application/Dto/SlipEmailDto.php.html#25"><abbr title="App\Context\Slip\Application\Dto\SlipEmailDto::dueDate">dueDate</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Application/Dto/SlipEmailDto.php.html#30"><abbr title="App\Context\Slip\Application\Dto\SlipEmailDto::monthDueDate">monthDueDate</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Application/Dto/SlipEmailDto.php.html#35"><abbr title="App\Context\Slip\Application\Dto\SlipEmailDto::description">description</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Application/Dto/SlipEmailDto.php.html#40"><abbr title="App\Context\Slip\Application\Dto\SlipEmailDto::unitNumber">unitNumber</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Application/Dto/SlipEmailDto.php.html#50"><abbr title="App\Context\Slip\Application\Dto\SlipEmailDto::toArray">toArray</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Application/Message/SendSlipNotificationHandler.php.html#16"><abbr title="App\Context\Slip\Application\Message\SendSlipNotificationHandler::__construct">__construct</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Application/Message/SendSlipNotificationHandler.php.html#18"><abbr title="App\Context\Slip\Application\Message\SendSlipNotificationHandler::__invoke">__invoke</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Application/Service/SlipWorkflowService.php.html#15"><abbr title="App\Context\Slip\Application\Service\SlipWorkflowService::__construct">__construct</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Application/Service/SlipWorkflowService.php.html#20"><abbr title="App\Context\Slip\Application\Service\SlipWorkflowService::send">send</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Application/Service/SlipWorkflowService.php.html#25"><abbr title="App\Context\Slip\Application\Service\SlipWorkflowService::pay">pay</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Application/Service/SlipWorkflowService.php.html#32"><abbr title="App\Context\Slip\Application\Service\SlipWorkflowService::expire">expire</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Application/Service/SlipWorkflowService.php.html#37"><abbr title="App\Context\Slip\Application\Service\SlipWorkflowService::cancel">cancel</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Application/Service/SlipWorkflowService.php.html#50"><abbr title="App\Context\Slip\Application\Service\SlipWorkflowService::apply">apply</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Application/SlipStateSync.php.html#13"><abbr title="App\Context\Slip\Application\SlipStateSync::syncEnum">syncEnum</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Application/UseCase/PaySlip/PaySlipCommand.php.html#13"><abbr title="App\Context\Slip\Application\UseCase\PaySlip\PaySlipCommand::id">id</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Application/UseCase/SendSlip/SlipSendCommand.php.html#13"><abbr title="App\Context\Slip\Application\UseCase\SendSlip\SlipSendCommand::id">id</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Domain/Event/SlipWasSubmitted.php.html#28"><abbr title="App\Context\Slip\Domain\Event\SlipWasSubmitted::eventName">eventName</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Domain/Event/SlipWasSubmitted.php.html#33"><abbr title="App\Context\Slip\Domain\Event\SlipWasSubmitted::toPrimitives">toPrimitives</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Domain/Event/SlipWasSubmitted.php.html#45"><abbr title="App\Context\Slip\Domain\Event\SlipWasSubmitted::fromPrimitives">fromPrimitives</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Domain/Service/ExpenseDistributor.php.html#22"><abbr title="App\Context\Slip\Domain\Service\ExpenseDistributor::distribute">distribute</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Domain/Service/ExpenseDistributor.php.html#69"><abbr title="App\Context\Slip\Domain\Service\ExpenseDistributor::distributeByIdealFraction">distributeByIdealFraction</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Domain/Service/ExpenseDistributor.php.html#101"><abbr title="App\Context\Slip\Domain\Service\ExpenseDistributor::distributeEqually">distributeEqually</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Domain/Slip.php.html#61"><abbr title="App\Context\Slip\Domain\Slip::amount">amount</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Domain/Slip.php.html#71"><abbr title="App\Context\Slip\Domain\Slip::dueDate">dueDate</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Domain/Slip.php.html#76"><abbr title="App\Context\Slip\Domain\Slip::description">description</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Domain/Slip.php.html#81"><abbr title="App\Context\Slip\Domain\Slip::createdAt">createdAt</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Domain/Slip.php.html#110"><abbr title="App\Context\Slip\Domain\Slip::markAsOverdue">markAsOverdue</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Domain/Slip.php.html#115"><abbr title="App\Context\Slip\Domain\Slip::markAsCancelled">markAsCancelled</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Domain/SlipStatus.php.html#24"><abbr title="App\Context\Slip\Domain\SlipStatus::isTerminal">isTerminal</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Domain/ValueObject/SlipDueDate.php.html#22"><abbr title="App\Context\Slip\Domain\ValueObject\SlipDueDate::fromDateTime">fromDateTime</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Domain/ValueObject/SlipDueDate.php.html#30"><abbr title="App\Context\Slip\Domain\ValueObject\SlipDueDate::from">from</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Domain/ValueObject/SlipDueDate.php.html#47"><abbr title="App\Context\Slip\Domain\ValueObject\SlipDueDate::isInPast">isInPast</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Domain/ValueObject/SlipDueDate.php.html#52"><abbr title="App\Context\Slip\Domain\ValueObject\SlipDueDate::isInFuture">isInFuture</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Domain/ValueObject/SlipDueDate.php.html#70"><abbr title="App\Context\Slip\Domain\ValueObject\SlipDueDate::selectDueDate">selectDueDate</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Infrastructure/Http/Controller/SlipGenerationPostController.php.html#81"><abbr title="App\Context\Slip\Infrastructure\Http\Controller\SlipGenerationPostController::exceptions">exceptions</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Infrastructure/Http/Controller/SlipGenerationPostController.php.html#90"><abbr title="App\Context\Slip\Infrastructure\Http\Controller\SlipGenerationPostController::unwrap">unwrap</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Infrastructure/Http/Controller/SlipPayPatchController.php.html#46"><abbr title="App\Context\Slip\Infrastructure\Http\Controller\SlipPayPatchController::exceptions">exceptions</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Infrastructure/Http/Controller/SlipPayPatchController.php.html#57"><abbr title="App\Context\Slip\Infrastructure\Http\Controller\SlipPayPatchController::unwrap">unwrap</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Infrastructure/Http/Controller/SlipPayPatchController.php.html#71"><abbr title="App\Context\Slip\Infrastructure\Http\Controller\SlipPayPatchController::isSharedNotFound">isSharedNotFound</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Infrastructure/Http/Controller/SlipSendPatchController.php.html#46"><abbr title="App\Context\Slip\Infrastructure\Http\Controller\SlipSendPatchController::exceptions">exceptions</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Infrastructure/Http/Controller/SlipSendPatchController.php.html#57"><abbr title="App\Context\Slip\Infrastructure\Http\Controller\SlipSendPatchController::unwrap">unwrap</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Infrastructure/Http/Controller/SlipSendPatchController.php.html#71"><abbr title="App\Context\Slip\Infrastructure\Http\Controller\SlipSendPatchController::isSharedNotFound">isSharedNotFound</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Infrastructure/Http/Controller/SlipsBulkSendPostController.php.html#31"><abbr title="App\Context\Slip\Infrastructure\Http\Controller\SlipsBulkSendPostController::exceptions">exceptions</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Infrastructure/Http/Dto/SlipGenerationRequestDto.php.html#25"><abbr title="App\Context\Slip\Infrastructure\Http\Dto\SlipGenerationRequestDto::__construct">__construct</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Infrastructure/Http/Dto/SlipGenerationRequestDto.php.html#42"><abbr title="App\Context\Slip\Infrastructure\Http\Dto\SlipGenerationRequestDto::toCommand">toCommand</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Infrastructure/Messaging/SendSlipEmailMessage.php.html#11"><abbr title="App\Context\Slip\Infrastructure\Messaging\SendSlipEmailMessage::__construct">__construct</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Infrastructure/Messaging/SendSlipEmailMessage.php.html#18"><abbr title="App\Context\Slip\Infrastructure\Messaging\SendSlipEmailMessage::residentUnitId">residentUnitId</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Infrastructure/Messaging/SendSlipEmailMessage.php.html#23"><abbr title="App\Context\Slip\Infrastructure\Messaging\SendSlipEmailMessage::slipId">slipId</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Infrastructure/Messaging/SendSlipEmailMessage.php.html#28"><abbr title="App\Context\Slip\Infrastructure\Messaging\SendSlipEmailMessage::amount">amount</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Infrastructure/Messaging/SendSlipEmailMessage.php.html#33"><abbr title="App\Context\Slip\Infrastructure\Messaging\SendSlipEmailMessage::dueDate">dueDate</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Infrastructure/Messaging/SendSlipNotificationHandler.php.html#13"><abbr title="App\Context\Slip\Infrastructure\Messaging\SendSlipNotificationHandler::__invoke">__invoke</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Infrastructure/Persistence/Doctrine/DoctrineSlipRepository.php.html#23"><abbr title="App\Context\Slip\Infrastructure\Persistence\Doctrine\DoctrineSlipRepository::flush">flush</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Infrastructure/Persistence/Doctrine/DoctrineSlipRepository.php.html#61"><abbr title="App\Context\Slip\Infrastructure\Persistence\Doctrine\DoctrineSlipRepository::existsForDueDateMonth">existsForDueDateMonth</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Infrastructure/Workflow/SlipWorkflowCompletedSubscriber.php.html#32"><abbr title="App\Context\Slip\Infrastructure\Workflow\SlipWorkflowCompletedSubscriber::getSubscribedEvents">getSubscribedEvents</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Infrastructure/Workflow/SlipWorkflowCompletedSubscriber.php.html#99"><abbr title="App\Context\Slip\Infrastructure\Workflow\SlipWorkflowCompletedSubscriber::onExpired">onExpired</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Infrastructure/Workflow/SlipWorkflowCompletedSubscriber.php.html#116"><abbr title="App\Context\Slip\Infrastructure\Workflow\SlipWorkflowCompletedSubscriber::onCancelled">onCancelled</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Infrastructure/Mailer/SlipMailer.php.html#24"><abbr title="App\Context\Slip\Infrastructure\Mailer\SlipMailer::sendSlipSubmittedEmail">sendSlipSubmittedEmail</abbr></a></td><td class="text-right">9%</td></tr>
+       <tr><td><a href="Domain/Service/SlipFactory.php.html#31"><abbr title="App\Context\Slip\Domain\Service\SlipFactory::createFromExpensesAndUnits">createFromExpensesAndUnits</abbr></a></td><td class="text-right">11%</td></tr>
+       <tr><td><a href="Infrastructure/Http/Controller/SlipPayPatchController.php.html#21"><abbr title="App\Context\Slip\Infrastructure\Http\Controller\SlipPayPatchController::__invoke">__invoke</abbr></a></td><td class="text-right">15%</td></tr>
+       <tr><td><a href="Infrastructure/Http/Controller/SlipSendPatchController.php.html#21"><abbr title="App\Context\Slip\Infrastructure\Http\Controller\SlipSendPatchController::__invoke">__invoke</abbr></a></td><td class="text-right">15%</td></tr>
+       <tr><td><a href="Infrastructure/Workflow/SlipWorkflowCompletedSubscriber.php.html#133"><abbr title="App\Context\Slip\Infrastructure\Workflow\SlipWorkflowCompletedSubscriber::extractId">extractId</abbr></a></td><td class="text-right">40%</td></tr>
+       <tr><td><a href="Domain/ValueObject/SlipAmount.php.html#19"><abbr title="App\Context\Slip\Domain\ValueObject\SlipAmount::ensureIsPositive">ensureIsPositive</abbr></a></td><td class="text-right">50%</td></tr>
+       <tr><td><a href="Infrastructure/Http/Controller/SlipGenerationPostController.php.html#30"><abbr title="App\Context\Slip\Infrastructure\Http\Controller\SlipGenerationPostController::__invoke">__invoke</abbr></a></td><td class="text-right">57%</td></tr>
+       <tr><td><a href="Infrastructure/Persistence/Doctrine/DoctrineSlipRepository.php.html#37"><abbr title="App\Context\Slip\Infrastructure\Persistence\Doctrine\DoctrineSlipRepository::findOneByIdOrFail">findOneByIdOrFail</abbr></a></td><td class="text-right">66%</td></tr>
+       <tr><td><a href="Infrastructure/Workflow/SlipWorkflowCompletedSubscriber.php.html#54"><abbr title="App\Context\Slip\Infrastructure\Workflow\SlipWorkflowCompletedSubscriber::onSubmitted">onSubmitted</abbr></a></td><td class="text-right">71%</td></tr>
+       <tr><td><a href="Infrastructure/Http/Controller/SlipsBulkSendPostController.php.html#17"><abbr title="App\Context\Slip\Infrastructure\Http\Controller\SlipsBulkSendPostController::__invoke">__invoke</abbr></a></td><td class="text-right">83%</td></tr>
+       <tr><td><a href="Infrastructure/Workflow/SlipWorkflowCompletedSubscriber.php.html#150"><abbr title="App\Context\Slip\Infrastructure\Workflow\SlipWorkflowCompletedSubscriber::syncInfraStatusFromMarking">syncInfraStatusFromMarking</abbr></a></td><td class="text-right">83%</td></tr>
+       <tr><td><a href="Infrastructure/Persistence/Doctrine/DoctrineSlipRepository.php.html#84"><abbr title="App\Context\Slip\Infrastructure\Persistence\Doctrine\DoctrineSlipRepository::findManyByIds">findManyByIds</abbr></a></td><td class="text-right">85%</td></tr>
+
+       </tbody>
+      </table>
+     </div>
+    </div>
+    <div class="col-md-6">
+     <h3 style="margin-top: 2rem;">Project Risks</h3>
+     <div class="scrollbox">
+      <table class="table">
+       <thead>
+        <tr>
+         <th>Method</th>
+         <th class="text-right">Coverage</th>
+         <th class="text-right">Complexity</th>
+         <th class="text-right"><abbr title="Change Risk Anti-Patterns (CRAP) Index">CRAP</abbr></th>
+        </tr>
+       </thead>
+       <tbody>
+       <tr><td><a href="Domain/ValueObject/SlipDueDate.php.html#70"><abbr title="App\Context\Slip\Domain\ValueObject\SlipDueDate::selectDueDate">selectDueDate</abbr></a></td><td class="text-right">0.0%</td><td class="text-right">18</td><td class="text-right">342</td></tr>
+       <tr><td><a href="Domain/Service/ExpenseDistributor.php.html#22"><abbr title="App\Context\Slip\Domain\Service\ExpenseDistributor::distribute">distribute</abbr></a></td><td class="text-right">0.0%</td><td class="text-right">7</td><td class="text-right">56</td></tr>
+       <tr><td><a href="Infrastructure/Http/Controller/SlipPayPatchController.php.html#21"><abbr title="App\Context\Slip\Infrastructure\Http\Controller\SlipPayPatchController::__invoke">__invoke</abbr></a></td><td class="text-right">15.4%</td><td class="text-right">7</td><td class="text-right">36</td></tr>
+       <tr><td><a href="Infrastructure/Http/Controller/SlipSendPatchController.php.html#21"><abbr title="App\Context\Slip\Infrastructure\Http\Controller\SlipSendPatchController::__invoke">__invoke</abbr></a></td><td class="text-right">15.4%</td><td class="text-right">7</td><td class="text-right">36</td></tr>
+       <tr><td><a href="Infrastructure/Http/Controller/SlipGenerationPostController.php.html#30"><abbr title="App\Context\Slip\Infrastructure\Http\Controller\SlipGenerationPostController::__invoke">__invoke</abbr></a></td><td class="text-right">57.7%</td><td class="text-right">15</td><td class="text-right">32</td></tr>
+       <tr><td><a href="Domain/Service/SlipFactory.php.html#31"><abbr title="App\Context\Slip\Domain\Service\SlipFactory::createFromExpensesAndUnits">createFromExpensesAndUnits</abbr></a></td><td class="text-right">11.1%</td><td class="text-right">5</td><td class="text-right">22</td></tr>
+       <tr><td><a href="Domain/Service/ExpenseDistributor.php.html#69"><abbr title="App\Context\Slip\Domain\Service\ExpenseDistributor::distributeByIdealFraction">distributeByIdealFraction</abbr></a></td><td class="text-right">0.0%</td><td class="text-right">4</td><td class="text-right">20</td></tr>
+       <tr><td><a href="Domain/Service/ExpenseDistributor.php.html#101"><abbr title="App\Context\Slip\Domain\Service\ExpenseDistributor::distributeEqually">distributeEqually</abbr></a></td><td class="text-right">0.0%</td><td class="text-right">4</td><td class="text-right">20</td></tr>
+       <tr><td><a href="Infrastructure/Mailer/SlipMailer.php.html#24"><abbr title="App\Context\Slip\Infrastructure\Mailer\SlipMailer::sendSlipSubmittedEmail">sendSlipSubmittedEmail</abbr></a></td><td class="text-right">9.4%</td><td class="text-right">4</td><td class="text-right">15</td></tr>
+       <tr><td><a href="Application/Service/SlipWorkflowService.php.html#37"><abbr title="App\Context\Slip\Application\Service\SlipWorkflowService::cancel">cancel</abbr></a></td><td class="text-right">0.0%</td><td class="text-right">3</td><td class="text-right">12</td></tr>
+       <tr><td><a href="Domain/ValueObject/SlipDueDate.php.html#30"><abbr title="App\Context\Slip\Domain\ValueObject\SlipDueDate::from">from</abbr></a></td><td class="text-right">0.0%</td><td class="text-right">3</td><td class="text-right">12</td></tr>
+       <tr><td><a href="Infrastructure/Http/Controller/SlipGenerationPostController.php.html#90"><abbr title="App\Context\Slip\Infrastructure\Http\Controller\SlipGenerationPostController::unwrap">unwrap</abbr></a></td><td class="text-right">0.0%</td><td class="text-right">3</td><td class="text-right">12</td></tr>
+       <tr><td><a href="Infrastructure/Http/Controller/SlipPayPatchController.php.html#57"><abbr title="App\Context\Slip\Infrastructure\Http\Controller\SlipPayPatchController::unwrap">unwrap</abbr></a></td><td class="text-right">0.0%</td><td class="text-right">3</td><td class="text-right">12</td></tr>
+       <tr><td><a href="Infrastructure/Http/Controller/SlipSendPatchController.php.html#57"><abbr title="App\Context\Slip\Infrastructure\Http\Controller\SlipSendPatchController::unwrap">unwrap</abbr></a></td><td class="text-right">0.0%</td><td class="text-right">3</td><td class="text-right">12</td></tr>
+       <tr><td><a href="Application/Service/SlipWorkflowService.php.html#25"><abbr title="App\Context\Slip\Application\Service\SlipWorkflowService::pay">pay</abbr></a></td><td class="text-right">0.0%</td><td class="text-right">2</td><td class="text-right">6</td></tr>
+       <tr><td><a href="Application/Service/SlipWorkflowService.php.html#50"><abbr title="App\Context\Slip\Application\Service\SlipWorkflowService::apply">apply</abbr></a></td><td class="text-right">0.0%</td><td class="text-right">2</td><td class="text-right">6</td></tr>
+       <tr><td><a href="Domain/SlipStatus.php.html#24"><abbr title="App\Context\Slip\Domain\SlipStatus::isTerminal">isTerminal</abbr></a></td><td class="text-right">0.0%</td><td class="text-right">2</td><td class="text-right">6</td></tr>
+       <tr><td><a href="Infrastructure/Http/Controller/SlipPayPatchController.php.html#71"><abbr title="App\Context\Slip\Infrastructure\Http\Controller\SlipPayPatchController::isSharedNotFound">isSharedNotFound</abbr></a></td><td class="text-right">0.0%</td><td class="text-right">2</td><td class="text-right">6</td></tr>
+       <tr><td><a href="Infrastructure/Http/Controller/SlipSendPatchController.php.html#71"><abbr title="App\Context\Slip\Infrastructure\Http\Controller\SlipSendPatchController::isSharedNotFound">isSharedNotFound</abbr></a></td><td class="text-right">0.0%</td><td class="text-right">2</td><td class="text-right">6</td></tr>
+       <tr><td><a href="Infrastructure/Http/Dto/SlipGenerationRequestDto.php.html#25"><abbr title="App\Context\Slip\Infrastructure\Http\Dto\SlipGenerationRequestDto::__construct">__construct</abbr></a></td><td class="text-right">0.0%</td><td class="text-right">2</td><td class="text-right">6</td></tr>
+       <tr><td><a href="Infrastructure/Workflow/SlipWorkflowCompletedSubscriber.php.html#54"><abbr title="App\Context\Slip\Infrastructure\Workflow\SlipWorkflowCompletedSubscriber::onSubmitted">onSubmitted</abbr></a></td><td class="text-right">71.4%</td><td class="text-right">4</td><td class="text-right">4</td></tr>
+       <tr><td><a href="Infrastructure/Workflow/SlipWorkflowCompletedSubscriber.php.html#133"><abbr title="App\Context\Slip\Infrastructure\Workflow\SlipWorkflowCompletedSubscriber::extractId">extractId</abbr></a></td><td class="text-right">40.0%</td><td class="text-right">3</td><td class="text-right">4</td></tr>
+       <tr><td><a href="Infrastructure/Http/Controller/SlipsBulkSendPostController.php.html#17"><abbr title="App\Context\Slip\Infrastructure\Http\Controller\SlipsBulkSendPostController::__invoke">__invoke</abbr></a></td><td class="text-right">83.3%</td><td class="text-right">3</td><td class="text-right">3</td></tr>
+       <tr><td><a href="Infrastructure/Workflow/SlipWorkflowCompletedSubscriber.php.html#150"><abbr title="App\Context\Slip\Infrastructure\Workflow\SlipWorkflowCompletedSubscriber::syncInfraStatusFromMarking">syncInfraStatusFromMarking</abbr></a></td><td class="text-right">83.3%</td><td class="text-right">3</td><td class="text-right">3</td></tr>
+       <tr><td><a href="Domain/ValueObject/SlipAmount.php.html#19"><abbr title="App\Context\Slip\Domain\ValueObject\SlipAmount::ensureIsPositive">ensureIsPositive</abbr></a></td><td class="text-right">50.0%</td><td class="text-right">2</td><td class="text-right">2</td></tr>
+       <tr><td><a href="Infrastructure/Persistence/Doctrine/DoctrineSlipRepository.php.html#37"><abbr title="App\Context\Slip\Infrastructure\Persistence\Doctrine\DoctrineSlipRepository::findOneByIdOrFail">findOneByIdOrFail</abbr></a></td><td class="text-right">66.7%</td><td class="text-right">2</td><td class="text-right">2</td></tr>
+       <tr><td><a href="Infrastructure/Persistence/Doctrine/DoctrineSlipRepository.php.html#84"><abbr title="App\Context\Slip\Infrastructure\Persistence\Doctrine\DoctrineSlipRepository::findManyByIds">findManyByIds</abbr></a></td><td class="text-right">85.7%</td><td class="text-right">2</td><td class="text-right">2</td></tr>
+
+       </tbody>
+      </table>
+     </div>
+    </div>
+   </div>
+   <footer>
+    <hr/>
+    <p>
+     <small>Generated by <a href="https://github.com/sebastianbergmann/php-code-coverage" target="_top">php-code-coverage 12.3.4</a> using <a href="https://www.php.net/" target="_top">PHP 8.3.25</a> and <a href="https://phpunit.de/">PHPUnit 12.3.7</a> at Sat Sep 6 14:41:36 UTC 2025.</small>
+    </p>
+   </footer>
+  </div>
+  <script src="../../_js/billboard.pkgd.min.js?v=12.3.4" type="text/javascript"></script>
+  <script type="application/json" id="complexity_class">[[0,2,"Application\/Message\/SendSlipNotificationHandler.php.html#13","App\\Context\\Slip\\Application\\Message\\SendSlipNotificationHandler","6"],[0,10,"Application\/Service\/SlipWorkflowService.php.html#13","App\\Context\\Slip\\Application\\Service\\SlipWorkflowService","110"],[0,1,"Application\/SlipStateSync.php.html#11","App\\Context\\Slip\\Application\\SlipStateSync","2"],[0,15,"Domain\/Service\/ExpenseDistributor.php.html#20","App\\Context\\Slip\\Domain\\Service\\ExpenseDistributor","240"],[0,2,"Domain\/SlipStatus.php.html#7","App\\Context\\Slip\\Domain\\SlipStatus","6"],[0,3,"Infrastructure\/Http\/Dto\/SlipGenerationRequestDto.php.html#19","App\\Context\\Slip\\Infrastructure\\Http\\Dto\\SlipGenerationRequestDto","12"],[0,5,"Infrastructure\/Messaging\/SendSlipEmailMessage.php.html#9","App\\Context\\Slip\\Infrastructure\\Messaging\\SendSlipEmailMessage","30"],[0,1,"Infrastructure\/Messaging\/SendSlipNotificationHandler.php.html#11","App\\Context\\Slip\\Infrastructure\\Messaging\\SendSlipNotificationHandler","2"],[7.317073170731707,27,"Domain\/ValueObject\/SlipDueDate.php.html#15","App\\Context\\Slip\\Domain\\ValueObject\\SlipDueDate","607.40"],[8,13,"Infrastructure\/Http\/Controller\/SlipPayPatchController.php.html#19","App\\Context\\Slip\\Infrastructure\\Http\\Controller\\SlipPayPatchController","144.60"],[8,13,"Infrastructure\/Http\/Controller\/SlipSendPatchController.php.html#19","App\\Context\\Slip\\Infrastructure\\Http\\Controller\\SlipSendPatchController","144.60"],[12.121212121212121,5,"Infrastructure\/Mailer\/SlipMailer.php.html#17","App\\Context\\Slip\\Infrastructure\\Mailer\\SlipMailer","21.97"],[12.5,9,"Application\/Dto\/SlipEmailDto.php.html#9","App\\Context\\Slip\\Application\\Dto\\SlipEmailDto","63.26"],[15.789473684210526,6,"Domain\/Service\/SlipFactory.php.html#18","App\\Context\\Slip\\Domain\\Service\\SlipFactory","27.50"],[30,7,"Domain\/Event\/SlipWasSubmitted.php.html#12","App\\Context\\Slip\\Domain\\Event\\SlipWasSubmitted","23.81"],[42.857142857142854,19,"Infrastructure\/Http\/Controller\/SlipGenerationPostController.php.html#28","App\\Context\\Slip\\Infrastructure\\Http\\Controller\\SlipGenerationPostController","86.36"],[45.45454545454545,15,"Infrastructure\/Workflow\/SlipWorkflowCompletedSubscriber.php.html#24","App\\Context\\Slip\\Infrastructure\\Workflow\\SlipWorkflowCompletedSubscriber","51.51"],[50,2,"Application\/UseCase\/PaySlip\/PaySlipCommand.php.html#9","App\\Context\\Slip\\Application\\UseCase\\PaySlip\\PaySlipCommand","2.50"],[50,2,"Application\/UseCase\/SendSlip\/SlipSendCommand.php.html#9","App\\Context\\Slip\\Application\\UseCase\\SendSlip\\SlipSendCommand","2.50"],[60.60606060606061,10,"Infrastructure\/Persistence\/Doctrine\/DoctrineSlipRepository.php.html#16","App\\Context\\Slip\\Infrastructure\\Persistence\\Doctrine\\DoctrineSlipRepository","16.11"],[71.42857142857143,4,"Infrastructure\/Http\/Controller\/SlipsBulkSendPostController.php.html#15","App\\Context\\Slip\\Infrastructure\\Http\\Controller\\SlipsBulkSendPostController","4.37"],[75,3,"Domain\/ValueObject\/SlipAmount.php.html#10","App\\Context\\Slip\\Domain\\ValueObject\\SlipAmount","3.14"],[80,14,"Domain\/Slip.php.html#18","App\\Context\\Slip\\Domain\\Slip","15.57"],[100,1,"Application\/Message\/SendSlipNotification.php.html#9","App\\Context\\Slip\\Application\\Message\\SendSlipNotification","1"],[100,3,"Application\/Subscriber\/EnqueueSlipNotificationOnSlipWasSubmitted.php.html#12","App\\Context\\Slip\\Application\\Subscriber\\EnqueueSlipNotificationOnSlipWasSubmitted","3"],[100,2,"Application\/UseCase\/PaySlip\/PaySlipCommandHandler.php.html#14","App\\Context\\Slip\\Application\\UseCase\\PaySlip\\PaySlipCommandHandler","2"],[100,1,"Application\/UseCase\/SendBulkSlips\/SendBulkSlipsCommand.php.html#9","App\\Context\\Slip\\Application\\UseCase\\SendBulkSlips\\SendBulkSlipsCommand","1"],[100,4,"Application\/UseCase\/SendBulkSlips\/SendBulkSlipsCommandHandler.php.html#15","App\\Context\\Slip\\Application\\UseCase\\SendBulkSlips\\SendBulkSlipsCommandHandler","4"],[100,2,"Application\/UseCase\/SendSlip\/SlipSendCommandHandler.php.html#14","App\\Context\\Slip\\Application\\UseCase\\SendSlip\\SlipSendCommandHandler","2"],[100,4,"Application\/UseCase\/SlipGeneration\/SlipGenerationCommand.php.html#9","App\\Context\\Slip\\Application\\UseCase\\SlipGeneration\\SlipGenerationCommand","4"],[100,4,"Application\/UseCase\/SlipGeneration\/SlipGenerationCommandHandler.php.html#22","App\\Context\\Slip\\Application\\UseCase\\SlipGeneration\\SlipGenerationCommandHandler","4"],[100,0,"Domain\/Exception\/FirstTimeGenerationExpiredException.php.html#9","App\\Context\\Slip\\Domain\\Exception\\FirstTimeGenerationExpiredException","0"],[100,0,"Domain\/Exception\/GenerationNotAllowedYetException.php.html#9","App\\Context\\Slip\\Domain\\Exception\\GenerationNotAllowedYetException","0"],[100,0,"Domain\/Exception\/PastMonthGenerationRequiresConfirmationException.php.html#9","App\\Context\\Slip\\Domain\\Exception\\PastMonthGenerationRequiresConfirmationException","0"],[100,0,"Domain\/Exception\/RecreationExpiredException.php.html#9","App\\Context\\Slip\\Domain\\Exception\\RecreationExpiredException","0"],[100,1,"Domain\/Exception\/SlipNotFoundException.php.html#11","App\\Context\\Slip\\Domain\\Exception\\SlipNotFoundException","1"],[100,7,"Domain\/Service\/SlipGenerationPolicy.php.html#17","App\\Context\\Slip\\Domain\\Service\\SlipGenerationPolicy","7"],[100,1,"Domain\/ValueObject\/SlipId.php.html#9","App\\Context\\Slip\\Domain\\ValueObject\\SlipId","1"]]</script>
+  <script type="application/json" id="complexity_method">[[0,1,"Application\/Dto\/SlipEmailDto.php.html#15","App\\Context\\Slip\\Application\\Dto\\SlipEmailDto::slipId","2"],[0,1,"Application\/Dto\/SlipEmailDto.php.html#20","App\\Context\\Slip\\Application\\Dto\\SlipEmailDto::amount","2"],[0,1,"Application\/Dto\/SlipEmailDto.php.html#25","App\\Context\\Slip\\Application\\Dto\\SlipEmailDto::dueDate","2"],[0,1,"Application\/Dto\/SlipEmailDto.php.html#30","App\\Context\\Slip\\Application\\Dto\\SlipEmailDto::monthDueDate","2"],[0,1,"Application\/Dto\/SlipEmailDto.php.html#35","App\\Context\\Slip\\Application\\Dto\\SlipEmailDto::description","2"],[0,1,"Application\/Dto\/SlipEmailDto.php.html#40","App\\Context\\Slip\\Application\\Dto\\SlipEmailDto::unitNumber","2"],[0,1,"Application\/Dto\/SlipEmailDto.php.html#50","App\\Context\\Slip\\Application\\Dto\\SlipEmailDto::toArray","2"],[0,1,"Application\/Message\/SendSlipNotificationHandler.php.html#16","App\\Context\\Slip\\Application\\Message\\SendSlipNotificationHandler::__construct","2"],[0,1,"Application\/Message\/SendSlipNotificationHandler.php.html#18","App\\Context\\Slip\\Application\\Message\\SendSlipNotificationHandler::__invoke","2"],[0,1,"Application\/Service\/SlipWorkflowService.php.html#15","App\\Context\\Slip\\Application\\Service\\SlipWorkflowService::__construct","2"],[0,1,"Application\/Service\/SlipWorkflowService.php.html#20","App\\Context\\Slip\\Application\\Service\\SlipWorkflowService::send","2"],[0,2,"Application\/Service\/SlipWorkflowService.php.html#25","App\\Context\\Slip\\Application\\Service\\SlipWorkflowService::pay","6"],[0,1,"Application\/Service\/SlipWorkflowService.php.html#32","App\\Context\\Slip\\Application\\Service\\SlipWorkflowService::expire","2"],[0,3,"Application\/Service\/SlipWorkflowService.php.html#37","App\\Context\\Slip\\Application\\Service\\SlipWorkflowService::cancel","12"],[0,2,"Application\/Service\/SlipWorkflowService.php.html#50","App\\Context\\Slip\\Application\\Service\\SlipWorkflowService::apply","6"],[0,1,"Application\/SlipStateSync.php.html#13","App\\Context\\Slip\\Application\\SlipStateSync::syncEnum","2"],[0,1,"Application\/UseCase\/PaySlip\/PaySlipCommand.php.html#13","App\\Context\\Slip\\Application\\UseCase\\PaySlip\\PaySlipCommand::id","2"],[0,1,"Application\/UseCase\/SendSlip\/SlipSendCommand.php.html#13","App\\Context\\Slip\\Application\\UseCase\\SendSlip\\SlipSendCommand::id","2"],[0,1,"Domain\/Event\/SlipWasSubmitted.php.html#28","App\\Context\\Slip\\Domain\\Event\\SlipWasSubmitted::eventName","2"],[0,1,"Domain\/Event\/SlipWasSubmitted.php.html#33","App\\Context\\Slip\\Domain\\Event\\SlipWasSubmitted::toPrimitives","2"],[0,1,"Domain\/Event\/SlipWasSubmitted.php.html#45","App\\Context\\Slip\\Domain\\Event\\SlipWasSubmitted::fromPrimitives","2"],[0,7,"Domain\/Service\/ExpenseDistributor.php.html#22","App\\Context\\Slip\\Domain\\Service\\ExpenseDistributor::distribute","56"],[0,4,"Domain\/Service\/ExpenseDistributor.php.html#69","App\\Context\\Slip\\Domain\\Service\\ExpenseDistributor::distributeByIdealFraction","20"],[0,4,"Domain\/Service\/ExpenseDistributor.php.html#101","App\\Context\\Slip\\Domain\\Service\\ExpenseDistributor::distributeEqually","20"],[0,1,"Domain\/Slip.php.html#61","App\\Context\\Slip\\Domain\\Slip::amount","2"],[0,1,"Domain\/Slip.php.html#71","App\\Context\\Slip\\Domain\\Slip::dueDate","2"],[0,1,"Domain\/Slip.php.html#76","App\\Context\\Slip\\Domain\\Slip::description","2"],[0,1,"Domain\/Slip.php.html#81","App\\Context\\Slip\\Domain\\Slip::createdAt","2"],[0,1,"Domain\/Slip.php.html#110","App\\Context\\Slip\\Domain\\Slip::markAsOverdue","2"],[0,1,"Domain\/Slip.php.html#115","App\\Context\\Slip\\Domain\\Slip::markAsCancelled","2"],[0,2,"Domain\/SlipStatus.php.html#24","App\\Context\\Slip\\Domain\\SlipStatus::isTerminal","6"],[0,1,"Domain\/ValueObject\/SlipDueDate.php.html#22","App\\Context\\Slip\\Domain\\ValueObject\\SlipDueDate::fromDateTime","2"],[0,3,"Domain\/ValueObject\/SlipDueDate.php.html#30","App\\Context\\Slip\\Domain\\ValueObject\\SlipDueDate::from","12"],[0,1,"Domain\/ValueObject\/SlipDueDate.php.html#47","App\\Context\\Slip\\Domain\\ValueObject\\SlipDueDate::isInPast","2"],[0,1,"Domain\/ValueObject\/SlipDueDate.php.html#52","App\\Context\\Slip\\Domain\\ValueObject\\SlipDueDate::isInFuture","2"],[0,18,"Domain\/ValueObject\/SlipDueDate.php.html#70","App\\Context\\Slip\\Domain\\ValueObject\\SlipDueDate::selectDueDate","342"],[0,1,"Infrastructure\/Http\/Controller\/SlipGenerationPostController.php.html#81","App\\Context\\Slip\\Infrastructure\\Http\\Controller\\SlipGenerationPostController::exceptions","2"],[0,3,"Infrastructure\/Http\/Controller\/SlipGenerationPostController.php.html#90","App\\Context\\Slip\\Infrastructure\\Http\\Controller\\SlipGenerationPostController::unwrap","12"],[0,1,"Infrastructure\/Http\/Controller\/SlipPayPatchController.php.html#46","App\\Context\\Slip\\Infrastructure\\Http\\Controller\\SlipPayPatchController::exceptions","2"],[0,3,"Infrastructure\/Http\/Controller\/SlipPayPatchController.php.html#57","App\\Context\\Slip\\Infrastructure\\Http\\Controller\\SlipPayPatchController::unwrap","12"],[0,2,"Infrastructure\/Http\/Controller\/SlipPayPatchController.php.html#71","App\\Context\\Slip\\Infrastructure\\Http\\Controller\\SlipPayPatchController::isSharedNotFound","6"],[0,1,"Infrastructure\/Http\/Controller\/SlipSendPatchController.php.html#46","App\\Context\\Slip\\Infrastructure\\Http\\Controller\\SlipSendPatchController::exceptions","2"],[0,3,"Infrastructure\/Http\/Controller\/SlipSendPatchController.php.html#57","App\\Context\\Slip\\Infrastructure\\Http\\Controller\\SlipSendPatchController::unwrap","12"],[0,2,"Infrastructure\/Http\/Controller\/SlipSendPatchController.php.html#71","App\\Context\\Slip\\Infrastructure\\Http\\Controller\\SlipSendPatchController::isSharedNotFound","6"],[0,1,"Infrastructure\/Http\/Controller\/SlipsBulkSendPostController.php.html#31","App\\Context\\Slip\\Infrastructure\\Http\\Controller\\SlipsBulkSendPostController::exceptions","2"],[0,2,"Infrastructure\/Http\/Dto\/SlipGenerationRequestDto.php.html#25","App\\Context\\Slip\\Infrastructure\\Http\\Dto\\SlipGenerationRequestDto::__construct","6"],[0,1,"Infrastructure\/Http\/Dto\/SlipGenerationRequestDto.php.html#42","App\\Context\\Slip\\Infrastructure\\Http\\Dto\\SlipGenerationRequestDto::toCommand","2"],[0,1,"Infrastructure\/Messaging\/SendSlipEmailMessage.php.html#11","App\\Context\\Slip\\Infrastructure\\Messaging\\SendSlipEmailMessage::__construct","2"],[0,1,"Infrastructure\/Messaging\/SendSlipEmailMessage.php.html#18","App\\Context\\Slip\\Infrastructure\\Messaging\\SendSlipEmailMessage::residentUnitId","2"],[0,1,"Infrastructure\/Messaging\/SendSlipEmailMessage.php.html#23","App\\Context\\Slip\\Infrastructure\\Messaging\\SendSlipEmailMessage::slipId","2"],[0,1,"Infrastructure\/Messaging\/SendSlipEmailMessage.php.html#28","App\\Context\\Slip\\Infrastructure\\Messaging\\SendSlipEmailMessage::amount","2"],[0,1,"Infrastructure\/Messaging\/SendSlipEmailMessage.php.html#33","App\\Context\\Slip\\Infrastructure\\Messaging\\SendSlipEmailMessage::dueDate","2"],[0,1,"Infrastructure\/Messaging\/SendSlipNotificationHandler.php.html#13","App\\Context\\Slip\\Infrastructure\\Messaging\\SendSlipNotificationHandler::__invoke","2"],[0,1,"Infrastructure\/Persistence\/Doctrine\/DoctrineSlipRepository.php.html#23","App\\Context\\Slip\\Infrastructure\\Persistence\\Doctrine\\DoctrineSlipRepository::flush","2"],[0,1,"Infrastructure\/Persistence\/Doctrine\/DoctrineSlipRepository.php.html#61","App\\Context\\Slip\\Infrastructure\\Persistence\\Doctrine\\DoctrineSlipRepository::existsForDueDateMonth","2"],[0,1,"Infrastructure\/Workflow\/SlipWorkflowCompletedSubscriber.php.html#32","App\\Context\\Slip\\Infrastructure\\Workflow\\SlipWorkflowCompletedSubscriber::getSubscribedEvents","2"],[0,1,"Infrastructure\/Workflow\/SlipWorkflowCompletedSubscriber.php.html#99","App\\Context\\Slip\\Infrastructure\\Workflow\\SlipWorkflowCompletedSubscriber::onExpired","2"],[0,1,"Infrastructure\/Workflow\/SlipWorkflowCompletedSubscriber.php.html#116","App\\Context\\Slip\\Infrastructure\\Workflow\\SlipWorkflowCompletedSubscriber::onCancelled","2"],[9.375,4,"Infrastructure\/Mailer\/SlipMailer.php.html#24","App\\Context\\Slip\\Infrastructure\\Mailer\\SlipMailer::sendSlipSubmittedEmail","15.91"],[11.11111111111111,5,"Domain\/Service\/SlipFactory.php.html#31","App\\Context\\Slip\\Domain\\Service\\SlipFactory::createFromExpensesAndUnits","22.56"],[15.384615384615385,7,"Infrastructure\/Http\/Controller\/SlipPayPatchController.php.html#21","App\\Context\\Slip\\Infrastructure\\Http\\Controller\\SlipPayPatchController::__invoke","36.69"],[15.384615384615385,7,"Infrastructure\/Http\/Controller\/SlipSendPatchController.php.html#21","App\\Context\\Slip\\Infrastructure\\Http\\Controller\\SlipSendPatchController::__invoke","36.69"],[40,3,"Infrastructure\/Workflow\/SlipWorkflowCompletedSubscriber.php.html#133","App\\Context\\Slip\\Infrastructure\\Workflow\\SlipWorkflowCompletedSubscriber::extractId","4.94"],[50,2,"Domain\/ValueObject\/SlipAmount.php.html#19","App\\Context\\Slip\\Domain\\ValueObject\\SlipAmount::ensureIsPositive","2.50"],[57.692307692307686,15,"Infrastructure\/Http\/Controller\/SlipGenerationPostController.php.html#30","App\\Context\\Slip\\Infrastructure\\Http\\Controller\\SlipGenerationPostController::__invoke","32.04"],[66.66666666666666,2,"Infrastructure\/Persistence\/Doctrine\/DoctrineSlipRepository.php.html#37","App\\Context\\Slip\\Infrastructure\\Persistence\\Doctrine\\DoctrineSlipRepository::findOneByIdOrFail","2.15"],[71.42857142857143,4,"Infrastructure\/Workflow\/SlipWorkflowCompletedSubscriber.php.html#54","App\\Context\\Slip\\Infrastructure\\Workflow\\SlipWorkflowCompletedSubscriber::onSubmitted","4.37"],[83.33333333333334,3,"Infrastructure\/Http\/Controller\/SlipsBulkSendPostController.php.html#17","App\\Context\\Slip\\Infrastructure\\Http\\Controller\\SlipsBulkSendPostController::__invoke","3.04"],[83.33333333333334,3,"Infrastructure\/Workflow\/SlipWorkflowCompletedSubscriber.php.html#150","App\\Context\\Slip\\Infrastructure\\Workflow\\SlipWorkflowCompletedSubscriber::syncInfraStatusFromMarking","3.04"],[85.71428571428571,2,"Infrastructure\/Persistence\/Doctrine\/DoctrineSlipRepository.php.html#84","App\\Context\\Slip\\Infrastructure\\Persistence\\Doctrine\\DoctrineSlipRepository::findManyByIds","2.01"],[100,1,"Application\/Dto\/SlipEmailDto.php.html#11","App\\Context\\Slip\\Application\\Dto\\SlipEmailDto::__construct","1"],[100,1,"Application\/Dto\/SlipEmailDto.php.html#45","App\\Context\\Slip\\Application\\Dto\\SlipEmailDto::recipients","1"],[100,1,"Application\/Message\/SendSlipNotification.php.html#11","App\\Context\\Slip\\Application\\Message\\SendSlipNotification::__construct","1"],[100,1,"Application\/Subscriber\/EnqueueSlipNotificationOnSlipWasSubmitted.php.html#14","App\\Context\\Slip\\Application\\Subscriber\\EnqueueSlipNotificationOnSlipWasSubmitted::__construct","1"],[100,1,"Application\/Subscriber\/EnqueueSlipNotificationOnSlipWasSubmitted.php.html#16","App\\Context\\Slip\\Application\\Subscriber\\EnqueueSlipNotificationOnSlipWasSubmitted::__invoke","1"],[100,1,"Application\/Subscriber\/EnqueueSlipNotificationOnSlipWasSubmitted.php.html#26","App\\Context\\Slip\\Application\\Subscriber\\EnqueueSlipNotificationOnSlipWasSubmitted::subscribedTo","1"],[100,1,"Application\/UseCase\/PaySlip\/PaySlipCommand.php.html#11","App\\Context\\Slip\\Application\\UseCase\\PaySlip\\PaySlipCommand::__construct","1"],[100,1,"Application\/UseCase\/PaySlip\/PaySlipCommandHandler.php.html#17","App\\Context\\Slip\\Application\\UseCase\\PaySlip\\PaySlipCommandHandler::__construct","1"],[100,1,"Application\/UseCase\/PaySlip\/PaySlipCommandHandler.php.html#23","App\\Context\\Slip\\Application\\UseCase\\PaySlip\\PaySlipCommandHandler::__invoke","1"],[100,1,"Application\/UseCase\/SendBulkSlips\/SendBulkSlipsCommand.php.html#14","App\\Context\\Slip\\Application\\UseCase\\SendBulkSlips\\SendBulkSlipsCommand::__construct","1"],[100,1,"Application\/UseCase\/SendBulkSlips\/SendBulkSlipsCommandHandler.php.html#18","App\\Context\\Slip\\Application\\UseCase\\SendBulkSlips\\SendBulkSlipsCommandHandler::__construct","1"],[100,3,"Application\/UseCase\/SendBulkSlips\/SendBulkSlipsCommandHandler.php.html#24","App\\Context\\Slip\\Application\\UseCase\\SendBulkSlips\\SendBulkSlipsCommandHandler::__invoke","3"],[100,1,"Application\/UseCase\/SendSlip\/SlipSendCommand.php.html#11","App\\Context\\Slip\\Application\\UseCase\\SendSlip\\SlipSendCommand::__construct","1"],[100,1,"Application\/UseCase\/SendSlip\/SlipSendCommandHandler.php.html#17","App\\Context\\Slip\\Application\\UseCase\\SendSlip\\SlipSendCommandHandler::__construct","1"],[100,1,"Application\/UseCase\/SendSlip\/SlipSendCommandHandler.php.html#23","App\\Context\\Slip\\Application\\UseCase\\SendSlip\\SlipSendCommandHandler::__invoke","1"],[100,1,"Application\/UseCase\/SlipGeneration\/SlipGenerationCommand.php.html#11","App\\Context\\Slip\\Application\\UseCase\\SlipGeneration\\SlipGenerationCommand::__construct","1"],[100,1,"Application\/UseCase\/SlipGeneration\/SlipGenerationCommand.php.html#17","App\\Context\\Slip\\Application\\UseCase\\SlipGeneration\\SlipGenerationCommand::year","1"],[100,1,"Application\/UseCase\/SlipGeneration\/SlipGenerationCommand.php.html#22","App\\Context\\Slip\\Application\\UseCase\\SlipGeneration\\SlipGenerationCommand::month","1"],[100,1,"Application\/UseCase\/SlipGeneration\/SlipGenerationCommand.php.html#27","App\\Context\\Slip\\Application\\UseCase\\SlipGeneration\\SlipGenerationCommand::isForced","1"],[100,1,"Application\/UseCase\/SlipGeneration\/SlipGenerationCommandHandler.php.html#25","App\\Context\\Slip\\Application\\UseCase\\SlipGeneration\\SlipGenerationCommandHandler::__construct","1"],[100,3,"Application\/UseCase\/SlipGeneration\/SlipGenerationCommandHandler.php.html#37","App\\Context\\Slip\\Application\\UseCase\\SlipGeneration\\SlipGenerationCommandHandler::__invoke","3"],[100,1,"Domain\/Event\/SlipWasSubmitted.php.html#14","App\\Context\\Slip\\Domain\\Event\\SlipWasSubmitted::__construct","1"],[100,1,"Domain\/Event\/SlipWasSubmitted.php.html#61","App\\Context\\Slip\\Domain\\Event\\SlipWasSubmitted::residentUnitId","1"],[100,1,"Domain\/Event\/SlipWasSubmitted.php.html#66","App\\Context\\Slip\\Domain\\Event\\SlipWasSubmitted::amount","1"],[100,1,"Domain\/Event\/SlipWasSubmitted.php.html#71","App\\Context\\Slip\\Domain\\Event\\SlipWasSubmitted::dueDate","1"],[100,1,"Domain\/Exception\/SlipNotFoundException.php.html#13","App\\Context\\Slip\\Domain\\Exception\\SlipNotFoundException::__construct","1"],[100,1,"Domain\/Service\/SlipFactory.php.html#20","App\\Context\\Slip\\Domain\\Service\\SlipFactory::__construct","1"],[100,1,"Domain\/Service\/SlipGenerationPolicy.php.html#19","App\\Context\\Slip\\Domain\\Service\\SlipGenerationPolicy::__construct","1"],[100,6,"Domain\/Service\/SlipGenerationPolicy.php.html#27","App\\Context\\Slip\\Domain\\Service\\SlipGenerationPolicy::check","6"],[100,1,"Domain\/Slip.php.html#26","App\\Context\\Slip\\Domain\\Slip::__construct","1"],[100,1,"Domain\/Slip.php.html#40","App\\Context\\Slip\\Domain\\Slip::createForUnit","1"],[100,1,"Domain\/Slip.php.html#56","App\\Context\\Slip\\Domain\\Slip::id","1"],[100,1,"Domain\/Slip.php.html#66","App\\Context\\Slip\\Domain\\Slip::getStatus","1"],[100,1,"Domain\/Slip.php.html#86","App\\Context\\Slip\\Domain\\Slip::residentUnit","1"],[100,1,"Domain\/Slip.php.html#91","App\\Context\\Slip\\Domain\\Slip::markAsSubmitted","1"],[100,1,"Domain\/Slip.php.html#104","App\\Context\\Slip\\Domain\\Slip::markAsPaid","1"],[100,1,"Domain\/Slip.php.html#123","App\\Context\\Slip\\Domain\\Slip::setStatus","1"],[100,1,"Domain\/ValueObject\/SlipAmount.php.html#12","App\\Context\\Slip\\Domain\\ValueObject\\SlipAmount::__construct","1"],[100,1,"Domain\/ValueObject\/SlipDueDate.php.html#17","App\\Context\\Slip\\Domain\\ValueObject\\SlipDueDate::__construct","1"],[100,1,"Domain\/ValueObject\/SlipDueDate.php.html#42","App\\Context\\Slip\\Domain\\ValueObject\\SlipDueDate::fromString","1"],[100,1,"Domain\/ValueObject\/SlipDueDate.php.html#60","App\\Context\\Slip\\Domain\\ValueObject\\SlipDueDate::toDateTimeImmutable","1"],[100,1,"Domain\/ValueObject\/SlipId.php.html#11","App\\Context\\Slip\\Domain\\ValueObject\\SlipId::fromString","1"],[100,1,"Infrastructure\/Mailer\/SlipMailer.php.html#19","App\\Context\\Slip\\Infrastructure\\Mailer\\SlipMailer::__construct","1"],[100,1,"Infrastructure\/Persistence\/Doctrine\/DoctrineSlipRepository.php.html#18","App\\Context\\Slip\\Infrastructure\\Persistence\\Doctrine\\DoctrineSlipRepository::__construct","1"],[100,2,"Infrastructure\/Persistence\/Doctrine\/DoctrineSlipRepository.php.html#28","App\\Context\\Slip\\Infrastructure\\Persistence\\Doctrine\\DoctrineSlipRepository::save","2"],[100,1,"Infrastructure\/Persistence\/Doctrine\/DoctrineSlipRepository.php.html#46","App\\Context\\Slip\\Infrastructure\\Persistence\\Doctrine\\DoctrineSlipRepository::deleteByDateRange","1"],[100,1,"Infrastructure\/Workflow\/SlipWorkflowCompletedSubscriber.php.html#26","App\\Context\\Slip\\Infrastructure\\Workflow\\SlipWorkflowCompletedSubscriber::__construct","1"],[100,1,"Infrastructure\/Workflow\/SlipWorkflowCompletedSubscriber.php.html#82","App\\Context\\Slip\\Infrastructure\\Workflow\\SlipWorkflowCompletedSubscriber::onPaid","1"]]</script>
+  <script type="text/javascript" defer>
+  const barLabels = [
+    '0%',
+    '0-10%',
+    '10-20%',
+    '20-30%',
+    '30-40%',
+    '40-50%',
+    '50-60%',
+    '60-70%',
+    '70-80%',
+    '80-90%',
+    '90-100%',
+    '100%'
+  ];
+  const barConfig = (name, fullName, values) => ({
+    axis: {
+      x: {
+        type: "category",
+        categories: barLabels,
+      },
+      y: {
+        label: {
+          text: `#${name}`,
+          position: 'outer-top',
+        },
+      },
+    },
+    bindto: `#${name}CoverageDistribution`,
+    data: {
+      columns: [
+        [fullName].concat(values),
+      ],
+      colors: {
+        [fullName]: "rgba(69, 114, 167, 0.75)",
+      },
+      type: "bar",
+    },
+    bar: {
+      width: {
+        ratio: 0.9,
+      },
+    },
+    grid: {
+      focus: {
+        show: false,
+      },
+      x: {
+        show: true,
+      },
+      y: {
+        show: true,
+      },
+    },
+    legend: {
+      show: false,
+    },
+    tooltip: {
+      contents: function (data) {
+        return `<table class="bb-tooltip"><tbody>
+            <tr><th colspan="2">Coverage ${barLabels[data[0].x]}</th></tr>
+            <tr><td class="value">${data[0].value} ${name}</td></tr>
+          </tbody></table>`;
+      },
+      grouped: false,
+    },
+  });
+  bb.generate(
+    barConfig('classes', "Class Coverage", [8,3,3,0,1,2,2,1,2,1,0,15])
+  );
+  bb.generate(
+    barConfig('methods', "Method Coverage", [58,1,3,0,0,1,2,1,1,3,0,48])
+  );
+
+  const scatterConfig = (name, complexityData) => ({
+    axis: {
+      x: {
+        label: {
+          text: 'Code Coverage (in percent)',
+          position: 'outer-right',
+        },
+        tick: {
+          values: [0, 20, 40, 60, 80, 100],
+        },
+      },
+      y: {
+        label: {
+          text: 'Cyclomatic Complexity',
+          position: 'outer-top',
+        },
+        min: 0,
+        padding: {
+          bottom: 0,
+          top: 5,
+        },
+      },
+    },
+    bindto: `#${name}Complexity`,
+    data: {
+      columns: [
+        ["complexity_x"].concat(complexityData.map(d => d[0])),
+        ["complexity"].concat(complexityData.map(d => d[1])),
+      ],
+      onclick: function(data, element) {
+        window.location = complexityData[data.index][2];
+      },
+      type: "scatter",
+      xs: {
+        "complexity": "complexity_x",
+      },
+    },
+    grid: {
+      focus: {
+        show: true,
+        y: true,
+      },
+      x: {
+        show: true,
+      },
+      y: {
+        show: true,
+      },
+    },
+    legend: {
+      show: false,
+    },
+    tooltip: {
+      contents: function (data) {
+        const coverage = Math.round(data[0].x);
+        const complexity = data[0].value;
+        const targetName = complexityData[data[0].index][3];
+        const crap = complexityData[data[0].index][4];
+        return `<table class="bb-tooltip"><tbody>
+            <tr><th colspan="2">${targetName}</th></tr>
+            <tr class="bb-tooltip-name-complexity"><td>Coverage</td><td class="name">${coverage}%</td></tr>
+            <tr class="bb-tooltip-name-complexity"><td>Complexity</td><td class="value">${complexity}</td></tr>
+            <tr class="bb-tooltip-name-complexity"><td>Crap</td><td class="value">${crap}</td></tr>
+          </tbody></table>`;
+      },
+      grouped: false,
+    },
+  });
+  const classComplexityData = JSON.parse(document.getElementById('complexity_class').textContent);
+  bb.generate(
+    scatterConfig("class", classComplexityData)
+  );
+  const methodComplexityData = JSON.parse(document.getElementById('complexity_method').textContent);
+  bb.generate(
+    scatterConfig("method", methodComplexityData),
+  );
+  </script>
+ </body>
+</html>

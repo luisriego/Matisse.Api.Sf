@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<doctrine-mapping xmlns="http://doctrine-project.org/schemas/orm/doctrine-mapping"
+                  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                  xsi:schemaLocation="http://doctrine-project.org/schemas/orm/doctrine-mapping
+                  https://www.doctrine-project.org/schemas/orm/doctrine-mapping.xsd">
+
+    <entity name="App\Context\User\Domain\User" table="users" repository-class="App\Context\User\Infrastructure\Persistence\Doctrine\DoctrineUserRepository">
+        <id name="id" type="uuid" column="id">
+            <generator strategy="NONE"/>
+        </id>
+        <field name="name" column="name" type="string" length="80" nullable="true" />
+        <field name="lastName" column="last_name" type="string" length="80" nullable="true" />
+        <field name="email" column="email" type="string" length="180" unique="true" />
+        <field name="gender" column="gender" type="string" length="1" nullable="true" />
+        <field name="phoneNumber" column="phone" type="string" length="20" nullable="true" />
+        <field name="roles" column="roles" type="json" />
+        <field name="confirmationToken" column="confirmation_token" type="string" length="40" nullable="true" />
+        <field name="password" column="password" type="string" length="255" />
+        <field name="isActive" column="is_active" type="boolean" />
+        <field name="passwordResetToken" column="password_reset_token" type="string" length="40" nullable="true" /> <!-- Added -->
+        <field name="passwordResetRequestedAt" column="password_reset_requested_at" type="datetime_immutable" nullable="true" /> <!-- Added -->
+        <field name="createdAt" column="created_at" type="datetime_immutable" />
+        <field name="updatedAt" column="updated_at" type="datetime" nullable="true" />
+
+        <many-to-one field="residentUnit" target-entity="App\Context\ResidentUnit\Domain\ResidentUnit" inversed-by="users">
+            <join-column name="resident_unit_id" referenced-column-name="id" nullable="true" on-delete="SET NULL" />
+        </many-to-one>
+    </entity>
+
+</doctrine-mapping>

@@ -1,0 +1,37 @@
+framework:
+    workflows:
+        slip:
+            type: state_machine
+            marking_store:
+                type: method
+                property: status
+            supports:
+                - App\Context\Slip\Domain\Slip
+            initial_marking: pending
+            events_to_dispatch:
+                - workflow.completed
+            places:
+                - pending
+                - submitted
+                - paid
+                - overdue
+                - cancelled
+            transitions:
+                send:
+                    from: pending
+                    to: submitted
+                pay_from_submitted:
+                    from: submitted
+                    to: paid
+                expire:
+                    from: [pending, submitted]
+                    to: overdue
+                void_from_pending:
+                    from: pending
+                    to: cancelled
+                void_from_submitted:
+                    from: submitted
+                    to: cancelled
+                void_from_overdue:
+                    from: overdue
+                    to: cancelled

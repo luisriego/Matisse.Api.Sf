@@ -6,7 +6,7 @@ namespace App\Context\Account\Infrastructure\Persistence\Doctrine;
 
 use App\Context\Account\Domain\Account;
 use App\Context\Account\Domain\AccountRepository;
-use App\Shared\Domain\ResourceNotFoundException;
+use App\Shared\Domain\Exception\ResourceNotFoundException;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
 use Symfony\Component\DependencyInjection\Attribute\AsAlias;

@@ -1,0 +1,17 @@
+services:
+    _defaults:
+        autowire: true
+        autoconfigure: true
+
+    App\Context\Slip\Infrastructure\Http\Controller\:
+        public: true
+        resource: './Infrastructure/Http/Controller/'
+        tags: ['controller.service_arguments']
+
+    App\Context\Slip\:
+        resource: './'
+        exclude:
+            - './Domain/Entity/'
+            - './Infrastructure/Persistence/Entity/'
+            - './Infrastructure/Http/Controller/'
+            - './Slip.yaml'

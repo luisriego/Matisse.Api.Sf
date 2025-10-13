@@ -1,0 +1,15 @@
+services:
+    _defaults:
+        autowire: true
+        autoconfigure: true
+        public: true
+
+    # When a service asks for the EventStore interface, provide the consolidated Doctrine implementation.
+    App\Shared\Application\EventStore:
+        alias: App\Context\EventStore\Infrastructure\Persistence\Doctrine\DoctrineStoreEventRepository
+
+    App\Context\EventStore\Infrastructure\Persistence\EventStoreSubscriber:
+        arguments:
+            - '@doctrine.dbal.default_connection'
+        tags:
+            - { name: 'messenger.message_handler', bus: 'event.bus' }
