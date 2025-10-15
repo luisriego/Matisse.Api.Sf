@@ -6,91 +6,17 @@ namespace App\Tests\Context\Account\Application\UseCase\GetAccountBalance;
 
 use App\Context\Account\Application\UseCase\GetAccountBalance\GetAccountBalanceQuery;
 use App\Context\Account\Application\UseCase\GetAccountBalance\GetAccountBalanceQueryHandler;
-use App\Context\Account\Domain\Bus\InitialBalanceSet;
 use App\Context\EventStore\Domain\StoredEvent;
-use App\Context\EventStore\Domain\StoredEventRepository;
-use App\Context\Expense\Domain\Bus\ExpenseWasEntered;
 use App\Context\Income\Domain\Bus\IncomeWasEntered;
-use App\Shared\Domain\Event\DomainEvent;
 use App\Shared\Domain\ValueObject\Uuid;
 use App\Tests\Context\Account\Domain\AccountIdMother;
 use App\Tests\Context\Expense\Domain\ExpenseAmountMother;
 use App\Tests\Context\Expense\Domain\ExpenseTypeMother;
 use App\Tests\Context\Income\Domain\IncomeAmountMother;
 use App\Tests\Context\Income\Domain\IncomeTypeMother;
+use App\Tests\Context\Shared\Infrastructure\Persistence\InMemoryStoredEventRepository;
 use DateTimeImmutable;
-use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
-
-// Fake In-Memory StoredEventRepository for testing
-class InMemoryStoredEventRepository implements StoredEventRepository
-{
-    /**
-     * @var StoredEvent[]
-     */
-    private array $events = [];
-
-    public function save(StoredEvent $event, bool $flush = true): void
-    {
-        $this->events[] = $event;
-        usort($this->events, fn(StoredEvent $a, StoredEvent $b) => $a->occurredAt() <=> $b->occurredAt());
-    }
-
-    public function findByAggregateId(string $aggregateId): array
-    {
-        return array_filter($this->events, fn(StoredEvent $event) => $event->aggregateId() === $aggregateId);
-    }
-
-    public function findByEventNamesAndOccurredBetween(
-        array $eventNames,
-        DateTimeImmutable $startDate,
-        ?DateTimeImmutable $endDate
-    ): array {
-        return array_filter(
-            $this->events,
-            function (StoredEvent $event) use ($eventNames, $startDate, $endDate) {
-                $isEventNameMatch = in_array($event->eventType(), $eventNames);
-                $isAfterStartDate = $event->occurredAt() >= $startDate;
-                $isBeforeEndDate = ($endDate === null) || ($event->occurredAt() <= $endDate);
-
-                return $isEventNameMatch && $isAfterStartDate && $isBeforeEndDate;
-            }
-        );
-    }
-
-    public function findByEventNamesAndOccurredBetweenAndAggregateId(
-        array $eventNames,
-        DateTimeImmutable $startDate,
-        ?DateTimeImmutable $endDate,
-        string $aggregateId
-    ): array {
-        return array_filter(
-            $this->events,
-            function (StoredEvent $event) use ($eventNames, $startDate, $endDate, $aggregateId) {
-                $isEventNameMatch = in_array($event->eventType(), $eventNames);
-                $isAfterStartDate = $event->occurredAt() >= $startDate;
-                $isBeforeEndDate = ($endDate === null) || ($event->occurredAt() <= $endDate);
-                $isAggregateIdMatch = $event->aggregateId() === $aggregateId;
-
-                return $isEventNameMatch && $isAfterStartDate && $isBeforeEndDate && $isAggregateIdMatch;
-            }
-        );
-    }
-
-    public function append(DomainEvent $event): void
-    {
-        $this->save(StoredEvent::create(
-            $event->aggregateId(),
-            $event::eventName(),
-            $event->toPrimitives(),
-        ));
-    }
-
-    public function clear(): void
-    {
-        $this->events = [];
-    }
-}
 
 class GetAccountBalanceQueryHandlerTest extends TestCase
 {
@@ -331,7 +257,7 @@ class GetAccountBalanceQueryHandlerTest extends TestCase
     {
         return StoredEvent::create(
             $accountId,
-            ExpenseWasEntered::eventName(),
+            'expense.entered', // Using literal to avoid dependency on Expense context
             [
                 'amount' => $amount,
                 'type' => ExpenseTypeMother::create()->id(),
@@ -348,7 +274,7 @@ class GetAccountBalanceQueryHandlerTest extends TestCase
     {
         return StoredEvent::create(
             $accountId,
-            InitialBalanceSet::eventName(),
+            'account.initial_balance.set', // Using literal to avoid dependency on Account context
             [
                 'amount' => $amount,
                 'date' => $date,
