@@ -77,4 +77,14 @@ class IncomeType
             $income->setIncomeType(null);
         }
     }
+
+    public function toArray(): array
+    {
+        return [
+            'id' => $this->id,
+            'name' => $this->name,
+            'code' => $this->code,
+            'description' => $this->description,
+        ];
+    }
 }

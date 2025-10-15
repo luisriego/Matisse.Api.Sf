@@ -14,6 +14,8 @@ interface IncomeRepository
 
     public function findOneByIdOrFail(string $id): Income;
 
+    public function findAll(): array;
+
     public function findActiveByDateRange(DateRange $dateRange): array;
 
     public function findInactiveByDateRange(DateRange $dateRange): array;

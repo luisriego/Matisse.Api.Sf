@@ -4,41 +4,22 @@ declare(strict_types=1);
 
 namespace App\Context\Income\Application\UseCase\GetIncomesByMonth;
 
-use App\Context\EventStore\Domain\StoredEvent;
-use App\Context\EventStore\Domain\StoredEventRepository;
-use App\Context\Income\Domain\Bus\IncomeWasEntered;
+use App\Context\Income\Domain\Income;
+use App\Context\Income\Domain\IncomeRepository;
 use App\Shared\Application\QueryHandler;
-use DateMalformedStringException;
-use DateTimeImmutable;
-
-use function array_map;
-use function sprintf;
+use App\Shared\Domain\ValueObject\DateRange;
 
 final readonly class GetIncomesByMonthQueryHandler implements QueryHandler
 {
-    public function __construct(private StoredEventRepository $eventRepository) {}
+    public function __construct(private IncomeRepository $incomeRepository)
+    {}
 
-    /**
-     * @throws DateMalformedStringException
-     */
     public function __invoke(GetIncomesByMonthQuery $query): array
     {
-        $year = $query->year();
-        $month = $query->month();
+        $dateRange = DateRange::createFromMonthAndYear($query->month(), $query->year());
 
-        $startDate = new DateTimeImmutable(sprintf('%d-%02d-01 00:00:00', $year, $month));
-        $endDate = $startDate->modify('last day of this month')->setTime(23, 59, 59);
+        $incomes = $this->incomeRepository->findActiveByDateRange($dateRange);
 
-        $events = $this->eventRepository->findByEventNamesAndOccurredBetween(
-            [IncomeWasEntered::eventName()],
-            $startDate,
-            $endDate,
-        );
-
-        return array_map(function (StoredEvent $event) {
-            $domainEvent = $event->toDomainEvent();
-
-            return $domainEvent->toPrimitives();
-        }, $events);
+        return array_map(fn(Income $income) => $income->toArray(), $incomes);
     }
 }

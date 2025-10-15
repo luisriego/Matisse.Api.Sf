@@ -102,16 +102,18 @@ class IncomeTest extends TestCase
         $this->assertIsArray($incomeArray);
         $this->assertArrayHasKey('id', $incomeArray);
         $this->assertArrayHasKey('amount', $incomeArray);
+        $this->assertArrayHasKey('type', $incomeArray);
         $this->assertArrayHasKey('dueDate', $incomeArray);
         $this->assertArrayHasKey('paidAt', $incomeArray);
-        $this->assertArrayHasKey('residentUnit', $incomeArray);
+        $this->assertArrayHasKey('residentUnitId', $incomeArray);
         $this->assertArrayHasKey('description', $incomeArray);
 
         $this->assertSame($income->id(), $incomeArray['id']);
         $this->assertSame($income->amount(), $incomeArray['amount']);
-        $this->assertSame($income->dueDate(), $incomeArray['dueDate']);
+        $this->assertSame($income->incomeType()->toArray(), $incomeArray['type']);
+        $this->assertSame($income->dueDate()->format('Y-m-d'), $incomeArray['dueDate']);
         $this->assertSame($income->paidAt(), $incomeArray['paidAt']);
-        $this->assertSame($income->residentUnit()->unit(), $incomeArray['residentUnit']);
+        $this->assertSame($income->residentUnit()->id(), $incomeArray['residentUnitId']);
         $this->assertSame($income->description(), $incomeArray['description']);
     }
 }

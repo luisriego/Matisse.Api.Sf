@@ -273,6 +273,8 @@ Updates an expense.
 }
 ```
 
+**Parameters:**
+
 -   `dueDate` (string, optional): The new due date of the expense (format: `YYYY-MM-DD`).
 -   `description` (string, optional): The new description of the expense.
 
@@ -297,6 +299,8 @@ Compensates an expense.
   "amount": 5000
 }
 ```
+
+**Parameters:**
 
 -   `amount` (integer, optional): The amount to compensate. If not provided, the full amount of the expense will be compensated.
 
@@ -420,7 +424,7 @@ Creates a new recurring expense.
 
 -   `id` (string, required): The unique identifier for the recurring expense (UUID format).
 -   `amount` (integer, required): The expense amount (in cents).
--   `type` (string, required): The type of expense (e.g., "services", "maintenance").
+-   `type` (string, required): The type of expense (UUID format).
 -   `accountId` (string, required): The ID of the account associated with the expense.
 -   `dueDay` (integer, required): The day of the month the expense is due.
 -   `monthsOfYear` (array, required): An array of months in which the expense occurs (1-12).
@@ -457,8 +461,10 @@ Updates a recurring expense.
 }
 ```
 
+**Parameters:**
+
 -   `amount` (integer, optional): The new expense amount (in cents).
--   `type` (string, optional): The new type of expense.
+-   `type` (string, optional): The new type of expense (UUID format).
 -   `dueDay` (integer, optional): The new day of the month the expense is due.
 -   `monthsOfYear` (array, optional): The new array of months in which the expense occurs.
 -   `startDate` (string, optional): The new start date of the recurring expense (format: `YYYY-MM-DD`).
@@ -499,21 +505,21 @@ Enters a new income.
 
 ```json
 {
-  "id": "g4e8b3f0-6b7a-4f2a-8b8b-3b3b3b3b3b3g",
-  "residentUnitId": "e4b8b3f0-6b7a-4f2a-8b8b-3b3b3b3b3b3e",
-  "amount": 50000,
-  "type": "rent",
-  "dueDate": "2023-11-01",
-  "description": "Monthly rent"
+  "id": "1f0b8de4-809c-4586-aacd-254d0fde6eba",
+  "residentUnitId": "674424a7-6009-42c0-a2da-6cc21a542bbd",
+  "amount": 132000,
+  "type": "6ed40f15-07a9-416a-99cf-bbb58348f4fd",
+  "dueDate": "2025-10-21",
+  "description": "Condominio de outubro"
 }
 ```
 
 **Parameters:**
 
 -   `id` (string, required): The unique identifier for the income (UUID format).
--   `residentUnitId` (string, required): The ID of the resident unit associated with the income.
+-   `residentUnitId` (string, required): The ID of the resident unit associated with the income (UUID format).
 -   `amount` (integer, required): The income amount (in cents).
--   `type` (string, required): The type of income (e.g., "rent", "fees").
+-   `type` (string, required): The type of income (UUID format).
 -   `dueDate` (string, required): The due date of the income (format: `YYYY-MM-DD`).
 -   `description` (string, optional): A description of the income.
 
@@ -538,6 +544,8 @@ Updates an income.
   "description": "Updated rent description"
 }
 ```
+
+**Parameters:**
 
 -   `dueDate` (string, optional): The new due date of the income (format: `YYYY-MM-DD`).
 -   `description` (string, optional): The new description of the income.
@@ -568,7 +576,39 @@ Retrieves a list of incomes for a given month and year.
   {
     "amount": 132000,
     "residentUnitId": "674424a7-6009-42c0-a2da-6cc21a542bbd",
-    "type": "6ed40f15-07a9-4403-a1dd-d81e9a05c430",
+    "type": {
+      "id": "6ed40f15-07a9-416a-99cf-bbb58348f4fd",
+      "name": "Condominio",
+      "code": "CON",
+      "description": "Cuota de condominio"
+    },
+    "dueDate": "2025-10-21",
+    "description": "Condominio de outubro"
+  }
+]
+```
+
+### `GET /api/v1/incomes`
+
+Retrieves a list of all incomes.
+
+**Responses:**
+
+-   `200 OK`: The request was successful.
+
+**Example Response:**
+
+```json
+[
+  {
+    "amount": 132000,
+    "residentUnitId": "674424a7-6009-42c0-a2da-6cc21a542bbd",
+    "type": {
+      "id": "6ed40f15-07a9-416a-99cf-bbb58348f4fd",
+      "name": "Condominio",
+      "code": "CON",
+      "description": "Cuota de condominio"
+    },
     "dueDate": "2025-10-21",
     "description": "Condominio de outubro"
   }
@@ -844,6 +884,7 @@ Activates a user account. This endpoint is typically used by clicking a link in 
 **Responses:**
 
 -   `200 OK`: The user account was activated successfully.
+
 -   `400 Bad Request`: The activation token is invalid or has expired.
 -   `404 Not Found`: The specified user does not exist.
 
@@ -1107,6 +1148,8 @@ Appends a recipient to a resident unit.
 }
 ```
 
+**Parameters:**
+
 -   `name` (string, required): The name of the recipient.
 -   `email` (string, required): The email address of the recipient.
 
@@ -1128,3 +1171,4 @@ Appends a recipient to a resident unit.
   "createdAt": "2023-10-27T10:00:00+00:00",
   "updatedAt": "2023-10-27T10:00:00+00:00"
 }
+```
