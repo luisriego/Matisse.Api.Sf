@@ -25,7 +25,7 @@ use DateTime;
 
 use function sprintf;
 
-readonly class CreateRecurringExpenseCommandHandler implements CommandHandler
+final readonly class CreateRecurringExpenseCommandHandler implements CommandHandler
 {
     public function __construct(
         private RecurringExpenseRepository $recurringExpenseRepository,
@@ -41,6 +41,7 @@ readonly class CreateRecurringExpenseCommandHandler implements CommandHandler
     public function __invoke(CreateRecurringExpenseCommand $command): void
     {
         $id = new ExpenseId($command->id());
+        $accountId = $command->accountId(); // Get accountId from command
         $amount = new ExpenseAmount($command->amount());
         $type = $this->typeRepo->findOneByIdOrFail($command->type());
         $dueDay = new ExpenseDueDay($command->dueDay());
@@ -52,6 +53,7 @@ readonly class CreateRecurringExpenseCommandHandler implements CommandHandler
 
         $recurringExpense = RecurringExpense::create(
             $id,
+            $accountId, // Pass accountId
             $amount,
             $type,
             $dueDay,
@@ -60,7 +62,7 @@ readonly class CreateRecurringExpenseCommandHandler implements CommandHandler
             $endDate,
             $description,
             $notes,
-            $command->hasPredefinedAmount(), // Pass the value from the command
+            $command->hasPredefinedAmount()
         );
 
         $this->recurringExpenseRepository->save($recurringExpense, false);

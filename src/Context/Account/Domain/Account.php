@@ -31,7 +31,7 @@ class Account extends AggregateRoot
         $this->name = $name;
         $this->isActive = false;
         $this->createdAt = new DateTimeImmutable();
-        $this->expenses = new ArrayCollection();
+        // Doctrine will manage this collection
     }
 
     public static function create(AccountId $id, AccountCode $code, AccountName $name): self

@@ -58,8 +58,7 @@ class ExpenseType
         $this->name               = $name;
         $this->distributionMethod = $distributionMethod;
         $this->description        = $description;
-        $this->expenses           = new ArrayCollection();
-        $this->recurringExpenses  = new ArrayCollection(); // <-- AÑADIDO
+        // Doctrine will manage these collections
     }
 
     public static function create(

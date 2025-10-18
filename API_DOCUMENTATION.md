@@ -159,7 +159,7 @@ Enters a new expense.
 
 -   `id` (string, required): The unique identifier for the expense (UUID format).
 -   `amount` (integer, required): The expense amount (in cents).
--   `type` (string, required): The type of expense (e.g., "services", "maintenance").
+-   `type` (string, required): The unique identifier for the expense type (UUID format).
 -   `accountId` (string, required): The ID of the account associated with the expense.
 -   `dueDate` (string, required): The due date of the expense (format: `YYYY-MM-DD`).
 -   `isActive` (boolean, optional): Whether the expense is active. Defaults to `true`.
@@ -192,7 +192,7 @@ Enters a new expense with a required description.
 
 -   `id` (string, required): The unique identifier for the expense (UUID format).
 -   `amount` (integer, required): The expense amount (in cents).
--   `type` (string, required): The type of expense (e.g., "services", "maintenance").
+-   `type` (string, required): The unique identifier for the expense type (UUID format).
 -   `accountId` (string, required): The ID of the account associated with the expense.
 -   `dueDate` (string, required): The due date of the expense (format: `YYYY-MM-DD`).
 -   `description` (string, required): A description of the expense.
@@ -204,7 +204,7 @@ Enters a new expense with a required description.
 
 ### `GET /api/v1/expenses`
 
-Retrieves a list of all expenses.
+Retrieves a list of all expenses. The `type` field now returns a complete Expense Type Object.
 
 **Responses:**
 
@@ -215,17 +215,53 @@ Retrieves a list of all expenses.
 ```json
 [
   {
-    "id": "d4e8b3f0-6b7a-4f2a-8b8b-3b3b3b3b3b3d",
-    "amount": 10000,
-    "type": "services",
-    "accountId": "a7b7b3f0-6b7a-4f2a-8b8b-3b3b3b3b3b3b",
-    "dueDate": "2023-11-15",
-    "isActive": true,
-    "description": "Monthly internet service",
-    "residentUnitId": "e4b8b3f0-6b7a-4f2a-8b8b-3b3b3b3b3b3e"
+    "id": "0e45a25e-6857-40f5-86ae-b1031bd51c3f",
+    "amount": 9000,
+    "description": "Robert telf. 555-313131 (October 2025)",
+    "dueDate": "2025-10-09 00:00:00",
+    "paidAt": null,
+    "createdAt": "2025-10-15 22:32:02",
+    "residentUnitId": null,
+    "type": {
+        "id": "f2266caa-0edf-4403-a1dd-d81e9a05c430",
+        "code": "MR1GE",
+        "name": "MANUTENCAO_GERAL",
+        "distributionMethod": "EQUAL",
+        "description": "Pequenos reparos (hidráulica, elétrica em áreas comuns, chaveiro, etc.)."
+    },
+    "account": {
+        "id": "6509f512-11f6-4f39-8457-e5e2ad9e221f",
+        "code": "TRE23UY",
+        "name": "Conta Principal",
+        "description": "Esta é a conta principal do condominio, utilizada para gastos correntes.",
+        "isActive": true
+    },
+    "recurringExpense": "c9e67e09-84ca-4c73-8f3d-6377d6d852db"
   }
 ]
 ```
+
+#### Expense Type Object
+
+The `type` field, when returned as a full object, has the following structure:
+
+```json
+{
+  "id": "string",
+  "name": "string",
+  "code": "string",
+  "distributionMethod": "string",
+  "description": "string"
+}
+```
+
+**Parameters:**
+
+-   `id` (string): The unique identifier for the expense type (UUID format).
+-   `name` (string): The name of the expense type.
+-   `code` (string): A short code for the expense type.
+-   `distributionMethod` (string): The method used for distributing the expense.
+-   `description` (string): A description of the expense type.
 
 ### `GET /api/v1/expenses/{id}`
 
@@ -246,7 +282,13 @@ Retrieves a single expense by its ID.
 {
   "id": "d4e8b3f0-6b7a-4f2a-8b8b-3b3b3b3b3b3d",
   "amount": 10000,
-  "type": "services",
+  "type": {
+      "id": "f2266caa-0edf-4403-a1dd-d81e9a05c430",
+      "code": "MR1GE",
+      "name": "MANUTENCAO_GERAL",
+      "distributionMethod": "EQUAL",
+      "description": "Pequenos reparos (hidráulica, elétrica em áreas comuns, chaveiro, etc.)."
+  },
   "accountId": "a7b7b3f0-6b7a-4f2a-8b8b-3b3b3b3b3b3b",
   "dueDate": "2023-11-15",
   "isActive": true,
@@ -325,7 +367,7 @@ Marks an expense as payed.
 
 ### `GET /api/v1/expenses/date-range/{year}/{month}`
 
-Retrieves a list of active expenses for a given month and year.
+Retrieves a list of active expenses for a given month and year. The `type` field now returns a complete Expense Type Object.
 
 **Parameters:**
 
@@ -341,14 +383,28 @@ Retrieves a list of active expenses for a given month and year.
 ```json
 [
   {
-    "id": "d4e8b3f0-6b7a-4f2a-8b8b-3b3b3b3b3b3d",
-    "amount": 10000,
-    "type": "services",
-    "accountId": "a7b7b3f0-6b7a-4f2a-8b8b-3b3b3b3b3b3b",
-    "dueDate": "2023-11-15",
-    "isActive": true,
-    "description": "Monthly internet service",
-    "residentUnitId": "e4b8b3f0-6b7a-4f2a-8b8b-3b3b3b3b3b3e"
+    "id": "1adab14f-7101-46fa-9f50-876126178324",
+    "amount": 108050,
+    "description": "Facility BH (October)",
+    "dueDate": "2025-10-02 00:30:00",
+    "paidAt": null,
+    "createdAt": "2025-10-18 02:33:21",
+    "residentUnitId": null,
+    "type": {
+        "id": "f2266caa-0edf-4403-a1dd-d81e9a05c430",
+        "code": "MR1GE",
+        "name": "MANUTENCAO_GERAL",
+        "distributionMethod": "EQUAL",
+        "description": "Pequenos reparos (hidráulica, elétrica em áreas comuns, chaveiro, etc.)."
+    },
+    "account": {
+        "id": "6509f512-11f6-4f39-8457-e5e2ad9e221f",
+        "code": "TRE23UY",
+        "name": "Conta Principal",
+        "description": "Esta é a conta principal do condominio, utilizada para gastos correntes.",
+        "isActive": true
+    },
+    "recurringExpense": "79897837-2575-4830-b6c4-a42da653e413"
   }
 ]
 ```

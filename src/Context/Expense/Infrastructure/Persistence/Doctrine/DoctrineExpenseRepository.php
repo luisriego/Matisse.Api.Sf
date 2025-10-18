@@ -55,7 +55,12 @@ class DoctrineExpenseRepository extends ServiceEntityRepository implements Expen
 
     public function findAll(): array
     {
-        return $this->findAll();
+        return $this->getEntityManager()
+            ->createQueryBuilder()
+            ->select('e')
+            ->from(Expense::class, 'e')
+            ->getQuery()
+            ->getResult();
     }
 
     public function findActiveByDateRange(DateRange $dateRange): array

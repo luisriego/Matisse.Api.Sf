@@ -38,10 +38,9 @@ final readonly class GetPendingMonthlyRecurringExpensesQueryHandler implements Q
 
         foreach ($allRecurringExpenses as $recurringExpense) {
             // Filter by account if provided
-            // TODO: RecurringExpense entity does not currently store accountId. This needs to be added.
-            // if (null !== $accountId && $recurringExpense->accountId() !== $accountId) {
-            //     continue;
-            // }
+            if (null !== $accountId && $recurringExpense->accountId() !== $accountId) {
+                continue;
+            }
 
             // Check if this recurring expense is active for the given month/year
             $targetDate = new DateTimeImmutable(sprintf('%d-%02d-%02d', $year, $month, $recurringExpense->dueDay()));

@@ -33,16 +33,17 @@ final class GetPendingMonthlyRecurringExpensesController extends ApiController
 
         $data = array_map(function ($recurringExpense) {
             return [
-                'id' => $recurringExpense->id(), // Corrected: id() returns string
-                'amount' => $recurringExpense->amount(), // Corrected: amount() returns int
-                'type' => $recurringExpense->type()->id(), // Corrected: type()->id() returns string
-                'dueDay' => $recurringExpense->dueDay(), // Corrected: dueDay() returns int
-                'monthsOfYear' => $recurringExpense->monthsOfYear(), // Correct: monthsOfYear() returns array
-                'startDate' => $recurringExpense->startDate()->format('Y-m-d'), // Corrected: startDate() returns DateTimeInterface
-                'endDate' => $recurringExpense->endDate()?->format('Y-m-d'), // Corrected: endDate() returns ?DateTimeInterface, handle null
-                'description' => $recurringExpense->description(), // Corrected: description() returns ?string
-                'notes' => $recurringExpense->notes(), // Corrected: notes() returns ?string
-                'hasPredefinedAmount' => $recurringExpense->hasPredefinedAmount(), // Corrected: hasPredefinedAmount() returns bool
+                'id' => $recurringExpense->id(),
+                'accountId' => $recurringExpense->accountId(), // Added accountId
+                'amount' => $recurringExpense->amount(),
+                'type' => $recurringExpense->type()->id(),
+                'dueDay' => $recurringExpense->dueDay(),
+                'monthsOfYear' => $recurringExpense->monthsOfYear(),
+                'startDate' => $recurringExpense->startDate()->format('Y-m-d'),
+                'endDate' => $recurringExpense->endDate()?->format('Y-m-d'),
+                'description' => $recurringExpense->description(),
+                'notes' => $recurringExpense->notes(),
+                'hasPredefinedAmount' => $recurringExpense->hasPredefinedAmount(),
             ];
         }, $recurringExpenses);
 

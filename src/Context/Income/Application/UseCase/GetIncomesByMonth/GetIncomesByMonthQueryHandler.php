@@ -14,9 +14,13 @@ final readonly class GetIncomesByMonthQueryHandler implements QueryHandler
     public function __construct(private IncomeRepository $incomeRepository)
     {}
 
+    /**
+     * @throws \DateMalformedStringException
+     */
     public function __invoke(GetIncomesByMonthQuery $query): array
     {
-        $dateRange = DateRange::createFromMonthAndYear($query->month(), $query->year());
+        // Corrected method call to use the existing `fromMonth` method with correct argument order
+        $dateRange = DateRange::fromMonth($query->year(), $query->month());
 
         $incomes = $this->incomeRepository->findActiveByDateRange($dateRange);
 

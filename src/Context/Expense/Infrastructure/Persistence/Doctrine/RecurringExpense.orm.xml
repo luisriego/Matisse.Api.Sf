@@ -16,6 +16,7 @@
         </id>
 
         <field name="amount"        column="amount"         type="integer"/>
+        <field name="accountId"     column="account_id"     type="uuid"    nullable="true"/>
         <field name="description"   column="description"    type="text"    nullable="true"/>
         <field name="dueDay"        column="due_day"         type="integer"/>
         <field name="monthsOfYear"  column="months_of_year"  type="json"    nullable="true"/>
