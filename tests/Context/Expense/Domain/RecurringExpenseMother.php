@@ -19,6 +19,7 @@ final class RecurringExpenseMother
      */
     public static function create(
         ?ExpenseId $id = null,
+        ?string $accountId = null,
         ?ExpenseAmount $amount = null,
         ?ExpenseType $expenseType = null,
         ?ExpenseDueDay $dueDay = null,
@@ -28,6 +29,7 @@ final class RecurringExpenseMother
         ?string $description = null
     ): RecurringExpense {
         $id            = $id            ?? ExpenseIdMother::create();
+        $accountId     = $accountId     ?? 'a5a4c7e4-9c5b-4b8f-8c6e-1e2b3c4d5e6f'; // Default test account ID
         $amount        = $amount        ?? ExpenseAmountMother::create();
         $expenseType   = $expenseType   ?? ExpenseTypeMother::create();
         $dueDay        = $dueDay        ?? new ExpenseDueDay(15);
@@ -38,6 +40,7 @@ final class RecurringExpenseMother
 
         return RecurringExpense::create(
             $id,
+            $accountId,
             $amount,
             $expenseType,
             $dueDay,

@@ -77,3 +77,8 @@ recurring_expense_get_pending_monthly:
     path: /api/v1/recurring-expenses/pending-monthly/{month}/{year}
     controller: App\Context\Expense\Infrastructure\Http\Controller\GetPendingMonthlyRecurringExpensesController
     methods: ['GET']
+
+recurring_expense_get_by_year:
+    path: /api/v1/recurring-expenses/year/{year}
+    controller: App\Context\Expense\Infrastructure\Http\Controller\GetRecurringExpensesByYearController
+    methods: ['GET']

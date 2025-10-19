@@ -23,7 +23,7 @@ final readonly class RecurringExpenseWasCreated extends DomainEvent
         private ?string $description,
         private ?string $notes,
         ?string $eventId = null,
-        ?DateTimeImmutable $occurredOn = null
+        ?DateTimeImmutable $occurredOn = null,
     ) {
         parent::__construct($id, $eventId ?? Uuid::random()->value(), $occurredOn ?? new DateTimeImmutable());
     }
@@ -55,7 +55,7 @@ final readonly class RecurringExpenseWasCreated extends DomainEvent
         string $aggregateId,
         array $body,
         string $eventId,
-        string $occurredOn
+        string $occurredOn,
     ): DomainEvent {
         return new self(
             $aggregateId,
@@ -69,7 +69,7 @@ final readonly class RecurringExpenseWasCreated extends DomainEvent
             $body['description'],
             $body['notes'],
             $eventId,
-            new DateTimeImmutable($occurredOn)
+            new DateTimeImmutable($occurredOn),
         );
     }
 }

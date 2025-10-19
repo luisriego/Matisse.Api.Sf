@@ -62,7 +62,7 @@ final readonly class CreateRecurringExpenseCommandHandler implements CommandHand
             $endDate,
             $description,
             $notes,
-            $command->hasPredefinedAmount()
+            $command->hasPredefinedAmount(),
         );
 
         $this->recurringExpenseRepository->save($recurringExpense, false);

@@ -11,7 +11,6 @@ use App\Context\Expense\Domain\ValueObject\ExpenseTypeDescription;
 use App\Context\Expense\Domain\ValueObject\ExpenseTypeDistributionMethod;
 use App\Context\Expense\Domain\ValueObject\ExpenseTypeId;
 use App\Context\Expense\Domain\ValueObject\ExpenseTypeName;
-use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 

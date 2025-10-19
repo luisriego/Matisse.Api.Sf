@@ -36,10 +36,10 @@ class RecurringExpense extends AggregateRoot
         private ?DateTimeInterface $endDate = null,
         private ?string $description = null,
         private ?string $notes = null,
-        bool $hasPredefinedAmount = true
+        bool $hasPredefinedAmount = true,
     ) {
         $this->accountId = $accountId;
-        // Doctrine will manage this collection
+        $this->expenses = new ArrayCollection();
         $this->createdAt  = new DateTimeImmutable();
         $this->isActive   = true;
         $this->hasPredefinedAmount = $hasPredefinedAmount;
@@ -59,7 +59,7 @@ class RecurringExpense extends AggregateRoot
         ?ExpenseEndDate $endDate   = null,
         ?string $description      = null,
         ?string $notes            = null,
-        bool $hasPredefinedAmount = true
+        bool $hasPredefinedAmount = true,
     ): self {
         $start = $startDate ?? ExpenseStartDate::from();
         $end = $endDate   ?? ExpenseEndDate::from();
@@ -75,7 +75,7 @@ class RecurringExpense extends AggregateRoot
             $end->toDateTime(),
             $description,
             $notes,
-            $hasPredefinedAmount
+            $hasPredefinedAmount,
         );
 
         $recurringExpense->record(new RecurringExpenseWasCreated(
@@ -89,7 +89,7 @@ class RecurringExpense extends AggregateRoot
             $end->toDateTime()?->format('Y-m-d H:i:s'),
             $description,
             $notes,
-            null // Pass null for eventId
+            null, // Pass null for eventId
         ));
 
         return $recurringExpense;

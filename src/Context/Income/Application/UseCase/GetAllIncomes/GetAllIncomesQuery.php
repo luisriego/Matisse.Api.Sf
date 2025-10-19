@@ -8,6 +8,5 @@ use App\Shared\Application\Query;
 
 final readonly class GetAllIncomesQuery implements Query
 {
-    public function __construct()
-    {}
+    public function __construct() {}
 }
