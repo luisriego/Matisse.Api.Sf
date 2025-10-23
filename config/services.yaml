@@ -93,3 +93,9 @@ services:
     App\Security\JWTCreatedListener:
         tags:
             - { name: kernel.event_listener, event: lexik_jwt_authentication.on_jwt_created, method: onJWTCreated }
+
+    App\Shared\Application\TextGeneratorInterface:
+        class: App\Shared\Infrastructure\Ollama\OllamaTextGenerator
+        arguments:
+            $ollamaHost: '%env(OLLAMA_HOST)%'
+            $logger: '@logger'

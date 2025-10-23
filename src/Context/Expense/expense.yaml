@@ -15,3 +15,8 @@ services:
             - './Infrastructure/Persistence/Entity/'
             - './Infrastructure/Http/Controller/'
             - './expense.yaml'
+
+    App\Context\Expense\Application\Service\ExpenseAlertService:
+        arguments:
+            $textGenerator: '@App\Shared\Application\TextGeneratorInterface'
+            $logger: '@logger'
