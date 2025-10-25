@@ -10,6 +10,7 @@ use App\Context\Income\Domain\IncomeTypeRepository;
 use App\Context\Income\Domain\ValueObject\IncomeAmount;
 use App\Context\Income\Domain\ValueObject\IncomeDueDate;
 use App\Context\Income\Domain\ValueObject\IncomeId;
+use App\Context\ResidentUnit\Domain\ResidentUnitId;
 use App\Context\ResidentUnit\Domain\ResidentUnitRepository;
 use App\Shared\Application\CommandHandler;
 use App\Shared\Domain\Event\EventBus;
@@ -32,12 +33,12 @@ readonly class EnterIncomeCommandHandler implements CommandHandler
     {
         $id = new IncomeId($command->id());
         $amount = new IncomeAmount($command->amount());
-        $residentUnit = $this->residentUnitRepository->findOneByIdOrFail($command->residentUnitId());
+        $residentUnitId = new ResidentUnitId($command->residentUnitId());
         $type = $this->incomeTypeRepository->findOneByIdOrFail($command->type());
         $dueDate = new IncomeDueDate(new DateTime($command->dueDate()));
         $descriptionValue = $command->description();
 
-        $income = Income::create($id, $amount, $residentUnit, $type, $dueDate, $descriptionValue);
+        $income = Income::create($id, $amount, $residentUnitId, $type, $dueDate, $descriptionValue);
 
         if ($income->hasDomainEvents()) {
             $this->incomeRepository->save($income, false);

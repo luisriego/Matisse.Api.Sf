@@ -2,6 +2,8 @@
 
 namespace App\Tests\Context\Account\Application\UseCase\FindAccount;
 
+use App\Context\Account\Application\AccountResponse;
+use App\Context\Account\Application\AccountTransformer;
 use App\Context\Account\Application\UseCase\FindAccount\FindAccountQuery;
 use App\Context\Account\Application\UseCase\FindAccount\FindAccountQueryHandler;
 use App\Context\Account\Domain\AccountId;
@@ -16,12 +18,14 @@ use PHPUnit\Framework\TestCase;
 class FindAccountQueryHandlerTest extends TestCase
 {
     private AccountRepository|MockInterface $repository;
+    private AccountTransformer|MockInterface $transformer;
     private FindAccountQueryHandler $handler;
 
     protected function setUp(): void
     {
         $this->repository = Mockery::mock(AccountRepository::class);
-        $this->handler = new FindAccountQueryHandler($this->repository);
+        $this->transformer = Mockery::mock(AccountTransformer::class);
+        $this->handler = new FindAccountQueryHandler($this->repository, $this->transformer);
     }
 
     protected function tearDown(): void
@@ -34,6 +38,13 @@ class FindAccountQueryHandlerTest extends TestCase
         // Arrange
         $account = AccountMother::create();
         $accountId = new AccountId($account->id());
+        $accountResponse = new AccountResponse(
+            $account->id(),
+            $account->code(),
+            $account->name(),
+            $account->description(),
+            $account->isActive()
+        );
 
         $this->repository
             ->shouldReceive('find')
@@ -43,13 +54,19 @@ class FindAccountQueryHandlerTest extends TestCase
             ->once()
             ->andReturn($account);
 
+        $this->transformer
+            ->shouldReceive('transform')
+            ->with($account)
+            ->once()
+            ->andReturn($accountResponse);
+
         $query = new FindAccountQuery($account->id());
 
         // Act
         $result = ($this->handler)($query);
 
         // Assert
-        $this->assertEquals($account->toArray(), $result);
+        $this->assertEquals($accountResponse, $result);
     }
 
     public function testFindAccountNotFound(): void

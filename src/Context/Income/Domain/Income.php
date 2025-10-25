@@ -8,7 +8,7 @@ use App\Context\Income\Domain\Bus\IncomeWasEntered;
 use App\Context\Income\Domain\ValueObject\IncomeAmount;
 use App\Context\Income\Domain\ValueObject\IncomeDueDate;
 use App\Context\Income\Domain\ValueObject\IncomeId;
-use App\Context\ResidentUnit\Domain\ResidentUnit;
+use App\Context\ResidentUnit\Domain\ResidentUnitId;
 use App\Shared\Domain\AggregateRoot;
 use DateTime;
 use DateTimeImmutable;
@@ -22,7 +22,7 @@ class Income extends AggregateRoot
     public function __construct(
         private readonly string $id,
         private int $amount,
-        private ResidentUnit $residentUnit,
+        private ResidentUnitId $residentUnitId,
         private ?IncomeType $incomeType,
         private DateTime $dueDate,
         private ?string $description = null,
@@ -34,7 +34,7 @@ class Income extends AggregateRoot
     public static function create(
         IncomeId $id,
         IncomeAmount $amount,
-        ResidentUnit $residentUnit,
+        ResidentUnitId $residentUnitId,
         IncomeType $type,
         IncomeDueDate $dueDate,
         ?string $description = null,
@@ -42,7 +42,7 @@ class Income extends AggregateRoot
         $income =  new self(
             $id->value(),
             $amount->value(),
-            $residentUnit,
+            $residentUnitId,
             $type,
             $dueDate->toDateTime(),
             $description,
@@ -51,7 +51,7 @@ class Income extends AggregateRoot
         $income->record(new IncomeWasEntered(
             aggregateId: $id->value(),
             amount: $amount->value(),
-            residentUnitId: $residentUnit->id(),
+            residentUnitId: $residentUnitId->value(),
             type: $type->id(),
             dueDate: $dueDate->toDateTime()->format('Y-m-d'),
             description: $description,
@@ -85,9 +85,9 @@ class Income extends AggregateRoot
         return $this->paidAt;
     }
 
-    public function residentUnit(): ResidentUnit
+    public function residentUnitId(): ResidentUnitId
     {
-        return $this->residentUnit;
+        return $this->residentUnitId;
     }
 
     public function description(): ?string
@@ -128,7 +128,7 @@ class Income extends AggregateRoot
             'type' => $this->incomeType?->toArray(),
             'dueDate' => $this->dueDate->format('Y-m-d'),
             'paidAt' => $this->paidAt?->format('Y-m-d'),
-            'residentUnitId' => $this->residentUnit?->id(),
+            'residentUnitId' => $this->residentUnitId->value(),
             'description' => $this->description,
         ];
     }

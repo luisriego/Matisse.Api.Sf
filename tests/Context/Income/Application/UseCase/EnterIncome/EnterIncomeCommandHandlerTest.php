@@ -38,13 +38,11 @@ class EnterIncomeCommandHandlerTest extends TestCase
         parent::setUp();
         $this->incomeRepository = $this->createMock(IncomeRepository::class);
         $this->incomeTypeRepository = $this->createMock(IncomeTypeRepository::class);
-        $this->residentUnitRepository = $this->createMock(ResidentUnitRepository::class);
         $this->eventBus = $this->createMock(EventBus::class);
 
         $this->handler = new EnterIncomeCommandHandler(
             $this->incomeRepository,
             $this->incomeTypeRepository,
-            $this->residentUnitRepository,
             $this->eventBus
         );
     }
@@ -71,15 +69,7 @@ class EnterIncomeCommandHandlerTest extends TestCase
             $description
         );
 
-        $residentUnitMock = $this->createMock(ResidentUnit::class);
-        $residentUnitMock->method('id')->willReturn($residentUnitId);
         $incomeTypeMock = $this->createMock(IncomeType::class);
-
-        $this->residentUnitRepository
-            ->expects(self::once())
-            ->method('findOneByIdOrFail')
-            ->with($residentUnitId)
-            ->willReturn($residentUnitMock);
 
         $this->incomeTypeRepository
             ->expects(self::once())
@@ -129,15 +119,7 @@ class EnterIncomeCommandHandlerTest extends TestCase
             null
         );
 
-        $residentUnitMock = $this->createMock(ResidentUnit::class);
-        $residentUnitMock->method('id')->willReturn($residentUnitId);
         $incomeTypeMock = $this->createMock(IncomeType::class);
-
-        $this->residentUnitRepository
-            ->expects(self::once())
-            ->method('findOneByIdOrFail')
-            ->with($residentUnitId)
-            ->willReturn($residentUnitMock);
 
         $this->incomeTypeRepository
             ->expects(self::once())
@@ -165,31 +147,6 @@ class EnterIncomeCommandHandlerTest extends TestCase
         ($this->handler)($command);
     }
 
-    /** @test */
-    public function test_it_propagates_exception_when_resident_unit_not_found(): void
-    {
-        $incomeId = IncomeIdMother::create();
-        $command = new EnterIncomeCommand(
-            $incomeId->value(),
-            1000,
-            'non-existent-unit',
-            'type-id',
-            (new DateTime('+30 days'))->format('Y-m-d'),
-            'description'
-        );
-
-        $this->residentUnitRepository
-            ->expects(self::once())
-            ->method('findOneByIdOrFail')
-            ->with('non-existent-unit')
-            ->willThrowException(new RuntimeException('Resident unit not found'));
-
-        $this->expectException(RuntimeException::class);
-        $this->expectExceptionMessage('Resident unit not found');
-
-        ($this->handler)($command);
-    }
-
     /** @test
      * @throws Exception
      */
@@ -206,14 +163,6 @@ class EnterIncomeCommandHandlerTest extends TestCase
             (new DateTime('+30 days'))->format('Y-m-d'),
             'description'
         );
-
-        $residentUnitMock = $this->createMock(ResidentUnit::class);
-
-        $this->residentUnitRepository
-            ->expects(self::once())
-            ->method('findOneByIdOrFail')
-            ->with($residentUnitId)
-            ->willReturn($residentUnitMock);
 
         $this->incomeTypeRepository
             ->expects(self::once())
@@ -243,13 +192,7 @@ class EnterIncomeCommandHandlerTest extends TestCase
             'description'
         );
 
-        $residentUnitMock = $this->createMock(ResidentUnit::class);
         $incomeTypeMock = $this->createMock(IncomeType::class);
-
-        $this->residentUnitRepository
-            ->expects(self::once())
-            ->method('findOneByIdOrFail')
-            ->willReturn($residentUnitMock);
 
         $this->incomeTypeRepository
             ->expects(self::once())
@@ -278,13 +221,7 @@ class EnterIncomeCommandHandlerTest extends TestCase
             'description'
         );
 
-        $residentUnitMock = $this->createMock(ResidentUnit::class);
         $incomeTypeMock = $this->createMock(IncomeType::class);
-
-        $this->residentUnitRepository
-            ->expects(self::once())
-            ->method('findOneByIdOrFail')
-            ->willReturn($residentUnitMock);
 
         $this->incomeTypeRepository
             ->expects(self::once())
@@ -316,14 +253,7 @@ class EnterIncomeCommandHandlerTest extends TestCase
             null
         );
 
-        $residentUnitMock = $this->createMock(ResidentUnit::class);
-        $residentUnitMock->method('id')->willReturn($residentUnitId);
         $incomeTypeMock = $this->createMock(IncomeType::class);
-
-        $this->residentUnitRepository
-            ->expects(self::once())
-            ->method('findOneByIdOrFail')
-            ->willReturn($residentUnitMock);
 
         $this->incomeTypeRepository
             ->expects(self::once())
@@ -362,14 +292,7 @@ class EnterIncomeCommandHandlerTest extends TestCase
             null
         );
 
-        $residentUnitMock = $this->createMock(ResidentUnit::class);
-        $residentUnitMock->method('id')->willReturn($residentUnitId);
         $incomeTypeMock = $this->createMock(IncomeType::class);
-
-        $this->residentUnitRepository
-            ->expects(self::once())
-            ->method('findOneByIdOrFail')
-            ->willReturn($residentUnitMock);
 
         $this->incomeTypeRepository
             ->expects(self::once())

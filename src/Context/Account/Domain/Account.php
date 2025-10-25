@@ -6,7 +6,8 @@ namespace App\Context\Account\Domain;
 
 use App\Context\Account\Domain\Bus\AccountWasDisabled;
 use App\Context\Account\Domain\Bus\AccountWasEnabled;
-use App\Context\Expense\Domain\Expense;
+use App\Context\Account\Domain\Bus\ExpenseAddedToAccount;
+use App\Context\Expense\Domain\ValueObject\ExpenseId;
 use App\Shared\Domain\AggregateRoot;
 use DateTime;
 use DateTimeImmutable;
@@ -123,32 +124,21 @@ class Account extends AggregateRoot
         $this->record(new AccountWasDisabled($this->id()));
     }
 
-    public function addExpense(Expense $expense): void
+    public function addExpense(ExpenseId $expenseId): void
     {
-        if (!$this->expenses->contains($expense)) {
-            $this->expenses[] = $expense;
-            $expense->setAccount($this);
+        if (!$this->expenses->contains($expenseId)) {
+            $this->expenses[] = $expenseId;
+            $this->record(new ExpenseAddedToAccount($this->id(), $expenseId->value()));
         }
     }
 
-    public function removeExpense(Expense $expense): void
+    public function removeExpense(ExpenseId $expenseId): void
     {
-        $this->expenses->removeElement($expense);
+        $this->expenses->removeElement($expenseId);
     }
 
     public function markAsUpdated(): void
     {
         $this->updatedAt = new DateTime();
-    }
-
-    public function toArray(): array
-    {
-        return [
-            'id' => $this->id,
-            'code' => $this->code,
-            'name' => $this->name,
-            'description' => $this->description,
-            'isActive' => $this->isActive,
-        ];
     }
 }

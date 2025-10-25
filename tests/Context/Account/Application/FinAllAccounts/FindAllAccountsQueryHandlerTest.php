@@ -2,6 +2,8 @@
 
 namespace App\Tests\Context\Account\Application\UseCase\FindAllAccounts;
 
+use App\Context\Account\Application\AccountResponse;
+use App\Context\Account\Application\AccountTransformer;
 use App\Context\Account\Application\UseCase\FindAllAccounts\FindAllAccountsQuery;
 use App\Context\Account\Application\UseCase\FindAllAccounts\FindAllAccountsQueryHandler;
 use App\Context\Account\Domain\AccountRepository;
@@ -13,12 +15,14 @@ use PHPUnit\Framework\TestCase;
 class FindAllAccountsQueryHandlerTest extends TestCase
 {
     private AccountRepository|MockInterface $repository;
+    private AccountTransformer|MockInterface $transformer;
     private FindAllAccountsQueryHandler $handler;
 
     protected function setUp(): void
     {
         $this->repository = Mockery::mock(AccountRepository::class);
-        $this->handler = new FindAllAccountsQueryHandler($this->repository);
+        $this->transformer = Mockery::mock(AccountTransformer::class);
+        $this->handler = new FindAllAccountsQueryHandler($this->repository, $this->transformer);
     }
 
     protected function tearDown(): void
