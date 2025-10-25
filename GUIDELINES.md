@@ -5,31 +5,31 @@ Welcome to the PHP Project Guidelines. This document outlines the architectural 
 ## Table of Contents
 
 -   [Naming Conventions and Code Structure](#naming-conventions-and-code-structure)
-  -   [General Naming Conventions](#general-naming-conventions)
-  -   [Code Style](#code-style)
-  -   [Root Directory Structure](#root-directory-structure)
-  -   [`src/` Directory Deep Dive](#src-directory-deep-dive)
-  -   [Specific Type Naming Conventions (Summary and Location)](#specific-type-naming-conventions-summary-and-location)
+-   [General Naming Conventions](#general-naming-conventions)
+-   [Code Style](#code-style)
+-   [Root Directory Structure](#root-directory-structure)
+-   [`src/` Directory Deep Dive](#src-directory-deep-dive)
+-   [Specific Type Naming Conventions (Summary and Location)](#specific-type-naming-conventions-summary-and-location)
 -   [Architectural Principles](#architectural-principles)
-  -   [Vertical Slice Architecture](#vertical-slice-architecture)
-  -   [Clean Architecture Layers](#clean-architecture-layers)
-  -   [Domain-Driven Design (DDD) Principles](#domain-driven-design-ddd-principles)
-  -   [CQRS (Command Query Responsibility Segregation) Guidelines](#cqrs-command-query-responsibility-segregation-guidelines)
-  -   [Event Sourcing (ES) Concepts](#event-sourcing-es-concepts)
+-   [Vertical Slice Architecture](#vertical-slice-architecture)
+-   [Clean Architecture Layers](#clean-architecture-layers)
+-   [Domain-Driven Design (DDD) Principles](#domain-driven-design-ddd-principles)
+-   [CQRS (Command Query Responsibility Segregation) Guidelines](#cqrs-command-query-responsibility-segregation-guidelines)
+-   [Event Sourcing (ES) Concepts](#event-sourcing-es-concepts)
 -   [Exhaustive Testing Standards](#exhaustive-testing-standards)
-  -   [General Testing Philosophy](#general-testing-philosophy)
-  -   [Test Organization](#test-organization)
-  -   [Unit Testing Standards](#unit-testing-standards)
-  -   [Object Mother Pattern](#object-mother-pattern)
-  -   [Naming Conventions for Tests](#naming-conventions-for-tests)
-  -   ["Exhaustive" Testing - What to Cover](#exhaustive-testing---what-to-cover)
-  -   [Integration Testing Guidelines](#integration-testing-guidelines)
-  -   [Code Coverage](#code-coverage)
+-   [General Testing Philosophy](#general-testing-philosophy)
+-   [Test Organization](#test-organization)
+-   [Unit Testing Standards](#unit-testing-standards)
+-   [Object Mother Pattern](#object-mother-pattern)
+-   [Naming Conventions for Tests](#naming-conventions-for-tests)
+-   ["Exhaustive" Testing - What to Cover](#exhaustive-testing---what-to-cover)
+-   [Integration Testing Guidelines](#integration-testing-guidelines)
+-   [Code Coverage](#code-coverage)
 -   [Cross-Cutting Concerns](#cross-cutting-concerns)
-  -   [Error Handling and Exception Strategy](#error-handling-and-exception-strategy)
-  -   [Logging](#logging)
-  -   [Configuration Management](#configuration-management)
-  -   [Security (General Guidelines)](#security-general-guidelines)
+-   [Error Handling and Exception Strategy](#error-handling-and-exception-strategy)
+-   [Logging](#logging)
+-   [Configuration Management](#configuration-management)
+-   [Security (General Guidelines)](#security-general-guidelines)
 -   [Final Recommendations](#final-recommendations)
 
 ## Naming Conventions and Code Structure
@@ -64,51 +64,51 @@ This section details the naming conventions and the overall code structure of th
 Each Bounded Context (e.g., `Account`, `User`, `Order`) resides in its own directory within `src/Context/`. This isolates domain models and business logic specific to that part of the business.
 
 -   **Context Configuration:**
-  -   `src/Context/{BoundedContextName}/{contextname}.yaml` (e.g., `src/Context/Account/account.yaml`): This file is used for context-specific Dependency Injection services and parameters.
+-   `src/Context/{BoundedContextName}/{contextname}.yaml` (e.g., `src/Context/Account/account.yaml`): This file is used for context-specific Dependency Injection services and parameters.
 
 -   **Layers within a Bounded Context:**
 
-  -   **`Application/`**: Contains the application logic that orchestrates domain objects to perform use cases.
+-   **`Application/`**: Contains the application logic that orchestrates domain objects to perform use cases.
     -   `UseCase/{ActionName}/`: Organizes all files related to a specific use case (Vertical Slice).
-      -   `{ActionName}Command.php`: The command object for the use case.
-      -   `{ActionName}Query.php`: The query object (if the use case is a query).
-      -   `{ActionName}CommandHandler.php`: The handler for the command.
-      -   `{ActionName}QueryHandler.php`: The handler for the query.
-      -   Request/Response DTOs: If a use case requires specific input/output structures not covered by Command/Query objects, they can be placed here (e.g., `{ActionName}Response.php`).
+    -   `{ActionName}Command.php`: The command object for the use case.
+    -   `{ActionName}Query.php`: The query object (if the use case is a query).
+    -   `{ActionName}CommandHandler.php`: The handler for the command.
+    -   `{ActionName}QueryHandler.php`: The handler for the query.
+    -   Request/Response DTOs: If a use case requires specific input/output structures not covered by Command/Query objects, they can be placed here (e.g., `{ActionName}Response.php`).
 
-  -   **`Domain/`**: The heart of the Bounded Context, containing all domain logic and objects, independent of application or infrastructure concerns.
+-   **`Domain/`**: The heart of the Bounded Context, containing all domain logic and objects, independent of application or infrastructure concerns.
     -   `Bus/`: Contains Domain Event classes specific to this context (e.g., `AccountWasCreated.php`, `AccountWasDisabled.php`).
-      -   *Convention:* `{AggregateName}Was{PastTenseAction}.php` or `{AggregateName}{PastTenseVerb}.php`.
-    -   `Exception/`: Custom domain exceptions specific to this Bounded Context (e.g., `AccountNotFoundException.php`, `InsufficientBalanceException.php`).
-      -   *Convention:* `{ErrorDescription}Exception.php`. Exceptions should have meaningful messages providing context.
-    -   Aggregate Roots (e.g., `Account.php`).
-      -   *Convention:* Noun representing the concept.
-    -   Entities (if not ARs).
-    -   Value Objects (e.g., `AccountId.php`, `AccountCode.php`, `EmailAddress.php`).
-      -   *Convention:* Descriptive name, often ending with `Id` for identifiers.
-    -   Repository Interfaces (e.g., `AccountRepository.php`).
-      -   *Convention:* `{AggregateName}Repository.php`.
+    -   *Convention:* `{AggregateName}Was{PastTenseAction}.php` or `{AggregateName}{PastTenseVerb}.php`.
+        -   `Exception/`: Custom domain exceptions specific to this Bounded Context (e.g., `AccountNotFoundException.php`, `InsufficientBalanceException.php`).
+    -   *Convention:* `{ErrorDescription}Exception.php`. Exceptions should have meaningful messages providing context.
+        -   Aggregate Roots (e.g., `Account.php`).
+    -   *Convention:* Noun representing the concept.
+        -   Entities (if not ARs).
+        -   Value Objects (e.g., `AccountId.php`, `AccountCode.php`, `EmailAddress.php`).
+    -   *Convention:* Descriptive name, often ending with `Id` for identifiers.
+        -   Repository Interfaces (e.g., `AccountRepository.php`).
+    -   *Convention:* `{AggregateName}Repository.php`.
 
-  -   **`Infrastructure/`**: Contains implementations of external concerns (database, APIs, framework bindings).
+-   **`Infrastructure/`**: Contains implementations of external concerns (database, APIs, framework bindings).
     -   `Persistence/{Technology}/` (e.g., `Persistence/Doctrine/`): Houses repository implementations.
-      -   `{Technology}{AggregateName}Repository.php` (e.g., `DoctrineAccountRepository.php`).
-    -   `Http/`: For components related to the HTTP interface.
-      -   `Controller/`: API controllers specific to this Bounded Context's use cases (e.g., `CreateAccountController.php`).
-      -   `Dto/`: Request/Response DTOs used by controllers if they differ from application layer DTOs or Commands/Queries (e.g., `CreateAccountApiRequest.php`).
-    -   Other subdirectories as needed for different infrastructure concerns (e.g., `Messaging/`, `ExternalServices/`).
+    -   `{Technology}{AggregateName}Repository.php` (e.g., `DoctrineAccountRepository.php`).
+        -   `Http/`: For components related to the HTTP interface.
+    -   `Controller/`: API controllers specific to this Bounded Context's use cases (e.g., `CreateAccountController.php`).
+    -   `Dto/`: Request/Response DTOs used by controllers if they differ from application layer DTOs or Commands/Queries (e.g., `CreateAccountApiRequest.php`).
+        -   Other subdirectories as needed for different infrastructure concerns (e.g., `Messaging/`, `ExternalServices/`).
 
 #### `src/Shared/`
 
 Contains code that is genuinely shared across multiple Bounded Contexts. This code must still adhere to Clean Architecture principles (dependencies point inwards).
 
 -   **`Application/`**:
-  -   Base interfaces or classes for Commands, Queries, Handlers (e.g., `Command.php`, `Query.php`, `CommandHandler.php`, `QueryHandler.php`).
-  -   Shared application services if any (use with caution to avoid coupling contexts).
+-   Base interfaces or classes for Commands, Queries, Handlers (e.g., `Command.php`, `Query.php`, `CommandHandler.php`, `QueryHandler.php`).
+-   Shared application services if any (use with caution to avoid coupling contexts).
 -   **`Domain/`**:
-  -   Generic base classes for domain objects (e.g., `AggregateRoot.php`, `DomainEvent.php`).
-  -   Common Value Objects used across contexts (e.g., `SimpleUuid.php`, `StringValueObject.php`, `Money.php`).
+-   Generic base classes for domain objects (e.g., `AggregateRoot.php`, `DomainEvent.php`).
+-   Common Value Objects used across contexts (e.g., `SimpleUuid.php`, `StringValueObject.php`, `Money.php`).
 -   **`Infrastructure/`**:
-  -   Shared infrastructure components like common message bus implementations, base API controller logic, or shared authentication/authorization utilities.
+-   Shared infrastructure components like common message bus implementations, base API controller logic, or shared authentication/authorization utilities.
 
 ### Specific Type Naming Conventions (Summary and Location)
 
@@ -127,6 +127,15 @@ Contains code that is genuinely shared across multiple Bounded Contexts. This co
 -   **Object Mothers:** `{ClassName}Mother.php` -> `tests/Context/{BC}/Domain/` (primarily for domain objects)
 
 This structure and naming convention aims to provide a clear, scalable, and maintainable codebase that reflects the architectural principles outlined in these guidelines.
+
+### Dependency Injection and Service Configuration
+
+To maintain the autonomy and isolation of each Bounded Context, the following principles for service configuration must be followed.
+
+-   **Autonomous Bounded Context Configuration:** Each Bounded Context is responsible for its own service definitions. All context-specific services, parameters, and autowiring configurations must be defined within its dedicated YAML file (e.g., `src/Context/Account/account.yaml`).
+-   **Self-Contained Configuration:** Each context's YAML file must be self-contained. It should include its own `_defaults` section for `autowire`, `autoconfigure`, and any `bind` directives applicable to that context. This prevents reliance on global defaults.
+-   **Central `services.yaml` as a Manifest:** The main `config/services.yaml` file should act primarily as a manifest for importing the configuration files from each Bounded Context. It should contain minimal global configuration, limited to genuinely shared services or bundles.
+-   **Explicit Tagging for Subscribers:** Event Subscribers must be explicitly tagged in the context's YAML file (e.g., with `app.domain.event_subscriber`) to be discovered by the dependency injection container, rather than relying on global autoconfiguration tags. This makes the intention clear and avoids unintended side effects.
 
 ## Architectural Principles
 
@@ -171,42 +180,42 @@ The project primarily follows these three core layers:
 
 -   **Responsibilities:** This is the innermost layer and contains the enterprise-wide business rules, logic, and models. It represents the heart of the application's functionality.
 -   **Components:**
-  -   **Entities:** Objects with an identity that persists over time (e.g., `Account`).
-  -   **Aggregates:** Clusters of entities and value objects treated as a single unit, with one entity acting as the Aggregate Root (e.g., an `Order` aggregate might include `OrderItem` entities).
-  -   **Value Objects:** Immutable objects representing descriptive aspects of the domain without a conceptual identity (e.g., `Email`, `Money`).
-  -   **Domain Events:** Represent significant occurrences within the domain that other parts of the system might react to (e.g., `AccountCreatedEvent`).
-  -   **Repository Interfaces:** Define contracts for data persistence operations, abstracting the actual storage mechanism (e.g., `AccountRepository`).
+-   **Entities:** Objects with an identity that persists over time (e.g., `Account`).
+-   **Aggregates:** Clusters of entities and value objects treated as a single unit, with one entity acting as the Aggregate Root (e.g., an `Order` aggregate might include `OrderItem` entities).
+-   **Value Objects:** Immutable objects representing descriptive aspects of the domain without a conceptual identity (e.g., `Email`, `Money`).
+-   **Domain Events:** Represent significant occurrences within the domain that other parts of the system might react to (e.g., `AccountCreatedEvent`).
+-   **Repository Interfaces:** Define contracts for data persistence operations, abstracting the actual storage mechanism (e.g., `AccountRepository`).
 -   **Characteristics:**
-  -   Pure PHP code.
-  -   No dependencies on outer layers (Application, Infrastructure). It knows nothing about application logic or how data is stored or presented.
+-   Pure PHP code.
+-   No dependencies on outer layers (Application, Infrastructure). It knows nothing about application logic or how data is stored or presented.
 -   **Location:** `src/Context/{BoundedContext}/Domain`
 
 #### 2. Application Layer
 
 -   **Responsibilities:** This layer contains application-specific business rules and orchestrates the use cases of the application. It directs the flow of data and coordinates the Domain layer objects to perform specific tasks.
 -   **Components:**
-  -   **Commands:** Objects representing an intent to change the system's state (e.g., `CreateAccountCommand`).
-  -   **Queries:** Objects representing an intent to retrieve data without altering the system's state (e.g., `GetAccountByIdQuery`).
-  -   **Command Handlers:** Process commands, interact with Domain objects (via repository interfaces or directly), and orchestrate the execution of domain logic (e.g., `CreateAccountCommandHandler`).
-  -   **Query Handlers:** Process queries, retrieve data (often using repository interfaces), and prepare it for presentation (e.g., `GetAccountByIdQueryHandler`).
-  -   **Application Services:** Can be used for tasks that don't fit neatly into a command/query pattern but still represent application-specific operations.
+-   **Commands:** Objects representing an intent to change the system's state (e.g., `CreateAccountCommand`).
+-   **Queries:** Objects representing an intent to retrieve data without altering the system's state (e.g., `GetAccountByIdQuery`).
+-   **Command Handlers:** Process commands, interact with Domain objects (via repository interfaces or directly), and orchestrate the execution of domain logic (e.g., `CreateAccountCommandHandler`).
+-   **Query Handlers:** Process queries, retrieve data (often using repository interfaces), and prepare it for presentation (e.g., `GetAccountByIdQueryHandler`).
+-   **Application Services:** Can be used for tasks that don't fit neatly into a command/query pattern but still represent application-specific operations.
 -   **Characteristics:**
-  -   Depends on the Domain Layer (it uses Domain entities, events, and repository interfaces).
-  -   Must not depend on the Infrastructure Layer directly. It relies on abstractions (interfaces) defined in the Domain layer for external concerns like data persistence.
+-   Depends on the Domain Layer (it uses Domain entities, events, and repository interfaces).
+-   Must not depend on the Infrastructure Layer directly. It relies on abstractions (interfaces) defined in the Domain layer for external concerns like data persistence.
 -   **Location:** `src/Context/{BoundedContext}/Application` (specifically Use Cases within this layer like `src/Context/{BoundedContext}/Application/UseCase/{Action}`).
 
 #### 3. Infrastructure Layer
 
 -   **Responsibilities:** This is the outermost layer and contains implementations for all external concerns. This includes database interactions, connections to external APIs, message queue integrations, framework-specific code, UI components (though UI is often considered a separate concern interacting with Application).
 -   **Components:**
-  -   **Repository Implementations:** Concrete classes that implement the repository interfaces defined in the Domain Layer, providing data access for a specific technology (e.g., `DoctrineAccountRepository` implementing `AccountRepository`).
-  -   **Framework-specific Controllers/Adapters:** Code that bridges requests from the web framework to the Application Layer.
-  -   **External Service Clients:** Clients for interacting with third-party APIs.
-  -   **Message Queue Producers/Consumers:** Implementations for sending and receiving messages.
+-   **Repository Implementations:** Concrete classes that implement the repository interfaces defined in the Domain Layer, providing data access for a specific technology (e.g., `DoctrineAccountRepository` implementing `AccountRepository`).
+-   **Framework-specific Controllers/Adapters:** Code that bridges requests from the web framework to the Application Layer.
+-   **External Service Clients:** Clients for interacting with third-party APIs.
+-   **Message Queue Producers/Consumers:** Implementations for sending and receiving messages.
 -   **Characteristics:**
-  -   Implements interfaces defined in the Domain Layer (e.g., `AccountRepository`) or sometimes Application Layer.
-  -   Depends on both Domain and Application layers (e.g., a repository implementation will know about Domain entities, and a controller will call Application services/handlers).
-  -   **Crucially, no other layer should depend on the Infrastructure layer.** This is achieved through Dependency Inversion (relying on abstractions defined by inner layers).
+-   Implements interfaces defined in the Domain Layer (e.g., `AccountRepository`) or sometimes Application Layer.
+-   Depends on both Domain and Application layers (e.g., a repository implementation will know about Domain entities, and a controller will call Application services/handlers).
+-   **Crucially, no other layer should depend on the Infrastructure layer.** This is achieved through Dependency Inversion (relying on abstractions defined by inner layers).
 -   **Location:** `src/Context/{BoundedContext}/Infrastructure`
 
 #### The Dependency Rule
@@ -241,27 +250,27 @@ Domain-Driven Design (DDD) is an approach to software development that focuses o
 -   **Role:** A Bounded Context is a central pattern in DDD. It defines a specific boundary within which a particular domain model is defined and applicable. Inside a Bounded Context, all terms and concepts of the domain model have a specific meaning. This helps manage complexity by preventing a single, large, and often inconsistent model for the entire system.
 -   **Identifying and Defining:** New Bounded Contexts are typically identified by looking for different areas of business concern that use different language or have different rules. For example, "Sales" might be a different Bounded Context from "Support" because the term "Customer" might have different attributes and behaviors in each.
 -   **Examples:**
-  -   `src/Context/Account`: Manages accounts, balances, and related operations.
-  -   `src/Context/User`: Manages user identity, authentication, and authorization.
+-   `src/Context/Account`: Manages accounts, balances, and related operations.
+-   `src/Context/User`: Manages user identity, authentication, and authorization.
 -   **Configuration:** Each Bounded Context might have its own configuration or definitions. For instance, `src/Context/Account/account.yaml` might define specific parameters or service configurations relevant only to the Account context. Other contexts might have similar files (e.g., `user.yaml` if it existed).
 
 #### Ubiquitous Language
 
 -   **Importance:** This is the practice of crafting a common, rigorous language shared by the development team, domain experts, users, and the code itself. This language should be based on the domain model.
 -   **Usage:** The Ubiquitous Language should be used everywhere:
-  -   Naming of classes, methods, and variables (e.g., `Account`, `AccountCode`, `debit()`, `credit()`).
-  -   In team discussions, documentation, and user stories.
-  -   This reduces ambiguity and miscommunication.
+-   Naming of classes, methods, and variables (e.g., `Account`, `AccountCode`, `debit()`, `credit()`).
+-   In team discussions, documentation, and user stories.
+-   This reduces ambiguity and miscommunication.
 
 #### Aggregates
 
 -   **Definition:** An Aggregate is a cluster of associated domain objects (Entities and Value Objects) that are treated as a single unit for the purpose of data changes.
 -   **Aggregate Root (AR):** Each Aggregate has one specific Entity known as the Aggregate Root. The AR is the only member of the Aggregate that outside objects are allowed to hold references to. It acts as a gateway for all modifications within the Aggregate.
-  -   The base class for Aggregate Roots in this project is `src/Shared/Domain/AggregateRoot.php`.
+-   The base class for Aggregate Roots in this project is `src/Shared/Domain/AggregateRoot.php`.
 -   **Rules for Designing Aggregates:**
-  -   **Global Unique ID:** The Aggregate Root must have a globally unique identifier.
-  -   **Reference by ID:** Aggregates should reference other Aggregates only by their unique ID, not by holding direct object references. This promotes loose coupling and helps maintain transaction boundaries.
-  -   **Transactional Consistency:** Operations on an Aggregate should be atomic. A transaction should not span multiple Aggregates. If business rules require coordination between Aggregates, use eventual consistency mediated by Domain Events.
+-   **Global Unique ID:** The Aggregate Root must have a globally unique identifier.
+-   **Reference by ID:** Aggregates should reference other Aggregates only by their unique ID, not by holding direct object references. This promotes loose coupling and helps maintain transaction boundaries.
+-   **Transactional Consistency:** Operations on an Aggregate should be atomic. A transaction should not span multiple Aggregates. If business rules require coordination between Aggregates, use eventual consistency mediated by Domain Events.
 -   **Example:** The `Account` entity (`src/Context/Account/Domain/Account.php`) is an Aggregate Root. It groups related value objects (like `AccountId`, `AccountCode`, `AccountName`, `AccountBalance`) and ensures its internal consistency.
 -   **Invariants:** The Aggregate Root is responsible for enforcing invariants (business rules that must always be true) for all objects within its boundary. For example, an `Account` AR might ensure that its balance never drops below a certain limit.
 
@@ -277,10 +286,10 @@ Domain-Driven Design (DDD) is an approach to software development that focuses o
 -   **Equality:** Two Value Objects are considered equal if all their constituent attribute values are equal.
 -   **Immutability:** Value Objects should be immutable once created. If a change is needed, a new Value Object instance should be created. This makes them safer and easier to reason about.
 -   **Examples:**
-  -   `src/Context/Account/Domain/ValueObject/AccountId.php`
-  -   `src/Context/Account/Domain/ValueObject/AccountCode.php`
-  -   `src/Context/Account/Domain/ValueObject/AccountName.php`
-  -   Base Value Objects in `src/Shared/Domain/` like `SimpleUuid.php` (often used as a base for ID VOs) and `StringValueObject.php` provide common functionality.
+-   `src/Context/Account/Domain/ValueObject/AccountId.php`
+-   `src/Context/Account/Domain/ValueObject/AccountCode.php`
+-   `src/Context/Account/Domain/ValueObject/AccountName.php`
+-   Base Value Objects in `src/Shared/Domain/` like `SimpleUuid.php` (often used as a base for ID VOs) and `StringValueObject.php` provide common functionality.
 
 #### Domain Events
 
@@ -289,15 +298,15 @@ Domain-Driven Design (DDD) is an approach to software development that focuses o
 -   **Creation:** Domain Events are typically created and recorded by Aggregate Roots when their state changes as a result of a command. The `AggregateRoot` base class provides methods to record and pull these events.
 -   **Dispatch:** After a transaction is successfully committed, these events are dispatched (e.g., via an Event Bus like `src/Shared/Application/EventBus.php`). Other parts of the system (potentially in different Bounded Contexts) can subscribe to these events and react accordingly (e.g., sending a welcome email when `AccountWasCreated` occurs).
 -   **Examples:**
-  -   `src/Context/Account/Domain/Bus/AccountWasCreated.php` (Note: Path corrected based on `ls` output)
-  -   The base class `src/Shared/Domain/DomainEvent.php` provides common structure for domain events.
+-   `src/Context/Account/Domain/Bus/AccountWasCreated.php` (Note: Path corrected based on `ls` output)
+-   The base class `src/Shared/Domain/DomainEvent.php` provides common structure for domain events.
 
 #### Repositories
 
 -   **Role:** Repositories are a mechanism for encapsulating storage, retrieval, and search behavior, emulating an in-memory collection of Aggregates. They abstract the underlying data persistence technology.
 -   **Definition and Implementation:**
-  -   **Interfaces:** Defined in the Domain Layer, alongside the Aggregates they manage (e.g., `src/Context/Account/Domain/AccountRepository.php`). These interfaces form part of the Ubiquitous Language, with methods reflecting domain operations.
-  -   **Implementations:** Reside in the Infrastructure Layer, specific to a persistence technology (e.g., `src/Context/Account/Infrastructure/Persistence/Doctrine/DoctrineAccountRepository.php`).
+-   **Interfaces:** Defined in the Domain Layer, alongside the Aggregates they manage (e.g., `src/Context/Account/Domain/AccountRepository.php`). These interfaces form part of the Ubiquitous Language, with methods reflecting domain operations.
+-   **Implementations:** Reside in the Infrastructure Layer, specific to a persistence technology (e.g., `src/Context/Account/Infrastructure/Persistence/Doctrine/DoctrineAccountRepository.php`).
 -   **Methods:** Repository methods should be named to reflect domain operations and typically work with Aggregate Roots (e.g., `save(Account $account)`, `findOneByIdOrFail(AccountId $id)`). They should not expose underlying database query language or details.
 
 ### CQRS (Command Query Responsibility Segregation) Guidelines
@@ -367,30 +376,57 @@ Event Sourcing (ES) is an architectural pattern where all changes to an applicat
 #### Core Concepts in This Project
 
 -   **Domain Events as the Source of Truth (Hybrid Approach):**
-  -   Domain Events (e.g., `AccountWasCreated`, `AccountWasEnabled` in `src/Context/Account/Domain/Bus/`) are meticulously recorded.
-  -   However, Aggregates like `Account.php` also maintain their current state directly in properties for command processing performance. State is hydrated by the ORM, not purely from events. This is a hybrid approach. Events serve audit, projection, and integration purposes.
+-   Domain Events (e.g., `AccountWasCreated`, `AccountWasEnabled` in `src/Context/Account/Domain/Bus/`) are meticulously recorded.
+-   However, Aggregates like `Account.php` also maintain their current state directly in properties for command processing performance. State is hydrated by the ORM, not purely from events. This is a hybrid approach. Events serve audit, projection, and integration purposes.
 -   **Event Structure (`App\Shared\Domain\DomainEvent.php`):**
-  -   Standard fields: `aggregateId`, `eventId`, `occurredOn`.
-  -   Abstract methods: `eventName()`, `toPrimitives()`, `fromPrimitives()`.
+-   Standard fields: `aggregateId`, `eventId`, `occurredOn`.
+-   Abstract methods: `eventName()`, `toPrimitives()`, `fromPrimitives()`.
 -   **Storing Events:**
-  -   Conceptually appended to an Event Stream per aggregate.
-  -   Actual storage might be a relational table or a dedicated Event Store.
+-   Conceptually appended to an Event Stream per aggregate.
+-   Actual storage might be a relational table or a dedicated Event Store.
 -   **Reconstructing Aggregate State (Current vs. Pure ES):**
-  -   **Current:** `Account.php` does not reconstruct state from events on load; ORM hydrates properties. Methods directly modify properties and then record events.
-  -   **Pure ES:** State would be reconstructed by replaying events using `apply()` methods in the aggregate. This is a potential future direction.
+-   **Current:** `Account.php` does not reconstruct state from events on load; ORM hydrates properties. Methods directly modify properties and then record events.
+-   **Pure ES:** State would be reconstructed by replaying events using `apply()` methods in the aggregate. This is a potential future direction.
 -   **Recording Events:**
-  -   Aggregates use `record(DomainEvent $event)` from `App\Shared\Domain\AggregateRoot.php`.
-  -   Events are pulled via `pullDomainEvents()` and dispatched by infrastructure (e.g., Event Bus after transaction commit).
+-   Aggregates use `record(DomainEvent $event)` from `App\Shared\Domain\AggregateRoot.php`.
+-   Events are pulled via `pullDomainEvents()` and dispatched by infrastructure (e.g., Event Bus after transaction commit).
 -   **Projections (Read Models):**
-  -   Events are fundamental for building/updating projections via Event Handlers ("Projectors").
+-   Events are fundamental for building/updating projections via Event Handlers ("Projectors").
 -   **Snapshots (Optional Optimization):**
-  -   Not currently implemented but a standard ES optimization for long-lived aggregates.
+-   Not currently implemented but a standard ES optimization for long-lived aggregates.
 -   **Event Versioning and Schema Evolution:**
-  -   Acknowledge as a challenge; strategies include upcasting or maintaining multiple versions.
+-   Acknowledge as a challenge; strategies include upcasting or maintaining multiple versions.
 -   **Idempotency in Event Handlers/Projectors:**
-  -   Crucial for "at-least-once" delivery; handlers should tolerate reprocessing events.
+-   Crucial for "at-least-once" delivery; handlers should tolerate reprocessing events.
 -   **Relationship with CQRS:**
-  -   ES fits naturally on the command side; events drive read model updates.
+-   ES fits naturally on the command side; events drive read model updates.
+
+### Event Management Strategy
+
+To ensure a consistent and decoupled architecture, the following rules for creating, dispatching, and handling domain events are mandatory.
+
+#### 1. Event Subscriber Pattern
+
+-   **Interface:** A service that listens to domain events must implement the `App\Shared\Domain\Event\EventSubscriber` interface.
+-   **Subscription Method:** The subscriber must declare which events it listens to via the static `subscribedTo(): array` method. This method should return an associative array where the key is the event class and the value is the name of the public method that will handle it.
+-   **Handler Method Naming:** The name of the method that handles an event must follow the convention `on{EventName}`. For example, the `AccountWasCreated` event should be handled by a method named `onAccountWasCreated`.
+-   **Deprecated `__invoke`:** The `__invoke` method within the `EventSubscriber` interface is considered deprecated and should not be used. The logic must be placed in the named handler method. Future refactoring will remove `__invoke` from the interface.
+
+#### 2. Command Handler Responsibility
+
+-   It is the strict responsibility of the `CommandHandler` to manage the lifecycle of domain events within a use case.
+-   The process is as follows:
+    1.  Execute the business logic on the Aggregate Root.
+    2.  After successful execution, pull the recorded domain events from the aggregate using the `pullDomainEvents()` method.
+    3.  Pass the extracted events to the `EventBus` for publication.
+-   This ensures that events are only dispatched if the core operation completes without exceptions.
+
+#### 3. Synchronous by Default
+
+-   The default `EventBus` implementation (`InMemorySymfonyEventBus`) is **synchronous**.
+-   This means event subscribers are executed immediately and within the same process and transaction as the original `CommandHandler`.
+-   This pattern is suitable for operations that require immediate consistency within the same Bounded Context.
+-   For operations that can be eventually consistent or require communication between Bounded Contexts (e.g., sending an email, calling an external API), the **Symfony Messenger** component should be used with an asynchronous transport. The domain `EventBus` should not be used for asynchronous, cross-context communication.
 
 ## Exhaustive Testing Standards
 
@@ -411,10 +447,10 @@ This section expands upon general testing principles to provide comprehensive gu
 #### Base Test Case for Bounded Contexts
 -   Each Bounded Context should provide a base unit test class (e.g., `tests/Context/Account/AccountModuleUnitTestCase.php`).
 -   This class should:
-  -   Extend a shared base like `MockeryTestCase` if using Mockery extensively.
-  -   Set up common mocked dependencies relevant to that context (e.g., `AccountRepository`, `EventBus` are mocked in `AccountModuleUnitTestCase`).
-  -   Provide helper methods for common assertions or interactions (e.g., `shouldSave()`, `shouldPublishDomainEvents()` as seen in `AccountModuleUnitTestCase`).
-  -   Handle Mockery cleanup in `tearDown()` method (e.g., `Mockery::close()`).
+-   Extend a shared base like `MockeryTestCase` if using Mockery extensively.
+-   Set up common mocked dependencies relevant to that context (e.g., `AccountRepository`, `EventBus` are mocked in `AccountModuleUnitTestCase`).
+-   Provide helper methods for common assertions or interactions (e.g., `shouldSave()`, `shouldPublishDomainEvents()` as seen in `AccountModuleUnitTestCase`).
+-   Handle Mockery cleanup in `tearDown()` method (e.g., `Mockery::close()`).
 -   **Mandate:** All unit tests for application handlers (Commands/Queries) and domain services within a Bounded Context *must* extend its specific module unit test case.
 
 #### Application Layer Tests (Command/Query Handlers)
@@ -422,9 +458,9 @@ This section expands upon general testing principles to provide comprehensive gu
 -   **Dependencies:** All external dependencies *must* be mocked.
 -   **Test Data:** Input data *must* be generated using Object Mothers.
 -   **Assertions:**
-  -   Verify interactions with mocked dependencies (e.g., repository's `save` method called).
-  -   Verify domain events publication.
-  -   Assert return values or exceptions.
+-   Verify interactions with mocked dependencies (e.g., repository's `save` method called).
+-   Verify domain events publication.
+-   Assert return values or exceptions.
 -   **Example:** `tests/Context/Account/Application/UseCase/CreateAccount/CreateAccountCommandHandlerTest.php`.
 
 #### Domain Layer Tests (Aggregates, Entities)
@@ -432,17 +468,17 @@ This section expands upon general testing principles to provide comprehensive gu
 -   **Dependencies:** Minimize and mock if any.
 -   **Test Data:** Use Object Mothers.
 -   **Assertions:**
-  -   Verify state initialization and changes.
-  -   Verify domain events recorded (via `pullDomainEvents()`).
-  -   Verify invariant enforcement (expect domain exceptions).
+-   Verify state initialization and changes.
+-   Verify domain events recorded (via `pullDomainEvents()`).
+-   Verify invariant enforcement (expect domain exceptions).
 -   **Example:** `tests/Context/Account/Domain/CreateAccountTest.php`.
 
 #### Value Object Tests
 -   **Focus:** Construction, validation, behavior.
 -   **Assertions:**
-  -   Valid/invalid data construction (expect exceptions for invalid).
-  -   Equality logic.
-  -   Specific methods.
+-   Valid/invalid data construction (expect exceptions for invalid).
+-   Equality logic.
+-   Specific methods.
 
 ### Object Mother Pattern
 -   **Mandate:** For every significant Entity and Value Object, a corresponding Object Mother *must* be created in `tests/Context/{BoundedContext}/Domain/{ObjectName}Mother.php`.
@@ -456,9 +492,9 @@ This section expands upon general testing principles to provide comprehensive gu
 ### "Exhaustive" Testing - What to Cover
 -   **Happy Paths:** Expected successful execution flow.
 -   **Error Conditions & Exceptions:**
-  -   Business rule/invariant violations (expect domain exceptions).
-  -   VO validation with invalid data (expect exceptions).
-  -   Handler behavior with failing dependencies.
+-   Business rule/invariant violations (expect domain exceptions).
+-   VO validation with invalid data (expect exceptions).
+-   Handler behavior with failing dependencies.
 -   **Edge Cases:** Boundary values, null inputs, etc.
 -   **Command Handlers:** All command properties used correctly.
 -   **Query Handlers:** Different parameter combinations, correct data structure returns.
@@ -468,13 +504,13 @@ This section expands upon general testing principles to provide comprehensive gu
 
 -   **Scope:** Interaction between components, especially with infrastructure (database).
 -   **Repository Tests:**
-  -   Each Doctrine repository implementation *should* have an integration test.
-  -   *Must* interact with a real test database.
-  -   Verify full lifecycle: persist, retrieve, update, custom queries.
+-   Each Doctrine repository implementation *should* have an integration test.
+-   *Must* interact with a real test database.
+-   Verify full lifecycle: persist, retrieve, update, custom queries.
 -   **Test Database Setup:**
-  -   Separate test database configuration.
-  -   Schema managed by migrations.
-  -   Strategies for cleaning database between tests (transactions, truncation).
+-   Separate test database configuration.
+-   Schema managed by migrations.
+-   Strategies for cleaning database between tests (transactions, truncation).
 -   **External API Client Tests:** Use PACT or sandbox environments if applicable.
 
 ### Code Coverage
@@ -489,18 +525,18 @@ Cross-cutting concerns are aspects of a program that affect or are used by multi
 ### Error Handling and Exception Strategy
 
 -   **Domain Exceptions:**
-  -   Represent specific business rule violations; part of Ubiquitous Language.
-  -   Defined in `Domain/Exception/` or `Shared/Domain/`.
-  -   Thrown by Aggregates, Entities, VOs.
-  -   Should have meaningful messages with context.
+-   Represent specific business rule violations; part of Ubiquitous Language.
+-   Defined in `Domain/Exception/` or `Shared/Domain/`.
+-   Thrown by Aggregates, Entities, VOs.
+-   Should have meaningful messages with context.
 -   **Application Layer Handling:**
-  -   Handlers catch anticipated domain exceptions.
-  -   May propagate, translate, or rely on global handlers.
+-   Handlers catch anticipated domain exceptions.
+-   May propagate, translate, or rely on global handlers.
 -   **Infrastructure Layer Exceptions:**
-  -   Caught by infrastructure components, may be wrapped. Avoid leaking raw infra exceptions.
+-   Caught by infrastructure components, may be wrapped. Avoid leaking raw infra exceptions.
 -   **Global Exception Handling (API):**
-  -   `src/Shared/Infrastructure/JsonTransformerExceptionListener.php` for standardized JSON error responses.
-  -   Ensure new exceptions are mapped correctly. Consistent error formats.
+-   `src/Shared/Infrastructure/JsonTransformerExceptionListener.php` for standardized JSON error responses.
+-   Ensure new exceptions are mapped correctly. Consistent error formats.
 
 ### Logging
 
@@ -520,8 +556,8 @@ Cross-cutting concerns are aspects of a program that affect or are used by multi
 
 -   **Authentication & Authorization:** Symfony Security component. Roles, permissions, voters.
 -   **Input Validation:**
-  -   **Application Layer:** Commands/DTOs via Symfony Validator or custom logic.
-  -   **Domain Layer:** VOs enforce invariants on construction. Aggregates/Entities enforce business rules.
+-   **Application Layer:** Commands/DTOs via Symfony Validator or custom logic.
+-   **Domain Layer:** VOs enforce invariants on construction. Aggregates/Entities enforce business rules.
 -   **Data Protection:** Avoid logging PII. Secure secrets (Symfony secrets/env vars). Consider encryption at rest. HTTPS.
 -   **Principle of Least Privilege:** Minimum necessary permissions.
 -   **Dependency Management:** Keep dependencies updated; monitor vulnerabilities (`symfony security:check`).
