@@ -45,5 +45,5 @@ income_get_date_range_recurring:
 
 income_get_date_range:
     path: /api/v1/incomes/date-range/{year}/{month}
-    controller: App\Context\Income\Infrastructure\Http\Controller\GetActiveIncomesByDateRangeController
+    controller: App\Context\Income\Infrastructure\Http\Controller\GetIncomesByMonthController
     methods: ['GET']

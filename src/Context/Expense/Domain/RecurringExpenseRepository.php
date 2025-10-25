@@ -19,4 +19,8 @@ interface RecurringExpenseRepository
     public function findForThisMonth(int $month): array;
 
     public function findActiveForDateRange(DateRange $dateRange): array;
+
+    public function findByHasPredefinedAmount(bool $hasPredefinedAmount): array;
+
+    public function findByYear(int $year): array;
 }

@@ -58,6 +58,30 @@ class DoctrineStoreEventRepository extends ServiceEntityRepository implements St
         return $qb->getQuery()->getResult();
     }
 
+    public function findByEventNamesAndOccurredBetweenAndAggregateId(
+        array $eventNames,
+        DateTimeImmutable $startDate,
+        ?DateTimeImmutable $endDate,
+        string $aggregateId,
+    ): array {
+        $qb = $this->createQueryBuilder('e');
+
+        $qb->where($qb->expr()->in('e.eventType', ':names'))
+            ->andWhere('e.occurredAt >= :start')
+            ->andWhere('e.aggregateId = :aggregateId')
+            ->setParameter('names', $eventNames)
+            ->setParameter('start', $startDate)
+            ->setParameter('aggregateId', $aggregateId)
+            ->orderBy('e.occurredAt', 'ASC');
+
+        if ($endDate !== null) {
+            $qb->andWhere('e.occurredAt <= :end')
+                ->setParameter('end', $endDate);
+        }
+
+        return $qb->getQuery()->getResult();
+    }
+
     // Implementación de EventStore::append (movida desde DoctrineEventStore)
     public function append(DomainEvent $event): void
     {

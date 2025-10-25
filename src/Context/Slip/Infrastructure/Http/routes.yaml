@@ -22,3 +22,8 @@ slip_pay:
     path: /api/v1/slips/pay/{id}
     controller: App\Context\Slip\Infrastructure\Http\Controller\SlipPayPatchController
     methods: ['PATCH']
+
+slip_check_total_post:
+    path: /api/v1/slips/check-total
+    controller: App\Context\Slip\Infrastructure\Http\Controller\SlipCheckTotalPostController
+    methods: ['POST']

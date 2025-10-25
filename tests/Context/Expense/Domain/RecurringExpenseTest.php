@@ -23,6 +23,7 @@ class RecurringExpenseTest extends TestCase
     {
         // Arrange
         $id          = ExpenseIdMother::create();
+        $accountId   = 'a5a4c7e4-9c5b-4b8f-8c6e-1e2b3c4d5e6f';
         $amount      = ExpenseAmountMother::create();
         $type        = ExpenseTypeMother::create();
         $dueDay      = new ExpenseDueDay(15);
@@ -35,6 +36,7 @@ class RecurringExpenseTest extends TestCase
         // Act
         $recurring = RecurringExpense::create(
             $id,
+            $accountId,
             $amount,
             $type,
             $dueDay,
@@ -47,6 +49,7 @@ class RecurringExpenseTest extends TestCase
 
         // Assert
         $this->assertSame($id->value(), $recurring->id());
+        $this->assertSame($accountId, $recurring->accountId());
         $this->assertSame($amount->value(), $recurring->amount());
         $this->assertSame($type, $recurring->type());
         $this->assertSame(15, $recurring->dueDay());

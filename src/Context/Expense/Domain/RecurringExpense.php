@@ -22,9 +22,12 @@ class RecurringExpense extends AggregateRoot
     private Collection $expenses;
     private readonly DateTimeImmutable $createdAt;
     private bool $isActive;
+    private bool $hasPredefinedAmount;
+    private ?string $accountId = null; // Made nullable with default
 
     public function __construct(
         private readonly string $id,
+        ?string $accountId, // Made nullable
         private int $amount,
         private ExpenseType $expenseType,
         private int $dueDay,
@@ -33,10 +36,13 @@ class RecurringExpense extends AggregateRoot
         private ?DateTimeInterface $endDate = null,
         private ?string $description = null,
         private ?string $notes = null,
+        bool $hasPredefinedAmount = true,
     ) {
-        $this->expenses   = new ArrayCollection();
+        $this->accountId = $accountId;
+        $this->expenses = new ArrayCollection();
         $this->createdAt  = new DateTimeImmutable();
         $this->isActive   = true;
+        $this->hasPredefinedAmount = $hasPredefinedAmount;
     }
 
     /**
@@ -44,6 +50,7 @@ class RecurringExpense extends AggregateRoot
      */
     public static function create(
         ExpenseId $id,
+        string $accountId, // Still required for new entities
         ExpenseAmount $amount,
         ExpenseType $expenseType,
         ExpenseDueDay $dueDay,
@@ -52,12 +59,14 @@ class RecurringExpense extends AggregateRoot
         ?ExpenseEndDate $endDate   = null,
         ?string $description      = null,
         ?string $notes            = null,
+        bool $hasPredefinedAmount = true,
     ): self {
         $start = $startDate ?? ExpenseStartDate::from();
         $end = $endDate   ?? ExpenseEndDate::from();
 
         $recurringExpense = new self(
             $id->value(),
+            $accountId,
             $amount->value(),
             $expenseType,
             $dueDay->value(),
@@ -66,10 +75,12 @@ class RecurringExpense extends AggregateRoot
             $end->toDateTime(),
             $description,
             $notes,
+            $hasPredefinedAmount,
         );
 
         $recurringExpense->record(new RecurringExpenseWasCreated(
             $id->value(),
+            $accountId,
             $amount->value(),
             $expenseType->id(),
             $dueDay->value(),
@@ -78,6 +89,7 @@ class RecurringExpense extends AggregateRoot
             $end->toDateTime()?->format('Y-m-d H:i:s'),
             $description,
             $notes,
+            null, // Pass null for eventId
         ));
 
         return $recurringExpense;
@@ -87,6 +99,11 @@ class RecurringExpense extends AggregateRoot
     public function id(): string
     {
         return $this->id;
+    }
+
+    public function accountId(): ?string
+    {
+        return $this->accountId;
     }
 
     public function amount(): int
@@ -137,6 +154,11 @@ class RecurringExpense extends AggregateRoot
     public function notes(): ?string
     {
         return $this->notes;
+    }
+
+    public function hasPredefinedAmount(): bool
+    {
+        return $this->hasPredefinedAmount;
     }
 
     /**

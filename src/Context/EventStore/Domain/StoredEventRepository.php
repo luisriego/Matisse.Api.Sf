@@ -15,5 +15,12 @@ interface StoredEventRepository
 
     public function findByEventNamesAndOccurredBetween(array $eventNames, DateTimeImmutable $startDate, ?DateTimeImmutable $endDate): array;
 
+    public function findByEventNamesAndOccurredBetweenAndAggregateId(
+        array $eventNames,
+        DateTimeImmutable $startDate,
+        ?DateTimeImmutable $endDate,
+        string $aggregateId,
+    ): array;
+
     public function append(DomainEvent $event): void;
 }

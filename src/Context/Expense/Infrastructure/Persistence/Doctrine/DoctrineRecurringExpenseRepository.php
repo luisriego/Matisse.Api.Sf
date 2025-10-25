@@ -9,11 +9,13 @@ use App\Context\Expense\Domain\RecurringExpenseRepository;
 use App\Shared\Domain\Exception\ResourceNotFoundException;
 use App\Shared\Domain\ValueObject\DateRange;
 use DateMalformedStringException;
+use DateTimeImmutable;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
 use Exception;
 
 use function in_array;
+use function sprintf;
 
 class DoctrineRecurringExpenseRepository extends ServiceEntityRepository implements RecurringExpenseRepository
 {
@@ -108,6 +110,31 @@ class DoctrineRecurringExpenseRepository extends ServiceEntityRepository impleme
         }
 
         return $result;
+    }
+
+    public function findByHasPredefinedAmount(bool $hasPredefinedAmount): array
+    {
+        return $this->createQueryBuilder('r')
+            ->where('r.hasPredefinedAmount = :hasPredefinedAmount')
+            ->setParameter('hasPredefinedAmount', $hasPredefinedAmount)
+            ->getQuery()
+            ->getResult();
+    }
+
+    public function findByYear(int $year): array
+    {
+        $yearStartDate = new DateTimeImmutable(sprintf('%d-01-01', $year));
+        $yearEndDate = new DateTimeImmutable(sprintf('%d-12-31', $year));
+
+        return $this->createQueryBuilder('r')
+            ->where('r.isActive = :isActive')
+            ->andWhere('r.startDate <= :yearEndDate')
+            ->andWhere('r.endDate IS NULL OR r.endDate >= :yearStartDate')
+            ->setParameter('isActive', true)
+            ->setParameter('yearStartDate', $yearStartDate)
+            ->setParameter('yearEndDate', $yearEndDate)
+            ->getQuery()
+            ->getResult();
     }
 
     private function findAllActives(): array

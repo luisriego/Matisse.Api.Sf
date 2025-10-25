@@ -25,7 +25,7 @@ use DateTime;
 
 use function sprintf;
 
-readonly class CreateRecurringExpenseCommandHandler implements CommandHandler
+final readonly class CreateRecurringExpenseCommandHandler implements CommandHandler
 {
     public function __construct(
         private RecurringExpenseRepository $recurringExpenseRepository,
@@ -41,6 +41,7 @@ readonly class CreateRecurringExpenseCommandHandler implements CommandHandler
     public function __invoke(CreateRecurringExpenseCommand $command): void
     {
         $id = new ExpenseId($command->id());
+        $accountId = $command->accountId(); // Get accountId from command
         $amount = new ExpenseAmount($command->amount());
         $type = $this->typeRepo->findOneByIdOrFail($command->type());
         $dueDay = new ExpenseDueDay($command->dueDay());
@@ -52,6 +53,7 @@ readonly class CreateRecurringExpenseCommandHandler implements CommandHandler
 
         $recurringExpense = RecurringExpense::create(
             $id,
+            $accountId, // Pass accountId
             $amount,
             $type,
             $dueDay,
@@ -60,6 +62,7 @@ readonly class CreateRecurringExpenseCommandHandler implements CommandHandler
             $endDate,
             $description,
             $notes,
+            $command->hasPredefinedAmount(),
         );
 
         $this->recurringExpenseRepository->save($recurringExpense, false);
@@ -67,12 +70,14 @@ readonly class CreateRecurringExpenseCommandHandler implements CommandHandler
         // Collect all events to publish at the end
         $events = [...$recurringExpense->pullDomainEvents()];
 
-        // Now create individual expenses for each month
-        $individualExpenses = $this->createIndividualExpenses($recurringExpense, $command);
+        // Only create individual expenses if the amount is predefined
+        if ($command->hasPredefinedAmount()) {
+            $individualExpenses = $this->createIndividualExpenses($recurringExpense, $command);
 
-        // Collect events from individual expenses
-        foreach ($individualExpenses as $expense) {
-            $events = [...$events, ...$expense->pullDomainEvents()];
+            foreach ($individualExpenses as $expense) {
+                $this->expenseRepository->save($expense, false);
+                $events = [...$events, ...$expense->pullDomainEvents()];
+            }
         }
 
         // Flush everything at once
@@ -115,12 +120,6 @@ readonly class CreateRecurringExpenseCommandHandler implements CommandHandler
             );
 
             $expense->setRecurringExpense($recurringExpense);
-
-            if ($expense->hasDomainEvents()) {
-                $this->expenseRepository->save($expense, true);
-                $this->eventBus->publish(...$expense->pullDomainEvents());
-            }
-
             $expenses[] = $expense;
         }
 

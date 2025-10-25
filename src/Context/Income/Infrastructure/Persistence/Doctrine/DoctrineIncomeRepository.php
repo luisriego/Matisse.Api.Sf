@@ -41,15 +41,20 @@ class DoctrineIncomeRepository extends ServiceEntityRepository implements Income
         return $income;
     }
 
+    public function findAll(): array
+    {
+        return $this->findBy([], ['dueDate' => 'ASC']);
+    }
+
     public function findActiveByDateRange(DateRange $dateRange): array
     {
         return $this->getEntityManager()
             ->createQuery('
-            SELECT e FROM App\Context\Income\Domain\Income i 
+            SELECT i FROM App\Context\Income\Domain\Income i 
             WHERE i.isActive = true 
             AND i.dueDate >= :startDate 
             AND i.dueDate <= :endDate
-            ORDER BY e.dueDate ASC
+            ORDER BY i.dueDate ASC
         ')
             ->setParameter('startDate', $dateRange->startDate())
             ->setParameter('endDate', $dateRange->endDate())
@@ -60,11 +65,11 @@ class DoctrineIncomeRepository extends ServiceEntityRepository implements Income
     {
         return $this->getEntityManager()
             ->createQuery('
-            SELECT e FROM App\Context\Income\Domain\Income e 
+            SELECT i FROM App\Context\Income\Domain\Income i 
             WHERE i.isActive = false 
             AND i.dueDate >= :startDate 
             AND i.dueDate <= :endDate
-            ORDER BY e.dueDate ASC
+            ORDER BY i.dueDate ASC
         ')
             ->setParameter('startDate', $dateRange->startDate())
             ->setParameter('endDate', $dateRange->endDate())

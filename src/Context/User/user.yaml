@@ -26,3 +26,8 @@ services:
 
     App\Context\Expense\Domain\ExpenseTypeRepository:
         class: App\Context\Expense\Infrastructure\Persistence\Doctrine\DoctrineExpenseTypeRepository
+
+    App\Context\Slip\Application\Service\SlipAlertService:
+        arguments:
+            $textGenerator: 'App\Shared\Application\TextGeneratorInterface'
+            $logger: '@logger'

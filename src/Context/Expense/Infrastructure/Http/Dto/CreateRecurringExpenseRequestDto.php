@@ -19,6 +19,7 @@ class CreateRecurringExpenseRequestDto implements RequestDto
     public string $endDate;
     public string $description;
     public string $notes;
+    public bool $hasPredefinedAmount;
 
     public function __construct(Request $request)
     {
@@ -32,5 +33,6 @@ class CreateRecurringExpenseRequestDto implements RequestDto
         $this->endDate = $request->get('endDate', '');
         $this->description = $request->get('description', '');
         $this->notes = $request->get('notes', '');
+        $this->hasPredefinedAmount = $request->get('hasPredefinedAmount', true);
     }
 }

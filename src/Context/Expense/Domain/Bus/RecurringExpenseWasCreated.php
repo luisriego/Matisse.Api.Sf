@@ -13,6 +13,7 @@ final readonly class RecurringExpenseWasCreated extends DomainEvent
 {
     public function __construct(
         string $id,
+        private ?string $accountId, // Made nullable
         private int $amount,
         private string $typeId,
         private int $dueDay,
@@ -35,6 +36,7 @@ final readonly class RecurringExpenseWasCreated extends DomainEvent
     public function toPrimitives(): array
     {
         return [
+            'accountId' => $this->accountId,
             'amount' => $this->amount,
             'typeId' => $this->typeId,
             'dueDay' => $this->dueDay,
@@ -57,6 +59,7 @@ final readonly class RecurringExpenseWasCreated extends DomainEvent
     ): DomainEvent {
         return new self(
             $aggregateId,
+            $body['accountId'] ?? null, // Handle nullable
             $body['amount'],
             $body['typeId'],
             $body['dueDay'],

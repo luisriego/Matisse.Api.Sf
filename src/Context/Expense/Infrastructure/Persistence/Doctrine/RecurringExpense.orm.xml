@@ -16,6 +16,7 @@
         </id>
 
         <field name="amount"        column="amount"         type="integer"/>
+        <field name="accountId"     column="account_id"     type="uuid"    nullable="true"/>
         <field name="description"   column="description"    type="text"    nullable="true"/>
         <field name="dueDay"        column="due_day"         type="integer"/>
         <field name="monthsOfYear"  column="months_of_year"  type="json"    nullable="true"/>
@@ -24,6 +25,9 @@
         <field name="createdAt"     column="created_at"      type="datetime_immutable"/>
         <field name="isActive"      column="is_active"       type="boolean"/>
         <field name="notes"         column="notes"           type="text"    nullable="true"/>
+        <field name="hasPredefinedAmount" column="has_predefined_amount" type="boolean" nullable="true"/>
+
+
 
         <many-to-one field="expenseType"
                      target-entity="App\Context\Expense\Domain\ExpenseType"

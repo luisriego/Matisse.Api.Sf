@@ -15,22 +15,47 @@ use App\Shared\Domain\AggregateRoot;
 use DateMalformedStringException;
 use DateTime;
 use DateTimeImmutable;
+use Doctrine\ORM\Mapping as ORM;
 
+#[ORM\Entity]
+#[ORM\Table(name: 'expenses')]
 class Expense extends AggregateRoot
 {
+    #[ORM\Id]
+    #[ORM\Column(type: 'string', length: 36)]
     private string $id;
+
+    #[ORM\Column(type: 'integer')]
     private int $amount;
+
+    #[ORM\Column(type: 'text', nullable: true)]
     private ?string $description = '';
+
+    #[ORM\Column(type: 'datetime')]
     private DateTime $dueDate;
+
+    #[ORM\Column(type: 'datetime_immutable', nullable: true)]
     private ?DateTimeImmutable $paidAt = null;
+
+    #[ORM\Column(type: 'datetime_immutable')]
     private DateTimeImmutable $createdAt;
 
+    #[ORM\Column(type: 'boolean')]
     private bool $isActive = true;
 
+    #[ORM\ManyToOne(targetEntity: Account::class, fetch: 'LAZY')]
+    #[ORM\JoinColumn(name: 'account_id', referencedColumnName: 'id', nullable: true)]
     private ?Account $account;
+
+    #[ORM\Column(type: 'string', length: 36, nullable: true)]
     private ?string $residentUnitId = null; // Added property
 
+    #[ORM\ManyToOne(targetEntity: ExpenseType::class, fetch: 'LAZY')]
+    #[ORM\JoinColumn(name: 'expense_type_id', referencedColumnName: 'id', nullable: true)]
     private ?ExpenseType $type = null;
+
+    #[ORM\ManyToOne(targetEntity: RecurringExpense::class, fetch: 'LAZY')]
+    #[ORM\JoinColumn(name: 'recurring_expense_id', referencedColumnName: 'id', nullable: true)]
     private ?RecurringExpense $recurringExpense = null;
 
     public function __construct(
@@ -224,11 +249,13 @@ class Expense extends AggregateRoot
             'id' => $this->id,
             'amount' => $this->amount,
             'description' => $this->description,
-            'dueDate' => $this->dueDate,
-            'paidAt' => $this->paidAt,
-            'createdAt' => $this->createdAt,
+            'dueDate' => $this->dueDate->format('Y-m-d H:i:s'),
+            'paidAt' => $this->paidAt?->format('Y-m-d H:i:s'),
+            'createdAt' => $this->createdAt->format('Y-m-d H:i:s'),
             'residentUnitId' => $this->residentUnitId,
             'type' => $this->type?->toArray(),
+            'account' => $this->account?->toArray(),
+            'recurringExpense' => $this->recurringExpense?->id(),
         ];
     }
 

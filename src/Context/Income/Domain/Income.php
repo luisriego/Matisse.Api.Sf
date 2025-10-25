@@ -125,9 +125,10 @@ class Income extends AggregateRoot
         return [
             'id' => $this->id,
             'amount' => $this->amount,
-            'dueDate' => $this->dueDate,
-            'paidAt' => $this->paidAt,
-            'residentUnit' => $this->residentUnit?->unit(),
+            'type' => $this->incomeType?->toArray(),
+            'dueDate' => $this->dueDate->format('Y-m-d'),
+            'paidAt' => $this->paidAt?->format('Y-m-d'),
+            'residentUnitId' => $this->residentUnit?->id(),
             'description' => $this->description,
         ];
     }
