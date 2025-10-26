@@ -10,7 +10,7 @@ final class SlipAlertContentProvider
         string $anomalyType,
         string $amountStr,
         string $minStr,
-        string $maxStr
+        string $maxStr,
     ): array {
         if ($anomalyType === 'muito baixo') {
             return [

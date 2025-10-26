@@ -46,7 +46,7 @@ final class SlipCheckTotalPostControllerTest extends ApiTestCase
 
         $this->assertResponseStatusCodeSame(Response::HTTP_OK);
         $this->assertSame('ok', $responseData['status']);
-        $this->assertSame('O total do slip está dentro do intervalo esperado.', $responseData['message']);
+        $this->assertSame('O total de gastos do slip está dentro do intervalo esperado.', $responseData['message']);
         $this->assertSame(750000, $responseData['amount']);
     }
 
