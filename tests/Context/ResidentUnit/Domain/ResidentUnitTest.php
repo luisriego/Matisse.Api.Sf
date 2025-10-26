@@ -29,7 +29,7 @@ final class ResidentUnitTest extends UnitTestCase
             ['name' => 'John Doe', 'email' => 'john.doe@example.com'],
             ['name' => 'Jane Doe', 'email' => 'jane.doe@example.com'],
         ];
-        $residentUnit = ResidentUnitMother::createWithRecipients(notificationRecipients: $recipients);
+        $residentUnit = ResidentUnitMother::createWithRecipients(recipients: $recipients);
 
         self::assertInstanceOf(ResidentUnit::class, $residentUnit);
         self::assertNotEmpty($residentUnit->id());

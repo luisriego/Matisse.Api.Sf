@@ -36,11 +36,6 @@
         <testsuite name="authenticated_integration">
             <directory>tests/Context/*/Infrastructure</directory>
         </testsuite>
-
-        <!-- Suite for tests that should run WITHOUT authentication -->
-        <testsuite name="unauthenticated_integration">
-            <directory>tests/Context/*/Infrastructure</directory>
-        </testsuite>
     </testsuites>
 
     <source>
