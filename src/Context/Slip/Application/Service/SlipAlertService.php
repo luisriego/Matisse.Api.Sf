@@ -23,32 +23,24 @@ class SlipAlertService
      * Genera un aviso si el total de un slip está fuera de un rango esperado.
      *
      * @param SlipAmount $amount El monto total del slip (en centavos).
-     * @return \stdClass|null Um objeto com {titulo, diagnostico, recomendacao}, ou null se não houver anomalia ou em caso de falha.
      */
     public function checkAndGenerateAnomalyAlert(
         SlipAmount $amount
-    ): ?\stdClass {
+    ): ?string {
 
         // --- Lógica Correcta ---
         $minExpected = new SlipAmount(500000);  // Representa 5000.00
         $maxExpected = new SlipAmount(1000000); // Representa 10000.00
 
         if ($amount->value() >= $minExpected->value() && $amount->value() <= $maxExpected->value()) {
-            return null; // O valor está dentro do intervalo esperado.
+            return null;
         }
 
-        // --- Lógica do Prompt (NOVA ESTRATÉGIA) ---
         $anomalyType = $amount->value() < $minExpected->value() ? 'muito baixo' : 'muito alto';
 
-        // 1. Formatamos os valores
         $amountStr = 'R$ ' . number_format($amount->value() / 100, 2, ',', '.');
         $minStr = 'R$ ' . number_format($minExpected->value() / 100, 2, ',', '.');
         $maxStr = 'R$ ' . number_format($maxExpected->value() / 100, 2, ',', '.');
-
-        // 2. Criamos o texto exato para o diagnóstico e recomendação AQUI no PHP
-        $diagInstruction = '';
-        $recomInstruction = '';
-        $titleInstruction = "Alerta: Total de Slip Anormal"; // Título genérico
 
         if ($anomalyType === 'muito baixo') {
             $diagInstruction = "O valor total do slip ({$amountStr}) está abaixo do esperado (mínimo de {$minStr}). Isso geralmente indica que faltam despesas a serem registradas ou houve um erro de digitação para menos.";
@@ -60,8 +52,6 @@ class SlipAlertService
             $titleInstruction = "Alerta: Total de Slip Elevado";
         }
 
-        // 3. Construímos o prompt focado 100% em formatar o JSON.
-        // Este prompt é muito mais simples para o Gemma 2B seguir.
         $prompt = <<<PROMPT
 Você é um assistente que formata respostas em JSON.
 Sua única tarefa é gerar uma resposta em formato JSON.
@@ -86,11 +76,8 @@ PROMPT;
             return null;
         }
 
-        // --- MUDANÇA 2: Validar o JSON ---
-        // Tenta decodificar a string JSON para um objeto PHP (\stdClass)
         $decodedJson = json_decode($alertMessage);
 
-        // Verifica se json_decode falhou (retorna null para JSON inválido)
         if ($decodedJson === null && json_last_error() !== JSON_ERROR_NONE) {
             $this->logger->error(
                 "Failed to decode JSON from text generator. Invalid JSON received.",
@@ -99,10 +86,9 @@ PROMPT;
                     'raw_response' => $alertMessage
                 ]
             );
-            return null; // Retorna nulo porque a resposta da IA foi inutilizável
+            return null;
         }
 
-        // Verifica se as chaves esperadas existem (opcional, mas recomendado)
         if (!isset($decodedJson->titulo) || !isset($decodedJson->diagnostico) || !isset($decodedJson->recomendacao)) {
             $this->logger->error(
                 "JSON response from text generator is missing required keys.",
@@ -113,8 +99,6 @@ PROMPT;
             return null;
         }
 
-
-        // Retorna o objeto PHP decodificado
         return $decodedJson;
     }
 }
