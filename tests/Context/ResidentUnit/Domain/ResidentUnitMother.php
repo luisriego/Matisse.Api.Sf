@@ -8,6 +8,7 @@ use App\Context\ResidentUnit\Domain\ResidentUnit;
 use App\Context\ResidentUnit\Domain\ResidentUnitId;
 use App\Context\ResidentUnit\Domain\ResidentUnitIdealFraction;
 use App\Context\ResidentUnit\Domain\ResidentUnitVO;
+use App\Shared\Domain\ValueObject\Uuid;
 
 final class ResidentUnitMother
 {
@@ -17,23 +18,9 @@ final class ResidentUnitMother
         ?ResidentUnitIdealFraction $idealFraction = null
     ): ResidentUnit {
         return ResidentUnit::create(
-            $id ?? ResidentUnitIdMother::create(),
-            $unit ?? ResidentUnitVOMother::create(),
-            $idealFraction ?? ResidentUnitIdealFractionMother::create()
-        );
-    }
-
-    public static function createWithRecipients(
-        ?ResidentUnitId $id = null,
-        ?ResidentUnitVO $unit = null,
-        ?ResidentUnitIdealFraction $idealFraction = null,
-        array $notificationRecipients = []
-    ): ResidentUnit {
-        return ResidentUnit::createWithRecipients(
-            $id ?? ResidentUnitIdMother::create(),
-            $unit ?? ResidentUnitVOMother::create(),
-            $idealFraction ?? ResidentUnitIdealFractionMother::create(),
-            $notificationRecipients
+            $id ?? new ResidentUnitId(Uuid::random()->value()),
+            $unit ?? new ResidentUnitVO('101'),
+            $idealFraction ?? new ResidentUnitIdealFraction(0.01)
         );
     }
 }
