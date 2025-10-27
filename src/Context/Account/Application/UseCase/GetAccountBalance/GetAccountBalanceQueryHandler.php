@@ -20,6 +20,9 @@ readonly class GetAccountBalanceQueryHandler implements QueryHandler
         private StoredEventRepository $eventRepository,
     ) {}
 
+    /**
+     * @throws \DateMalformedStringException
+     */
     public function __invoke(GetAccountBalanceQuery $query): int
     {
         $accountId = $query->accountId();
