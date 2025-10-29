@@ -92,5 +92,8 @@ abstract class ApiTestCase extends WebTestCase
             $this->entityManager->close();
             $this->entityManager = null;
         }
+
+        // Force the kernel to shut down, ensuring a clean state for the next test.
+        static::ensureKernelShutdown();
     }
 }
