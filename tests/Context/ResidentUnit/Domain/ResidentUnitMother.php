@@ -8,6 +8,7 @@ use App\Context\ResidentUnit\Domain\ResidentUnit;
 use App\Context\ResidentUnit\Domain\ResidentUnitId;
 use App\Context\ResidentUnit\Domain\ResidentUnitIdealFraction;
 use App\Context\ResidentUnit\Domain\ResidentUnitVO;
+use App\Shared\Domain\ValueObject\Uuid;
 
 final class ResidentUnitMother
 {
@@ -17,9 +18,9 @@ final class ResidentUnitMother
         ?ResidentUnitIdealFraction $idealFraction = null
     ): ResidentUnit {
         return ResidentUnit::create(
-            $id ?? ResidentUnitIdMother::create(),
-            $unit ?? ResidentUnitVOMother::create(),
-            $idealFraction ?? ResidentUnitIdealFractionMother::create()
+            $id ?? new ResidentUnitId(Uuid::random()->value()),
+            $unit ?? new ResidentUnitVO('101'),
+            $idealFraction ?? new ResidentUnitIdealFraction(0.01)
         );
     }
 
@@ -27,13 +28,13 @@ final class ResidentUnitMother
         ?ResidentUnitId $id = null,
         ?ResidentUnitVO $unit = null,
         ?ResidentUnitIdealFraction $idealFraction = null,
-        array $notificationRecipients = []
+        ?array $recipients = null
     ): ResidentUnit {
         return ResidentUnit::createWithRecipients(
-            $id ?? ResidentUnitIdMother::create(),
-            $unit ?? ResidentUnitVOMother::create(),
-            $idealFraction ?? ResidentUnitIdealFractionMother::create(),
-            $notificationRecipients
+            $id ?? new ResidentUnitId(Uuid::random()->value()),
+            $unit ?? new ResidentUnitVO('101'),
+            $idealFraction ?? new ResidentUnitIdealFraction(0.01),
+            $recipients ?? [['name' => 'Test Recipient', 'email' => 'recipient@example.com']]
         );
     }
 }

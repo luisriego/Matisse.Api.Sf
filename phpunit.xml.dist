@@ -19,6 +19,7 @@
         <server name="SHELL_VERBOSITY" value="-1" />
         <env name="SYMFONY_DEPRECATIONS_HELPER" value="disabled" />
         <env name="KERNEL_CLASS" value="App\Kernel"/>
+        <env name="DATABASE_URL" value="sqlite:///%kernel.project_dir%/var/data_test.db" />
     </php>
 
     <testsuites>
@@ -27,13 +28,12 @@
             <directory>tests/Context/*/Domain</directory>
         </testsuite>
 
-        <!-- Suite for tests that require authentication -->
-        <testsuite name="authenticated_integration">
-            <directory>tests/Context/*/Infrastructure</directory>
+        <testsuite name="shared">
+            <directory>tests/Shared/Infrastructure</directory>
         </testsuite>
 
-        <!-- Suite for tests that should run WITHOUT authentication -->
-        <testsuite name="unauthenticated_integration">
+        <!-- Suite for tests that require authentication -->
+        <testsuite name="authenticated_integration">
             <directory>tests/Context/*/Infrastructure</directory>
         </testsuite>
     </testsuites>

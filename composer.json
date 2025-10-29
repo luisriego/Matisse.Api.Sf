@@ -94,11 +94,12 @@
     },
     "extra": {
         "symfony": {
-            "allow-contrib": false,
+            "allow-contrib": true,
             "require": "6.4.*"
         }
     },
     "require-dev": {
+        "dama/doctrine-test-bundle": "^8.4",
         "fakerphp/faker": "^1.24",
         "infection/infection": "^0.31.2",
         "mockery/mockery": "^1.6",

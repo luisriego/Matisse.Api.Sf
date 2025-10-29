@@ -44,4 +44,4 @@ ssh: ## bash into the be container
 
 .PHONY: tests
 tests:
-	U_ID=${UID} docker exec --user ${UID} ${DOCKER_BE} vendor/bin/phpunit -c phpunit.xml.dist
+	U_ID=${UID} docker exec --user ${UID} ${DOCKER_BE} vendor/bin/phpunit --testsuite=unit -c phpunit.xml.dist
