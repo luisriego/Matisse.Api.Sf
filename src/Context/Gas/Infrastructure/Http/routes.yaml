@@ -1,0 +1,4 @@
+gas_price_calculate:
+    path: /api/v1/gas/price
+    controller: App\Context\Gas\Infrastructure\Http\Controller\CalculateGasPricePutController
+    methods: ['PUT']

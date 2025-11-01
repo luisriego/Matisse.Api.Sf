@@ -9,6 +9,7 @@ imports:
     - { resource: '../src/Context/Slip/Slip.yaml'}
     - { resource: '../src/Context/EventStore/event.yaml'}
     - { resource: '../src/Context/User/user.yaml' }
+    - { resource: '../src/Context/Gas/gas.yaml'}
 
 services:
     _defaults:

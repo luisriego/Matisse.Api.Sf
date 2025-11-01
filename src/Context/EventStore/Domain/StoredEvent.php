@@ -17,7 +17,7 @@ use function sprintf;
 
 use const DATE_ATOM;
 
- // Importar el nuevo evento
+// Importar el nuevo evento
 
 class StoredEvent
 {

@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Context\Expense\Application\Service;
 
 use App\Shared\Application\TextGeneratorInterface;
@@ -20,16 +22,17 @@ class ExpenseAlertService
      * Genera un aviso si el valor de un gasto está fuera de un rango esperado.
      *
      * @param string $expenseType El tipo de gasto (ej. "cuentas del edificio").
-     * @param float $amount El monto del gasto.
-     * @param float $minExpected El valor mínimo esperado.
-     * @param float $maxExpected El valor máximo esperado.
-     * @return string|null Un mensaje de aviso generado por la IA, o null si el monto está dentro del rango.
+     * @param float  $amount      el monto del gasto
+     * @param float  $minExpected el valor mínimo esperado
+     * @param float  $maxExpected el valor máximo esperado
+     *
+     * @return string|null un mensaje de aviso generado por la IA, o null si el monto está dentro del rango
      */
     public function generateExpenseAnomalyAlert(
         string $expenseType,
         float $amount,
         float $minExpected,
-        float $maxExpected
+        float $maxExpected,
     ): ?string {
         if ($amount >= $minExpected && $amount <= $maxExpected) {
             return null; // El monto está dentro del rango esperado, no se necesita aviso.
@@ -38,17 +41,18 @@ class ExpenseAlertService
         $anomalyType = $amount < $minExpected ? 'demasiado bajo' : 'demasiado alto';
         $expectedRange = "entre {$minExpected} y {$maxExpected}";
 
-        $prompt = "El gasto de '{$expenseType}' tiene un valor de {$amount}, lo cual es {$anomalyType}. " .
-            "Normalmente, este gasto está {$expectedRange}. " .
-            "Genera un aviso conciso y profesional para un gerente, explicando la anomalía y sugiriendo una posible acción o revisión. " .
-            "No uses introducciones como 'Estimado gerente', ve directo al punto.";
+        $prompt = "El gasto de '{$expenseType}' tiene un valor de {$amount}, lo cual es {$anomalyType}. "
+            . "Normalmente, este gasto está {$expectedRange}. "
+            . 'Genera un aviso conciso y profesional para un gerente, explicando la anomalía y sugiriendo una posible acción o revisión. '
+            . "No uses introducciones como 'Estimado gerente', ve directo al punto.";
 
         $this->logger->info("Generando alerta de anomalía para gasto: {$expenseType} con monto {$amount}");
 
         $alertMessage = $this->textGenerator->generate($prompt);
 
         if ($alertMessage === null) {
-            $this->logger->error("Fallo al generar el mensaje de alerta para la anomalía del gasto.");
+            $this->logger->error('Fallo al generar el mensaje de alerta para la anomalía del gasto.');
+
             return "No se pudo generar un aviso de anomalía para el gasto de '{$expenseType}'.";
         }
 

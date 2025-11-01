@@ -11,7 +11,7 @@ use DateTimeImmutable;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 
- // Importar User
+// Importar User
 
 // Eliminadas todas las anotaciones #[ORM\...] (se asume que el mapeo se hace por XML)
 class ResidentUnit extends AggregateRoot
