@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace App\Context\Gas\Domain\ValueObject;
 
+use App\Shared\Domain\Exception\InvalidArgumentException;
 use App\Shared\Domain\ValueObject\FloatValueObject;
-use InvalidArgumentException;
 
 final class ReadingInM3 extends FloatValueObject
 {

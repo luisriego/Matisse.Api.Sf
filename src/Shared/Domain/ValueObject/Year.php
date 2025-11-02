@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\Shared\Domain\ValueObject;
 
-use InvalidArgumentException;
+use App\Shared\Domain\Exception\InvalidArgumentException;
 
 use function sprintf;
 

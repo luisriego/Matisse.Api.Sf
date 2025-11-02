@@ -5,16 +5,12 @@ declare(strict_types=1);
 namespace App\Tests\Context\Gas\Domain\ValueObject;
 
 use App\Context\Gas\Domain\ValueObject\GasId;
+use App\Tests\Shared\Domain\UuidMother;
 
 final class GasIdMother
 {
     public static function create(?string $value = null): GasId
     {
-        return new GasId($value ?? GasId::random()->value());
-    }
-
-    public static function random(): GasId
-    {
-        return self::create();
+        return new GasId($value ?? UuidMother::create());
     }
 }
