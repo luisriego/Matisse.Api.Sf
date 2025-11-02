@@ -7,8 +7,8 @@ namespace App\Tests\Context\Slip\Application\UseCase\SlipGeneration;
 use App\Context\EventStore\Domain\StoredEventRepository;
 use App\Context\Expense\Domain\Expense;
 use App\Context\Expense\Domain\ExpenseRepository;
-use App\Context\Expense\Domain\ExpenseType;
 use App\Context\Expense\Domain\RecurringExpenseRepository;
+use App\Context\Expense\Domain\ExpenseType;
 use App\Context\Expense\Domain\ExpenseTypeRepository;
 use App\Context\ResidentUnit\Domain\ResidentUnit;
 use App\Context\ResidentUnit\Domain\ResidentUnitRepository;
@@ -92,7 +92,7 @@ class SlipGenerationCommandHandlerTest extends TestCase
         $this->residentUnitRepository->method('findAllActive')->willReturn([$resident]);
 
         // Configura el mock de storedEventRepository para que no devuelva eventos de gas
-        $this->storedEventRepository->method('findByEventNamesAndOccurredBetween')->willReturn([]);
+        $this->storedEventRepository->method('findByEventTypesAndOccurredBetween')->willReturn([]);
 
         // Configura el mock de monthlyExpenseAggregatorService para que devuelva los totales esperados
         $this->monthlyExpenseAggregatorService->method('aggregateTotals')->willReturn([
@@ -144,7 +144,7 @@ class SlipGenerationCommandHandlerTest extends TestCase
         $this->residentUnitRepository->method('findAllActive')->willReturn([$this->createMock(ResidentUnit::class)]);
 
         // Configura el mock de storedEventRepository para que no devuelva eventos de gas
-        $this->storedEventRepository->method('findByEventNamesAndOccurredBetween')->willReturn([]);
+        $this->storedEventRepository->method('findByEventTypesAndOccurredBetween')->willReturn([]);
 
         // Configura el mock de monthlyExpenseAggregatorService para que devuelva cero
         $this->monthlyExpenseAggregatorService->method('aggregateTotals')->willReturn([
@@ -175,7 +175,7 @@ class SlipGenerationCommandHandlerTest extends TestCase
         $this->residentUnitRepository->method('findAllActive')->willReturn([]);
 
         // Configura el mock de storedEventRepository para que no devuelva eventos de gas
-        $this->storedEventRepository->method('findByEventNamesAndOccurredBetween')->willReturn([]);
+        $this->storedEventRepository->method('findByEventTypesAndOccurredBetween')->willReturn([]);
 
         // Configura el mock de monthlyExpenseAggregatorService para que devuelva los totales esperados
         $this->monthlyExpenseAggregatorService->method('aggregateTotals')->willReturn([

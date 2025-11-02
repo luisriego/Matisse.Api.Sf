@@ -42,7 +42,7 @@ final class CalculateGasPricePutControllerTest extends ApiTestCase
         // Final assertion: check the event count in the repository
         /** @var StoredEventRepository $storedEventRepository */
         $storedEventRepository = $container->get(StoredEventRepository::class);
-        $events = $storedEventRepository->findByEventName('gas.price.was.defined');
+        $events = $storedEventRepository->findByEventType('gas.price.was.defined');
 
         $this->assertCount(1, $events);
         $this->assertEquals('gas.price.was.defined', $events[0]->eventType());

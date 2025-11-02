@@ -13,10 +13,12 @@ interface StoredEventRepository
 
     public function findByAggregateId(string $aggregateId): array;
 
-    public function findByEventNamesAndOccurredBetween(array $eventNames, DateTimeImmutable $startDate, ?DateTimeImmutable $endDate): array;
+    public function findByEventType(string $eventType): array;
 
-    public function findByEventNamesAndOccurredBetweenAndAggregateId(
-        array $eventNames,
+    public function findByEventTypesAndOccurredBetween(array $eventTypes, DateTimeImmutable $startDate, ?DateTimeImmutable $endDate): array;
+
+    public function findByEventTypesAndOccurredBetweenAndAggregateId(
+        array $eventTypes,
         DateTimeImmutable $startDate,
         ?DateTimeImmutable $endDate,
         string $aggregateId,
