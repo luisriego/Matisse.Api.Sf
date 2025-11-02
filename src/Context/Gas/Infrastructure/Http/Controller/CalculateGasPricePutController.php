@@ -15,7 +15,6 @@ final readonly class CalculateGasPricePutController
 {
     public function __construct(private DefineGasPriceCommandHandler $commandHandler) {}
 
-    // 2. Añadir el atributo #[MapRequestPayload] antes del argumento
     public function __invoke(#[MapRequestPayload] DefineGasPriceRequestDto $request): Response
     {
         $command = $request->toCommand();

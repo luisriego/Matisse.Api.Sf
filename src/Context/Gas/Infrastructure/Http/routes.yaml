@@ -2,3 +2,8 @@ gas_price_calculate:
     path: /api/v1/gas/price
     controller: App\Context\Gas\Infrastructure\Http\Controller\CalculateGasPricePutController
     methods: ['PUT']
+
+gas_consumption_record:
+    path: /api/v1/gas/consumption
+    controller: App\Context\Gas\Infrastructure\Http\Controller\RecordGasConsumptionPutController
+    methods: ['PUT']
