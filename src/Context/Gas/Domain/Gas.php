@@ -4,31 +4,33 @@ declare(strict_types=1);
 
 namespace App\Context\Gas\Domain;
 
-use App\Context\Gas\Domain\Bus\GasConsumptionWasRecorded;
 use App\Context\Gas\Domain\Bus\GasPriceWasDefined;
+use App\Context\Gas\Domain\Bus\GasReadingWasRecorded;
 use App\Context\Gas\Domain\ValueObject\BufferPercentage;
-use App\Context\Gas\Domain\ValueObject\ConsumptionInM3;
 use App\Context\Gas\Domain\ValueObject\CylinderCapacity;
 use App\Context\Gas\Domain\ValueObject\GasAmount;
 use App\Context\Gas\Domain\ValueObject\GasId;
+use App\Context\Gas\Domain\ValueObject\ReadingInM3;
 use App\Context\ResidentUnit\Domain\ResidentUnitId;
 use App\Shared\Domain\AggregateRoot;
+use App\Shared\Domain\ValueObject\Month;
+use App\Shared\Domain\ValueObject\Year;
+use DateMalformedStringException;
 
 final class Gas extends AggregateRoot
 {
     public function __construct(
         private readonly GasId $id,
-        private readonly ?float $pricePerM3 = null
-    ) {
-    }
+        private readonly ?float $pricePerM3 = null,
+    ) {}
 
     /**
-     * @throws \DateMalformedStringException
+     * @throws DateMalformedStringException
      */
     public static function definePrice(
         GasAmount $amount,
         CylinderCapacity $capacity,
-        BufferPercentage $buffer
+        BufferPercentage $buffer,
     ): self {
         $cylinderCapacityInM3 = $capacity->toM3();
         $billAmount = $amount->toFloat();
@@ -54,28 +56,26 @@ final class Gas extends AggregateRoot
     }
 
     /**
-     * @throws \DateMalformedStringException
+     * @throws DateMalformedStringException
      */
-    public static function recordConsumption(
+    public static function recordReading(
         GasId $id,
         ResidentUnitId $residentUnitId,
-        int $year,
-        int $month,
-        ConsumptionInM3 $consumption
+        Year $year,
+        Month $month,
+        ReadingInM3 $reading,
     ): self {
         $gas = new self($id);
-
-        $gas->record(new GasConsumptionWasRecorded(
+        $gas->record(new GasReadingWasRecorded(
             $id->value(),
             $residentUnitId->value(),
-            $year,
-            $month,
-            $consumption->value()
+            $year->value(),
+            $month->value(),
+            $reading->value(),
         ));
 
         return $gas;
     }
-
 
     public function id(): GasId
     {

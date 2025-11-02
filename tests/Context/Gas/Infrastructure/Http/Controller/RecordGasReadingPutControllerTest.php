@@ -8,7 +8,7 @@ use App\Context\EventStore\Domain\StoredEventRepository;
 use App\Tests\Shared\Infrastructure\PhpUnit\ApiTestCase;
 use Symfony\Component\HttpFoundation\Response;
 
-final class RecordGasConsumptionPutControllerTest extends ApiTestCase
+final class RecordGasReadingPutControllerTest extends ApiTestCase
 {
     protected function setUp(): void
     {
@@ -16,23 +16,21 @@ final class RecordGasConsumptionPutControllerTest extends ApiTestCase
         $this->createAuthenticatedClient();
     }
 
-    public function test_it_should_record_gas_consumption(): void
+    public function test_it_should_record_gas_reading(): void
     {
         $container = self::getContainer();
 
-        // Define the JSON body for the request
         $requestBody = [
             'id' => 'a0eebc99-9c0b-4ef8-bb6d-6bb9bd380a11',
             'residentUnitId' => 'a0eebc99-9c0b-4ef8-bb6d-6bb9bd380a12',
             'year' => 2024,
             'month' => 11,
-            'consumption' => 25.5,
+            'reading' => 150.7,
         ];
 
-        // Make the HTTP request to our endpoint using the authenticated client
         $this->client->request(
             'PUT',
-            '/api/v1/gas/consumption',
+            '/api/v1/gas/reading',
             [],
             [],
             ['CONTENT_TYPE' => 'application/json'],
@@ -41,12 +39,11 @@ final class RecordGasConsumptionPutControllerTest extends ApiTestCase
 
         $this->assertResponseStatusCodeSame(Response::HTTP_CREATED);
 
-        // Final assertion: check the event count in the repository
         /** @var StoredEventRepository $storedEventRepository */
         $storedEventRepository = $container->get(StoredEventRepository::class);
-        $events = $storedEventRepository->findByEventType('gas.consumption.was.recorded');
+        $events = $storedEventRepository->findByEventType('gas.reading.was.recorded');
 
         $this->assertCount(1, $events);
-        $this->assertEquals('gas.consumption.was.recorded', $events[0]->eventType());
+        $this->assertEquals('gas.reading.was.recorded', $events[0]->eventType());
     }
 }

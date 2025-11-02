@@ -39,7 +39,6 @@ class DoctrineStoreEventRepository extends ServiceEntityRepository implements St
     public function findByEventType(string $eventType): array
     {
         return $this->findBy(['eventType' => $eventType], ['occurredAt' => 'ASC']);
-
     }
 
     // Implementación modificada de StoredEventRepository::findByEventTypesAndOccurredBetween

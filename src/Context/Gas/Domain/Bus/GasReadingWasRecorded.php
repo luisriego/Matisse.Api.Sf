@@ -9,7 +9,7 @@ use DateMalformedStringException;
 use DateTimeImmutable;
 use Symfony\Component\Uid\Uuid;
 
-final readonly class GasConsumptionWasRecorded extends DomainEvent
+final readonly class GasReadingWasRecorded extends DomainEvent
 {
     /**
      * @throws DateMalformedStringException
@@ -19,7 +19,7 @@ final readonly class GasConsumptionWasRecorded extends DomainEvent
         public string $residentUnitId,
         public int $year,
         public int $month,
-        public float $consumption,
+        public float $reading,
         ?string $eventId = null,
         ?string $occurredOn = null,
     ) {
@@ -32,7 +32,7 @@ final readonly class GasConsumptionWasRecorded extends DomainEvent
 
     public static function eventName(): string
     {
-        return 'gas.consumption.was.recorded';
+        return 'gas.reading.was.recorded';
     }
 
     public static function fromPrimitives(
@@ -46,7 +46,7 @@ final readonly class GasConsumptionWasRecorded extends DomainEvent
             $body['residentUnitId'],
             $body['year'],
             $body['month'],
-            $body['consumption'],
+            $body['reading'],
             $eventId,
             $occurredOn,
         );
@@ -58,7 +58,7 @@ final readonly class GasConsumptionWasRecorded extends DomainEvent
             'residentUnitId' => $this->residentUnitId,
             'year' => $this->year,
             'month' => $this->month,
-            'consumption' => $this->consumption,
+            'reading' => $this->reading,
         ];
     }
 }
