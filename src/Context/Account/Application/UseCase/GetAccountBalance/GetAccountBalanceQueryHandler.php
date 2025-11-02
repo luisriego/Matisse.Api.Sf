@@ -29,7 +29,7 @@ readonly class GetAccountBalanceQueryHandler implements QueryHandler
         $eventsStartDate = new DateTimeImmutable('1900-01-01'); // Default start date
 
         // 1. Find the latest InitialBalanceSet event up to the query's upToDate
-        $initialBalanceEvents = $this->eventRepository->findByEventNamesAndOccurredBetweenAndAggregateId(
+        $initialBalanceEvents = $this->eventRepository->findByEventTypesAndOccurredBetweenAndAggregateId(
             [InitialBalanceSet::eventName()],
             new DateTimeImmutable('1900-01-01'),
             $upToDate,
@@ -47,7 +47,7 @@ readonly class GetAccountBalanceQueryHandler implements QueryHandler
         }
 
         // 2. Fetch all transaction events (expenses and incomes) after the initial balance date
-        $transactionEvents = $this->eventRepository->findByEventNamesAndOccurredBetweenAndAggregateId(
+        $transactionEvents = $this->eventRepository->findByEventTypesAndOccurredBetweenAndAggregateId(
             [
                 ExpenseWasEntered::eventName(),
                 IncomeWasEntered::eventName(),

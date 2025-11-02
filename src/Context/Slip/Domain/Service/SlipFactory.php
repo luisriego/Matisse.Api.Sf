@@ -108,7 +108,7 @@ readonly class SlipFactory
         $startDate = new DateTimeImmutable(sprintf('%s-%s-01 00:00:00', $year, $month));
         $endDate = $startDate->modify('last day of this month 23:59:59');
 
-        $events = $this->storedEventRepository->findByEventNamesAndOccurredBetween(
+        $events = $this->storedEventRepository->findByEventTypesAndOccurredBetween(
             ['expense.entered', 'expense.compensated'],
             $startDate,
             $endDate,

@@ -1,0 +1,18 @@
+services:
+    _defaults:
+        autowire: true
+        autoconfigure: true
+        public: true
+
+    App\Context\Gas\Infrastructure\Http\Controller\:
+        public: true
+        resource: './Infrastructure/Http/Controller/'
+        tags: ['controller.service_arguments']
+
+    App\Context\Gas\:
+        resource: './'
+        exclude:
+            - './Domain/Entity/'
+            - './Infrastructure/Persistence/Entity/'
+            - './Infrastructure/Http/Controller/'
+            - './gas.yaml'

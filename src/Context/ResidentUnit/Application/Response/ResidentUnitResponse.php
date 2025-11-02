@@ -13,7 +13,6 @@ final class ResidentUnitResponse
         public readonly bool $isActive,
         public readonly string $createdAt,
         public readonly ?string $updatedAt,
-        public readonly array $notificationRecipients
-    ) {
-    }
+        public readonly array $notificationRecipients,
+    ) {}
 }

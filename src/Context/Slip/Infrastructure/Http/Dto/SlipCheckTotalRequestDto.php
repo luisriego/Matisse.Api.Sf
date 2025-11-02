@@ -5,8 +5,13 @@ declare(strict_types=1);
 namespace App\Context\Slip\Infrastructure\Http\Dto;
 
 use App\Context\Slip\Domain\ValueObject\SlipAmount;
-use Symfony\Component\HttpFoundation\Request;
 use App\Shared\Domain\Exception\InvalidArgumentException;
+use RuntimeException;
+use Symfony\Component\HttpFoundation\Request;
+
+use function is_numeric;
+use function json_decode;
+use function round;
 
 class SlipCheckTotalRequestDto
 {
@@ -28,9 +33,8 @@ class SlipCheckTotalRequestDto
 
             // Aquí está la magia: creamos el objeto y lo asignamos.
             $dto->amount = new SlipAmount($intValue);
-
         } catch (InvalidArgumentException $e) {
-            throw new \RuntimeException("Erro de validação do DTO: " . $e->getMessage(), 0, $e);
+            throw new RuntimeException('Erro de validação do DTO: ' . $e->getMessage(), 0, $e);
         }
 
         return $dto;

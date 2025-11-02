@@ -9,7 +9,7 @@ use App\Context\Account\Domain\Bus\InitialBalanceSet;
 use App\Shared\Application\CommandHandler;
 use App\Shared\Application\EventStore;
 
- // Changed from EventBus
+// Changed from EventBus
 
 readonly class SetInitialBalanceCommandHandler implements CommandHandler
 {

@@ -9,9 +9,8 @@ use App\Context\Slip\Domain\ValueObject\SlipAmount;
 class CheckSlipTotalAnomalyCommand
 {
     public function __construct(
-        private SlipAmount $amount // <-- El constructor DEBE esperar un objeto SlipAmount
-    ) {
-    }
+        private SlipAmount $amount, // <-- El constructor DEBE esperar un objeto SlipAmount
+    ) {}
 
     public function getAmount(): SlipAmount // <-- El método DEBE devolver un objeto SlipAmount
     {

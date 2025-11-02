@@ -17,7 +17,7 @@ final class ResidentUnitResponseConverter
             $residentUnit->isActive(),
             $residentUnit->createdAt()->format('Y-m-d H:i:s'),
             $residentUnit->updatedAt() ? $residentUnit->updatedAt()->format('Y-m-d H:i:s') : null,
-            $residentUnit->notificationRecipients()
+            $residentUnit->notificationRecipients(),
         );
     }
 }

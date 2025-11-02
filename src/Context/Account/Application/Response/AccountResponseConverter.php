@@ -15,7 +15,7 @@ class AccountResponseConverter
             $account->code(),
             $account->name(),
             $account->description(),
-            $account->isActive()
+            $account->isActive(),
         );
     }
 }

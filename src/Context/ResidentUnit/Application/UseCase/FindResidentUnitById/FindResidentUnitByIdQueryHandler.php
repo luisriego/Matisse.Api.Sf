@@ -15,9 +15,8 @@ final readonly class FindResidentUnitByIdQueryHandler implements QueryHandler
 {
     public function __construct(
         private ResidentUnitRepository $repository,
-        private ResidentUnitResponseConverter $converter
-    ) {
-    }
+        private ResidentUnitResponseConverter $converter,
+    ) {}
 
     public function __invoke(FindResidentUnitByIdQuery $query): ResidentUnitResponse
     {

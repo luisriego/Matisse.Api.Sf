@@ -47,7 +47,7 @@ class SlipFactoryTest extends TestCase
 
 
         // Configura el mock de storedEventRepository para que no devuelva eventos de gas por defecto
-        $this->storedEventRepository->method('findByEventNamesAndOccurredBetween')->willReturn([]);
+        $this->storedEventRepository->method('findByEventTypesAndOccurredBetween')->willReturn([]);
 
         // Instancia SlipFactory con los mocks correctos
         $this->factory = new SlipFactory(

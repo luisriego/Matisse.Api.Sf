@@ -36,17 +36,23 @@ class DoctrineStoreEventRepository extends ServiceEntityRepository implements St
         return $this->findBy(['aggregateId' => $aggregateId], ['occurredAt' => 'ASC']);
     }
 
-    // Implementación modificada de StoredEventRepository::findByEventNamesAndOccurredBetween
-    public function findByEventNamesAndOccurredBetween(
-        array $eventNames,
+    public function findByEventType(string $eventType): array
+    {
+        return $this->findBy(['eventType' => $eventType], ['occurredAt' => 'ASC']);
+
+    }
+
+    // Implementación modificada de StoredEventRepository::findByEventTypesAndOccurredBetween
+    public function findByEventTypesAndOccurredBetween(
+        array $eventTypes,
         DateTimeImmutable $startDate,
         ?DateTimeImmutable $endDate = null,
     ): array {
         $qb = $this->createQueryBuilder('e');
 
-        $qb->where($qb->expr()->in('e.eventType', ':names')) // Corregido: e.name a e.eventType
+        $qb->where($qb->expr()->in('e.eventType', ':names'))
             ->andWhere('e.occurredAt >= :start')
-            ->setParameter('names', $eventNames)
+            ->setParameter('names', $eventTypes)
             ->setParameter('start', $startDate)
             ->orderBy('e.occurredAt', 'ASC');
 
@@ -58,8 +64,8 @@ class DoctrineStoreEventRepository extends ServiceEntityRepository implements St
         return $qb->getQuery()->getResult();
     }
 
-    public function findByEventNamesAndOccurredBetweenAndAggregateId(
-        array $eventNames,
+    public function findByEventTypesAndOccurredBetweenAndAggregateId(
+        array $eventTypes,
         DateTimeImmutable $startDate,
         ?DateTimeImmutable $endDate,
         string $aggregateId,
@@ -69,7 +75,7 @@ class DoctrineStoreEventRepository extends ServiceEntityRepository implements St
         $qb->where($qb->expr()->in('e.eventType', ':names'))
             ->andWhere('e.occurredAt >= :start')
             ->andWhere('e.aggregateId = :aggregateId')
-            ->setParameter('names', $eventNames)
+            ->setParameter('names', $eventTypes)
             ->setParameter('start', $startDate)
             ->setParameter('aggregateId', $aggregateId)
             ->orderBy('e.occurredAt', 'ASC');
@@ -91,6 +97,7 @@ class DoctrineStoreEventRepository extends ServiceEntityRepository implements St
             $event->toPrimitives(),
         );
 
-        $this->getEntityManager()->persist($storedEvent);
+        // Llamar al método save para asegurar la persistencia y el flush
+        $this->save($storedEvent, true);
     }
 }
