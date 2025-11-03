@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace App\Context\Gas\Domain\ValueObject;
 
+use App\Shared\Domain\Exception\InvalidArgumentException;
 use App\Shared\Domain\ValueObject\IntValueObject;
-use DomainException;
 
 final class CylinderCapacity extends IntValueObject
 {
@@ -25,7 +25,7 @@ final class CylinderCapacity extends IntValueObject
     private function ensureIsGreaterThanZero(int $value): void
     {
         if ($value <= 0) {
-            throw new DomainException('CylinderCapacity must be greater than zero.');
+            throw new InvalidArgumentException('CylinderCapacity must be greater than zero.');
         }
     }
 }

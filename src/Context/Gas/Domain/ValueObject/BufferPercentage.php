@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace App\Context\Gas\Domain\ValueObject;
 
+use App\Shared\Domain\Exception\InvalidArgumentException;
 use App\Shared\Domain\ValueObject\IntValueObject;
-use DomainException;
 
 final class BufferPercentage extends IntValueObject
 {
@@ -23,7 +23,7 @@ final class BufferPercentage extends IntValueObject
     private function ensureIsWithinRange(int $value): void
     {
         if ($value < 0 || $value > 100) {
-            throw new DomainException('BufferPercentage must be between 0 and 100.');
+            throw new InvalidArgumentException('BufferPercentage must be between 0 and 100.');
         }
     }
 }

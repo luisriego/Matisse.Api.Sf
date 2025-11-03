@@ -10,12 +10,6 @@ final class CylinderCapacityMother
 {
     public static function create(?int $value = null): CylinderCapacity
     {
-        return new CylinderCapacity($value ?? 45);
-    }
-
-    public static function random(): CylinderCapacity
-    {
-        $commonSizes = [5, 8, 13, 20, 45];
-        return self::create($commonSizes[array_rand($commonSizes)]);
+        return new CylinderCapacity($value ?? 100); // Usar un int
     }
 }
