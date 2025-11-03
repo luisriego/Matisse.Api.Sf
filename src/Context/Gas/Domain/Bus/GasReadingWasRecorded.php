@@ -20,6 +20,7 @@ final readonly class GasReadingWasRecorded extends DomainEvent
         public int $year,
         public int $month,
         public float $reading,
+        public ?int $price,
         ?string $eventId = null,
         ?string $occurredOn = null,
     ) {
@@ -47,6 +48,7 @@ final readonly class GasReadingWasRecorded extends DomainEvent
             $body['year'],
             $body['month'],
             $body['reading'],
+            $body['price'],
             $eventId,
             $occurredOn,
         );
@@ -59,6 +61,7 @@ final readonly class GasReadingWasRecorded extends DomainEvent
             'year' => $this->year,
             'month' => $this->month,
             'reading' => $this->reading,
+            'price' => $this->price,
         ];
     }
 }

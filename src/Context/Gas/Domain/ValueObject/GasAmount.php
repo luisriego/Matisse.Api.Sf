@@ -15,9 +15,9 @@ final class GasAmount extends IntValueObject
         parent::__construct($value);
     }
 
-    public function toFloat(): float
+    public function toInt(): int
     {
-        return $this->value / 100;
+        return $this->value;
     }
 
     private function ensureIsGreaterThanZero(int $value): void

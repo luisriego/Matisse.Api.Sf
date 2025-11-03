@@ -44,10 +44,8 @@ class DefineGasPriceCommandHandlerTest extends TestCase
             $bufferPercentage
         );
 
-        $expectedPricePerM3 = (
-            (new GasAmount($billAmountInCents))->toFloat() /
-            (new CylinderCapacity($cylinderCapacityInKg))->toM3()
-        ) * (1 + (new BufferPercentage($bufferPercentage))->toFactor());
+        $expectedPricePerM3 = (int) ((($billAmountInCents * 2) / $cylinderCapacityInKg));
+        $expectedPricePerM3 += (int) (($expectedPricePerM3 * $bufferPercentage) / 100);
 
         $this->eventBus
             ->expects(self::once())
@@ -68,10 +66,8 @@ class DefineGasPriceCommandHandlerTest extends TestCase
     {
         $command = DefineGasPriceCommandMother::create(billAmountInCents: 10000, cylinderCapacityInKg: null, bufferPercentage: null);
 
-        $expectedPricePerM3 = (
-            (new GasAmount(10000))->toFloat() /
-            (new CylinderCapacity(45))->toM3()
-        ) * (1 + (new BufferPercentage(10))->toFactor());
+        $expectedPricePerM3 = (int) (((10000 * 2) / 45));
+        $expectedPricePerM3 += (int) (($expectedPricePerM3 * 10) / 100);
 
         $this->eventBus
             ->expects(self::once())
@@ -100,10 +96,7 @@ class DefineGasPriceCommandHandlerTest extends TestCase
             $bufferPercentage
         );
 
-        $expectedPricePerM3 = (
-            (new GasAmount($billAmountInCents))->toFloat() /
-            (new CylinderCapacity($cylinderCapacityInKg))->toM3()
-        ) * (1 + (new BufferPercentage($bufferPercentage))->toFactor());
+        $expectedPricePerM3 = (int) ((($billAmountInCents * 2) / $cylinderCapacityInKg));
 
         $this->eventBus
             ->expects(self::once())
@@ -132,10 +125,8 @@ class DefineGasPriceCommandHandlerTest extends TestCase
             $bufferPercentage
         );
 
-        $expectedPricePerM3 = (
-            (new GasAmount($billAmountInCents))->toFloat() /
-            (new CylinderCapacity($cylinderCapacityInKg))->toM3()
-        ) * (1 + (new BufferPercentage($bufferPercentage))->toFactor());
+        $expectedPricePerM3 = (int) ((($billAmountInCents * 2) / $cylinderCapacityInKg));
+        $expectedPricePerM3 += (int) (($expectedPricePerM3 * $bufferPercentage) / 100);
 
         $this->eventBus
             ->expects(self::once())

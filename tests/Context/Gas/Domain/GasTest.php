@@ -39,13 +39,15 @@ class GasTest extends TestCase
         $year = YearMother::create();
         $month = MonthMother::create();
         $reading = ReadingInM3Mother::create();
+        $price = 123;
 
         $gas = Gas::recordReading(
             $id,
             $residentUnitId,
             $year,
             $month,
-            $reading
+            $reading,
+            $price
         );
 
         $this->assertInstanceOf(Gas::class, $gas);
@@ -59,6 +61,7 @@ class GasTest extends TestCase
         $this->assertSame($year->value(), $events[0]->year);
         $this->assertSame($month->value(), $events[0]->month);
         $this->assertSame($reading->value(), $events[0]->reading);
+        $this->assertSame($price, $events[0]->price);
     }
 
     /**
@@ -78,10 +81,11 @@ class GasTest extends TestCase
 
         $this->assertInstanceOf(Gas::class, $gas);
         $this->assertNotNull($gas->id());
-        $this->assertIsFloat($gas->pricePerM3());
+        $this->assertIsInt($gas->pricePerM3());
 
         // Recalculate expected price based on default values and conversions
-        $expectedPricePerM3 = ($amount->toFloat() / $capacity->toM3()) * (1 + $buffer->toFactor());
+        $expectedPricePerM3 = (int) (($amount->toInt() * 2) / $capacity->value());
+        $expectedPricePerM3 += (int) (($expectedPricePerM3 * $buffer->value()) / 100);
         $this->assertEquals($expectedPricePerM3, $gas->pricePerM3());
 
         $events = $gas->pullDomainEvents();
