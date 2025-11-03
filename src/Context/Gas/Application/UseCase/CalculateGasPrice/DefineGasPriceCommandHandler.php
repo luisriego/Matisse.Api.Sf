@@ -10,6 +10,7 @@ use App\Context\Gas\Domain\ValueObject\CylinderCapacity;
 use App\Context\Gas\Domain\ValueObject\GasAmount;
 use App\Shared\Application\CommandHandler;
 use App\Shared\Domain\Event\EventBus;
+use DateMalformedStringException;
 
 final class DefineGasPriceCommandHandler implements CommandHandler
 {
@@ -19,7 +20,7 @@ final class DefineGasPriceCommandHandler implements CommandHandler
     public function __construct(private readonly EventBus $eventBus) {}
 
     /**
-     * @throws \DateMalformedStringException
+     * @throws DateMalformedStringException
      */
     public function __invoke(DefineGasPriceCommand $command): void
     {
