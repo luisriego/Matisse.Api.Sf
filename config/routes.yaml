@@ -2,24 +2,3 @@
 context_routes:
     resource: '../src/Context/*/Infrastructure/Http/routes.yaml'
     type: glob
-#
-#account-routes:
-#    resource: '../src/Context/Account/Infrastructure/Http/routes.yaml'
-#
-#resident_unit_routes:
-#    resource: '../src/Context/ResidentUnit/Infrastructure/Http/routes.yaml'
-#
-#expense_routes:
-#    resource: '../src/Context/Expense/Infrastructure/Http/routes.yaml'
-#
-#income_routes:
-#    resource: '../src/Context/Income/Infrastructure/Http/routes.yaml'
-#
-#slip_routes:
-#    resource: '../src/Context/Slip/Infrastructure/Http/routes.yaml'
-#
-#user_routes:
-#    resource: '../src/Context/User/Infrastructure/Http/routes.yaml'
-#
-#gas_routes:
-#    resource: '../src/Context/Gas/Infrastructure/Http/routes.yaml'

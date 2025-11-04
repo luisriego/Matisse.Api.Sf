@@ -10,14 +10,18 @@ use App\Context\Gas\Domain\ValueObject\CylinderCapacity;
 use App\Context\Gas\Domain\ValueObject\GasAmount;
 use App\Shared\Application\CommandHandler;
 use App\Shared\Domain\Event\EventBus;
+use DateMalformedStringException;
 
 final class DefineGasPriceCommandHandler implements CommandHandler
 {
-    private const DEFAULT_CYLINDER_CAPACITY_KG = 45;
-    private const DEFAULT_BUFFER_PERCENTAGE = 10;
+    private const int DEFAULT_CYLINDER_CAPACITY_KG = 45;
+    private const int DEFAULT_BUFFER_PERCENTAGE = 10;
 
     public function __construct(private readonly EventBus $eventBus) {}
 
+    /**
+     * @throws DateMalformedStringException
+     */
     public function __invoke(DefineGasPriceCommand $command): void
     {
         $amount = new GasAmount($command->getBillAmountInCents());
