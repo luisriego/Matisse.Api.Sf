@@ -19,7 +19,7 @@
         <server name="SHELL_VERBOSITY" value="-1" />
         <env name="SYMFONY_DEPRECATIONS_HELPER" value="disabled" />
         <env name="KERNEL_CLASS" value="App\Kernel"/>
-        <env name="DATABASE_URL" value="sqlite:///%kernel.project_dir%/var/data_test.db" />
+<!--        <env name="DATABASE_URL" value="sqlite:///%kernel.project_dir%/var/data_test.db" />-->
     </php>
 
     <testsuites>
