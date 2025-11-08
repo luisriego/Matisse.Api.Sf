@@ -47,6 +47,12 @@ jobs:
             - name: Install dependencies
               run: composer install --prefer-dist --no-progress --no-suggest
 
+            - name: Check Coding Standards (PHP-CS-Fixer)
+              run: composer analyze:standards
+
+            - name: Run Static Analysis (PHPStan)
+              run: composer analyze:phpstan
+
             - name: Create database schema
               env:
                   # Esta URL debe coincidir con los datos del servicio 'postgres'
