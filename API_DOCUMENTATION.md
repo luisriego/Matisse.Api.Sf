@@ -17,6 +17,7 @@ The API is organized into the following Bounded Contexts, each representing a sp
 - [Account](#account)
 - [Expense](#expense)
 - [Income](#income)
+- [Gas](#gas)
 - [ResidentUnit](#resident-unit)
 - [Slip](#slip)
 - [User](#user)
@@ -670,6 +671,62 @@ Retrieves a list of all incomes.
   }
 ]
 ```
+
+---
+
+## Gas
+
+The Gas context manages gas readings and price calculations.
+
+### `PUT /api/v1/gas/price`
+
+Calculates and defines the gas price based on the total bill amount.
+
+**Request Body:**
+
+```json
+{
+  "billAmountInCents": 51000
+}
+```
+
+**Parameters:**
+
+-   `billAmountInCents` (integer, required): The total amount of the gas bill in cents.
+
+**Responses:**
+
+-   `201 Created`: The gas price was calculated and defined successfully.
+-   `400 Bad Request`: The request was malformed or validation failed.
+
+### `PUT /api/v1/gas/reading`
+
+Records a new gas reading for a specific resident unit and period.
+
+**Request Body:**
+
+```json
+{
+  "id": "a0eebc99-9c0b-4ef8-bb6d-6bb9bd380a11",
+  "residentUnitId": "a0eebc99-9c0b-4ef8-bb6d-6bb9bd380a12",
+  "year": 2024,
+  "month": 11,
+  "reading": 150.7
+}
+```
+
+**Parameters:**
+
+-   `id` (string, required): The unique identifier for the gas reading (UUID format).
+-   `residentUnitId` (string, required): The ID of the resident unit associated with the reading.
+-   `year` (integer, required): The year of the reading.
+-   `month` (integer, required): The month of the reading (1-12).
+-   `reading` (float, required): The gas meter reading value.
+
+**Responses:**
+
+-   `201 Created`: The gas reading was recorded successfully.
+-   `400 Bad Request`: The request was malformed or validation failed.
 
 ---
 
