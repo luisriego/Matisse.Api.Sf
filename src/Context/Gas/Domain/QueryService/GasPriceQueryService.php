@@ -11,6 +11,6 @@ interface GasPriceQueryService
 {
     public function getPricePerM3(
         Year $year,
-        Month $month
+        Month $month,
     ): ?float;
 }

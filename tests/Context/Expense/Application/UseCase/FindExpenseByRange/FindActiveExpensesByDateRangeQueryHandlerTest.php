@@ -13,16 +13,19 @@ use App\Tests\Shared\Domain\DateRangeMother;
 use Mockery;
 use Mockery\MockInterface;
 use PHPUnit\Framework\TestCase;
+use Symfony\Component\Serializer\SerializerInterface;
 
 class FindActiveExpensesByDateRangeQueryHandlerTest extends TestCase
 {
     private ExpenseRepository|MockInterface $repository;
+    private SerializerInterface|MockInterface $serializer;
     private FindActiveExpensesByDateRangeQueryHandler $handler;
 
     protected function setUp(): void
     {
         $this->repository = Mockery::mock(ExpenseRepository::class);
-        $this->handler = new FindActiveExpensesByDateRangeQueryHandler($this->repository);
+        $this->serializer = Mockery::mock(SerializerInterface::class);
+        $this->handler = new FindActiveExpensesByDateRangeQueryHandler($this->repository, $this->serializer);
     }
 
     protected function tearDown(): void
@@ -37,12 +40,22 @@ class FindActiveExpensesByDateRangeQueryHandlerTest extends TestCase
         $activeExpense1 = ExpenseMother::create();
         $activeExpense2 = ExpenseMother::create();
         $activeExpenses = [$activeExpense1, $activeExpense2];
+        $activeExpensesArray = [
+            ['id' => $activeExpense1->id()],
+            ['id' => $activeExpense2->id()],
+        ];
 
         $this->repository
             ->shouldReceive('findActiveByDateRange')
             ->once()
             ->with($dateRange)
             ->andReturn($activeExpenses);
+
+        $this->serializer
+            ->shouldReceive('normalize')
+            ->once()
+            ->with($activeExpenses)
+            ->andReturn($activeExpensesArray);
 
         $query = new FindActiveExpensesByDateRangeQuery($dateRange);
 
@@ -52,8 +65,7 @@ class FindActiveExpensesByDateRangeQueryHandlerTest extends TestCase
         // Assert
         $this->assertIsArray($result);
         $this->assertCount(2, $result);
-        $this->assertEquals($activeExpense1->toArray(), $result[0]);
-        $this->assertEquals($activeExpense2->toArray(), $result[1]);
+        $this->assertEquals($activeExpensesArray, $result);
     }
 
     public function testFindActiveExpensesByDateRangeEmptyResult(): void
@@ -65,6 +77,12 @@ class FindActiveExpensesByDateRangeQueryHandlerTest extends TestCase
             ->shouldReceive('findActiveByDateRange')
             ->once()
             ->with($dateRange)
+            ->andReturn([]);
+
+        $this->serializer
+            ->shouldReceive('normalize')
+            ->once()
+            ->with([])
             ->andReturn([]);
 
         $query = new FindActiveExpensesByDateRangeQuery($dateRange);
@@ -88,14 +106,20 @@ class FindActiveExpensesByDateRangeQueryHandlerTest extends TestCase
             null, null, null,
             new ExpenseDueDate(new \DateTime("2025-07-15"))
         );
-
         $activeExpenses = [$activeExpense];
+        $activeExpenseArray = [['id' => $activeExpense->id()]];
 
         $this->repository
             ->shouldReceive('findActiveByDateRange')
             ->once()
             ->with($dateRange)
             ->andReturn($activeExpenses);
+
+        $this->serializer
+            ->shouldReceive('normalize')
+            ->once()
+            ->with($activeExpenses)
+            ->andReturn($activeExpenseArray);
 
         $query = new FindActiveExpensesByDateRangeQuery($dateRange);
 
@@ -105,7 +129,7 @@ class FindActiveExpensesByDateRangeQueryHandlerTest extends TestCase
         // Assert
         $this->assertIsArray($result);
         $this->assertCount(1, $result);
-        $this->assertEquals($activeExpense->toArray(), $result[0]);
+        $this->assertEquals($activeExpenseArray, $result);
     }
 
     public function testFindActiveExpensesByDateRangeCallsRepositoryOnce(): void
@@ -119,6 +143,11 @@ class FindActiveExpensesByDateRangeQueryHandlerTest extends TestCase
             ->once()
             ->with($dateRange)
             ->andReturn($activeExpenses);
+
+        $this->serializer
+            ->shouldReceive('normalize')
+            ->once()
+            ->andReturn([]);
 
         $query = new FindActiveExpensesByDateRangeQuery($dateRange);
 

@@ -253,25 +253,6 @@ class User extends AggregateRoot implements UserInterface, PasswordAuthenticated
         return $this;
     }
 
-    public function toArray(): array
-    {
-        return [
-            'id' => $this->id,
-            'email' => $this->email,
-            'name' => $this->name,
-            'lastName' => $this->lastName,
-            'gender' => $this->gender,
-            'phoneNumber' => $this->phoneNumber,
-            'roles' => $this->roles,
-            'isActive' => $this->isActive,
-            'passwordResetToken' => $this->passwordResetToken,
-            'passwordResetRequestedAt' => $this->passwordResetRequestedAt,
-            'createdAt' => $this->createdAt,
-            'updatedAt' => $this->updatedAt,
-            'residentUnit' => $this->residentUnit?->toArray(),
-        ];
-    }
-
     public function equals(User $user): bool
     {
         return $this->getId() === $user->getId();

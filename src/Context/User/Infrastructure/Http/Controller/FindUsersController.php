@@ -10,12 +10,14 @@ use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Messenger\MessageBusInterface;
 use Symfony\Component\Messenger\Stamp\HandledStamp;
-
-use function array_map;
+use Symfony\Component\Serializer\SerializerInterface;
 
 final class FindUsersController extends AbstractController
 {
-    public function __construct(private readonly MessageBusInterface $queryBus) {}
+    public function __construct(
+        private readonly MessageBusInterface $queryBus,
+        private readonly SerializerInterface $serializer,
+    ) {}
 
     public function __invoke(): JsonResponse
     {
@@ -27,7 +29,7 @@ final class FindUsersController extends AbstractController
         /** @var array|null $users */
         $users = $stamp->getResult();
 
-        $usersAsArray = array_map(static fn ($user) => $user->toArray(), $users);
+        $usersAsArray = $this->serializer->normalize($users);
 
         return new JsonResponse($usersAsArray, Response::HTTP_OK);
     }

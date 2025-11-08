@@ -10,10 +10,14 @@ use App\Context\Expense\Infrastructure\Http\Dto\EnterExpenseRequestDto;
 use DateMalformedStringException;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\Serializer\SerializerInterface;
 
 final readonly class ExpenseEnterPutController
 {
-    public function __construct(private EnterExpenseCommandHandler $commandHandler) {}
+    public function __construct(
+        private EnterExpenseCommandHandler $commandHandler,
+        private SerializerInterface $serializer,
+    ) {}
 
     /**
      * @throws DateMalformedStringException
@@ -33,6 +37,8 @@ final readonly class ExpenseEnterPutController
 
         $expense = $this->commandHandler->__invoke($command);
 
-        return new JsonResponse($expense->toArray(), Response::HTTP_CREATED);
+        $data = $this->serializer->normalize($expense);
+
+        return new JsonResponse($data, Response::HTTP_CREATED);
     }
 }

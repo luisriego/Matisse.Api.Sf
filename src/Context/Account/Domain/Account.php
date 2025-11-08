@@ -140,15 +140,4 @@ class Account extends AggregateRoot
     {
         $this->updatedAt = new DateTime();
     }
-
-    public function toArray(): array
-    {
-        return [
-            'id' => $this->id,
-            'code' => $this->code,
-            'name' => $this->name,
-            'description' => $this->description,
-            'isActive' => $this->isActive,
-        ];
-    }
 }

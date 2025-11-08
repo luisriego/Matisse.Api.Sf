@@ -1,0 +1,27 @@
+# Ficheros y directorios a excluir del despliegue
+/.git
+/tests
+/var/cache/*
+!/var/cache/.gitkeep
+/var/log/*
+!/var/log/.gitkeep
+/vendor
+.env.local
+.env.*.local
+/phpunit.xml.dist
+/migrations/*.php
+!/migrations/Version*.php
+/public/build/
+/.idea/
+/.DS_Store
+/.editorconfig
+/.php-cs-fixer.cache
+/.phpunit.result.cache
+/README.md
+/composer.lock
+/docker-compose.yml
+/docker-compose.override.yml
+/Dockerfile
+/.github
+/assets/
+/node_modules/

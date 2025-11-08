@@ -26,3 +26,6 @@ services:
     App\Shared\Infrastructure\Bus\SymfonyEventBus:
         arguments:
             - '@event.bus'
+
+    App\Context\ResidentUnit\Infrastructure\Symfony\Normalizer\ResidentUnitNormalizer:
+        tags: [serializer.normalizer]

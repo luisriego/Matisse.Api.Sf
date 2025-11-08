@@ -14,6 +14,6 @@ interface GasReadingQueryService
     public function getPreviousMonthReading(
         ResidentUnitId $residentUnitId,
         Year $year,
-        Month $month
+        Month $month,
     ): ?ReadingInM3;
 }

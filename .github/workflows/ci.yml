@@ -1,0 +1,71 @@
+name: Continuous Integration
+
+on:
+    push:
+        branches: [ "main", "develop" ]
+    pull_request:
+        branches: [ "main" ]
+
+jobs:
+    build:
+        runs-on: ubuntu-latest
+
+        services:
+            postgres:
+                image: postgres:15-alpine
+                env:
+                    POSTGRES_DB: test_db
+                    POSTGRES_USER: test_user
+                    POSTGRES_PASSWORD: test_password
+                ports:
+                    - 5432:5432
+                options: >-
+                    --health-cmd pg_isready
+                    --health-interval 10s
+                    --health-timeout 5s
+                    --health-retries 5
+
+        steps:
+            - name: Checkout code
+              uses: actions/checkout@v4
+
+            - name: Setup PHP
+              uses: shivammathur/setup-php@v2
+              with:
+                  php-version: '8.3'
+                  extensions: pdo, pdo_pgsql
+                  tools: composer:v2
+
+            - name: Cache Composer dependencies
+              uses: actions/cache@v4
+              with:
+                  path: ~/.composer/cache/files
+                  key: ${{ runner.os }}-composer-${{ hashFiles('**/composer.lock') }}
+                  restore-keys: |
+                      ${{ runner.os }}-composer-
+
+            - name: Install dependencies
+              run: composer install --prefer-dist --no-progress --no-suggest --dev
+
+            - name: Check Coding Standards (PHP-CS-Fixer)
+              run: composer analyze:standards
+
+            - name: Create database schema
+              env:
+                  # Esta URL debe coincidir con los datos del servicio 'postgres'
+                  DATABASE_URL: "postgresql://test_user:test_password@127.0.0.1:5432/test_db?serverVersion=15&charset=utf8"
+              run: |
+                  php bin/console doctrine:database:create --if-not-exists --env=test
+                  php bin/console doctrine:schema:create --env=test
+
+            - name: Generate JWT keys for test environment
+              env:
+                # Usamos una passphrase simple para el entorno de test
+                JWT_PASSPHRASE: test
+              run: php bin/console lexik:jwt:generate-keypair --skip-if-exists --env=test
+
+            - name: Run tests
+              env:
+                  DATABASE_URL: "postgresql://test_user:test_password@127.0.0.1:5432/test_db?serverVersion=15&charset=utf8"
+                  JWT_PASSPHRASE: test
+              run: php bin/phpunit

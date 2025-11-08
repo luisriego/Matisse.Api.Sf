@@ -156,17 +156,4 @@ class ResidentUnit extends AggregateRoot
 
         return $this;
     }
-
-    public function toArray(): array
-    {
-        return [
-            'id' => $this->id,
-            'unit' => $this->unit,
-            'idealFraction' => $this->idealFraction,
-            'isActive' => $this->isActive(),
-            'createdAt' => $this->createdAt()->format('Y-m-d H:i:s'),
-            'updatedAt' => $this->updatedAt() ? $this->updatedAt()->format('Y-m-d H:i:s') : null,
-            'notificationRecipients' => $this->notificationRecipients(),
-        ];
-    }
 }

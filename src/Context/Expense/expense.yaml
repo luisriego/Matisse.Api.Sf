@@ -20,3 +20,9 @@ services:
         arguments:
             $textGenerator: '@App\Shared\Application\TextGeneratorInterface'
             $logger: '@logger'
+
+    App\Context\Expense\Infrastructure\Symfony\Normalizer\ExpenseNormalizer:
+        tags: [serializer.normalizer]
+
+    App\Context\Expense\Infrastructure\Symfony\Normalizer\ExpenseTypeNormalizer:
+        tags: [serializer.normalizer]

@@ -85,9 +85,6 @@
         ],
         "fix:standards": [
             "tools/php-cs-fixer/vendor/bin/php-cs-fixer fix src --verbose --show-progress=dots"
-        ],
-        "analyze:phpstan": [
-            "vendor/bin/phpstan analyse -c phpstan.dist.neon"
         ]
     },
     "conflict": {
