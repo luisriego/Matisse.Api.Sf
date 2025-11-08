@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace App\Context\Gas\Infrastructure\Http\Controller;
 
-use App\Context\Gas\Application\UseCase\RecordGasReading\RecordGasReadingCommandHandler;
 use App\Context\Gas\Infrastructure\Http\Dto\RecordGasReadingRequestDto;
 use App\Shared\Domain\Exception\InvalidArgumentException;
 use App\Shared\Infrastructure\Symfony\ApiController;

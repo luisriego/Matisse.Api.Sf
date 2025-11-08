@@ -4,11 +4,14 @@ declare(strict_types=1);
 
 namespace App\Tests\Context\Income\Infrastructure\Http\Controller;
 
+use App\Context\EventStore\Domain\StoredEventRepository;
 use App\Tests\Context\Income\Domain\IncomeTypeMother;
 use App\Tests\Context\ResidentUnit\Domain\ResidentUnitMother;
 use App\Tests\Shared\Domain\UuidMother;
 use App\Tests\Shared\Infrastructure\PhpUnit\ApiTestCase;
 use DateTimeImmutable;
+use Doctrine\ORM\Exception\ORMException;
+use Doctrine\ORM\OptimisticLockException;
 use Symfony\Component\HttpFoundation\Response;
 
 final class IncomeEnterPutControllerTest extends ApiTestCase
@@ -19,6 +22,11 @@ final class IncomeEnterPutControllerTest extends ApiTestCase
         $this->createAuthenticatedClient();
     }
 
+    /**
+     * @throws \DateMalformedStringException
+     * @throws OptimisticLockException
+     * @throws ORMException
+     */
     public function test_it_should_enter_income_and_store_event(): void
     {
         $incomeId = UuidMother::create();
@@ -49,5 +57,14 @@ final class IncomeEnterPutControllerTest extends ApiTestCase
         );
 
         $this->assertResponseStatusCodeSame(Response::HTTP_CREATED);
+
+        $container = self::getContainer();
+
+        /** @var StoredEventRepository $storedEventRepository */
+        $storedEventRepository = $container->get(StoredEventRepository::class);
+        $events = $storedEventRepository->findByEventType('income.entered');
+
+        $this->assertCount(1, $events);
+        $this->assertEquals('income.entered', $events[0]->eventType());
     }
 }

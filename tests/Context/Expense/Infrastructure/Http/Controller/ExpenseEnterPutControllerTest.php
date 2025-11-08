@@ -4,10 +4,13 @@ declare(strict_types=1);
 
 namespace App\Tests\Context\Expense\Infrastructure\Http\Controller;
 
+use App\Context\EventStore\Domain\StoredEventRepository;
 use App\Tests\Context\Account\Domain\AccountMother;
 use App\Tests\Context\Expense\Domain\ExpenseTypeMother;
 use App\Tests\Shared\Domain\UuidMother;
 use App\Tests\Shared\Infrastructure\PhpUnit\ApiTestCase;
+use Doctrine\ORM\Exception\ORMException;
+use Doctrine\ORM\OptimisticLockException;
 use Symfony\Component\HttpFoundation\Response;
 
 final class ExpenseEnterPutControllerTest extends ApiTestCase
@@ -18,6 +21,10 @@ final class ExpenseEnterPutControllerTest extends ApiTestCase
         $this->createAuthenticatedClient();
     }
 
+    /**
+     * @throws OptimisticLockException
+     * @throws ORMException
+     */
     public function test_it_should_enter_expense_and_store_event(): void
     {
         $expenseId = UuidMother::create();
@@ -47,5 +54,14 @@ final class ExpenseEnterPutControllerTest extends ApiTestCase
         );
 
         $this->assertResponseStatusCodeSame(Response::HTTP_CREATED);
+
+        $container = self::getContainer();
+
+        /** @var StoredEventRepository $storedEventRepository */
+        $storedEventRepository = $container->get(StoredEventRepository::class);
+        $events = $storedEventRepository->findByEventType('expense.entered');
+
+        $this->assertCount(1, $events);
+        $this->assertEquals('expense.entered', $events[0]->eventType());
     }
 }
