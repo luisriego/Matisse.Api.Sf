@@ -38,7 +38,7 @@ class Expense extends AggregateRoot
         DateTime $dueDate,
         ?bool $isActive = true,
         ?string $description = null,
-        ?string $residentUnitId = null, // Added parameter
+        ?string $residentUnitId = null,
     ) {
         $this->id = $id;
         $this->amount = $amount;
@@ -48,7 +48,7 @@ class Expense extends AggregateRoot
         $this->isActive = $isActive;
         $this->description = $description;
         $this->createdAt = new DateTimeImmutable();
-        $this->residentUnitId = $residentUnitId; // Assigned property
+        $this->residentUnitId = $residentUnitId;
     }
 
     /**
@@ -102,7 +102,7 @@ class Expense extends AggregateRoot
             type: $this->type->id(),
             accountId: $this->account->id(),
             dueDate: $this->dueDate->format('Y-m-d'),
-            residentUnitId: $this->residentUnitId, // Passed parameter to event
+            residentUnitId: $this->residentUnitId,
         );
 
         $this->record($event);
@@ -159,7 +159,7 @@ class Expense extends AggregateRoot
         return $this->residentUnitId;
     }
 
-    public function setResidentUnitId(?string $residentUnitId): void // Added setter
+    public function setResidentUnitId(?string $residentUnitId): void
     {
         $this->residentUnitId = $residentUnitId;
     }
@@ -213,22 +213,6 @@ class Expense extends AggregateRoot
     public function recurringExpense(): ?RecurringExpense
     {
         return $this->recurringExpense;
-    }
-
-    public function toArray(): array
-    {
-        return [
-            'id' => $this->id,
-            'amount' => $this->amount,
-            'description' => $this->description,
-            'dueDate' => $this->dueDate->format('Y-m-d H:i:s'),
-            'paidAt' => $this->paidAt?->format('Y-m-d H:i:s'),
-            'createdAt' => $this->createdAt->format('Y-m-d H:i:s'),
-            'residentUnitId' => $this->residentUnitId,
-            'type' => $this->type?->toArray(),
-            'account' => $this->account->toArray(),
-            'recurringExpense' => $this->recurringExpense?->id(),
-        ];
     }
 
     private function applyExpenseWasCompensated(ExpenseWasCompensated $event): void

@@ -12,37 +12,19 @@ use App\Context\Expense\Domain\ValueObject\ExpenseTypeDistributionMethod;
 use App\Context\Expense\Domain\ValueObject\ExpenseTypeId;
 use App\Context\Expense\Domain\ValueObject\ExpenseTypeName;
 use Doctrine\Common\Collections\Collection;
-use Doctrine\ORM\Mapping as ORM;
 
-#[ORM\Entity] // <-- AÑADIDO
-#[ORM\Table(name: 'expense_types')] // <-- AÑADIDO
 class ExpenseType
 {
     public const string EQUAL = 'EQUAL';
     public const string FRACTION = 'FRACTION';
     public const string INDIVIDUAL = 'INDIVIDUAL';
 
-    #[ORM\Id] // <-- AÑADIDO
-    #[ORM\Column(type: 'string', length: 36)] // <-- AÑADIDO
     private string $id;
-
-    #[ORM\Column(type: 'string', length: 255, nullable: true)] // <-- AÑADIDO
     private ?string $code = null;
-
-    #[ORM\Column(type: 'string', length: 255, nullable: true)] // <-- AÑADIDO
     private ?string $name = null;
-
-    #[ORM\Column(type: 'string', length: 255, nullable: true)] // <-- AÑADIDO
     private ?string $distributionMethod = 'EQUAL';
-
-    #[ORM\Column(type: 'text', nullable: true)] // <-- AÑADIDO
     private ?string $description = null;
-
-    #[ORM\OneToMany(mappedBy: 'expenseType', targetEntity: Expense::class)] // <-- AÑADIDO
     private Collection $expenses;
-
-    // --- RELACIÓN CORREGIDA ---
-    #[ORM\OneToMany(mappedBy: 'expenseType', targetEntity: RecurringExpense::class)] // <-- AÑADIDO
     private Collection $recurringExpenses;
 
     public function __construct(
@@ -115,16 +97,5 @@ class ExpenseType
         }
 
         return $this;
-    }
-
-    public function toArray(): array
-    {
-        return [
-            'id' => $this->id,
-            'code' => $this->code,
-            'name' => $this->name,
-            'distributionMethod' => $this->distributionMethod,
-            'description' => $this->description,
-        ];
     }
 }

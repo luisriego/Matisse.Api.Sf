@@ -13,16 +13,19 @@ use App\Tests\Shared\Domain\DateRangeMother;
 use Mockery;
 use Mockery\MockInterface;
 use PHPUnit\Framework\TestCase;
+use Symfony\Component\Serializer\SerializerInterface;
 
 class FindInactiveExpensesByDateRangeQueryHandlerTest extends TestCase
 {
     private ExpenseRepository|MockInterface $repository;
+    private SerializerInterface|MockInterface $serializer;
     private FindInactiveExpensesByDateRangeQueryHandler $handler;
 
     protected function setUp(): void
     {
         $this->repository = Mockery::mock(ExpenseRepository::class);
-        $this->handler = new FindInactiveExpensesByDateRangeQueryHandler($this->repository);
+        $this->serializer = Mockery::mock(SerializerInterface::class);
+        $this->handler = new FindInactiveExpensesByDateRangeQueryHandler($this->repository, $this->serializer);
     }
 
     protected function tearDown(): void
@@ -37,12 +40,22 @@ class FindInactiveExpensesByDateRangeQueryHandlerTest extends TestCase
         $inactiveExpense1 = ExpenseMother::createInactive();
         $inactiveExpense2 = ExpenseMother::createInactive();
         $inactiveExpenses = [$inactiveExpense1, $inactiveExpense2];
+        $inactiveExpensesArray = [
+            ['id' => $inactiveExpense1->id()],
+            ['id' => $inactiveExpense2->id()],
+        ];
 
         $this->repository
             ->shouldReceive('findInactiveByDateRange')
             ->once()
             ->with($dateRange)
             ->andReturn($inactiveExpenses);
+
+        $this->serializer
+            ->shouldReceive('normalize')
+            ->once()
+            ->with($inactiveExpenses)
+            ->andReturn($inactiveExpensesArray);
 
         $query = new FindInactiveExpensesByDateRangeQuery($dateRange);
 
@@ -52,8 +65,7 @@ class FindInactiveExpensesByDateRangeQueryHandlerTest extends TestCase
         // Assert
         $this->assertIsArray($result);
         $this->assertCount(2, $result);
-        $this->assertEquals($inactiveExpense1->toArray(), $result[0]);
-        $this->assertEquals($inactiveExpense2->toArray(), $result[1]);
+        $this->assertEquals($inactiveExpensesArray, $result);
     }
 
     public function testFindInactiveExpensesByDateRangeEmptyResult(): void
@@ -65,6 +77,12 @@ class FindInactiveExpensesByDateRangeQueryHandlerTest extends TestCase
             ->shouldReceive('findInactiveByDateRange')
             ->once()
             ->with($dateRange)
+            ->andReturn([]);
+
+        $this->serializer
+            ->shouldReceive('normalize')
+            ->once()
+            ->with([])
             ->andReturn([]);
 
         $query = new FindInactiveExpensesByDateRangeQuery($dateRange);
@@ -88,14 +106,20 @@ class FindInactiveExpensesByDateRangeQueryHandlerTest extends TestCase
             null, null, null,
             new ExpenseDueDate(new \DateTime("2025-07-15"))
         );
-
         $inactiveExpenses = [$inactiveExpense];
+        $inactiveExpenseArray = [['id' => $inactiveExpense->id()]];
 
         $this->repository
             ->shouldReceive('findInactiveByDateRange')
             ->once()
             ->with($dateRange)
             ->andReturn($inactiveExpenses);
+
+        $this->serializer
+            ->shouldReceive('normalize')
+            ->once()
+            ->with($inactiveExpenses)
+            ->andReturn($inactiveExpenseArray);
 
         $query = new FindInactiveExpensesByDateRangeQuery($dateRange);
 
@@ -105,7 +129,7 @@ class FindInactiveExpensesByDateRangeQueryHandlerTest extends TestCase
         // Assert
         $this->assertIsArray($result);
         $this->assertCount(1, $result);
-        $this->assertEquals($inactiveExpense->toArray(), $result[0]);
+        $this->assertEquals($inactiveExpenseArray, $result);
     }
 
     public function testFindInactiveExpensesByDateRangeCallsRepositoryOnce(): void
@@ -119,6 +143,11 @@ class FindInactiveExpensesByDateRangeQueryHandlerTest extends TestCase
             ->once()
             ->with($dateRange)
             ->andReturn($inactiveExpenses);
+
+        $this->serializer
+            ->shouldReceive('normalize')
+            ->once()
+            ->andReturn([]);
 
         $query = new FindInactiveExpensesByDateRangeQuery($dateRange);
 
