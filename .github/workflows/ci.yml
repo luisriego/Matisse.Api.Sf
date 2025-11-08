@@ -32,7 +32,7 @@ jobs:
             - name: Setup PHP
               uses: shivammathur/setup-php@v2
               with:
-                  php-version: '8.2'
+                  php-version: '8.3'
                   extensions: pdo, pdo_pgsql # Cambia pdo_pgsql por pdo_mysql si usas MySQL
                   tools: composer:v2
 
