@@ -226,3 +226,5 @@ Definición operativa del ciclo de vida del slip que incluya: estados, transicio
 - ¿Idempotency-key obligatorio en todas las transiciones mutables?
 
 Si te parece, cerramos estas decisiones y preparo el detalle final de la matriz de transiciones y guards con los roles exactos. Luego lo trasladamos a comandos/handlers y a los tests de aceptación para cada transición.
+
+incluir la posibilidad de subir archivos con los gastos. "fileupload"

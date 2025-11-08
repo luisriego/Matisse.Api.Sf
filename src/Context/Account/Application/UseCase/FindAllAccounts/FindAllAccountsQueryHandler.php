@@ -7,20 +7,23 @@ namespace App\Context\Account\Application\UseCase\FindAllAccounts;
 use App\Context\Account\Domain\AccountRepository;
 use App\Shared\Application\QueryHandler;
 use Symfony\Component\Messenger\Attribute\AsMessageHandler;
+use Symfony\Component\Serializer\SerializerInterface;
 
-use function array_map;
 use function count;
 
 #[AsMessageHandler(bus: 'query.bus')]
 readonly class FindAllAccountsQueryHandler implements QueryHandler
 {
-    public function __construct(private AccountRepository $repository) {}
+    public function __construct(
+        private AccountRepository $repository,
+        private SerializerInterface $serializer
+    ) {}
 
     public function __invoke(FindAllAccountsQuery $query): array
     {
         $accounts = $this->repository->findAll();
 
-        $accountsArray = array_map(fn ($account) => $account->toArray(), $accounts);
+        $accountsArray = $this->serializer->normalize($accounts);
 
         return [
             'accounts' => $accountsArray,

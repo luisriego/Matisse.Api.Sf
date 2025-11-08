@@ -28,7 +28,13 @@ class GetAccountControllerTest extends TestCase
     {
         // Arrange
         $account = AccountMother::create();
-        $accountData = $account->toArray();
+        $accountData = [
+            'id' => $account->id(),
+            'code' => $account->code(),
+            'name' => $account->name(),
+            'description' => $account->description(),
+            'isActive' => $account->isActive(),
+        ];
         $accountId = $account->id();
 
         // Create a real HandledStamp instead of mocking it
