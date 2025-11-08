@@ -45,7 +45,7 @@ jobs:
                       ${{ runner.os }}-composer-
 
             - name: Install dependencies
-              run: composer install --prefer-dist --no-progress --no-suggest
+              run: composer install --prefer-dist --no-progress --no-suggest --dev
 
             - name: Check Coding Standards (PHP-CS-Fixer)
               run: composer analyze:standards
