@@ -16,7 +16,7 @@ readonly class FindAllExpensesQueryHandler implements QueryHandler
 {
     public function __construct(
         private ExpenseRepository $repository,
-        private SerializerInterface $serializer
+        private SerializerInterface $serializer,
     ) {}
 
     public function __invoke(FindAllExpensesQuery $query): array

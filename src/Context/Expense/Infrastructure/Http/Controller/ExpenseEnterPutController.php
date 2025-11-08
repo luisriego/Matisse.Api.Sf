@@ -16,7 +16,7 @@ final readonly class ExpenseEnterPutController
 {
     public function __construct(
         private EnterExpenseCommandHandler $commandHandler,
-        private SerializerInterface $serializer
+        private SerializerInterface $serializer,
     ) {}
 
     /**

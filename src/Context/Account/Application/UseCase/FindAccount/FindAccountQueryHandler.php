@@ -13,7 +13,7 @@ final readonly class FindAccountQueryHandler implements QueryHandler
 {
     public function __construct(
         private AccountRepository $repository,
-        private SerializerInterface $serializer
+        private SerializerInterface $serializer,
     ) {}
 
     public function __invoke(FindAccountQuery $query): array

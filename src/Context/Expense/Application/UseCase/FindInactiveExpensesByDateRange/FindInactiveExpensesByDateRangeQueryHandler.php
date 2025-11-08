@@ -14,7 +14,7 @@ final readonly class FindInactiveExpensesByDateRangeQueryHandler implements Quer
 {
     public function __construct(
         private ExpenseRepository $repository,
-        private SerializerInterface $serializer
+        private SerializerInterface $serializer,
     ) {}
 
     public function __invoke(FindInactiveExpensesByDateRangeQuery $query): array

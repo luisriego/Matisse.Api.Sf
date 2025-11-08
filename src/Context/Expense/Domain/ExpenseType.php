@@ -65,22 +65,22 @@ class ExpenseType
         return $this->id;
     }
 
-    public function name(): string
+    public function name(): ?string
     {
         return $this->name;
     }
 
-    public function code(): string
+    public function code(): ?string
     {
         return $this->code;
     }
 
-    public function description(): string
+    public function description(): ?string
     {
         return $this->description;
     }
 
-    public function distributionMethod(): string
+    public function distributionMethod(): ?string
     {
         return $this->distributionMethod;
     }

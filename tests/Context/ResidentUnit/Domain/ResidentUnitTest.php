@@ -128,25 +128,4 @@ final class ResidentUnitTest extends UnitTestCase
         self::assertTrue($residentUnit->idealFractionMustNotBeMoreThan1(0.5, 0.5));
         self::assertFalse($residentUnit->idealFractionMustNotBeMoreThan1(0.5, 0.6));
     }
-
-    public function test_it_should_return_array_representation(): void
-    {
-        $residentUnit = ResidentUnitMother::create();
-        $residentUnitArray = $residentUnit->toArray();
-
-        self::assertIsArray($residentUnitArray);
-        self::assertArrayHasKey('id', $residentUnitArray);
-        self::assertArrayHasKey('unit', $residentUnitArray);
-        self::assertArrayHasKey('idealFraction', $residentUnitArray);
-        self::assertArrayHasKey('createdAt', $residentUnitArray);
-        self::assertArrayHasKey('updatedAt', $residentUnitArray);
-        self::assertArrayHasKey('notificationRecipients', $residentUnitArray);
-
-        self::assertSame($residentUnit->id(), $residentUnitArray['id']);
-        self::assertSame($residentUnit->unit(), $residentUnitArray['unit']);
-        self::assertSame($residentUnit->idealFraction(), $residentUnitArray['idealFraction']);
-        self::assertSame($residentUnit->createdAt()->format('Y-m-d H:i:s'), $residentUnitArray['createdAt']);
-        self::assertSame($residentUnit->updatedAt() ? $residentUnit->updatedAt()->format('Y-m-d H:i:s') : null, $residentUnitArray['updatedAt']);
-        self::assertSame($residentUnit->notificationRecipients(), $residentUnitArray['notificationRecipients']);
-    }
 }

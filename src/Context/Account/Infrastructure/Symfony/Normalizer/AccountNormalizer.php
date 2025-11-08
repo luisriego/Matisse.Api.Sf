@@ -11,11 +11,8 @@ class AccountNormalizer implements NormalizerInterface
 {
     /**
      * @param Account $object
-     * @param string|null $format
-     * @param array $context
-     * @return array
      */
-    public function normalize($object, string $format = null, array $context = []): array
+    public function normalize($object, ?string $format = null, array $context = []): array
     {
         return [
             'id' => $object->id(),
@@ -26,7 +23,7 @@ class AccountNormalizer implements NormalizerInterface
         ];
     }
 
-    public function supportsNormalization($data, string $format = null): bool
+    public function supportsNormalization($data, ?string $format = null): bool
     {
         return $data instanceof Account;
     }

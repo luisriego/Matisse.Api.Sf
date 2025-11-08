@@ -14,7 +14,7 @@ final readonly class FindActiveExpensesByDateRangeQueryHandler implements QueryH
 {
     public function __construct(
         private ExpenseRepository $repository,
-        private SerializerInterface $serializer
+        private SerializerInterface $serializer,
     ) {}
 
     public function __invoke(FindActiveExpensesByDateRangeQuery $query): array

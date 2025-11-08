@@ -31,3 +31,6 @@ services:
         arguments:
             $textGenerator: 'App\Shared\Application\TextGeneratorInterface'
             $logger: '@logger'
+
+    App\Context\User\Infrastructure\Symfony\Normalizer\UserNormalizer:
+        tags: [serializer.normalizer]

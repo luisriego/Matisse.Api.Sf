@@ -11,10 +11,14 @@ use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Messenger\MessageBusInterface; // Importar HandledStamp
 use Symfony\Component\Messenger\Stamp\HandledStamp;
+use Symfony\Component\Serializer\SerializerInterface;
 
 final class FindUserController extends AbstractController
 {
-    public function __construct(private readonly MessageBusInterface $queryBus) {}
+    public function __construct(
+        private readonly MessageBusInterface $queryBus,
+        private readonly SerializerInterface $serializer,
+    ) {}
 
     public function __invoke(string $id): JsonResponse
     {
@@ -30,6 +34,8 @@ final class FindUserController extends AbstractController
             return new JsonResponse(null, Response::HTTP_NOT_FOUND);
         }
 
-        return new JsonResponse($user->toArray(), Response::HTTP_OK);
+        $data = $this->serializer->normalize($user);
+
+        return new JsonResponse($data, Response::HTTP_OK);
     }
 }

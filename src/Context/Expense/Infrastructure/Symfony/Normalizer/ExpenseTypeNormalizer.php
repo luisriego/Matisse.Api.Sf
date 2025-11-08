@@ -12,7 +12,7 @@ class ExpenseTypeNormalizer implements NormalizerInterface
     /**
      * @param ExpenseType $object
      */
-    public function normalize($object, string $format = null, array $context = []): array
+    public function normalize($object, ?string $format = null, array $context = []): array
     {
         return [
             'id' => $object->id(),
@@ -23,7 +23,7 @@ class ExpenseTypeNormalizer implements NormalizerInterface
         ];
     }
 
-    public function supportsNormalization($data, string $format = null): bool
+    public function supportsNormalization($data, ?string $format = null): bool
     {
         return $data instanceof ExpenseType;
     }
