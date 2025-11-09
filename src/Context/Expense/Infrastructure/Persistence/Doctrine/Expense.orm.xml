@@ -15,7 +15,8 @@
         <field name="paidAt" column="paid_at" type="datetime_immutable" nullable="true" />
         <field name="createdAt" column="created_at" type="datetime_immutable" />
         <field name="isActive" column="is_active" type="boolean" />
-        <field name="residentUnitId" column="resident_unit_id" type="uuid" nullable="true" /> <!-- Corrected type to uuid -->
+        <field name="residentUnitId" column="resident_unit_id" type="uuid" nullable="true" />
+        <field name="attachment" column="attachment" type="text" length="255" nullable="true" />
 
         <many-to-one field="account" target-entity="App\Context\Account\Domain\Account" inversed-by="expenses">
             <join-column name="account_id" referenced-column-name="id" nullable="true" />

@@ -29,6 +29,7 @@ class Expense extends AggregateRoot
     private ?string $residentUnitId = null;
     private ?ExpenseType $type = null;
     private ?RecurringExpense $recurringExpense = null;
+    private ?string $attachment = null;
 
     public function __construct(
         string $id,
@@ -213,6 +214,16 @@ class Expense extends AggregateRoot
     public function recurringExpense(): ?RecurringExpense
     {
         return $this->recurringExpense;
+    }
+
+    public function updateAttachment(string $filename): void
+    {
+        $this->attachment = $filename;
+    }
+
+    public function attachment(): ?string
+    {
+        return $this->attachment;
     }
 
     private function applyExpenseWasCompensated(ExpenseWasCompensated $event): void

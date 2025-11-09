@@ -28,6 +28,11 @@ expense_payed:
     controller: App\Context\Expense\Infrastructure\Http\Controller\ExpensePayedPatchController
     methods: ['PATCH']
 
+expense_attachment:
+    path: /api/v1/expenses/attachment/{id}
+    controller: App\Context\Expense\Infrastructure\Http\Controller\ExpenseAttachmentPatchController
+    methods: ['POST']
+
 expenses_get:
     path: /api/v1/expenses
     controller: App\Context\Expense\Infrastructure\Http\Controller\GetAllExpensesController
