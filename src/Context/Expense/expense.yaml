@@ -26,3 +26,9 @@ services:
 
     App\Context\Expense\Infrastructure\Symfony\Normalizer\ExpenseTypeNormalizer:
         tags: [serializer.normalizer]
+
+    App\Context\Expense\Application\Service\InvoiceExtractorService:
+        arguments:
+            $projectId: '%env(GOOGLE_PROJECT_ID)%'
+            $location: '%env(GOOGLE_LOCATION)%'
+            $processorId: '%env(GOOGLE_PROCESSOR_ID)%'
