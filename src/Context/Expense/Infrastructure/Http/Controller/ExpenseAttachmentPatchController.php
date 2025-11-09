@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace App\Context\Expense\Infrastructure\Http\Controller;
 
 use App\Context\Expense\Application\UseCase\AddExpenseAttachment\AddExpenseAttachmentCommand;
-use App\Context\Expense\Domain\Exception\ExpenseNotFoundException;
 use App\Shared\Domain\Exception\InvalidArgumentException;
 use App\Shared\Domain\Exception\ResourceNotFoundException;
 use App\Shared\Infrastructure\Symfony\ApiController;
