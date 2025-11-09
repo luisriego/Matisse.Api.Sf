@@ -11,7 +11,6 @@ final readonly class AddExpenseAttachmentCommand implements Command
 {
     public function __construct(
         public string $expenseId,
-        public UploadedFile $attachment
-    ) {
-    }
+        public UploadedFile $attachment,
+    ) {}
 }

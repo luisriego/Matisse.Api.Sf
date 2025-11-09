@@ -6,6 +6,8 @@ namespace App\Tests\Context\Expense\Application\UseCase\UpdateExpense;
 
 use App\Context\Expense\Application\UseCase\UpdateExpense\UpdateExpenseCommand;
 use App\Context\Expense\Application\UseCase\UpdateExpense\UpdateExpenseCommandHandler;
+use App\Tests\Context\Expense\Domain\ExpenseAmountMother;
+use App\Tests\Context\Expense\Domain\ExpenseDueDateMother;
 use App\Tests\Context\Expense\Domain\ExpenseIdMother;
 use App\Tests\Context\Expense\Domain\ExpenseMother;
 use App\Tests\Context\Expense\ExpenseModuleUnitTestCase;
@@ -31,7 +33,7 @@ final class UpdateExpenseCommandHandlerTest extends ExpenseModuleUnitTestCase
     {
         // Arrange
         $id = ExpenseIdMother::create(); // Use the mother object to create valid UUID
-        $expense = ExpenseMother::create($id);
+        $expense = ExpenseMother::createFromValueObjects($id, ExpenseAmountMother::create(), null, ExpenseDueDateMother::create());
 
         $newAmount = 1000;
         $newDueDate = '2023-12-31';
@@ -56,7 +58,7 @@ final class UpdateExpenseCommandHandlerTest extends ExpenseModuleUnitTestCase
     {
         // Arrange
         $id = ExpenseIdMother::create(); // Use the mother object to create valid UUID
-        $expense = ExpenseMother::create($id);
+        $expense = ExpenseMother::createFromValueObjects($id, ExpenseAmountMother::create(), null, ExpenseDueDateMother::create());
 
         $command = new UpdateExpenseCommand(
             $id->value(),

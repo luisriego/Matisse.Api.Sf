@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Tests\Context\Expense\Domain;
 
 use App\Context\Account\Domain\Account;
@@ -8,85 +10,80 @@ use App\Context\Expense\Domain\ExpenseType;
 use App\Context\Expense\Domain\ValueObject\ExpenseAmount;
 use App\Context\Expense\Domain\ValueObject\ExpenseDueDate;
 use App\Context\Expense\Domain\ValueObject\ExpenseId;
-use App\Context\Expense\Domain\ValueObject\ExpenseTypeId;
 use App\Tests\Context\Account\Domain\AccountMother;
+use DateTime;
 
 final class ExpenseMother
 {
     public static function create(
-        ?ExpenseId $id = null,
-        ?ExpenseAmount $amount = null,
+        ?string $id = null,
+        ?int $amount = null,
+        ?ExpenseType $type = null,
         ?Account $account = null,
-        ?ExpenseDueDate $dueDate = null,
-        ?ExpenseType $type = null
+        ?DateTime $dueDate = null,
+        ?bool $isActive = true,
+        ?string $description = 'Default Description',
+        ?string $residentUnitId = null,
+        bool $forceAccount = true // Flag to control account creation
     ): Expense {
-        $id      = $id      ?? ExpenseIdMother::create();
-        $amount  = $amount  ?? ExpenseAmountMother::create();
-        $account = $account ?? AccountMother::create();
-        $dueDate = $dueDate?->toDateTime() ?? new \DateTime();
-        $type    = $type    ?? new ExpenseType(
-            ExpenseTypeId::random()->value(),
-            'DEFAULT_CODE',
-            'Default Type'
-        );
+        $finalAccount = $forceAccount ? ($account ?? AccountMother::create()) : $account;
 
         return new Expense(
-            $id->value(),
-            $amount->value(),
-            $type,
-            $account,
-            $dueDate
+            $id ?? ExpenseIdMother::create()->value(),
+            $amount ?? ExpenseAmountMother::create()->value(),
+            $type ?? ExpenseTypeMother::create(),
+            $finalAccount,
+            $dueDate ?? ExpenseDueDateMother::create()->toDateTime(),
+            $isActive,
+            $description,
+            $residentUnitId
         );
     }
 
-    public static function createWithNoAccount(
-        ?ExpenseId $id = null,
-        ?ExpenseAmount $amount = null,
-        ?ExpenseDueDate $dueDate = null,
-        ?ExpenseType $type = null
+    public static function createFromValueObjects(
+        ExpenseId $id,
+        ExpenseAmount $amount,
+        ?Account $account,
+        ExpenseDueDate $dueDate,
+        ?ExpenseType $type = null,
+        ?bool $isActive = true,
+        ?string $description = 'Default Description',
+        ?string $residentUnitId = null
     ): Expense {
-        $id      = $id      ?? ExpenseIdMother::create();
-        $amount  = $amount  ?? ExpenseAmountMother::create();
-        $dueDate = $dueDate?->toDateTime() ?? new \DateTime();
-        $type    = $type    ?? new ExpenseType(
-            ExpenseTypeId::random()->value(),
-            'DEFAULT_CODE',
-            'Default Type'
-        );
-
         return new Expense(
             $id->value(),
             $amount->value(),
-            $type,
-            null,
-            $dueDate
+            $type ?? ExpenseTypeMother::create(),
+            $account,
+            $dueDate->toDateTime(),
+            $isActive,
+            $description,
+            $residentUnitId
         );
     }
 
     public static function createInactive(
-        ?ExpenseId $id = null,
-        ?ExpenseAmount $amount = null,
+        ?string $id = null,
+        ?int $amount = null,
+        ?ExpenseType $type = null,
         ?Account $account = null,
-        ?ExpenseDueDate $dueDate = null,
-        ?ExpenseType $type = null
+        ?DateTime $dueDate = null,
+        ?string $description = 'Default Description',
+        ?string $residentUnitId = null
     ): Expense {
-        $id      = $id      ?? ExpenseIdMother::create();
-        $amount  = $amount  ?? ExpenseAmountMother::create();
-        $account = $account ?? AccountMother::create();
-        $dueDate = $dueDate?->toDateTime() ?? new \DateTime();
-        $type    = $type    ?? new ExpenseType(
-            ExpenseTypeId::random()->value(),
-            'DEFAULT_CODE',
-            'Default Type'
-        );
+        return self::create($id, $amount, $type, $account, $dueDate, false, $description, $residentUnitId);
+    }
 
-        return new Expense(
-            $id->value(),
-            $amount->value(),
-            $type,
-            $account,
-            $dueDate,
-            false
-        );
+    public static function createWithNoAccount(
+        ?string $id = null,
+        ?int $amount = null,
+        ?ExpenseType $type = null,
+        ?DateTime $dueDate = null,
+        ?bool $isActive = true,
+        ?string $description = 'Default Description',
+        ?string $residentUnitId = null
+    ): Expense {
+        // Call create but force the account to be null
+        return self::create($id, $amount, $type, null, $dueDate, $isActive, $description, $residentUnitId, false);
     }
 }
