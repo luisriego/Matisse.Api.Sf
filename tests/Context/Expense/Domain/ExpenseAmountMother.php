@@ -10,6 +10,7 @@ final class ExpenseAmountMother
 {
     public static function create(?int $value = null): ExpenseAmount
     {
-        return new ExpenseAmount($value ?? 10000);
+        // You can use a library like Faker for more random values
+        return new ExpenseAmount($value ?? 10000); // Default to 100.00
     }
 }

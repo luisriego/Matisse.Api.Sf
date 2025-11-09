@@ -103,8 +103,7 @@ class FindActiveExpensesByDateRangeQueryHandlerTest extends TestCase
         // Arrange
         $dateRange = DateRangeMother::fromMonth(2025, 7);
         $activeExpense = ExpenseMother::create(
-            null, null, null,
-            new ExpenseDueDate(new \DateTime("2025-07-15"))
+            dueDate: new \DateTime("2025-07-15")
         );
         $activeExpenses = [$activeExpense];
         $activeExpenseArray = [['id' => $activeExpense->id()]];

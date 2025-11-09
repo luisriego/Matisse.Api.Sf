@@ -45,7 +45,7 @@ class EnterExpenseCommandHandlerTest extends TestCase
         $account = AccountMother::create();
         $dueDate = ExpenseDueDateMother::create();
 
-        $expense = ExpenseMother::create($id, $amount, $account, $dueDate);
+        $expense = ExpenseMother::createFromValueObjects($id, $amount, $account, $dueDate);
 
         $command = new EnterExpenseCommand($id->value(), $amount->value(), $type->id(), $account->id(), $dueDate->value(), true);
 

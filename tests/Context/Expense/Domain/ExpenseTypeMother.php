@@ -5,28 +5,18 @@ declare(strict_types=1);
 namespace App\Tests\Context\Expense\Domain;
 
 use App\Context\Expense\Domain\ExpenseType;
-use App\Context\Expense\Domain\ValueObject\ExpenseTypeCode;
-use App\Context\Expense\Domain\ValueObject\ExpenseTypeDescription;
-use App\Context\Expense\Domain\ValueObject\ExpenseTypeDistributionMethod;
-use App\Context\Expense\Domain\ValueObject\ExpenseTypeId;
-use App\Context\Expense\Domain\ValueObject\ExpenseTypeName;
 
 final class ExpenseTypeMother
 {
     public static function create(
-        ?ExpenseTypeId $id = null,
-        ?ExpenseTypeCode $code = null,
-        ?ExpenseTypeName $name = null,
-        ?ExpenseTypeDistributionMethod $distributionMethod = null,
-        ?ExpenseTypeDescription $description = null
-    ): ExpenseType
-    {
-        return ExpenseType::create(
-            $id ?? ExpenseTypeIdMother::create(),
-            $code ?? ExpenseTypeCodeMother::create(),
-            $name ?? ExpenseTypeNameMother::create(),
-            $distributionMethod ?? ExpenseTypeDistributionMethodMother::create(),
-            $description ?? ExpenseTypeDescriptionMother::create()
+        ?string $id = null,
+        ?string $name = null,
+        ?string $description = null
+    ): ExpenseType {
+        return new ExpenseType(
+            $id ?? 'f47ac10b-58cc-4372-a567-0e02b2c3d479',
+            $name ?? 'Type', // Shorter name
+            $description ?? 'Default Type Description'
         );
     }
 }

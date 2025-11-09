@@ -103,8 +103,7 @@ class FindInactiveExpensesByDateRangeQueryHandlerTest extends TestCase
         // Arrange
         $dateRange = DateRangeMother::fromMonth(2025, 8);
         $inactiveExpense = ExpenseMother::createInactive(
-            null, null, null,
-            new ExpenseDueDate(new \DateTime("2025-07-15"))
+            dueDate: new \DateTime("2025-07-15")
         );
         $inactiveExpenses = [$inactiveExpense];
         $inactiveExpenseArray = [['id' => $inactiveExpense->id()]];

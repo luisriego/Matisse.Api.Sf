@@ -1,5 +1,6 @@
 parameters:
     password_reset_token_lifetime: 86400 # 1 day in seconds
+    expense_uploads_path: '%kernel.project_dir%/public/uploads/expenses'
 
 imports:
     - { resource: '../src/Context/Account/account.yaml' }
@@ -17,6 +18,7 @@ services:
         autoconfigure: true
         bind:
             $passwordResetTokenLifetime: '%password_reset_token_lifetime%'
+            string $uploadsPath: '%expense_uploads_path%'
 
     App\Context\User\Infrastructure\Http\Controller\:
         public: true
