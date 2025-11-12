@@ -24,6 +24,7 @@ final class AddExpenseAttachmentCommandHandler implements CommandHandler
     public function __invoke(AddExpenseAttachmentCommand $command): void
     {
         $expense = $this->repository->findOneByIdOrFail($command->expenseId);
+        $oldAttachment = $expense->attachment();
 
         $attachment = $command->attachment;
         $originalFilename = pathinfo($attachment->getClientOriginalName(), PATHINFO_FILENAME);
@@ -38,5 +39,9 @@ final class AddExpenseAttachmentCommandHandler implements CommandHandler
         $expense->updateAttachment($newFilename);
 
         $this->repository->save($expense);
+
+        if ($oldAttachment) {
+            @unlink($this->uploadsPath . '/' . $oldAttachment);
+        }
     }
 }
