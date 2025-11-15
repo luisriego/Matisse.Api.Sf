@@ -6,6 +6,7 @@ namespace App\Context\EventStore\Domain;
 
 use App\Context\Account\Domain\Bus\InitialBalanceSet;
 use App\Context\Expense\Domain\Bus\ExpenseWasEntered;
+use App\Context\Gas\Domain\Bus\GasPriceWasDefined;
 use App\Context\Income\Domain\Bus\IncomeWasEntered;
 use App\Shared\Domain\Event\DomainEvent;
 use App\Shared\Domain\ValueObject\Uuid;
@@ -87,6 +88,7 @@ class StoredEvent
             IncomeWasEntered::eventName() => IncomeWasEntered::class,
             ExpenseWasEntered::eventName() => ExpenseWasEntered::class,
             InitialBalanceSet::eventName() => InitialBalanceSet::class, // Añadir el mapeo para InitialBalanceSet
+            GasPriceWasDefined::eventName() => GasPriceWasDefined::class,
         ];
 
         $eventClassName = $eventClassMap[$this->eventType()] ?? null;

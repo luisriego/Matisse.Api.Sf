@@ -13,6 +13,7 @@
         "doctrine/doctrine-bundle": "^2.14",
         "doctrine/doctrine-migrations-bundle": "^3.4",
         "doctrine/orm": "^3.3",
+        "google/cloud-document-ai": "^2.5",
         "guzzlehttp/guzzle": "^7.10",
         "lexik/jwt-authentication-bundle": "^3.1",
         "nelmio/cors-bundle": "^2.5",
@@ -37,7 +38,8 @@
         "symfony/uid": "6.4.*",
         "symfony/validator": "6.4.*",
         "symfony/workflow": "^6.4",
-        "symfony/yaml": "6.4.*"
+        "symfony/yaml": "6.4.*",
+        "ext-fileinfo": "*"
     },
     "config": {
         "allow-plugins": {
