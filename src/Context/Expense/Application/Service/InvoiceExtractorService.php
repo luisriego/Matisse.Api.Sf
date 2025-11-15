@@ -8,14 +8,16 @@ use Google\Cloud\DocumentAI\V1\Client\DocumentProcessorServiceClient;
 use Google\Cloud\DocumentAI\V1\ProcessRequest;
 use Google\Cloud\DocumentAI\V1\RawDocument;
 
+use function file_get_contents;
+use function mime_content_type;
+
 readonly class InvoiceExtractorService
 {
     public function __construct(
         private string $projectId,
         private string $location,
-        private string $processorId
-    ) {
-    }
+        private string $processorId,
+    ) {}
 
     public function extractData(string $filePath): array
     {
@@ -30,7 +32,7 @@ readonly class InvoiceExtractorService
         $processorName = DocumentProcessorServiceClient::processorName(
             $this->projectId,
             $this->location,
-            $this->processorId
+            $this->processorId,
         );
 
         $request = new ProcessRequest([
@@ -45,6 +47,7 @@ readonly class InvoiceExtractorService
             $document = $result->getDocument();
 
             $extractedData = [];
+
             foreach ($document->getEntities() as $entity) {
                 $extractedData[$entity->getType()] = $entity->getMentionText();
             }

@@ -228,3 +228,22 @@ Definición operativa del ciclo de vida del slip que incluya: estados, transicio
 Si te parece, cerramos estas decisiones y preparo el detalle final de la matriz de transiciones y guards con los roles exactos. Luego lo trasladamos a comandos/handlers y a los tests de aceptación para cada transición.
 
 incluir la posibilidad de subir archivos con los gastos. "fileupload"
+
+---
+**NOTA DE ACLARACIÓN (2024-05-22):**
+
+Se ha confirmado que el ciclo de vida del "Slip" se gestiona a través del componente **Symfony Workflow**. La lógica de transición se orquesta en `SlipWorkflowCompletedSubscriber`.
+
+**Estado Actual de la Implementación:**
+- **Flujo implementado:** `pending` -> `submitted` -> `paid` / `overdue` / `cancelled`.
+- **Mecanismo:** El subscriber de workflow reacciona a las transiciones y llama a los métodos del agregado de dominio (`markAsSubmitted`, `markAsPaid`, etc.).
+
+**Funcionalidad Pendiente (según el plan original):**
+El flujo de **aprobación y contabilización** sigue pendiente. Esto incluye:
+- **Estados faltantes:** `validated`, `posted`, `rejected`.
+- **Transiciones faltantes:** `validate`, `post`, `reject`.
+- **Lógica de negocio (Guards):** Implementar las reglas de negocio y autorización para estas nuevas transiciones.
+- **Eventos de dominio:** Crear y despachar los eventos correspondientes (`SlipWasValidated`, `SlipWasPosted`, `SlipWasRejected`).
+- **Roles y Auditoría:** Integrar la lógica de roles y guardar la información de auditoría para las nuevas transiciones.
+- **Subida de Archivos:** La funcionalidad de adjuntar archivos no está implementada.
+---

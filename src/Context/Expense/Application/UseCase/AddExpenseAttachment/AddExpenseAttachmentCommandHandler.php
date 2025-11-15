@@ -10,6 +10,7 @@ use Symfony\Component\String\Slugger\SluggerInterface;
 
 use function pathinfo;
 use function time;
+use function unlink;
 
 use const PATHINFO_FILENAME;
 

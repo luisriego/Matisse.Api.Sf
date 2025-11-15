@@ -7,3 +7,8 @@ gas_reading_record:
     path: /api/v1/gas/reading
     controller: App\Context\Gas\Infrastructure\Http\Controller\RecordGasReadingPutController
     methods: ['PUT']
+
+gas_price:
+    path: /api/v1/gas/price
+    controller: App\Context\Gas\Infrastructure\Http\Controller\FindGasPriceController
+    methods: [GET]
