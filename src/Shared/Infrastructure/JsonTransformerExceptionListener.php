@@ -4,7 +4,8 @@ declare(strict_types=1);
 
 namespace App\Shared\Infrastructure;
 
-use App\Context\Gas\Domain\Exception\GasPriceNotFoundException; // <-- 1. Importar
+use App\Context\Gas\Domain\Exception\GasPriceNotFoundException;
+use App\Context\Gas\Domain\Exception\GasReadingNotFoundException; // 1. Importar
 use App\Shared\Domain\Exception\AccessDeniedException;
 use App\Shared\Domain\Exception\InvalidArgumentException;
 use App\Shared\Domain\Exception\ResourceAlreadyExistException;
@@ -30,7 +31,7 @@ class JsonTransformerExceptionListener
             $data['code'] = Response::HTTP_BAD_REQUEST;
         }
 
-        if ($e instanceof ResourceNotFoundException || $e instanceof GasPriceNotFoundException) { // <-- 2. Añadir aquí
+        if ($e instanceof ResourceNotFoundException || $e instanceof GasPriceNotFoundException || $e instanceof GasReadingNotFoundException) {
             $data['code'] = Response::HTTP_NOT_FOUND;
         }
 

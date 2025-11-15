@@ -12,3 +12,8 @@ gas_price:
     path: /api/v1/gas/price
     controller: App\Context\Gas\Infrastructure\Http\Controller\FindGasPriceController
     methods: [GET]
+
+get_last_gas_reading:
+  path: /api/v1/gas/resident-units/{id}/last-reading
+  controller: App\Context\Gas\Infrastructure\Http\Controller\FindLastGasReadingController
+  methods: [GET]
