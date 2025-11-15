@@ -25,9 +25,9 @@ final readonly class FindGasReadingQueryHandler implements QueryHandler
             $payload = $event->payload();
 
             if (
-                !isset($payload['residentUnitId']) || $payload['residentUnitId'] !== $query->residentUnitId
-                || !isset($payload['year']) || $payload['year'] !== $query->year
-                || !isset($payload['month']) || $payload['month'] !== $query->month
+                !isset($payload['residentUnitId']) || $payload['residentUnitId'] !== $query->residentUnitId->value()
+                || !isset($payload['year']) || $payload['year'] !== $query->year->value()
+                || !isset($payload['month']) || $payload['month'] !== $query->month->value()
             ) {
                 continue;
             }
