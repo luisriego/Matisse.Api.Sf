@@ -4,17 +4,17 @@ declare(strict_types=1);
 
 namespace App\Context\Gas\Infrastructure\Http\Controller;
 
-use App\Context\Gas\Application\UseCase\FindLastGasReading\FindLastGasReadingQuery;
+use App\Context\Gas\Application\UseCase\FindGasReading\FindGasReadingQuery;
 use App\Context\Gas\Domain\Exception\GasReadingNotFoundException;
 use App\Shared\Infrastructure\Symfony\ApiController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Response;
 
-final class FindLastGasReadingController extends ApiController
+final class FindGasReadingController extends ApiController
 {
-    public function __invoke(string $id): JsonResponse
+    public function __invoke(string $id, int $year, int $month): JsonResponse
     {
-        $query = new FindLastGasReadingQuery($id);
+        $query = new FindGasReadingQuery($id, $year, $month);
 
         $reading = $this->ask($query);
 

@@ -8,10 +8,9 @@ use App\Context\EventStore\Domain\StoredEvent;
 use App\Context\EventStore\Domain\StoredEventRepository;
 use App\Shared\Domain\ValueObject\Uuid;
 use App\Tests\Shared\Infrastructure\PhpUnit\ApiTestCase;
-use DateTimeImmutable;
 use Doctrine\ORM\EntityManagerInterface;
 
-final class FindLastGasReadingControllerTest extends ApiTestCase
+final class FindGasReadingControllerTest extends ApiTestCase
 {
     private ?StoredEventRepository $storedEventRepository;
     protected ?EntityManagerInterface $entityManager;
@@ -32,37 +31,27 @@ final class FindLastGasReadingControllerTest extends ApiTestCase
         $this->entityManager->flush();
     }
 
-    public function test_it_should_return_the_last_reading(): void
+    public function test_it_should_return_the_reading_for_a_specific_period(): void
     {
         $targetUnitId = Uuid::random()->value();
+        $targetYear = 2025;
+        $targetMonth = 10;
         $correctReading = 123.45;
-        $futureReading = 999.99;
 
-        $eventInPeriod = StoredEvent::create(
+        $event = StoredEvent::create(
             Uuid::random()->value(),
             'gas.reading.was.recorded',
             [
                 'residentUnitId' => $targetUnitId,
-                'year' => (int)(new DateTimeImmutable('-3 month'))->format('Y'),
-                'month' => (int)(new DateTimeImmutable('-3 month'))->format('n'),
+                'year' => $targetYear,
+                'month' => $targetMonth,
                 'reading' => $correctReading
             ]
         );
-        $this->storedEventRepository->save($eventInPeriod);
+        $this->storedEventRepository->save($event);
 
-        $eventOutOfPeriod = StoredEvent::create(
-            Uuid::random()->value(),
-            'gas.reading.was.recorded',
-            [
-                'residentUnitId' => $targetUnitId,
-                'year' => (int)(new DateTimeImmutable('-1 month'))->format('Y'),
-                'month' => (int)(new DateTimeImmutable('-1 month'))->format('n'),
-                'reading' => $futureReading
-            ]
-        );
-        $this->storedEventRepository->save($eventOutOfPeriod);
-
-        $this->client->request('GET', '/api/v1/gas/resident-units/' . $targetUnitId . '/last-reading');
+        // CORREGIDO: Usar la nueva ruta con sprintf
+        $this->client->request('GET', sprintf('/api/v1/gas/resident-units/%s/reading/%d/%d', $targetUnitId, $targetYear, $targetMonth));
 
         $this->assertResponseIsSuccessful();
         $responseContent = json_decode($this->client->getResponse()->getContent(), true);

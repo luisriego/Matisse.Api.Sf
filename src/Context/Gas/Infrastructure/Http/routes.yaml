@@ -13,7 +13,8 @@ gas_price:
     controller: App\Context\Gas\Infrastructure\Http\Controller\FindGasPriceController
     methods: [GET]
 
-get_last_gas_reading:
-  path: /api/v1/gas/resident-units/{id}/last-reading
-  controller: App\Context\Gas\Infrastructure\Http\Controller\FindLastGasReadingController
-  methods: [GET]
+get_gas_reading_by_period:
+    path: /api/v1/gas/resident-units/{id}/reading/{year}/{month}
+    controller: App\Context\Gas\Infrastructure\Http\Controller\FindGasReadingController
+    methods: [GET]
+

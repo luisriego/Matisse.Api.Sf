@@ -699,6 +699,33 @@ Calculates and defines the gas price based on the total bill amount.
 -   `201 Created`: The gas price was calculated and defined successfully.
 -   `400 Bad Request`: The request was malformed or validation failed.
 
+### `GET /api/v1/gas/price`
+
+Retrieves the current gas price per m³.
+
+**Responses:**
+
+-   `200 OK`: The price was found successfully.
+-   `404 Not Found`: The gas price has not been defined yet.
+
+**Example Response (Success):**
+
+```json
+{
+    "price_per_m3_in_cents": 587
+}
+```
+
+**Example Response (Error):**
+
+```json
+{
+    "class": "App\\Context\\Gas\\Domain\\Exception\\GasPriceNotFoundException",
+    "code": 404,
+    "message": "O preço do gás ainda não foi definido."
+}
+```
+
 ### `PUT /api/v1/gas/reading`
 
 Records a new gas reading for a specific resident unit and period.
@@ -727,6 +754,40 @@ Records a new gas reading for a specific resident unit and period.
 
 -   `201 Created`: The gas reading was recorded successfully.
 -   `400 Bad Request`: The request was malformed or validation failed.
+
+### `GET /api/v1/gas/resident-units/{id}/last-reading`
+
+Retrieves the last gas reading for a specific resident unit, corresponding to the period of "two months ago". For example, a call in November will return the last reading from September or earlier.
+
+**URL Parameters:**
+
+| Parámetro | Tipo         | Required | Descripción                                  |
+| :-------- | :----------- | :------- | :------------------------------------------- |
+| `{id}`    | `string` (UUID) | Yes      | The ID of the `ResidentUnit`.                |
+
+**Responses:**
+
+-   `200 OK`: A reading was found successfully.
+-   `404 Not Found`: No previous gas reading was found for this resident unit in the specified period.
+
+**Example Response (Success):**
+
+```json
+{
+    "resident_unit_id": "674424a7-6009-42c0-a2da-6cc21a542bbc",
+    "reading": 150.5
+}
+```
+
+**Example Response (Error):**
+
+```json
+{
+    "class": "App\\Context\\Gas\\Domain\\Exception\\GasReadingNotFoundException",
+    "code": 404,
+    "message": "Não foi encontrada uma leitura de gás anterior para esta unidade residencial."
+}
+```
 
 ---
 
