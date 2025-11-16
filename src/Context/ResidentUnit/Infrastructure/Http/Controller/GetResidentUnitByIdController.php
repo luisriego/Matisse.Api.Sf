@@ -15,7 +15,12 @@ use Throwable;
 
 final class GetResidentUnitByIdController extends ApiController
 {
-    public function __construct(private readonly MessageBusInterface $queryBus) {}
+    public function __construct(
+        MessageBusInterface $commandBus,
+        private readonly MessageBusInterface $queryBus,
+    ) {
+        parent::__construct($commandBus, $queryBus);
+    }
 
     public function __invoke(string $id): JsonResponse
     {
@@ -32,7 +37,7 @@ final class GetResidentUnitByIdController extends ApiController
         }
     }
 
-    protected function exceptions(): array
+    public function exceptions(): array
     {
         return [
             ResourceNotFoundException::class => Response::HTTP_NOT_FOUND,

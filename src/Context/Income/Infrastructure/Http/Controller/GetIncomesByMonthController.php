@@ -28,7 +28,7 @@ final class GetIncomesByMonthController extends ApiController
         return new JsonResponse($incomes, Response::HTTP_OK);
     }
 
-    protected function exceptions(): array
+    public function exceptions(): array
     {
         return []; // No specific exceptions to map for this query for now
     }

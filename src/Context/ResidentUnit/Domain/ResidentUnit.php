@@ -156,4 +156,10 @@ class ResidentUnit extends AggregateRoot
 
         return $this;
     }
+
+    public function changeIdealFraction(ResidentUnitIdealFraction $idealFraction): void
+    {
+        $this->idealFraction = $idealFraction->value();
+        $this->markAsUpdated();
+    }
 }

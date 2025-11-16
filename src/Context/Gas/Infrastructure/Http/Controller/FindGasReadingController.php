@@ -34,7 +34,7 @@ final class FindGasReadingController extends ApiController
         );
     }
 
-    protected function exceptions(): array
+    public function exceptions(): array
     {
         return [
             GasReadingNotFoundException::class => Response::HTTP_NOT_FOUND,

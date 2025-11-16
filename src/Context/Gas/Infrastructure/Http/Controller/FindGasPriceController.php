@@ -26,7 +26,7 @@ final class FindGasPriceController extends ApiController
         );
     }
 
-    protected function exceptions(): array
+    public function exceptions(): array
     {
         return [
             GasPriceNotFoundException::class => Response::HTTP_NOT_FOUND,

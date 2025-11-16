@@ -32,7 +32,7 @@ final class EnterMonthlyRecurringExpenseController extends ApiController
         return new Response(null, Response::HTTP_CREATED);
     }
 
-    protected function exceptions(): array
+    public function exceptions(): array
     {
         return [
             ResourceNotFoundException::class => Response::HTTP_NOT_FOUND,

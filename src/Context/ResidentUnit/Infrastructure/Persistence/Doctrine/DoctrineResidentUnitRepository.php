@@ -40,10 +40,15 @@ class DoctrineResidentUnitRepository extends ServiceEntityRepository implements 
         return $this->findOneBy(['id' => $id]);
     }
 
-    public function calculateTotalIdealFraction(): float
+    public function calculateTotalIdealFraction(?string $excludeId = null): float
     {
         $queryBuilder = $this->createQueryBuilder('ru')
             ->select('SUM(ru.idealFraction) as totalFraction');
+
+        if (null !== $excludeId) {
+            $queryBuilder->where('ru.id != :excludeId')
+                ->setParameter('excludeId', $excludeId);
+        }
 
         return (float) $queryBuilder->getQuery()->getSingleScalarResult();
     }

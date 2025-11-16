@@ -42,7 +42,7 @@ final class ExpenseAttachmentPatchController extends ApiController
         return new JsonResponse(null, Response::HTTP_OK);
     }
 
-    protected function exceptions(): array
+    public function exceptions(): array
     {
         return [
             InvalidArgumentException::class => Response::HTTP_BAD_REQUEST,

@@ -39,7 +39,7 @@ final class ChangePasswordController extends ApiController
         return new JsonResponse(['message' => 'Password changed successfully.'], Response::HTTP_OK);
     }
 
-    protected function exceptions(): array
+    public function exceptions(): array
     {
         return [
             InvalidArgumentException::class => Response::HTTP_BAD_REQUEST,

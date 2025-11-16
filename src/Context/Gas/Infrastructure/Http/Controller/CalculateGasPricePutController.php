@@ -20,7 +20,7 @@ final class CalculateGasPricePutController extends ApiController
         return new JsonResponse(null, Response::HTTP_CREATED);
     }
 
-    protected function exceptions(): array
+    public function exceptions(): array
     {
         return [
             InvalidArgumentException::class => Response::HTTP_BAD_REQUEST,
