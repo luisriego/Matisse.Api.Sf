@@ -12,7 +12,7 @@ interface ResidentUnitRepository
 
     public function findOneById(string $id): ?ResidentUnit;
 
-    public function calculateTotalIdealFraction(): float;
+    public function calculateTotalIdealFraction(?string $excludeId = null): float;
 
     public function findAllActive(): array;
 }

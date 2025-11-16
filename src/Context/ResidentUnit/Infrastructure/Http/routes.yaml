@@ -18,7 +18,17 @@ resident_unit_patch_recipients:
     controller: App\Context\ResidentUnit\Infrastructure\Http\Controller\ResidentUnitAppendRecipientsController
     methods: ['PATCH']
 
+resident_unit_patch_ideal_fraction:
+    path: /api/v1/resident-unit/{id}/ideal-fraction
+    controller: App\Context\ResidentUnit\Infrastructure\Http\Controller\ResidentUnitIdealFractionPatchController
+    methods: ['PATCH']
+
 list_active_resident_units:
     path: /api/v1/resident-unit/actives
     controller: App\Context\ResidentUnit\Infrastructure\Http\Controller\ListActiveResidentUnitsController
+    methods: ['GET']
+
+resident_unit_get_by_id:
+    path: /api/v1/resident-unit/{id}
+    controller: App\Context\ResidentUnit\Infrastructure\Http\Controller\GetResidentUnitByIdController
     methods: ['GET']

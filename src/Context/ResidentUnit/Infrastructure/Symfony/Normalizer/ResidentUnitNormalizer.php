@@ -7,7 +7,9 @@ namespace App\Context\ResidentUnit\Infrastructure\Symfony\Normalizer;
 use App\Context\ResidentUnit\Domain\ResidentUnit;
 use Symfony\Component\Serializer\Normalizer\NormalizerInterface;
 
-class ResidentUnitNormalizer implements NormalizerInterface
+use function array_map;
+
+final class ResidentUnitNormalizer implements NormalizerInterface
 {
     /**
      * @param ResidentUnit $object
@@ -20,8 +22,11 @@ class ResidentUnitNormalizer implements NormalizerInterface
             'idealFraction' => $object->idealFraction(),
             'isActive' => $object->isActive(),
             'createdAt' => $object->createdAt()->format('Y-m-d H:i:s'),
-            'updatedAt' => $object->updatedAt() ? $object->updatedAt()->format('Y-m-d H:i:s') : null,
-            'notificationRecipients' => $object->notificationRecipients(),
+            'updatedAt' => $object->updatedAt()?->format('Y-m-d H:i:s'),
+            'notificationRecipients' => array_map(static fn ($recipient) => [
+                'name' => $recipient->name(),
+                'email' => $recipient->email(),
+            ], $object->notificationRecipients()),
         ];
     }
 

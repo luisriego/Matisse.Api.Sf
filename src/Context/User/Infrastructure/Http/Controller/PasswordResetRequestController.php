@@ -29,7 +29,7 @@ final class PasswordResetRequestController extends ApiController
         );
     }
 
-    protected function exceptions(): array
+    public function exceptions(): array
     {
         // No necesitamos mapear excepciones aquí, ya que el controlador siempre devuelve 200 OK
         // para evitar la enumeración de usuarios, incluso si el email no existe.

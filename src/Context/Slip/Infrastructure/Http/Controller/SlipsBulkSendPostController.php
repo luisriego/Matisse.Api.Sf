@@ -28,7 +28,7 @@ final class SlipsBulkSendPostController extends ApiController
         return new JsonResponse(null, Response::HTTP_ACCEPTED);
     }
 
-    protected function exceptions(): array
+    public function exceptions(): array
     {
         return [];
     }

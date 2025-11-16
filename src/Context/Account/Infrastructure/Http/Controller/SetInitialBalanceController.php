@@ -34,7 +34,7 @@ final class SetInitialBalanceController extends ApiController
         return new Response(null, Response::HTTP_ACCEPTED);
     }
 
-    protected function exceptions(): array
+    public function exceptions(): array
     {
         return [
             ResourceNotFoundException::class => Response::HTTP_NOT_FOUND,

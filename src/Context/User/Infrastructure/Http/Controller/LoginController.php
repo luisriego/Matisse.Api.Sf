@@ -50,7 +50,7 @@ final class LoginController extends ApiController
         ]);
     }
 
-    protected function exceptions(): array
+    public function exceptions(): array
     {
         // Define exception mappings if needed, though most auth errors are handled before this controller.
         return [];

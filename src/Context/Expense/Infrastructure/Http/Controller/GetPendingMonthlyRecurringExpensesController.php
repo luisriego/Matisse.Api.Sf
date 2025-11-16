@@ -50,7 +50,7 @@ final class GetPendingMonthlyRecurringExpensesController extends ApiController
         return new JsonResponse($data, Response::HTTP_OK);
     }
 
-    protected function exceptions(): array
+    public function exceptions(): array
     {
         return [
             InvalidDataException::class => Response::HTTP_BAD_REQUEST,

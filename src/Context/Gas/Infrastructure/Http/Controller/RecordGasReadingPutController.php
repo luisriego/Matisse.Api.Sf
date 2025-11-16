@@ -21,7 +21,7 @@ final class RecordGasReadingPutController extends ApiController
         return new JsonResponse(null, Response::HTTP_CREATED);
     }
 
-    protected function exceptions(): array
+    public function exceptions(): array
     {
         return [
             DateMalformedStringException::class => Response::HTTP_BAD_REQUEST,

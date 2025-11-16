@@ -32,7 +32,7 @@ final class ActivateUserController extends ApiController
         );
     }
 
-    protected function exceptions(): array
+    public function exceptions(): array
     {
         return [
             ResourceNotFoundException::class => Response::HTTP_NOT_FOUND,

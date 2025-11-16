@@ -5,7 +5,8 @@ declare(strict_types=1);
 namespace App\Shared\Infrastructure;
 
 use App\Context\Gas\Domain\Exception\GasPriceNotFoundException;
-use App\Context\Gas\Domain\Exception\GasReadingNotFoundException; // 1. Importar
+use App\Context\Gas\Domain\Exception\GasReadingNotFoundException;
+use App\Context\ResidentUnit\Domain\Exception\IdealFractionSumExceedsLimitException;
 use App\Shared\Domain\Exception\AccessDeniedException;
 use App\Shared\Domain\Exception\InvalidArgumentException;
 use App\Shared\Domain\Exception\ResourceAlreadyExistException;
@@ -41,6 +42,10 @@ class JsonTransformerExceptionListener
 
         if ($e instanceof AccessDeniedException) {
             $data['code'] = Response::HTTP_FORBIDDEN;
+        }
+
+        if ($e instanceof IdealFractionSumExceedsLimitException) {
+            $data['code'] = Response::HTTP_CONFLICT;
         }
 
         $response = new JsonResponse($data, $data['code']);

@@ -52,6 +52,15 @@ final class RegisterController extends ApiController
         }
     }
 
+    public function exceptions(): array
+    {
+        return [
+            BadRequestHttpException::class => Response::HTTP_BAD_REQUEST,
+            ResourceAlreadyExistException::class => Response::HTTP_CONFLICT,
+            JsonException::class => Response::HTTP_BAD_REQUEST,
+        ];
+    }
+
     protected function unwrap(Throwable $e): Throwable
     {
         $t = $e;
@@ -61,14 +70,5 @@ final class RegisterController extends ApiController
         }
 
         return $t;
-    }
-
-    protected function exceptions(): array
-    {
-        return [
-            BadRequestHttpException::class => Response::HTTP_BAD_REQUEST,
-            ResourceAlreadyExistException::class => Response::HTTP_CONFLICT,
-            JsonException::class => Response::HTTP_BAD_REQUEST,
-        ];
     }
 }
