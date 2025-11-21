@@ -258,6 +258,16 @@ class User extends AggregateRoot implements UserInterface, PasswordAuthenticated
         return $this->getId() === $user->getId();
     }
 
+    public function createdAt(): ?DateTimeImmutable
+    {
+        return $this->createdAt;
+    }
+
+    public function updatedAt(): ?DateTime
+    {
+        return $this->updatedAt;
+    }
+
     private function markAsUpdated(): void
     {
         $this->updatedAt = new DateTime();
