@@ -39,4 +39,9 @@ class DoctrineIncomeTypeRepository extends ServiceEntityRepository implements In
 
         return $income;
     }
+
+    public function findAll(): array
+    {
+        return parent::findAll();
+    }
 }

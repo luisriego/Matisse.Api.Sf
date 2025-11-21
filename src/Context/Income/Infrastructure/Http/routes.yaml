@@ -3,6 +3,11 @@ income_health_check:
     controller: App\Context\Income\Infrastructure\Http\Controller\HealthCheckController
     methods: ['GET']
 
+income_types_get:
+    path: /api/v1/income-types
+    controller: App\Context\Income\Infrastructure\Http\Controller\GetIncomeTypesController
+    methods: ['GET']
+
 #income_enter_description:
 #    path: /api/v1/incomes/enter-description
 #    controller: App\Context\Income\Infrastructure\Http\Controller\IncomeEnterWithDescriptionPutController
@@ -23,20 +28,20 @@ income_update:
     controller: App\Context\Income\Infrastructure\Http\Controller\UpdateIncomePatchController
     methods: ['PATCH']
 
-income_payed:
-    path: /api/v1/incomes/payed/{id}
-    controller: App\Context\Income\Infrastructure\Http\Controller\IncomePayedPatchController
-    methods: ['PATCH']
+#income_payed:
+#    path: /api/v1/incomes/payed/{id}
+#    controller: App\Context\Income\Infrastructure\Http\Controller\IncomePayedPatchController
+#    methods: ['PATCH']
 
 incomes_get:
     path: /api/v1/incomes
     controller: App\Context\Income\Infrastructure\Http\Controller\GetAllIncomesController
     methods: ['GET']
 
-income_get:
-    path: /api/v1/incomes/{id}
-    controller: App\Context\Income\Infrastructure\Http\Controller\GetIncomeByIdController
-    methods: ['GET']
+#income_get:
+#    path: /api/v1/incomes/{id}
+#    controller: App\Context\Income\Infrastructure\Http\Controller\GetIncomeByIdController
+#    methods: ['GET']
 
 income_get_date_range_recurring:
     path: /api/v1/incomes/date-range-recurring/{year}/{month}
@@ -47,3 +52,4 @@ income_get_date_range:
     path: /api/v1/incomes/date-range/{year}/{month}
     controller: App\Context\Income\Infrastructure\Http\Controller\GetIncomesByMonthController
     methods: ['GET']
+

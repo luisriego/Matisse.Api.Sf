@@ -55,6 +55,30 @@ final class ExpenseEnterPutControllerTest extends ApiTestCase
 
         $this->assertResponseStatusCodeSame(Response::HTTP_CREATED);
 
+        // --- Strong Assertions for the API Response ---
+        $responseContent = $this->client->getResponse()->getContent();
+        $data = json_decode($responseContent, true);
+
+        // 1. Assert that the expected keys exist
+        $this->assertArrayHasKey('id', $data);
+        $this->assertArrayHasKey('amount', $data);
+        $this->assertArrayHasKey('dueDate', $data);
+        $this->assertArrayHasKey('type', $data);
+        $this->assertIsArray($data['type']);
+        $this->assertArrayHasKey('name', $data['type']);
+
+        // 2. Assert values and formats
+        $this->assertSame($payload['id'], $data['id']);
+        $this->assertSame(1000, $data['amount']);
+        $this->assertSame('Test Expense Description', $data['description']);
+
+        // 3. Assert the exact format of the date
+        $this->assertMatchesRegularExpression('/^\d{4}-\d{2}-\d{2}$/', $data['dueDate'], 'The dueDate format is not YYYY-MM-DD');
+
+        // 4. Assert the value of the nested object
+        $this->assertSame($expenseType->name(), $data['type']['name']);
+        // --- End of Strong Assertions ---
+
         $container = self::getContainer();
 
         /** @var StoredEventRepository $storedEventRepository */

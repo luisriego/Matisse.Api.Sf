@@ -13,13 +13,21 @@ use Doctrine\Common\Collections\Collection;
 class IncomeType
 {
     private Collection $incomes;
+    private string $id;
+    private ?string $name;
+    private ?string $code;
+    private ?string $description;
 
     public function __construct(
-        private readonly string $id,
-        private ?string $name,
-        private ?string $code = null,
-        private ?string $description = null,
+        string $id,
+        ?string $name,
+        ?string $code = null,
+        ?string $description = null,
     ) {
+        $this->id = $id;
+        $this->name = $name;
+        $this->code = $code;
+        $this->description = $description;
         $this->incomes = new ArrayCollection();
     }
 

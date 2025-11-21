@@ -10,7 +10,7 @@ use Doctrine\Migrations\AbstractMigration;
 /**
  * Auto-generated Migration: Please modify to your needs!
  */
-final class Version20251015213655 extends AbstractMigration
+final class Version20251121114659 extends AbstractMigration
 {
     public function getDescription(): string
     {
@@ -20,14 +20,17 @@ final class Version20251015213655 extends AbstractMigration
     public function up(Schema $schema): void
     {
         // this up() migration is auto-generated, please modify it to your needs
-        $this->addSql('ALTER TABLE recurring_expense ADD account_id UUID DEFAULT NULL');
-        $this->addSql('COMMENT ON COLUMN recurring_expense.account_id IS \'(DC2Type:uuid)\'');
+        $this->addSql('ALTER TABLE expense ALTER due_date TYPE DATE');
+        $this->addSql('ALTER TABLE expense ALTER paid_at TYPE DATE');
+        $this->addSql('COMMENT ON COLUMN expense.paid_at IS \'(DC2Type:date_immutable)\'');
     }
 
     public function down(Schema $schema): void
     {
         // this down() migration is auto-generated, please modify it to your needs
         $this->addSql('CREATE SCHEMA public');
-        $this->addSql('ALTER TABLE recurring_expense DROP account_id');
+        $this->addSql('ALTER TABLE expense ALTER due_date TYPE TIMESTAMP(0) WITHOUT TIME ZONE');
+        $this->addSql('ALTER TABLE expense ALTER paid_at TYPE TIMESTAMP(0) WITHOUT TIME ZONE');
+        $this->addSql('COMMENT ON COLUMN expense.paid_at IS \'(DC2Type:datetime_immutable)\'');
     }
 }

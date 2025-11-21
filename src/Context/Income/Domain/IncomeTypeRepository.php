@@ -9,4 +9,6 @@ interface IncomeTypeRepository
     public function save(IncomeType $incomeType, bool $flush = true): void;
 
     public function findOneByIdOrFail(string $id): IncomeType;
+
+    public function findAll(): array;
 }
