@@ -9,7 +9,6 @@ use App\Shared\Application\Query;
 final readonly class GetSlipDetailsQuery implements Query
 {
     public function __construct(
-        public string $slipId
-    ) {
-    }
+        public string $slipId,
+    ) {}
 }

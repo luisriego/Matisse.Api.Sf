@@ -10,9 +10,7 @@ use App\Shared\Application\QueryHandler;
 
 final readonly class GetSlipDetailsQueryHandler implements QueryHandler
 {
-    public function __construct(private SlipRepository $repository)
-    {
-    }
+    public function __construct(private SlipRepository $repository) {}
 
     public function __invoke(GetSlipDetailsQuery $query): array
     {
