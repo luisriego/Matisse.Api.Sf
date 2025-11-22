@@ -18,3 +18,7 @@ get_gas_reading_by_period:
     controller: App\Context\Gas\Infrastructure\Http\Controller\FindGasReadingController
     methods: [GET]
 
+gas_get_average_consumption:
+    path: /api/v1/gas/resident-units/{id}/average-consumption
+    controller: App\Context\Gas\Infrastructure\Http\Controller\GetAverageGasConsumptionController
+    methods: ['GET']
