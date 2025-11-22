@@ -31,15 +31,10 @@ class SlipCheckTotalPostController
             return new JsonResponse(['errors' => [$e->getMessage()]], Response::HTTP_BAD_REQUEST);
         }
 
-        // --- LÓGICA DE NEGOCIO DIRECTAMENTE AQUÍ ---
-
-        // 1. Definimos los límites en centavos.
         $minExpected = new SlipAmount(500000);
         $maxExpected = new SlipAmount(1000000);
 
-        // 2. Comparamos.
         if ($amount->value() >= $minExpected->value() && $amount->value() <= $maxExpected->value()) {
-            // Si está en el rango, devolvemos 'ok'.
             return new JsonResponse([
                 'status' => 'ok',
                 'message' => 'O total do slip está dentro do intervalo esperado.',
@@ -47,7 +42,6 @@ class SlipCheckTotalPostController
             ], Response::HTTP_OK);
         }
 
-        // 3. Si está fuera de rango, generamos el prompt y llamamos a la IA.
         $anomalyType = $amount->value() < $minExpected->value() ? 'muito baixo' : 'muito alto';
         $amountForPrompt = number_format($amount->value() / 100, 2, ',', '.');
         $minForPrompt = number_format($minExpected->value() / 100, 2, ',', '.');

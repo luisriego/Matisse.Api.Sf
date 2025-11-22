@@ -3,6 +3,11 @@ slip_health_check:
     controller: App\Context\Slip\Infrastructure\Http\Controller\HealthCheckController
     methods: ['GET']
 
+slip_get_details:
+    path: /api/v1/slips/{id}
+    controller: App\Context\Slip\Infrastructure\Http\Controller\GetSlipDetailsController
+    methods: ['GET']
+
 slip_generation:
     path: /api/v1/slips/generation
     controller: App\Context\Slip\Infrastructure\Http\Controller\SlipGenerationPostController
