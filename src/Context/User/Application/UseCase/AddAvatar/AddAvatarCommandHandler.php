@@ -20,8 +20,7 @@ final class AddAvatarCommandHandler implements CommandHandler
         private readonly UserRepository $repository,
         private readonly SluggerInterface $slugger,
         private readonly string $uploadsPath,
-    ) {
-    }
+    ) {}
 
     public function __invoke(AddAvatarCommand $command): void
     {

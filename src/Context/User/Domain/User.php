@@ -164,8 +164,6 @@ class User extends AggregateRoot implements UserInterface, PasswordAuthenticated
         $this->name = $userName->value();
     }
 
-
-
     public function lastName(): ?string
     {
         return $this->lastName;

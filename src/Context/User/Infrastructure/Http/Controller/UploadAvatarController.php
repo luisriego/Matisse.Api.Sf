@@ -14,6 +14,8 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Messenger\Exception\HandlerFailedException;
 
+use function in_array;
+
 final class UploadAvatarController extends ApiController
 {
     private const ALLOWED_MIME_TYPES = ['image/jpeg', 'image/png', 'image/gif'];
