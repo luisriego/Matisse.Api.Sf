@@ -8,6 +8,7 @@ use App\Context\ResidentUnit\Domain\ResidentUnit;
 use App\Context\User\Domain\User;
 use App\Context\User\Infrastructure\Symfony\Normalizer\UserNormalizer;
 use DateTimeImmutable;
+use PHPUnit\Framework\MockObject\Exception;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 use Symfony\Component\Serializer\Serializer; // Import the concrete Serializer class
@@ -115,6 +116,7 @@ final class UserNormalizerTest extends TestCase
                 'updatedAt' => $residentUnitUpdatedAt->format('Y-m-d H:i:s'),
                 'notificationRecipients' => $residentUnitRecipients,
             ],
+            'avatar' => null,
         ];
 
         $this->assertEquals($expected, $this->normalizer->normalize($user));
@@ -157,6 +159,7 @@ final class UserNormalizerTest extends TestCase
             'createdAt' => $userCreatedAt->format('Y-m-d H:i:s'),
             'updatedAt' => null,
             'residentUnit' => null,
+            'avatar' => null,
         ];
 
         $this->assertEquals($expected, $this->normalizer->normalize($user));
@@ -198,11 +201,15 @@ final class UserNormalizerTest extends TestCase
             'createdAt' => $userCreatedAt->format('Y-m-d H:i:s'),
             'updatedAt' => null,
             'residentUnit' => null,
+            'avatar' => null,
         ];
 
         $this->assertEquals($expected, $this->normalizer->normalize($user));
     }
 
+    /**
+     * @throws Exception
+     */
     public function testNormalizeUserWithMultipleRoles(): void
     {
         $userId = 'd1e2f3a4-b5c6-7d8e-9f0a-1b2c3d4e5f6a';
@@ -240,6 +247,7 @@ final class UserNormalizerTest extends TestCase
             'createdAt' => $userCreatedAt->format('Y-m-d H:i:s'),
             'updatedAt' => null,
             'residentUnit' => null,
+            'avatar' => null,
         ];
 
         $this->assertEquals($expected, $this->normalizer->normalize($user));
@@ -281,6 +289,7 @@ final class UserNormalizerTest extends TestCase
             'createdAt' => $userCreatedAt->format('Y-m-d H:i:s'),
             'updatedAt' => null,
             'residentUnit' => null,
+            'avatar' => null,
         ];
 
         $this->assertEquals($expected, $this->normalizer->normalize($user));
@@ -360,6 +369,7 @@ final class UserNormalizerTest extends TestCase
                 'updatedAt' => null,
                 'notificationRecipients' => $residentUnitRecipients,
             ],
+            'avatar' => null,
         ];
 
         $this->assertEquals($expected, $this->normalizer->normalize($user));

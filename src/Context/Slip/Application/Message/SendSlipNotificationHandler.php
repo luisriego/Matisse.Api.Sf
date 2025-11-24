@@ -39,11 +39,5 @@ final readonly class SendSlipNotificationHandler
             ));
 
         $this->mailer->send($email);
-
-        echo sprintf(
-            "\n[OK] Email para el Slip %s enviado a %s a través de Mailtrap.\n",
-            $message->slipId,
-            $recipientEmail,
-        );
     }
 }

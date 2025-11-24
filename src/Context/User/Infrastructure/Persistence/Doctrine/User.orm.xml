@@ -21,6 +21,7 @@
         <field name="passwordResetRequestedAt" column="password_reset_requested_at" type="datetime_immutable" nullable="true" /> <!-- Added -->
         <field name="createdAt" column="created_at" type="datetime_immutable" />
         <field name="updatedAt" column="updated_at" type="datetime" nullable="true" />
+        <field name="avatar" column="avatar" type="string" length="255" nullable="true" /> <!-- NUEVA PROPIEDAD -->
 
         <many-to-one field="residentUnit" target-entity="App\Context\ResidentUnit\Domain\ResidentUnit" inversed-by="users">
             <join-column name="resident_unit_id" referenced-column-name="id" nullable="true" on-delete="SET NULL" />

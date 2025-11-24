@@ -88,7 +88,7 @@ class EnterExpenseWithDescriptionCommandHandlerTest extends TestCase
     {
         $expense = ExpenseMother::create();
         $expenseType = new ExpenseType('type-id', 'CODE', 'Name');
-        $description = AccountDescriptionMother::create()->value();
+        $description = 'This is a valid description with more than 10 characters';
 
         $command = new EnterExpenseWithDescriptionCommand(
             $expense->id(),

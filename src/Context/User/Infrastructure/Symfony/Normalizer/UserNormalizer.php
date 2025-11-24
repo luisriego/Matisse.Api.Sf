@@ -29,6 +29,7 @@ class UserNormalizer implements NormalizerInterface, SerializerAwareInterface
             'isActive' => $object->isActive(),
             'createdAt' => $object->createdAt()?->format('Y-m-d H:i:s'),
             'updatedAt' => $object->updatedAt()?->format('Y-m-d H:i:s'),
+            'avatar' => $object->avatar(),
         ];
 
         // Handle residentUnit relation

@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Context\Expense\Domain;
 
+use App\Context\Account\Domain\Account;
 use App\Context\Expense\Domain\ValueObject\ExpenseEndDate;
 use App\Context\Expense\Domain\ValueObject\ExpenseStartDate;
 use App\Context\Expense\Domain\ValueObject\ExpenseTypeCode;
@@ -24,6 +25,7 @@ class ExpenseType
     private ?string $name = null;
     private ?string $distributionMethod = 'EQUAL';
     private ?string $description = null;
+    private ?Account $account = null;
     private Collection $expenses;
     private Collection $recurringExpenses;
 
@@ -33,12 +35,14 @@ class ExpenseType
         string $name,
         string $distributionMethod = self::EQUAL,
         ?string $description = null,
+        ?Account $account = null,
     ) {
         $this->id                 = $id;
         $this->code               = $code;
         $this->name               = $name;
         $this->distributionMethod = $distributionMethod;
         $this->description        = $description;
+        $this->account            = $account;
         // Doctrine will manage these collections
     }
 
@@ -48,6 +52,7 @@ class ExpenseType
         ExpenseTypeName $name,
         ExpenseTypeDistributionMethod $distributionMethod,
         ExpenseTypeDescription $description,
+        ?Account $account = null,
         ?ExpenseStartDate $startDate = null,
         ?ExpenseEndDate $endDate = null,
     ): self {
@@ -57,6 +62,7 @@ class ExpenseType
             $name->value(),
             $distributionMethod->value(),
             $description->value(),
+            $account,
         );
     }
 
@@ -83,6 +89,11 @@ class ExpenseType
     public function distributionMethod(): ?string
     {
         return $this->distributionMethod;
+    }
+
+    public function account(): ?Account
+    {
+        return $this->account;
     }
 
     public function expenses(): Collection
