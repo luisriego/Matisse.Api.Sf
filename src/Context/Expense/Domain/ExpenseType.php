@@ -109,4 +109,9 @@ class ExpenseType
 
         return $this;
     }
+
+    public function assignAccount(Account $account): void
+    {
+        $this->account = $account;
+    }
 }
