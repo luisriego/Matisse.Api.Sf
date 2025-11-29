@@ -15,6 +15,7 @@ use App\Context\ResidentUnit\Domain\ResidentUnitRepository;
 use App\Shared\Domain\Event\EventBus;
 use App\Shared\Domain\Exception\DueDateMustBeInTheFutureException;
 use App\Tests\Context\Income\Domain\IncomeIdMother;
+use App\Tests\Shared\Domain\UuidMother;
 use DateMalformedStringException;
 use DateTime;
 use Exception;
@@ -59,6 +60,7 @@ class EnterIncomeCommandHandlerTest extends TestCase
         $amount = 1500;
         $residentUnitId = 'resident-unit-id';
         $typeId = 'income-type-id';
+        $accountId = UuidMother::create();
         $dueDate = (new DateTime('+30 days'))->format('Y-m-d');
         $description = 'Monthly salary income';
 
@@ -67,6 +69,7 @@ class EnterIncomeCommandHandlerTest extends TestCase
             $amount,
             $residentUnitId,
             $typeId,
+            $accountId,
             $dueDate,
             $description
         );
@@ -118,6 +121,7 @@ class EnterIncomeCommandHandlerTest extends TestCase
         $amount = 1000;
         $residentUnitId = 'resident-unit-id';
         $typeId = 'income-type-id';
+        $accountId = UuidMother::create();
         $dueDate = (new DateTime('+15 days'))->format('Y-m-d');
 
         $command = new EnterIncomeCommand(
@@ -125,6 +129,7 @@ class EnterIncomeCommandHandlerTest extends TestCase
             $amount,
             $residentUnitId,
             $typeId,
+            $accountId,
             $dueDate,
             null
         );
@@ -174,6 +179,7 @@ class EnterIncomeCommandHandlerTest extends TestCase
             1000,
             'non-existent-unit',
             'type-id',
+            UuidMother::create(),
             (new DateTime('+30 days'))->format('Y-m-d'),
             'description'
         );
@@ -203,6 +209,7 @@ class EnterIncomeCommandHandlerTest extends TestCase
             1000,
             $residentUnitId,
             'non-existent-type',
+            UuidMother::create(),
             (new DateTime('+30 days'))->format('Y-m-d'),
             'description'
         );
@@ -239,6 +246,7 @@ class EnterIncomeCommandHandlerTest extends TestCase
             1000,
             'resident-unit-id',
             'type-id',
+            UuidMother::create(),
             'invalid-date',
             'description'
         );
@@ -274,6 +282,7 @@ class EnterIncomeCommandHandlerTest extends TestCase
             1000,
             'resident-unit-id',
             'type-id',
+            UuidMother::create(),
             $pastDate,
             'description'
         );
@@ -312,6 +321,7 @@ class EnterIncomeCommandHandlerTest extends TestCase
             $amount,
             $residentUnitId,
             $typeId,
+            UuidMother::create(),
             $dueDate,
             null
         );
@@ -358,6 +368,7 @@ class EnterIncomeCommandHandlerTest extends TestCase
             $amount,
             $residentUnitId,
             $typeId,
+            UuidMother::create(),
             $dueDate,
             null
         );

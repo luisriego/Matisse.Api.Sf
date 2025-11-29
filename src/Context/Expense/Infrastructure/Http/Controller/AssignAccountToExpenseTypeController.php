@@ -9,17 +9,18 @@ use App\Shared\Domain\Exception\InvalidArgumentException;
 use App\Shared\Infrastructure\Symfony\ApiController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Response;
+use Throwable;
 
 final class AssignAccountToExpenseTypeController extends ApiController
 {
     /**
-     * @throws \Throwable
+     * @throws Throwable
      */
     public function __invoke(string $expenseTypeId, string $accountTypeId): JsonResponse
     {
         $this->dispatch(new AssignAccountTypeToExpenseTypeCommand(
             $expenseTypeId,
-            $accountTypeId
+            $accountTypeId,
         ));
 
         return new JsonResponse(null, Response::HTTP_OK);

@@ -11,8 +11,7 @@ final readonly class AssignAccountTypeToExpenseTypeCommand implements Command
     public function __construct(
         private string $expenseTypeId,
         private string $accountTypeId,
-    ) {
-    }
+    ) {}
 
     public function getExpenseTypeId(): string
     {

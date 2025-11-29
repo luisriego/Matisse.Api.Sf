@@ -28,7 +28,7 @@ readonly class GetAccountBalanceQueryHandler implements QueryHandler
         $balance = 0;
         $eventsStartDate = new DateTimeImmutable('1900-01-01'); // Default start date
 
-        // 1. Find the latest InitialBalanceSet event up to the query's upToDate
+        // 1. Find the latest InitialBalanceSet event for the specific account
         $initialBalanceEvents = $this->eventRepository->findByEventTypesAndOccurredBetweenAndAggregateId(
             [InitialBalanceSet::eventName()],
             new DateTimeImmutable('1900-01-01'),
@@ -38,7 +38,7 @@ readonly class GetAccountBalanceQueryHandler implements QueryHandler
 
         if (!empty($initialBalanceEvents)) {
             /** @var StoredEvent $latestInitialBalanceStoredEvent */
-            $latestInitialBalanceStoredEvent = end($initialBalanceEvents); // Already sorted by occurredAt ASC
+            $latestInitialBalanceStoredEvent = end($initialBalanceEvents);
             /** @var InitialBalanceSet $initialBalanceEvent */
             $initialBalanceEvent = $latestInitialBalanceStoredEvent->toDomainEvent();
 
@@ -46,33 +46,37 @@ readonly class GetAccountBalanceQueryHandler implements QueryHandler
             $eventsStartDate = new DateTimeImmutable($initialBalanceEvent->date());
         }
 
-        // 2. Fetch all transaction events (expenses and incomes) after the initial balance date
-        $transactionEvents = $this->eventRepository->findByEventTypesAndOccurredBetweenAndAggregateId(
+        // 2. Fetch all transaction events (expenses and incomes) in the date range
+        $transactionEvents = $this->eventRepository->findByEventTypesAndOccurredBetween(
             [
                 ExpenseWasEntered::eventName(),
                 IncomeWasEntered::eventName(),
             ],
             $eventsStartDate,
             $upToDate,
-            $accountId,
         );
 
-        // @var StoredEvent $event
+        // 3. Filter events by accountId in PHP
         foreach ($transactionEvents as $storedEvent) {
             $domainEvent = $storedEvent->toDomainEvent();
+            $primitives = $domainEvent->toPrimitives();
 
-            // Ensure the event's dueDate is also within the upToDate limit
-            // This is important because findByEventNamesAndOccurredBetween filters by occurredAt, not dueDate
-            $eventDueDate = new DateTimeImmutable($domainEvent->toPrimitives()['dueDate']);
+            // Skip if the event is not for the requested account
+            if (!isset($primitives['accountId']) || $primitives['accountId'] !== $accountId) {
+                continue;
+            }
 
-            if ($eventDueDate > $upToDate) {
+            // Skip if the event's due date is outside the upToDate limit
+            $eventDueDate = new DateTimeImmutable($primitives['dueDate']);
+
+            if ($upToDate !== null && $eventDueDate > $upToDate) {
                 continue;
             }
 
             if ($domainEvent instanceof ExpenseWasEntered) {
-                $balance -= $domainEvent->toPrimitives()['amount'];
+                $balance -= $primitives['amount'];
             } elseif ($domainEvent instanceof IncomeWasEntered) {
-                $balance += $domainEvent->toPrimitives()['amount'];
+                $balance += $primitives['amount'];
             }
         }
 

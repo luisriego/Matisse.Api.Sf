@@ -14,16 +14,15 @@ final class AssignAccountTypeToExpenseTypeCommandHandler implements CommandHandl
     public function __construct(
         private readonly ExpenseTypeRepository $expenseTypeRepository,
         private readonly AccountRepository $accountRepository,
-    ) {
-    }
+    ) {}
 
     public function __invoke(AssignAccountTypeToExpenseTypeCommand $command): void
     {
         $expenseTypeId = new Uuid($command->getExpenseTypeId());
         $accountTypeId = new Uuid($command->getAccountTypeId());
 
-        $expenseType = $this->expenseTypeRepository->find($expenseTypeId->value());
-        $account = $this->accountRepository->find($accountTypeId->value());
+        $expenseType = $this->expenseTypeRepository->findOneByIdOrFail($expenseTypeId->value());
+        $account = $this->accountRepository->findOneByIdOrFail($accountTypeId->value());
 
         $expenseType->assignAccount($account);
 

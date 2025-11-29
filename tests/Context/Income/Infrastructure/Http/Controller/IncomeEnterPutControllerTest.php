@@ -43,6 +43,7 @@ final class IncomeEnterPutControllerTest extends ApiTestCase
             'amount' => 5000,
             'residentUnitId' => $residentUnit->id(),
             'type' => $incomeType->id(),
+            'accountId' => UuidMother::create(),
             'dueDate' => $futureDate,
             'description' => 'Test Income Description',
         ];

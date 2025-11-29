@@ -11,16 +11,20 @@ use Symfony\Component\Uid\Uuid as SfUuid;
 
 final readonly class IncomeWasEntered extends DomainEvent
 {
+    private string $accountId;
+
     public function __construct(
         string $aggregateId,
         private int $amount,
         private string $residentUnitId,
         private string $type,
+        string $accountId, // Added accountId to constructor
         private string $dueDate,
         private ?string $description,
         ?string $eventId = null,
         ?DateTimeImmutable $occurredOn = null,
     ) {
+        $this->accountId = $accountId;
         parent::__construct(
             $aggregateId,
             $eventId ?? SfUuid::v4()->toRfc4122(),
@@ -42,6 +46,7 @@ final readonly class IncomeWasEntered extends DomainEvent
             $body['amount'],
             $body['residentUnitId'],
             $body['type'],
+            $body['accountId'], // Added accountId
             $body['dueDate'],
             $body['description'] ?? null,
             $eventId,
@@ -60,6 +65,7 @@ final readonly class IncomeWasEntered extends DomainEvent
             'amount' => $this->amount,
             'residentUnitId' => $this->residentUnitId,
             'type' => $this->type,
+            'accountId' => $this->accountId, // Added accountId
             'dueDate' => $this->dueDate,
             'description' => $this->description,
         ];

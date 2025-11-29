@@ -12,6 +12,7 @@ use App\Context\Income\Domain\ValueObject\IncomeId;
 use App\Context\ResidentUnit\Domain\ResidentUnit;
 use App\Tests\Context\ResidentUnit\Domain\ResidentUnitMother;
 use App\Shared\Domain\ValueObject\Uuid;
+use App\Tests\Shared\Domain\UuidMother;
 use DateTime;
 
 final class IncomeMother
@@ -21,6 +22,7 @@ final class IncomeMother
         ?IncomeAmount $amount = null,
         ?ResidentUnit $residentUnit = null,
         ?IncomeType $type = null,
+        ?string $accountId = null, // Added accountId
         ?IncomeDueDate $dueDate = null,
         ?string $description = null
     ): Income {
@@ -29,6 +31,7 @@ final class IncomeMother
             $amount ?? IncomeAmountMother::create(),
             $residentUnit ?? ResidentUnitMother::create(),
             $type ?? IncomeTypeMother::create(),
+            $accountId ?? UuidMother::create(), // Pass accountId
             $dueDate ?? new IncomeDueDate(new DateTime('+1 day')),
             $description ?? 'Random income description'
         );

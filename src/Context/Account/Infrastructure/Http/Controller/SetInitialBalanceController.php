@@ -10,11 +10,15 @@ use App\Shared\Domain\Exception\ResourceNotFoundException;
 use App\Shared\Infrastructure\Symfony\ApiController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
+use Throwable;
 
 use function json_decode;
 
 final class SetInitialBalanceController extends ApiController
 {
+    /**
+     * @throws Throwable
+     */
     public function __invoke(string $id, Request $request): Response
     {
         $data = json_decode($request->getContent(), true);

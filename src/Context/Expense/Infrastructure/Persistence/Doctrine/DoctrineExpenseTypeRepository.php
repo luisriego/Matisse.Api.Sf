@@ -17,6 +17,11 @@ class DoctrineExpenseTypeRepository extends ServiceEntityRepository implements E
         parent::__construct($registry, ExpenseType::class);
     }
 
+    public function flush(): void
+    {
+        $this->getEntityManager()->flush();
+    }
+
     public function save(ExpenseType $type, bool $flush = true): void
     {
         $this->getEntityManager()->persist($type);

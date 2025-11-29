@@ -6,6 +6,8 @@ namespace App\Context\Expense\Domain;
 
 interface ExpenseTypeRepository
 {
+    public function save(ExpenseType $expenseType): void;
+
     public function findAll(): array;
 
     public function findOneByIdOrFail(string $id): ExpenseType;
