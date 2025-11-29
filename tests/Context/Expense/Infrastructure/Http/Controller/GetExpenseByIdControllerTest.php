@@ -4,11 +4,16 @@ declare(strict_types=1);
 
 namespace App\Tests\Context\Expense\Infrastructure\Http\Controller;
 
+use App\Context\Account\Domain\Exception\ExpenseNotFoundException;
+use App\Context\Expense\Infrastructure\Http\Controller\GetExpenseByIdController;
 use App\Tests\Context\Expense\Domain\ExpenseMother;
 use App\Tests\Shared\Domain\UuidMother;
 use App\Tests\Shared\Infrastructure\PhpUnit\ApiTestCase;
 use Symfony\Component\HttpFoundation\Response;
 
+/**
+ * @covers \App\Context\Expense\Infrastructure\Http\Controller\GetExpenseByIdController
+ */
 final class GetExpenseByIdControllerTest extends ApiTestCase
 {
     protected function setUp(): void
@@ -50,5 +55,14 @@ final class GetExpenseByIdControllerTest extends ApiTestCase
 
         // 3. Assert the response
         $this->assertResponseStatusCodeSame(Response::HTTP_NOT_FOUND);
+    }
+
+    public function test_it_maps_exceptions_correctly(): void
+    {
+        $controller = $this->getContainer()->get(GetExpenseByIdController::class);
+        $exceptions = $controller->exceptions();
+
+        $this->assertArrayHasKey(ExpenseNotFoundException::class, $exceptions);
+        $this->assertEquals(Response::HTTP_NOT_FOUND, $exceptions[ExpenseNotFoundException::class]);
     }
 }

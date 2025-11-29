@@ -10,7 +10,7 @@ use App\Context\Expense\Domain\RecurringExpenseRepository;
 use App\Shared\Application\QueryHandler;
 use DateMalformedStringException;
 use DateTimeImmutable;
-
+use function in_array;
 use function sprintf;
 
 final readonly class GetPendingMonthlyRecurringExpensesQueryHandler implements QueryHandler
@@ -33,8 +33,8 @@ final readonly class GetPendingMonthlyRecurringExpensesQueryHandler implements Q
 
         $pendingRecurringExpenses = [];
 
-        // 1. Get all recurring expenses that are not predefined amount
-        $allRecurringExpenses = $this->recurringExpenseRepository->findByHasPredefinedAmount(false);
+        // 1. Get all recurring expenses
+        $allRecurringExpenses = $this->recurringExpenseRepository->findAll();
 
         foreach ($allRecurringExpenses as $recurringExpense) {
             // Filter by account if provided
@@ -42,16 +42,21 @@ final readonly class GetPendingMonthlyRecurringExpensesQueryHandler implements Q
                 continue;
             }
 
+            // Check if the recurring expense is configured for the given month
+            if (!in_array($month, $recurringExpense->monthsOfYear(), true)) {
+                continue;
+            }
+
             // Check if this recurring expense is active for the given month/year
             $targetDate = new DateTimeImmutable(sprintf('%d-%02d-%02d', $year, $month, $recurringExpense->dueDay()));
 
-            if ($targetDate < $recurringExpense->startDate() || $targetDate > $recurringExpense->endDate()) { // Corrected: Removed ->value()
+            if ($targetDate < $recurringExpense->startDate() || ($recurringExpense->endDate() && $targetDate > $recurringExpense->endDate())) {
                 continue;
             }
 
             // Check if an actual expense has already been entered for this month/year
             $existingExpense = $this->expenseRepository->findByRecurringExpenseAndMonthYear(
-                $recurringExpense->id(), // Corrected: Removed ->value()
+                $recurringExpense->id(),
                 $month,
                 $year,
             );
