@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Tests\Context\Expense\Infrastructure\Http\Controller;
 
+use App\Context\Expense\Infrastructure\Http\Controller\GetInactiveExpensesByDateRangeController;
 use App\Tests\Context\Account\Domain\AccountMother;
 use App\Tests\Context\Expense\Domain\ExpenseMother;
 use App\Tests\Context\Expense\Domain\ExpenseTypeMother;
@@ -12,6 +13,9 @@ use App\Tests\Shared\Infrastructure\PhpUnit\ApiTestCase;
 use DateTime;
 use Symfony\Component\HttpFoundation\Response;
 
+/**
+ * @covers \App\Context\Expense\Infrastructure\Http\Controller\GetInactiveExpensesByDateRangeController
+ */
 final class GetInactiveExpensesByDateRangeControllerTest extends ApiTestCase
 {
     protected function setUp(): void
@@ -79,5 +83,14 @@ final class GetInactiveExpensesByDateRangeControllerTest extends ApiTestCase
         $this->assertIsArray($data);
         $this->assertCount(1, $data);
         $this->assertEquals($inactiveExpenseInOctober->id(), $data[0]['id']);
+    }
+
+    public function test_it_maps_exceptions_correctly(): void
+    {
+        $controller = $this->getContainer()->get(GetInactiveExpensesByDateRangeController::class);
+        $exceptions = $controller->exceptions();
+
+        $this->assertIsArray($exceptions);
+        $this->assertEmpty($exceptions);
     }
 }

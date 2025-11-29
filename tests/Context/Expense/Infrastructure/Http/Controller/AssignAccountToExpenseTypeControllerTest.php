@@ -5,6 +5,8 @@ declare(strict_types=1);
 namespace App\Tests\Context\Expense\Infrastructure\Http\Controller;
 
 use App\Context\Expense\Domain\ExpenseType;
+use App\Context\Expense\Infrastructure\Http\Controller\AssignAccountToExpenseTypeController;
+use App\Shared\Domain\Exception\InvalidArgumentException;
 use App\Tests\Context\Account\Domain\AccountMother;
 use App\Tests\Context\Expense\Domain\ExpenseTypeMother;
 use App\Tests\Shared\Infrastructure\PhpUnit\ApiTestCase;
@@ -12,6 +14,9 @@ use Doctrine\ORM\Exception\ORMException;
 use Doctrine\ORM\OptimisticLockException;
 use Symfony\Component\HttpFoundation\Response;
 
+/**
+ * @covers \App\Context\Expense\Infrastructure\Http\Controller\AssignAccountToExpenseTypeController
+ */
 final class AssignAccountToExpenseTypeControllerTest extends ApiTestCase
 {
     protected function setUp(): void
@@ -47,5 +52,14 @@ final class AssignAccountToExpenseTypeControllerTest extends ApiTestCase
 
         $this->assertNotNull($updatedExpenseType->account());
         $this->assertEquals($account->id(), $updatedExpenseType->account()->id());
+    }
+
+    public function test_it_maps_exceptions_correctly(): void
+    {
+        $controller = $this->getContainer()->get(AssignAccountToExpenseTypeController::class);
+        $exceptions = $controller->exceptions();
+
+        $this->assertArrayHasKey(InvalidArgumentException::class, $exceptions);
+        $this->assertEquals(Response::HTTP_BAD_REQUEST, $exceptions[InvalidArgumentException::class]);
     }
 }

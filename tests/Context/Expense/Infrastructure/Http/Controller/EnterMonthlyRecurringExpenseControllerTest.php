@@ -5,14 +5,19 @@ declare(strict_types=1);
 namespace App\Tests\Context\Expense\Infrastructure\Http\Controller;
 
 use App\Context\Expense\Domain\Expense;
+use App\Context\Expense\Infrastructure\Http\Controller\EnterMonthlyRecurringExpenseController;
+use App\Shared\Domain\Exception\InvalidDataException;
+use App\Shared\Domain\Exception\ResourceNotFoundException;
 use App\Tests\Context\Account\Domain\AccountMother;
 use App\Tests\Context\Expense\Domain\ExpenseTypeMother;
 use App\Tests\Context\Expense\Domain\RecurringExpenseMother;
 use App\Tests\Shared\Domain\UuidMother;
 use App\Tests\Shared\Infrastructure\PhpUnit\ApiTestCase;
-use DateTime;
 use Symfony\Component\HttpFoundation\Response;
 
+/**
+ * @covers \App\Context\Expense\Infrastructure\Http\Controller\EnterMonthlyRecurringExpenseController
+ */
 final class EnterMonthlyRecurringExpenseControllerTest extends ApiTestCase
 {
     protected function setUp(): void
@@ -67,5 +72,17 @@ final class EnterMonthlyRecurringExpenseControllerTest extends ApiTestCase
         $this->assertNotNull($createdExpense);
         $this->assertEquals($payload['amount'], $createdExpense->amount());
         $this->assertEquals($recurringExpense->id(), $createdExpense->recurringExpense()->id());
+    }
+
+    public function test_it_maps_exceptions_correctly(): void
+    {
+        $controller = $this->getContainer()->get(EnterMonthlyRecurringExpenseController::class);
+        $exceptions = $controller->exceptions();
+
+        $this->assertArrayHasKey(ResourceNotFoundException::class, $exceptions);
+        $this->assertEquals(Response::HTTP_NOT_FOUND, $exceptions[ResourceNotFoundException::class]);
+
+        $this->assertArrayHasKey(InvalidDataException::class, $exceptions);
+        $this->assertEquals(Response::HTTP_BAD_REQUEST, $exceptions[InvalidDataException::class]);
     }
 }

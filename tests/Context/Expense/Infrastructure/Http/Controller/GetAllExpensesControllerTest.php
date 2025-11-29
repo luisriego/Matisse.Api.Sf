@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Tests\Context\Expense\Infrastructure\Http\Controller;
 
+use App\Context\Expense\Infrastructure\Http\Controller\GetAllExpensesController;
 use App\Tests\Context\Account\Domain\AccountMother;
 use App\Tests\Context\Expense\Domain\ExpenseMother;
 use App\Tests\Context\Expense\Domain\ExpenseTypeMother;
@@ -11,6 +12,9 @@ use App\Tests\Shared\Domain\UuidMother;
 use App\Tests\Shared\Infrastructure\PhpUnit\ApiTestCase;
 use Symfony\Component\HttpFoundation\Response;
 
+/**
+ * @covers \App\Context\Expense\Infrastructure\Http\Controller\GetAllExpensesController
+ */
 final class GetAllExpensesControllerTest extends ApiTestCase
 {
     protected function setUp(): void
@@ -62,5 +66,14 @@ final class GetAllExpensesControllerTest extends ApiTestCase
         $responseIds = array_column($expensesInResponse, 'id');
         $this->assertContains($expense1->id(), $responseIds);
         $this->assertContains($expense2->id(), $responseIds);
+    }
+
+    public function test_it_maps_exceptions_correctly(): void
+    {
+        $controller = $this->getContainer()->get(GetAllExpensesController::class);
+        $exceptions = $controller->exceptions();
+
+        $this->assertIsArray($exceptions);
+        $this->assertEmpty($exceptions);
     }
 }

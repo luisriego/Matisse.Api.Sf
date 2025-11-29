@@ -4,16 +4,18 @@ declare(strict_types=1);
 
 namespace App\Tests\Context\Expense\Infrastructure\Http\Controller;
 
+use App\Context\Expense\Infrastructure\Http\Controller\GetActiveExpensesByDateRangeController;
 use App\Tests\Context\Account\Domain\AccountMother;
 use App\Tests\Context\Expense\Domain\ExpenseMother;
 use App\Tests\Context\Expense\Domain\ExpenseTypeMother;
 use App\Tests\Shared\Domain\UuidMother;
 use App\Tests\Shared\Infrastructure\PhpUnit\ApiTestCase;
 use DateTime;
-use Doctrine\ORM\Exception\ORMException;
-use Doctrine\ORM\OptimisticLockException;
 use Symfony\Component\HttpFoundation\Response;
 
+/**
+ * @covers \App\Context\Expense\Infrastructure\Http\Controller\GetActiveExpensesByDateRangeController
+ */
 final class GetActiveExpensesByDateRangeControllerTest extends ApiTestCase
 {
     protected function setUp(): void
@@ -22,10 +24,6 @@ final class GetActiveExpensesByDateRangeControllerTest extends ApiTestCase
         $this->createAuthenticatedClient();
     }
 
-    /**
-     * @throws ORMException
-     * @throws OptimisticLockException
-     */
     public function test_it_should_return_only_active_expenses_in_date_range(): void
     {
         // 1. Create expenses for the test scenario
@@ -36,8 +34,8 @@ final class GetActiveExpensesByDateRangeControllerTest extends ApiTestCase
         $account1 = AccountMother::create();
         $type1 = ExpenseTypeMother::create(id: UuidMother::create());
         $activeExpenseInOctober = ExpenseMother::create(
-            type: $type1,
             account: $account1,
+            type: $type1,
             dueDate: new DateTime("$year-$month-15")
         );
 
@@ -45,16 +43,16 @@ final class GetActiveExpensesByDateRangeControllerTest extends ApiTestCase
         $account2 = AccountMother::create();
         $type2 = ExpenseTypeMother::create(id: UuidMother::create());
         $activeExpenseInNovember = ExpenseMother::create(
-            type: $type2,
             account: $account2,
+            type: $type2,
             dueDate: new DateTime("$year-11-15")
         );
 
         $account3 = AccountMother::create();
         $type3 = ExpenseTypeMother::create(id: UuidMother::create());
         $inactiveExpenseInOctober = ExpenseMother::createInactive(
-            type: $type3,
             account: $account3,
+            type: $type3,
             dueDate: new DateTime("$year-$month-20")
         );
 
@@ -85,5 +83,14 @@ final class GetActiveExpensesByDateRangeControllerTest extends ApiTestCase
         $this->assertIsArray($data);
         $this->assertCount(1, $data);
         $this->assertEquals($activeExpenseInOctober->id(), $data[0]['id']);
+    }
+
+    public function test_it_maps_exceptions_correctly(): void
+    {
+        $controller = $this->getContainer()->get(GetActiveExpensesByDateRangeController::class);
+        $exceptions = $controller->exceptions();
+
+        $this->assertIsArray($exceptions);
+        $this->assertEmpty($exceptions);
     }
 }
