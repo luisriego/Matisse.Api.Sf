@@ -46,6 +46,7 @@ class User extends AggregateRoot implements UserInterface, PasswordAuthenticated
     private ?DateTimeImmutable $createdAt = null;
     private ?DateTime $updatedAt = null;
     private ?ResidentUnit $residentUnit = null; // Propiedad para la relación
+    private ?string $avatar = null; // <-- Añadido de nuevo
 
     private function __construct(
         UserId $id,
@@ -256,6 +257,27 @@ class User extends AggregateRoot implements UserInterface, PasswordAuthenticated
     public function equals(User $user): bool
     {
         return $this->getId() === $user->getId();
+    }
+
+    public function createdAt(): ?DateTimeImmutable
+    {
+        return $this->createdAt;
+    }
+
+    public function updatedAt(): ?DateTime
+    {
+        return $this->updatedAt;
+    }
+
+    public function avatar(): ?string
+    {
+        return $this->avatar;
+    }
+
+    public function updateAvatar(?string $avatar): void
+    {
+        $this->avatar = $avatar;
+        $this->markAsUpdated();
     }
 
     private function markAsUpdated(): void

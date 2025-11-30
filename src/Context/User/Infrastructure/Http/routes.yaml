@@ -42,3 +42,8 @@ user_find_all:
     path: /api/v1/users
     controller: App\Context\User\Infrastructure\Http\Controller\FindUsersController
     methods: ['GET']
+
+user_upload_avatar:
+    path: /api/v1/users/{id}/avatar
+    controller: App\Context\User\Infrastructure\Http\Controller\UploadAvatarController
+    methods: ['POST']

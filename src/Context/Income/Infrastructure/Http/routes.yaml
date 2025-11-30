@@ -1,4 +1,4 @@
-income_health_check:
+para que income_health_check:
     path: /api/v1/incomes/health-check
     controller: App\Context\Income\Infrastructure\Http\Controller\HealthCheckController
     methods: ['GET']

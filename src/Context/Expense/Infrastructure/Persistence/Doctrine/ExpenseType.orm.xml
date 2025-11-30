@@ -15,6 +15,10 @@
         <field name="distributionMethod" column="distribution_method" type="string" length="10"/>
         <field name="description" column="description" type="string" length="255" nullable="true"/>
 
+        <many-to-one field="account" target-entity="App\Context\Account\Domain\Account" inversed-by="expenseTypes">
+            <join-column name="account_id" referenced-column-name="id" nullable="true" />
+        </many-to-one>
+
         <one-to-many field="expenses" target-entity="App\Context\Expense\Domain\Expense" mapped-by="type"/>
     </entity>
 </doctrine-mapping>

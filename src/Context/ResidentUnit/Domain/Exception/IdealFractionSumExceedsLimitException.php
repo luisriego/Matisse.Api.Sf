@@ -10,6 +10,6 @@ final class IdealFractionSumExceedsLimitException extends DomainException
 {
     public function __construct()
     {
-        parent::__construct('The sum of ideal fractions cannot exceed 1.');
+        parent::__construct('A soma das frações ideais não pode ser maior que 1.');
     }
 }

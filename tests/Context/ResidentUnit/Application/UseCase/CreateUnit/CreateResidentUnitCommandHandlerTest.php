@@ -45,6 +45,12 @@ class CreateResidentUnitCommandHandlerTest extends TestCase
             ->method('calculateTotalIdealFraction')
             ->willReturn(0.5); // Ensure total ideal fraction is less than 1.0
 
+        // Mock the exists method to return false, indicating the unit does not exist
+        $this->repository->expects($this->once())
+            ->method('exists')
+            ->with(self::isInstanceOf(ResidentUnitId::class))
+            ->willReturn(false);
+
         $this->repository->expects($this->once())
             ->method('save')
             ->with(self::isInstanceOf(ResidentUnit::class), true);
@@ -54,18 +60,27 @@ class CreateResidentUnitCommandHandlerTest extends TestCase
 
     public function test_it_throws_exception_when_ideal_fraction_exceeds_one(): void
     {
+        // Use a valid ID for this test
+        $id = ResidentUnitIdMother::create();
+
         $this->repository
             ->method('calculateTotalIdealFraction')
             ->willReturn(0.9); // Mocked total ideal fraction
 
+        // Mock the exists method to return false, indicating the unit does not exist
+        $this->repository->expects($this->once())
+            ->method('exists')
+            ->with(self::isInstanceOf(ResidentUnitId::class))
+            ->willReturn(false);
+
         $command = new CreateResidentUnitCommand(
-            'unit-id',
+            $id->value(), // Use a valid ID
             'Unit Name',
             0.2 // New fraction that exceeds the limit
         );
 
         $this->expectException(InvalidArgumentException::class);
-        $this->expectExceptionMessage('Ideal fraction must not be more than 1');
+        $this->expectExceptionMessage('A fração ideal não pode ser maior que 1.');
 
         $this->handler->__invoke($command);
     }
@@ -82,11 +97,9 @@ class CreateResidentUnitCommandHandlerTest extends TestCase
             $idealFraction->value()
         );
 
-        // Expect calculateTotalIdealFraction to be called, as the ID validation happens after this
-        $this->repository->expects($this->once())
-            ->method('calculateTotalIdealFraction')
-            ->willReturn(0.0); // Return a dummy value
-
+        // The exists method will NOT be called because ResidentUnitId constructor will throw an exception first
+        $this->repository->expects($this->never())->method('exists');
+        $this->repository->expects($this->never())->method('calculateTotalIdealFraction');
         $this->repository->expects($this->never())->method('save');
 
         $this->expectException(InvalidArgumentException::class);
@@ -107,6 +120,12 @@ class CreateResidentUnitCommandHandlerTest extends TestCase
             $invalidIdealFraction
         );
 
+        // Mock the exists method to return false, indicating the unit does not exist
+        $this->repository->expects($this->once())
+            ->method('exists')
+            ->with(self::isInstanceOf(ResidentUnitId::class))
+            ->willReturn(false);
+
         // Expect calculateTotalIdealFraction to NOT be called, as the validation happens before this
         $this->repository->expects($this->never())
             ->method('calculateTotalIdealFraction');
@@ -114,7 +133,7 @@ class CreateResidentUnitCommandHandlerTest extends TestCase
         $this->repository->expects($this->never())->method('save');
 
         $this->expectException(InvalidArgumentException::class);
-        $this->expectExceptionMessage('A fracao ideal deve ser maior o igual que zero e menor ou igual que um');
+        $this->expectExceptionMessage('A fração ideal deve ser maior ou igual a zero e menor ou igual a um.');
 
         ($this->handler)($command);
     }

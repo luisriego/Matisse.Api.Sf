@@ -15,7 +15,7 @@ use Symfony\Component\HttpFoundation\Response;
 final class EnterMonthlyRecurringExpenseController extends ApiController
 {
     /**
-     * @throws Exception
+     * @throws Exception|\Throwable
      */
     public function __invoke(EnterMonthlyRecurringExpenseRequestDto $dto): Response
     {

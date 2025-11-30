@@ -8,14 +8,9 @@ use App\Context\Expense\Domain\RecurringExpense;
 use App\Context\Expense\Domain\RecurringExpenseRepository;
 use App\Shared\Domain\Exception\ResourceNotFoundException;
 use App\Shared\Domain\ValueObject\DateRange;
-use DateMalformedStringException;
-use DateTimeImmutable;
+use DateTime;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
-use Exception;
-
-use function in_array;
-use function sprintf;
 
 class DoctrineRecurringExpenseRepository extends ServiceEntityRepository implements RecurringExpenseRepository
 {
@@ -24,6 +19,11 @@ class DoctrineRecurringExpenseRepository extends ServiceEntityRepository impleme
         parent::__construct($registry, RecurringExpense::class);
     }
 
+    public function findAll(): array
+    {
+        return $this->findBy(['isActive' => true]);
+    }
+    
     public function flush(): void
     {
         $this->getEntityManager()->flush();
@@ -34,7 +34,7 @@ class DoctrineRecurringExpenseRepository extends ServiceEntityRepository impleme
         $this->getEntityManager()->persist($recurringExpense);
 
         if ($flush) {
-            $this->getEntityManager()->flush();
+            $this->flush();
         }
     }
 
@@ -43,17 +43,16 @@ class DoctrineRecurringExpenseRepository extends ServiceEntityRepository impleme
         $this->getEntityManager()->remove($recurringExpense);
 
         if ($flush) {
-            $this->getEntityManager()->flush();
+            $this->flush();
         }
     }
 
-    /**
-     * @throws Exception
-     */
     public function findOneByIdOrFail(string $id): RecurringExpense
     {
-        if (null === $recurringExpense = $this->findOneBy(['id' => $id])) {
-            throw ResourceNotFoundException::createFromClassAndId(RecurringExpense::class, $id);
+        if (null === $recurringExpense = $this->find($id)) {
+            throw new ResourceNotFoundException(
+                sprintf('Resource of type [%s] with ID [%s] not found', RecurringExpense::class, $id)
+            );
         }
 
         return $recurringExpense;
@@ -61,89 +60,61 @@ class DoctrineRecurringExpenseRepository extends ServiceEntityRepository impleme
 
     public function findForThisMonth(int $month): array
     {
-        $allActiveRecurring = $this->findAllActives();
+        $qb = $this->createQueryBuilder('re');
+        $qb->where('JSON_CONTAINS(re.monthsOfYear, :month) = 1')
+            ->andWhere('re.isActive = :isActive')
+            ->setParameter('month', $month)
+            ->setParameter('isActive', true);
 
-        $activeForThisMonth = [];
-
-        foreach ($allActiveRecurring as $recurringExpense) {
-            $monthsOfYear = $recurringExpense->monthsOfYear();
-
-            if ($monthsOfYear !== null && in_array($month, $monthsOfYear, true)) {
-                $activeForThisMonth[] = $recurringExpense;
-            }
-        }
-
-        return $activeForThisMonth;
+        return $qb->getQuery()->getResult();
     }
 
-    /**
-     * @throws DateMalformedStringException
-     */
     public function findActiveForDateRange(DateRange $dateRange): array
     {
-        $start = $dateRange->startDate();
-        $end   = $dateRange->endDate();
+        $qb = $this->createQueryBuilder('re');
 
-        $potentiallyActive = $this->createQueryBuilder('r')
-            ->where('r.isActive = :isActive')
-            ->andWhere('r.startDate <= :endDate')
-            ->andWhere('r.endDate IS NULL OR r.endDate >= :startDate')
+        $qb->where('re.isActive = :isActive')
+            ->andWhere(
+                $qb->expr()->orX(
+                    $qb->expr()->andX(
+                        're.startDate <= :endDate',
+                        're.endDate IS NULL'
+                    ),
+                    $qb->expr()->andX(
+                        're.startDate <= :endDate',
+                        're.endDate >= :startDate'
+                    )
+                )
+            )
             ->setParameter('isActive', true)
-            ->setParameter('startDate', $start)
-            ->setParameter('endDate', $end)
-            ->orderBy('r.dueDay', 'ASC')
-            ->getQuery()
-            ->getResult();
+            ->setParameter('startDate', $dateRange->startDate())
+            ->setParameter('endDate', $dateRange->endDate());
 
-        $result = [];
-        $monthOfRange = (int) $start->format('m');
-        $daysInMonth = (int) $start->format('t');
-
-        foreach ($potentiallyActive as $recurring) {
-            $months = $recurring->monthsOfYear();
-
-            if (null === $months || in_array($monthOfRange, $months, true)) {
-                if ($recurring->dueDay() >= 1 && $recurring->dueDay() <= $daysInMonth) {
-                    $result[] = $recurring;
-                }
-            }
-        }
-
-        return $result;
+        return $qb->getQuery()->getResult();
     }
 
     public function findByHasPredefinedAmount(bool $hasPredefinedAmount): array
     {
-        return $this->createQueryBuilder('r')
-            ->where('r.hasPredefinedAmount = :hasPredefinedAmount')
-            ->setParameter('hasPredefinedAmount', $hasPredefinedAmount)
-            ->getQuery()
-            ->getResult();
+        return $this->findBy(['hasPredefinedAmount' => $hasPredefinedAmount, 'isActive' => true]);
     }
 
     public function findByYear(int $year): array
     {
-        $yearStartDate = new DateTimeImmutable(sprintf('%d-01-01', $year));
-        $yearEndDate = new DateTimeImmutable(sprintf('%d-12-31', $year));
+        $yearStart = new DateTime("$year-01-01 00:00:00");
+        $yearEnd = new DateTime("$year-12-31 23:59:59");
 
-        return $this->createQueryBuilder('r')
-            ->where('r.isActive = :isActive')
-            ->andWhere('r.startDate <= :yearEndDate')
-            ->andWhere('r.endDate IS NULL OR r.endDate >= :yearStartDate')
-            ->setParameter('isActive', true)
-            ->setParameter('yearStartDate', $yearStartDate)
-            ->setParameter('yearEndDate', $yearEndDate)
-            ->getQuery()
-            ->getResult();
-    }
+        $qb = $this->createQueryBuilder('re');
 
-    private function findAllActives(): array
-    {
-        return $this->createQueryBuilder('r')
-            ->where('r.isActive = :isActive')
+        $qb->where('re.isActive = :isActive')
+            ->andWhere('re.startDate <= :yearEnd')
+            ->andWhere($qb->expr()->orX(
+                're.endDate IS NULL',
+                're.endDate >= :yearStart'
+            ))
             ->setParameter('isActive', true)
-            ->orderBy('r.dueDay', 'ASC')
-            ->getQuery()
-            ->getResult();
+            ->setParameter('yearStart', $yearStart)
+            ->setParameter('yearEnd', $yearEnd);
+
+        return $qb->getQuery()->getResult();
     }
 }

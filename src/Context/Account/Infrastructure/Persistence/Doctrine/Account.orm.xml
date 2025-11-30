@@ -17,6 +17,7 @@
         <field name="updatedAt" column="updated_at" type="datetime" nullable="true" />
 
         <one-to-many field="expenses" target-entity="App\Context\Expense\Domain\Expense" mapped-by="account" />
+        <one-to-many field="expenseTypes" target-entity="App\Context\Expense\Domain\ExpenseType" mapped-by="account" />
     </entity>
 
 </doctrine-mapping>

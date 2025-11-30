@@ -5,7 +5,6 @@ namespace App\Tests\Context\Account\Application\UseCase\FindAccount;
 use App\Context\Account\Application\UseCase\FindAccount\FindAccountQuery;
 use App\Context\Account\Application\UseCase\FindAccount\FindAccountQueryHandler;
 use App\Context\Account\Domain\Account;
-use App\Context\Account\Domain\AccountId;
 use App\Context\Account\Domain\AccountRepository;
 use App\Context\Account\Domain\Exception\AccountNotFoundException;
 use App\Tests\Context\Account\Domain\AccountIdMother;
@@ -37,9 +36,9 @@ class FindAccountQueryHandlerTest extends TestCase
     {
         // Arrange
         $account = AccountMother::create();
-        $accountId = new AccountId($account->id());
+        $accountId = $account->id();
         $accountData = [
-            'id' => $account->id(),
+            'id' => $accountId,
             'code' => $account->code(),
             'name' => $account->name(),
             'description' => $account->description(),
@@ -47,8 +46,8 @@ class FindAccountQueryHandlerTest extends TestCase
         ];
 
         $this->repository
-            ->shouldReceive('find')
-            ->with($accountId->value())
+            ->shouldReceive('findOneByIdOrFail')
+            ->with($accountId)
             ->once()
             ->andReturn($account);
 
@@ -62,7 +61,7 @@ class FindAccountQueryHandlerTest extends TestCase
             ->once()
             ->andReturn($accountData);
 
-        $query = new FindAccountQuery($account->id());
+        $query = new FindAccountQuery($accountId);
 
         // Act
         $result = ($this->handler)($query);
@@ -73,16 +72,16 @@ class FindAccountQueryHandlerTest extends TestCase
 
     public function testFindAccountNotFound(): void
     {
-        // Arrange - use a valid UUID format
-        $accountId = AccountIdMother::create();
+        // Arrange
+        $accountId = AccountIdMother::create()->value();
 
         $this->repository
-            ->shouldReceive('find')
-            ->with($accountId->value())
+            ->shouldReceive('findOneByIdOrFail')
+            ->with($accountId)
             ->once()
-            ->andThrow(new AccountNotFoundException($accountId->value()));
+            ->andThrow(new AccountNotFoundException($accountId));
 
-        $query = new FindAccountQuery($accountId->value());
+        $query = new FindAccountQuery($accountId);
 
         // Assert & Act
         $this->expectException(AccountNotFoundException::class);

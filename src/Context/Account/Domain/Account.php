@@ -7,6 +7,7 @@ namespace App\Context\Account\Domain;
 use App\Context\Account\Domain\Bus\AccountWasDisabled;
 use App\Context\Account\Domain\Bus\AccountWasEnabled;
 use App\Context\Expense\Domain\Expense;
+use App\Context\Expense\Domain\ExpenseType;
 use App\Shared\Domain\AggregateRoot;
 use DateTime;
 use DateTimeImmutable;
@@ -23,6 +24,7 @@ class Account extends AggregateRoot
     private ?DateTimeImmutable $createdAt = null;
     private ?DateTime $updatedAt = null;
     private Collection $expenses;
+    private Collection $expenseTypes;
 
     public function __construct(string $id, string $code, string $name)
     {
@@ -32,6 +34,7 @@ class Account extends AggregateRoot
         $this->isActive = false;
         $this->createdAt = new DateTimeImmutable();
         $this->expenses = new ArrayCollection();
+        $this->expenseTypes = new ArrayCollection();
     }
 
     public static function create(AccountId $id, AccountCode $code, AccountName $name): self
@@ -89,6 +92,23 @@ class Account extends AggregateRoot
     public function expenses(): Collection
     {
         return $this->expenses;
+    }
+
+    public function expenseTypes(): Collection
+    {
+        return $this->expenseTypes;
+    }
+
+    public function addExpenseType(ExpenseType $expenseType): void
+    {
+        if (!$this->expenseTypes->contains($expenseType)) {
+            $this->expenseTypes[] = $expenseType;
+        }
+    }
+
+    public function removeExpenseType(ExpenseType $expenseType): void
+    {
+        $this->expenseTypes->removeElement($expenseType);
     }
 
     public function updateCode(AccountCode $code): void

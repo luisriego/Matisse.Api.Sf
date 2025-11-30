@@ -18,17 +18,30 @@ class UserNormalizer implements NormalizerInterface, SerializerAwareInterface
      */
     public function normalize($object, ?string $format = null, array $context = []): array
     {
-        return [
+        $data = [
             'id' => $object->id(),
-            'email' => $object->getEmail(),
             'name' => $object->name(),
             'lastName' => $object->lastName(),
             'gender' => $object->gender(),
             'phoneNumber' => $object->phoneNumber(),
+            'email' => $object->getEmail(),
             'roles' => $object->getRoles(),
             'isActive' => $object->isActive(),
-            'residentUnit' => $this->serializer->normalize($object->getResidentUnit()),
+            'createdAt' => $object->createdAt()?->format('Y-m-d H:i:s'),
+            'updatedAt' => $object->updatedAt()?->format('Y-m-d H:i:s'),
+            'avatar' => $object->avatar(),
         ];
+
+        // Handle residentUnit relation
+        if ($object->getResidentUnit() !== null) {
+            // Normalize the ResidentUnit object using the serializer
+            // This will use ResidentUnitNormalizer if it exists, or default normalizers
+            $data['residentUnit'] = $this->serializer->normalize($object->getResidentUnit(), $format, $context);
+        } else {
+            $data['residentUnit'] = null;
+        }
+
+        return $data;
     }
 
     public function supportsNormalization($data, ?string $format = null): bool

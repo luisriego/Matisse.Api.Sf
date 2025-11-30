@@ -1,96 +1,72 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Tests\Context\Account\Infrastructure\Http\Controller;
 
-use App\Context\Account\Application\UseCase\FindAccount\FindAccountQuery;
 use App\Context\Account\Domain\Exception\AccountNotFoundException;
 use App\Context\Account\Infrastructure\Http\Controller\GetAccountController;
 use App\Tests\Context\Account\Domain\AccountMother;
-use PHPUnit\Framework\MockObject\MockObject;
-use PHPUnit\Framework\TestCase;
+use App\Tests\Shared\Domain\UuidMother;
+use App\Tests\Shared\Infrastructure\PhpUnit\ApiTestCase;
+use Doctrine\ORM\Exception\ORMException;
+use Doctrine\ORM\OptimisticLockException;
 use Symfony\Component\HttpFoundation\Response;
-use Symfony\Component\Messenger\Envelope;
-use Symfony\Component\Messenger\MessageBusInterface;
-use Symfony\Component\Messenger\Stamp\HandledStamp;
 
-class GetAccountControllerTest extends TestCase
+/**
+ * @covers \App\Context\Account\Infrastructure\Http\Controller\GetAccountController
+ */
+final class GetAccountControllerTest extends ApiTestCase
 {
-    private MessageBusInterface|MockObject $queryBus;
-    private GetAccountController $controller;
-
     protected function setUp(): void
     {
-        $this->queryBus = $this->createMock(MessageBusInterface::class);
-        $this->controller = new GetAccountController($this->queryBus);
+        parent::setUp();
+        $this->createAuthenticatedClient();
     }
 
-    public function testGetAccountSuccess(): void
+    /**
+     * @throws OptimisticLockException
+     * @throws ORMException
+     */
+    public function test_it_should_return_account_when_found(): void
     {
-        // Arrange
+        // 1. Create an account to be found
         $account = AccountMother::create();
-        $accountData = [
-            'id' => $account->id(),
-            'code' => $account->code(),
-            'name' => $account->name(),
-            'description' => $account->description(),
-            'isActive' => $account->isActive(),
-        ];
-        $accountId = $account->id();
+        $this->entityManager->persist($account);
+        $this->entityManager->flush();
 
-        // Create a real HandledStamp instead of mocking it
-        $handledStamp = new HandledStamp($accountData, 'handler_name');
-        $envelope = new Envelope(new \stdClass(), [$handledStamp]);
+        // 2. Send the GET request
+        $this->client->request('GET', '/api/v1/accounts/' . $account->id());
 
-        $this->queryBus
-            ->expects($this->once())
-            ->method('dispatch')
-            ->with($this->callback(function (FindAccountQuery $query) use ($accountId) {
-                return $query->id() === $accountId;
-            }))
-            ->willReturn($envelope);
+        // 3. Assert the response
+        $this->assertResponseStatusCodeSame(Response::HTTP_OK);
+        $responseContent = $this->client->getResponse()->getContent();
+        $data = json_decode($responseContent, true);
 
-        // Act
-        $response = $this->controller->__invoke($accountId);
-
-        // Assert
-        $this->assertEquals(Response::HTTP_OK, $response->getStatusCode());
-        $this->assertEquals($accountData, json_decode($response->getContent(), true));
+        $this->assertIsArray($data);
+        $this->assertEquals($account->id(), $data['id']);
+        $this->assertEquals($account->code(), $data['code']);
+        $this->assertEquals($account->name(), $data['name']);
     }
 
-//    public function testGetAccountNotFound(): void
-//    {
-//        // Arrange
-//        $accountId = 'non-existent-id';
-//
-//        $this->queryBus
-//            ->expects($this->once())
-//            ->method('dispatch')
-//            ->willThrowException(new AccountNotFoundException($accountId));
-//
-//        // Act
-//        $response = $this->controller->__invoke($accountId);
-//
-//        // Assert
-//        $this->assertEquals(Response::HTTP_NOT_FOUND, $response->getStatusCode());
-//        $this->assertEquals(['error' => 'Account not found'], json_decode($response->getContent(), true));
-//    }
-//
-//    public function testGetAccountThrowsException(): void
-//    {
-//        // Arrange
-//        $accountId = 'account-123';
-//        $errorMessage = 'Database connection error';
-//
-//        $this->queryBus
-//            ->expects($this->once())
-//            ->method('dispatch')
-//            ->willThrowException(new \RuntimeException($errorMessage));
-//
-//        // Act
-//        $response = $this->controller->__invoke($accountId);
-//
-//        // Assert
-//        $this->assertEquals(Response::HTTP_INTERNAL_SERVER_ERROR, $response->getStatusCode());
-//        $this->assertEquals(['error' => $errorMessage], json_decode($response->getContent(), true));
-//    }
+    public function test_it_should_return_not_found_when_account_does_not_exist(): void
+    {
+        // 1. Generate a random non-existent ID
+        $nonExistentId = UuidMother::create();
+
+        // 2. Send the GET request
+        $this->client->request('GET', '/api/v1/accounts/' . $nonExistentId);
+
+        // 3. Assert the response
+        $this->assertResponseStatusCodeSame(Response::HTTP_NOT_FOUND);
+    }
+
+    public function test_it_maps_exceptions_correctly(): void
+    {
+        $controller = $this->getContainer()->get(GetAccountController::class);
+        $exceptions = $controller->exceptions();
+
+        $this->assertArrayHasKey(AccountNotFoundException::class, $exceptions);
+        $this->assertEquals(Response::HTTP_NOT_FOUND, $exceptions[AccountNotFoundException::class]);
+    }
 }

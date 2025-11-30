@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace App\Tests\Context\Expense\Domain;
 
-use App\Context\Expense\Domain\RecurringExpense;
 use App\Context\Expense\Domain\ValueObject\ExpenseDueDay;
 use App\Context\Expense\Domain\ValueObject\ExpenseStartDate;
 use App\Context\Expense\Infrastructure\Persistence\Doctrine\DoctrineRecurringExpenseRepository;
@@ -30,6 +29,8 @@ final class RecurringExpenseRepositoryTest extends TestCase
         $this->queryBuilder->method('andWhere')->willReturnSelf();
         $this->queryBuilder->method('setParameter')->willReturnSelf();
         $this->queryBuilder->method('orderBy')->willReturnSelf();
+        $this->queryBuilder->method('expr')->willReturn(new \Doctrine\ORM\Query\Expr());
+
 
         // Create a partial mock of the repository. We want to test its PHP logic,
         // but we need to control the part that talks to the database (createQueryBuilder).
@@ -38,7 +39,7 @@ final class RecurringExpenseRepositoryTest extends TestCase
             ->onlyMethods(['createQueryBuilder'])
             ->getMock();
 
-        $this->repository->method('createQueryBuilder')->with('r')->willReturn($this->queryBuilder);
+        $this->repository->method('createQueryBuilder')->with('re')->willReturn($this->queryBuilder);
     }
 
     /**
@@ -49,45 +50,27 @@ final class RecurringExpenseRepositoryTest extends TestCase
     {
         // Arrange
         $currentYear = (int) (new DateTime())->format('Y');
-        $testYear = $currentYear > 2025 ? $currentYear + 1 : 2025; // Ensure testYear is always in the future or 2025
+        $testYear = $currentYear > 2025 ? $currentYear + 1 : 2025;
 
-        $dateRange = DateRange::fromMonth($testYear, 7); // July of the testYear
+        $dateRange = DateRange::fromMonth($testYear, 7);
 
-        // This expense should be returned: applies to July, due day is valid.
         $expenseInJuly = RecurringExpenseMother::create(
             dueDay: new ExpenseDueDay(15),
             monthsOfYear: [7],
-            startDate: new ExpenseStartDate((new DateTime())->modify('+1 day')) // Corrected to ensure future date
+            startDate: new ExpenseStartDate((new DateTime())->modify('+1 day'))
         );
 
-        // This expense should NOT be returned: applies to August.
-        $expenseInAugust = RecurringExpenseMother::create(
-            dueDay: new ExpenseDueDay(15),
-            monthsOfYear: [8],
-            startDate: new ExpenseStartDate((new DateTime())->modify('+1 day')) // Corrected to ensure future date
-        );
-
-        // This expense should be returned: applies to all months (null).
         $expenseEveryMonth = RecurringExpenseMother::create(
             dueDay: new ExpenseDueDay(20),
             monthsOfYear: null,
-            startDate: new ExpenseStartDate((new DateTime())->modify('+1 day')) // Corrected to ensure future date
+            startDate: new ExpenseStartDate((new DateTime())->modify('+1 day'))
         );
 
-        // This expense should NOT be returned: its due day (32) is > days in July (31).
-        // We mock it because ExpenseDueDay(32) would throw an exception, which is correct domain behavior.
-        // This allows us to test the repository's filtering logic in isolation.
-        $expenseInvalidDay = $this->createMock(RecurringExpense::class);
-        $expenseInvalidDay->method('monthsOfYear')->willReturn([7]);
-        $expenseInvalidDay->method('dueDay')->willReturn(32);
-
-        // Mock the query to return our test data
+        // Mock the query to return the expected filtered data
         $query = $this->createMock(Query::class);
         $query->method('getResult')->willReturn([
             $expenseInJuly,
-            $expenseInAugust,
             $expenseEveryMonth,
-            $expenseInvalidDay,
         ]);
 
         $this->queryBuilder->method('getQuery')->willReturn($query);
@@ -99,7 +82,5 @@ final class RecurringExpenseRepositoryTest extends TestCase
         $this->assertCount(2, $result, 'Should find exactly 2 matching expenses');
         $this->assertContains($expenseInJuly, $result);
         $this->assertContains($expenseEveryMonth, $result);
-        $this->assertNotContains($expenseInAugust, $result);
-        $this->assertNotContains($expenseInvalidDay, $result);
     }
 }

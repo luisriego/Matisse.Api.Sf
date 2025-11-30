@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace App\Context\Income\Infrastructure\Http\Controller;
 
-use App\Context\Income\Application\UseCase\EnterIncome\EnterIncomeCommand;
 use App\Context\Income\Application\UseCase\EnterIncome\EnterIncomeCommandHandler;
 use App\Context\Income\Infrastructure\Http\Dto\EnterIncomeRequestDto;
 use DateMalformedStringException;
@@ -19,15 +18,6 @@ final readonly class IncomeEnterPutController
      */
     public function __invoke(EnterIncomeRequestDto $request): Response
     {
-        $command = new EnterIncomeCommand(
-            $request->id,
-            $request->amount,
-            $request->residentUnitId,
-            $request->type,
-            $request->dueDate,
-            $request->description,
-        );
-
         $this->commandHandler->__invoke($request->toCommand());
 
         return new Response('', Response::HTTP_CREATED);

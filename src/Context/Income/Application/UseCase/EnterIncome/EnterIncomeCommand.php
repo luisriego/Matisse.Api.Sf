@@ -13,6 +13,7 @@ final readonly class EnterIncomeCommand implements Command
         private int $amount,
         private string $residentUnitId,
         private string $type,
+        private string $accountId, // Added accountId
         private string $dueDate,
         private ?string $description = null,
     ) {}
@@ -35,6 +36,11 @@ final readonly class EnterIncomeCommand implements Command
     public function type(): string
     {
         return $this->type;
+    }
+
+    public function accountId(): string
+    {
+        return $this->accountId;
     }
 
     public function dueDate(): string

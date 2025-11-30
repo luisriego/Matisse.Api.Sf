@@ -34,10 +34,11 @@ readonly class EnterIncomeCommandHandler implements CommandHandler
         $amount = new IncomeAmount($command->amount());
         $residentUnit = $this->residentUnitRepository->findOneByIdOrFail($command->residentUnitId());
         $type = $this->incomeTypeRepository->findOneByIdOrFail($command->type());
+        $accountId = $command->accountId(); // Get accountId from command
         $dueDate = new IncomeDueDate(new DateTime($command->dueDate()));
         $descriptionValue = $command->description();
 
-        $income = Income::create($id, $amount, $residentUnit, $type, $dueDate, $descriptionValue);
+        $income = Income::create($id, $amount, $residentUnit, $type, $accountId, $dueDate, $descriptionValue);
 
         if ($income->hasDomainEvents()) {
             $this->incomeRepository->save($income, false);

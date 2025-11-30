@@ -1,6 +1,7 @@
 parameters:
     password_reset_token_lifetime: 86400 # 1 day in seconds
     expense_uploads_path: '%kernel.project_dir%/public/uploads/expenses'
+    avatar_uploads_path: '%kernel.project_dir%/public/uploads/avatars' # Nuevo parámetro
 
 imports:
     - { resource: '../src/Context/Account/account.yaml' }
@@ -18,7 +19,8 @@ services:
         autoconfigure: true
         bind:
             $passwordResetTokenLifetime: '%password_reset_token_lifetime%'
-            string $uploadsPath: '%expense_uploads_path%'
+            # Change this line to remove 'string' type prefix
+            $uploadsPath: '%expense_uploads_path%'  # Default binding without type prefix
 
     App\Context\User\Infrastructure\Http\Controller\:
         public: true
@@ -92,6 +94,11 @@ services:
 
     App\Context\User\Application\UseCase\Update\UpdateUserCommandHandler:
         tags: [{ name: 'messenger.message_handler', bus: 'command.bus' }]
+
+    # Binding específico para el AddAvatarCommandHandler
+    App\Context\User\Application\UseCase\AddAvatar\AddAvatarCommandHandler:
+        bind:
+            $uploadsPath: '%avatar_uploads_path%'  # This is now consistent with the default binding
 
     App\Security\JWTCreatedListener:
         tags:

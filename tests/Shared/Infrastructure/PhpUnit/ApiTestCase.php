@@ -22,6 +22,7 @@ abstract class ApiTestCase extends WebTestCase
 {
     protected ?KernelBrowser $client = null;
     protected ?EntityManagerInterface $entityManager = null;
+    protected ?User $authenticatedUser = null; // <-- AÑADIDO
 
     protected function setUp(): void
     {
@@ -64,11 +65,19 @@ abstract class ApiTestCase extends WebTestCase
         $this->entityManager->persist($user);
         $this->entityManager->flush();
 
+        $this->authenticatedUser = $user; // <-- AÑADIDO
+
         $token = $jwtManager->create($user);
 
         $this->client->setServerParameter('HTTP_Authorization', sprintf('Bearer %s', $token));
 
         return $this->client;
+    }
+
+    // AÑADIDO
+    protected function getAuthenticatedUser(): ?User
+    {
+        return $this->authenticatedUser;
     }
 
     private function resetDatabase(): void

@@ -6,11 +6,13 @@ namespace App\Context\ResidentUnit\Infrastructure\Symfony\Normalizer;
 
 use App\Context\ResidentUnit\Domain\ResidentUnit;
 use Symfony\Component\Serializer\Normalizer\NormalizerInterface;
+use Symfony\Component\Serializer\SerializerAwareInterface;
+use Symfony\Component\Serializer\SerializerAwareTrait;
 
-use function array_map;
-
-final class ResidentUnitNormalizer implements NormalizerInterface
+class ResidentUnitNormalizer implements NormalizerInterface, SerializerAwareInterface
 {
+    use SerializerAwareTrait;
+
     /**
      * @param ResidentUnit $object
      */
@@ -23,10 +25,7 @@ final class ResidentUnitNormalizer implements NormalizerInterface
             'isActive' => $object->isActive(),
             'createdAt' => $object->createdAt()->format('Y-m-d H:i:s'),
             'updatedAt' => $object->updatedAt()?->format('Y-m-d H:i:s'),
-            'notificationRecipients' => array_map(static fn ($recipient) => [
-                'name' => $recipient->name(),
-                'email' => $recipient->email(),
-            ], $object->notificationRecipients()),
+            'notificationRecipients' => $object->notificationRecipients(), // Already an array
         ];
     }
 

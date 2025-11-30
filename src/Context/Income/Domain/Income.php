@@ -36,6 +36,7 @@ class Income extends AggregateRoot
         IncomeAmount $amount,
         ResidentUnit $residentUnit,
         IncomeType $type,
+        string $accountId, // Added accountId
         IncomeDueDate $dueDate,
         ?string $description = null,
     ): self {
@@ -53,6 +54,7 @@ class Income extends AggregateRoot
             amount: $amount->value(),
             residentUnitId: $residentUnit->id(),
             type: $type->id(),
+            accountId: $accountId, // Pass accountId to the event
             dueDate: $dueDate->toDateTime()->format('Y-m-d'),
             description: $description,
         ));

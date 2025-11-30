@@ -5,13 +5,20 @@ declare(strict_types=1);
 namespace App\Tests\Context\Expense\Infrastructure\Http\Controller;
 
 use App\Context\Expense\Domain\Expense;
+use App\Context\Expense\Infrastructure\Http\Controller\ExpenseAttachmentPatchController;
+use App\Shared\Domain\Exception\InvalidArgumentException;
+use App\Shared\Domain\Exception\ResourceNotFoundException;
 use App\Tests\Context\Expense\Domain\ExpenseMother;
+use App\Tests\Shared\Domain\UuidMother;
 use App\Tests\Shared\Infrastructure\PhpUnit\ApiTestCase;
 use Doctrine\ORM\Exception\ORMException;
 use Doctrine\ORM\OptimisticLockException;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
 use Symfony\Component\HttpFoundation\Response;
 
+/**
+ * @covers \App\Context\Expense\Infrastructure\Http\Controller\ExpenseAttachmentPatchController
+ */
 class ExpenseAttachmentPatchControllerTest extends ApiTestCase
 {
     private string $uploadsPath;
@@ -109,7 +116,7 @@ class ExpenseAttachmentPatchControllerTest extends ApiTestCase
 
     public function test_it_should_return_404_if_expense_not_found(): void
     {
-        $nonExistentId = 'f47ac10b-58cc-4372-a567-0e02b2c3d479';
+        $nonExistentId = UuidMother::create();
         $filePath = sys_get_temp_dir() . '/test.txt';
         file_put_contents($filePath, 'dummy content');
         $uploadedFile = new UploadedFile($filePath, 'test.txt', 'text/plain', null, true);
@@ -142,5 +149,17 @@ class ExpenseAttachmentPatchControllerTest extends ApiTestCase
         );
 
         $this->assertResponseStatusCodeSame(Response::HTTP_BAD_REQUEST);
+    }
+
+    public function test_it_maps_exceptions_correctly(): void
+    {
+        $controller = $this->getContainer()->get(ExpenseAttachmentPatchController::class);
+        $exceptions = $controller->exceptions();
+
+        $this->assertArrayHasKey(InvalidArgumentException::class, $exceptions);
+        $this->assertEquals(Response::HTTP_BAD_REQUEST, $exceptions[InvalidArgumentException::class]);
+
+        $this->assertArrayHasKey(ResourceNotFoundException::class, $exceptions);
+        $this->assertEquals(Response::HTTP_NOT_FOUND, $exceptions[ResourceNotFoundException::class]);
     }
 }

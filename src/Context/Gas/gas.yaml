@@ -16,3 +16,6 @@ services:
             - './Infrastructure/Persistence/Entity/'
             - './Infrastructure/Http/Controller/'
             - './gas.yaml'
+
+    App\Context\Gas\Application\UseCase\GetAverageGasConsumption\GetAverageGasConsumptionQueryHandler:
+        tags: ['messenger.message_handler']

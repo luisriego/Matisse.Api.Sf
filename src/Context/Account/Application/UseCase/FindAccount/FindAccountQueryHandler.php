@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace App\Context\Account\Application\UseCase\FindAccount;
 
-use App\Context\Account\Domain\AccountId;
 use App\Context\Account\Domain\AccountRepository;
 use App\Shared\Application\QueryHandler;
 use Symfony\Component\Serializer\SerializerInterface;
@@ -18,8 +17,7 @@ final readonly class FindAccountQueryHandler implements QueryHandler
 
     public function __invoke(FindAccountQuery $query): array
     {
-        $accountId = new AccountId($query->id());
-        $account = $this->repository->find($accountId->value());
+        $account = $this->repository->findOneByIdOrFail($query->id());
 
         return $this->serializer->normalize($account);
     }

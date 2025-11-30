@@ -14,6 +14,7 @@ class EnterIncomeRequestDto implements RequestDto
     public string $residentUnitId;
     public int $amount;
     public string $type;
+    public string $accountId; // Added accountId
     public string $dueDate;
     public ?string $description;
 
@@ -23,6 +24,7 @@ class EnterIncomeRequestDto implements RequestDto
         $this->amount = $request->get('amount');
         $this->residentUnitId = $request->get('residentUnitId');
         $this->type = $request->get('type');
+        $this->accountId = $request->get('accountId'); // Added accountId
         $this->dueDate = $request->get('dueDate');
         $this->description = $request->get('description');
     }
@@ -34,6 +36,7 @@ class EnterIncomeRequestDto implements RequestDto
             $this->amount,
             $this->residentUnitId,
             $this->type,
+            $this->accountId, // Added accountId
             $this->dueDate,
             $this->description,
         );

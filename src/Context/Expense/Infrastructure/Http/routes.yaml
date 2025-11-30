@@ -68,6 +68,11 @@ recurring_expense_update:
     controller: App\Context\Expense\Infrastructure\Http\Controller\UpdateRecurrentExpensePatchController
     methods: ['PATCH']
 
+expense_type_assign_account:
+    path: /api/v1/expense-types/{expenseTypeId}/assign-account/{accountTypeId}
+    controller: App\Context\Expense\Infrastructure\Http\Controller\AssignAccountToExpenseTypeController
+    methods: ['PATCH']
+
 expense_types_get:
     path: /api/v1/expense-types
     controller: App\Context\Expense\Infrastructure\Http\Controller\GetExpenseTypesController

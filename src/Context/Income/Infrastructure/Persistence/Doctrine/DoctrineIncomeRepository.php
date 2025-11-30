@@ -48,31 +48,27 @@ class DoctrineIncomeRepository extends ServiceEntityRepository implements Income
 
     public function findActiveByDateRange(DateRange $dateRange): array
     {
-        return $this->getEntityManager()
-            ->createQuery('
-            SELECT i FROM App\Context\Income\Domain\Income i 
-            WHERE i.isActive = true 
-            AND i.dueDate >= :startDate 
-            AND i.dueDate <= :endDate
-            ORDER BY i.dueDate ASC
-        ')
-            ->setParameter('startDate', $dateRange->startDate())
-            ->setParameter('endDate', $dateRange->endDate())
-            ->getResult();
+        $qb = $this->createQueryBuilder('i');
+        $qb->where('i.isActive = true')
+           ->andWhere('i.dueDate >= :startDate')
+           ->andWhere('i.dueDate <= :endDate')
+           ->orderBy('i.dueDate', 'ASC')
+           ->setParameter('startDate', $dateRange->startDate()->format('Y-m-d'))
+           ->setParameter('endDate', $dateRange->endDate()->format('Y-m-d'));
+
+        return $qb->getQuery()->getResult();
     }
 
     public function findInactiveByDateRange(DateRange $dateRange): array
     {
-        return $this->getEntityManager()
-            ->createQuery('
-            SELECT i FROM App\Context\Income\Domain\Income i 
-            WHERE i.isActive = false 
-            AND i.dueDate >= :startDate 
-            AND i.dueDate <= :endDate
-            ORDER BY i.dueDate ASC
-        ')
-            ->setParameter('startDate', $dateRange->startDate())
-            ->setParameter('endDate', $dateRange->endDate())
-            ->getResult();
+        $qb = $this->createQueryBuilder('i');
+        $qb->where('i.isActive = false')
+           ->andWhere('i.dueDate >= :startDate')
+           ->andWhere('i.dueDate <= :endDate')
+           ->orderBy('i.dueDate', 'ASC')
+           ->setParameter('startDate', $dateRange->startDate()->format('Y-m-d'))
+           ->setParameter('endDate', $dateRange->endDate()->format('Y-m-d'));
+
+        return $qb->getQuery()->getResult();
     }
 }
