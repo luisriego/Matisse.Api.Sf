@@ -4,17 +4,17 @@ declare(strict_types=1);
 
 namespace App\Tests\Context\Income\Infrastructure\Http\Controller;
 
-use App\Context\Income\Domain\ValueObject\IncomeAmount;
 use App\Context\Income\Domain\ValueObject\IncomeDueDate;
-use App\Context\ResidentUnit\Domain\ResidentUnit;
-use App\Tests\Context\ResidentUnit\Domain\ResidentUnitMother;
-use App\Tests\Context\Income\Domain\IncomeAmountMother;
+use App\Context\Income\Infrastructure\Http\Controller\GetIncomesByMonthController;
 use App\Tests\Context\Income\Domain\IncomeMother;
 use App\Tests\Shared\Infrastructure\PhpUnit\ApiTestCase;
 use DateTime;
-use Doctrine\ORM\Exception\ORMException;
+use Symfony\Component\HttpFoundation\Response;
 
-class GetIncomesByMonthControllerTest extends ApiTestCase
+/**
+ * @covers \App\Context\Income\Infrastructure\Http\Controller\GetIncomesByMonthController
+ */
+final class GetIncomesByMonthControllerTest extends ApiTestCase
 {
     protected function setUp(): void
     {
@@ -22,59 +22,63 @@ class GetIncomesByMonthControllerTest extends ApiTestCase
         $this->createAuthenticatedClient();
     }
 
-    /** @test */
     public function test_it_should_return_incomes_for_a_given_month(): void
     {
-        $targetDate = new DateTime('first day of next month');
-        $year = (int)$targetDate->format('Y');
-        $month = (int)$targetDate->format('m');
+        // 1. Create incomes for the test scenario, using the current year to avoid past date errors
+        $currentDate = new DateTime();
+        $year = (int)$currentDate->format('Y');
+        $month = (int)$currentDate->format('m');
+        
+        // To ensure we are testing a future month if we are at the end of the year
+        if ($month >= 11) {
+            $year += 1;
+            $month = 1;
+        }
 
-        $residentUnit = ResidentUnitMother::create();
-        $this->entityManager->persist($residentUnit);
+        $testMonth = $month;
+        $nextMonth = $month + 1;
 
-        $this->createAndPersistIncome(
-            amount: IncomeAmountMother::create(50000), residentUnit: $residentUnit, dueDate: new IncomeDueDate((clone $targetDate)->setDate($year, $month, 5))
+        // Income that should be found
+        $incomeInTestMonth = IncomeMother::create(
+            dueDate: new IncomeDueDate(new DateTime("$year-$testMonth-15"))
         );
-        $this->createAndPersistIncome(
-            amount: IncomeAmountMother::create(75000), residentUnit: $residentUnit, dueDate: new IncomeDueDate((clone $targetDate)->setDate($year, $month, 20))
+
+        // Income that should NOT be found
+        $incomeInNextMonth = IncomeMother::create(
+            dueDate: new IncomeDueDate(new DateTime("$year-$nextMonth-15"))
         );
-        $this->createAndPersistIncome(
-            amount: IncomeAmountMother::create(100000), residentUnit: $residentUnit, dueDate: new IncomeDueDate((clone $targetDate)->setDate($year, $month + 1, 15))
-        );
+
+        // 2. Persist all entities
+        $this->entityManager->persist($incomeInTestMonth->residentUnit());
+        $this->entityManager->persist($incomeInTestMonth->incomeType());
+        $this->entityManager->persist($incomeInTestMonth);
+
+        $this->entityManager->persist($incomeInNextMonth->residentUnit());
+        $this->entityManager->persist($incomeInNextMonth->incomeType());
+        $this->entityManager->persist($incomeInNextMonth);
 
         $this->entityManager->flush();
 
-        $this->client->request('GET', sprintf('/api/v1/incomes?year=%d&month=%d', $year, $month));
+        // 3. Send the GET request
+        $this->client->request('GET', "/api/v1/incomes/date-range/$year/$testMonth");
 
-        $this->assertResponseIsSuccessful();
+        // 4. Assert the response
+        $this->assertResponseStatusCodeSame(Response::HTTP_OK);
         $responseContent = $this->client->getResponse()->getContent();
-        $incomes = json_decode($responseContent, true);
+        $data = json_decode($responseContent, true);
 
-        self::assertCount(3, $incomes);
+        // 5. Assert the content of the response
+        $this->assertIsArray($data);
+        $this->assertCount(1, $data);
+        $this->assertEquals($incomeInTestMonth->id(), $data[0]['id']);
     }
 
-    /** @test */
-    public function test_it_should_return_empty_array_if_no_incomes(): void
+    public function test_it_maps_exceptions_correctly(): void
     {
-        $this->client->request('GET', '/api/v1/incomes?year=2030&month=1');
+        $controller = $this->getContainer()->get(GetIncomesByMonthController::class);
+        $exceptions = $controller->exceptions();
 
-        $this->assertResponseIsSuccessful();
-        $responseContent = $this->client->getResponse()->getContent();
-        $incomes = json_decode($responseContent, true);
-
-        self::assertCount(0, $incomes);
-    }
-
-    /**
-     * @throws ORMException
-     */
-    private function createAndPersistIncome(
-        ?IncomeAmount $amount = null,
-        ?ResidentUnit $residentUnit = null,
-        ?IncomeDueDate $dueDate = null
-    ): void {
-        $income = IncomeMother::create(id: null, amount: $amount, residentUnit: $residentUnit, type: null, dueDate: $dueDate, description: null);
-        $this->entityManager->persist($income->incomeType());
-        $this->entityManager->persist($income);
+        $this->assertIsArray($exceptions);
+        $this->assertEmpty($exceptions);
     }
 }

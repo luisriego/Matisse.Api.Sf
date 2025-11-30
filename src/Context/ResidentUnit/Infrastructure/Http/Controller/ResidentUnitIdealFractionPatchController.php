@@ -15,6 +15,9 @@ use Symfony\Component\HttpKernel\Attribute\MapRequestPayload;
 
 final class ResidentUnitIdealFractionPatchController extends ApiController
 {
+    /**
+     * @throws \Throwable
+     */
     public function __invoke(string $id, #[MapRequestPayload] PatchIdealFractionRequestDto $request): JsonResponse
     {
         $this->dispatch($request->toCommand($id));

@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Context\ResidentUnit\Infrastructure\Persistence\Doctrine;
 
 use App\Context\ResidentUnit\Domain\ResidentUnit;
+use App\Context\ResidentUnit\Domain\ResidentUnitId;
 use App\Context\ResidentUnit\Domain\ResidentUnitRepository;
 use App\Shared\Domain\Exception\ResourceNotFoundException;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
@@ -38,6 +39,11 @@ class DoctrineResidentUnitRepository extends ServiceEntityRepository implements 
     public function findOneById(string $id): ?ResidentUnit
     {
         return $this->findOneBy(['id' => $id]);
+    }
+
+    public function exists(ResidentUnitId $id): bool
+    {
+        return null !== $this->findOneBy(['id' => $id->value()]);
     }
 
     public function calculateTotalIdealFraction(?string $excludeId = null): float

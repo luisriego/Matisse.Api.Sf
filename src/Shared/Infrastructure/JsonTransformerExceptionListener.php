@@ -7,6 +7,7 @@ namespace App\Shared\Infrastructure;
 use App\Context\Gas\Domain\Exception\GasPriceNotFoundException;
 use App\Context\Gas\Domain\Exception\GasReadingNotFoundException;
 use App\Context\ResidentUnit\Domain\Exception\IdealFractionSumExceedsLimitException;
+use App\Context\ResidentUnit\Domain\Exception\ResidentUnitAlreadyExistsException; // Added this import
 use App\Shared\Domain\Exception\AccessDeniedException;
 use App\Shared\Domain\Exception\InvalidArgumentException;
 use App\Shared\Domain\Exception\ResourceAlreadyExistException;
@@ -30,6 +31,10 @@ class JsonTransformerExceptionListener
 
         if ($e instanceof ResourceAlreadyExistException) {
             $data['code'] = Response::HTTP_BAD_REQUEST;
+        }
+
+        if ($e instanceof ResidentUnitAlreadyExistsException) { // Added this condition
+            $data['code'] = Response::HTTP_CONFLICT;
         }
 
         if ($e instanceof ResourceNotFoundException || $e instanceof GasPriceNotFoundException || $e instanceof GasReadingNotFoundException) {

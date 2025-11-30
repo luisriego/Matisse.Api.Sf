@@ -12,6 +12,8 @@ interface ResidentUnitRepository
 
     public function findOneById(string $id): ?ResidentUnit;
 
+    public function exists(ResidentUnitId $id): bool; // Added this method
+
     public function calculateTotalIdealFraction(?string $excludeId = null): float;
 
     public function findAllActive(): array;

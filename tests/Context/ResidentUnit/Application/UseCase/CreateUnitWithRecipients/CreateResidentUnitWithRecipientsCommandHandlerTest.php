@@ -7,6 +7,7 @@ namespace App\Tests\Context\ResidentUnit\Application\UseCase\CreateUnitWithRecip
 use App\Context\ResidentUnit\Application\Message\WelcomeResidentNotification;
 use App\Context\ResidentUnit\Application\UseCase\CreateUnitWithRecipients\CreateResidentUnitWithRecipientsCommand;
 use App\Context\ResidentUnit\Application\UseCase\CreateUnitWithRecipients\CreateResidentUnitWithRecipientsCommandHandler;
+use App\Context\ResidentUnit\Domain\Exception\IdealFractionSumExceedsLimitException; // Added this import
 use App\Context\ResidentUnit\Domain\ResidentUnit;
 use App\Context\ResidentUnit\Domain\ResidentUnitRepository;
 use App\Shared\Domain\Exception\InvalidArgumentException;
@@ -21,9 +22,9 @@ use App\Context\ResidentUnit\Domain\ResidentUnitIdealFraction;
 
 class CreateResidentUnitWithRecipientsCommandHandlerTest extends TestCase
 {
-    private CreateResidentUnitWithRecipientsCommandHandler $handler;
     private ResidentUnitRepository $repository;
     private TestMessageBus $messageBus; // Changed to use TestMessageBus
+    private CreateResidentUnitWithRecipientsCommandHandler $handler;
 
     protected function setUp(): void
     {
@@ -56,6 +57,12 @@ class CreateResidentUnitWithRecipientsCommandHandlerTest extends TestCase
             ->method('calculateTotalIdealFraction')
             ->willReturn(0.5); // Ensure total ideal fraction is less than 1.0
 
+        // Mock the exists method to return false, indicating the unit does not exist
+        $this->repository->expects($this->once())
+            ->method('exists')
+            ->with(self::isInstanceOf(ResidentUnitId::class))
+            ->willReturn(false);
+
         $this->repository->expects($this->once())
             ->method('save')
             ->with(self::isInstanceOf(ResidentUnit::class), true);
@@ -87,8 +94,14 @@ class CreateResidentUnitWithRecipientsCommandHandlerTest extends TestCase
             ->method('calculateTotalIdealFraction')
             ->willReturn(0.3); // Make it exceed 1.0 when adding idealFraction
 
-        $this->expectException(InvalidArgumentException::class);
-        $this->expectExceptionMessage('Ideal fraction must not be more than 1');
+        // Mock the exists method to return false, indicating the unit does not exist
+        $this->repository->expects($this->once())
+            ->method('exists')
+            ->with(self::isInstanceOf(ResidentUnitId::class))
+            ->willReturn(false);
+
+        $this->expectException(IdealFractionSumExceedsLimitException::class); // Changed to expect the specific exception
+        $this->expectExceptionMessage('A soma das frações ideais não pode ser maior que 1.');
 
         // Ensure save and dispatch are not called
         $this->repository->expects($this->never())->method('save');
@@ -115,6 +128,12 @@ class CreateResidentUnitWithRecipientsCommandHandlerTest extends TestCase
             ->method('calculateTotalIdealFraction')
             ->willReturn(0.5); // Ensure total ideal fraction is less than 1.0
 
+        // Mock the exists method to return false, indicating the unit does not exist
+        $this->repository->expects($this->once())
+            ->method('exists')
+            ->with(self::isInstanceOf(ResidentUnitId::class))
+            ->willReturn(false);
+
         $this->repository->expects($this->once())
             ->method('save')
             ->with(self::isInstanceOf(ResidentUnit::class), true);
@@ -139,12 +158,9 @@ class CreateResidentUnitWithRecipientsCommandHandlerTest extends TestCase
             $recipients
         );
 
-        // Expect calculateTotalIdealFraction to be called, as the ID validation happens after this
-        $this->repository->expects($this->once())
-            ->method('calculateTotalIdealFraction')
-            ->willReturn(0.0); // Return a dummy value
-
-        // Ensure save and dispatch are not called
+        // The exists method will NOT be called because ResidentUnitId constructor will throw an exception first
+        $this->repository->expects($this->never())->method('exists');
+        $this->repository->expects($this->never())->method('calculateTotalIdealFraction');
         $this->repository->expects($this->never())->method('save');
         $this->messageBus->dispatchCallCount = 0; // Reset for this test
 
@@ -170,6 +186,12 @@ class CreateResidentUnitWithRecipientsCommandHandlerTest extends TestCase
             $recipients
         );
 
+        // Mock the exists method to return false, indicating the unit does not exist
+        $this->repository->expects($this->once())
+            ->method('exists')
+            ->with(self::isInstanceOf(ResidentUnitId::class))
+            ->willReturn(false);
+
         // Expect calculateTotalIdealFraction to NOT be called, as the validation happens before this
         $this->repository->expects($this->never())
             ->method('calculateTotalIdealFraction');
@@ -179,7 +201,7 @@ class CreateResidentUnitWithRecipientsCommandHandlerTest extends TestCase
         $this->messageBus->dispatchCallCount = 0; // Reset for this test
 
         $this->expectException(InvalidArgumentException::class);
-        $this->expectExceptionMessage('A fracao ideal deve ser maior o igual que zero e menor ou igual que um');
+        $this->expectExceptionMessage('A fração ideal deve ser maior ou igual a zero e menor ou igual a um.');
 
         ($this->handler)($command);
 

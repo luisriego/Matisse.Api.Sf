@@ -9,32 +9,17 @@ use App\Shared\Domain\Exception\ResourceNotFoundException;
 use App\Shared\Infrastructure\Symfony\ApiController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Response;
-use Symfony\Component\Messenger\MessageBusInterface;
-use Symfony\Component\Messenger\Stamp\HandledStamp;
-use Throwable;
 
 final class GetResidentUnitByIdController extends ApiController
 {
-    public function __construct(
-        MessageBusInterface $commandBus,
-        private readonly MessageBusInterface $queryBus,
-    ) {
-        parent::__construct($commandBus, $queryBus);
-    }
-
+    /**
+     * @throws \Throwable
+     */
     public function __invoke(string $id): JsonResponse
     {
-        try {
-            $query = new FindResidentUnitByIdQuery($id);
-            $envelope = $this->queryBus->dispatch($query);
-            $residentUnitData = $envelope->last(HandledStamp::class)->getResult();
+        $residentUnitData = $this->ask(new FindResidentUnitByIdQuery($id));
 
-            return new JsonResponse($residentUnitData, Response::HTTP_OK);
-        } catch (ResourceNotFoundException $e) {
-            return new JsonResponse(['error' => $e->getMessage()], Response::HTTP_NOT_FOUND);
-        } catch (Throwable $e) {
-            return new JsonResponse(['error' => $e->getMessage()], Response::HTTP_INTERNAL_SERVER_ERROR);
-        }
+        return new JsonResponse($residentUnitData, Response::HTTP_OK);
     }
 
     public function exceptions(): array

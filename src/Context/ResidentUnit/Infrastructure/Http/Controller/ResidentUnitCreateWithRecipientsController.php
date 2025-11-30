@@ -5,14 +5,14 @@ declare(strict_types=1);
 namespace App\Context\ResidentUnit\Infrastructure\Http\Controller;
 
 use App\Context\ResidentUnit\Application\UseCase\CreateUnitWithRecipients\CreateResidentUnitWithRecipientsCommand;
-use App\Context\ResidentUnit\Application\UseCase\CreateUnitWithRecipients\CreateResidentUnitWithRecipientsCommandHandler;
+use App\Context\ResidentUnit\Domain\Exception\ResidentUnitAlreadyExistsException;
+use App\Shared\Domain\Exception\InvalidArgumentException;
+use App\Shared\Infrastructure\Symfony\ApiController;
 use App\Context\ResidentUnit\Infrastructure\Http\Dto\CreateResidentUnitWithRecipientsRequestDto;
 use Symfony\Component\HttpFoundation\Response;
 
-final readonly class ResidentUnitCreateWithRecipientsController
+final class ResidentUnitCreateWithRecipientsController extends ApiController
 {
-    public function __construct(private CreateResidentUnitWithRecipientsCommandHandler $commandHandler) {}
-
     public function __invoke(CreateResidentUnitWithRecipientsRequestDto $requestDto): Response
     {
         $command = new CreateResidentUnitWithRecipientsCommand(
@@ -22,8 +22,16 @@ final readonly class ResidentUnitCreateWithRecipientsController
             $requestDto->notificationRecipients,
         );
 
-        $this->commandHandler->__invoke($command);
+        $this->dispatch($command);
 
         return new Response('', Response::HTTP_CREATED);
+    }
+
+    public function exceptions(): array
+    {
+        return [
+            InvalidArgumentException::class => Response::HTTP_BAD_REQUEST,
+            ResidentUnitAlreadyExistsException::class => Response::HTTP_CONFLICT,
+        ];
     }
 }

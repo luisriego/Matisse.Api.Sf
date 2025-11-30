@@ -13,7 +13,7 @@ final class ResidentUnitIdealFraction
     public function __construct(float $fraction)
     {
         if ($fraction < 0 || $fraction > 1) {
-            throw new InvalidArgumentException('A fracao ideal deve ser maior o igual que zero e menor ou igual que um');
+            throw new InvalidArgumentException('A fração ideal deve ser maior ou igual a zero e menor ou igual a um.');
         }
 
         $this->fraction = $fraction;
