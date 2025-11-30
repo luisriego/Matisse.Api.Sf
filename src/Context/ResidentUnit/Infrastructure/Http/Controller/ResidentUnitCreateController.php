@@ -6,15 +6,16 @@ namespace App\Context\ResidentUnit\Infrastructure\Http\Controller;
 
 use App\Context\ResidentUnit\Application\UseCase\CreateUnit\CreateResidentUnitCommand;
 use App\Context\ResidentUnit\Domain\Exception\ResidentUnitAlreadyExistsException;
+use App\Context\ResidentUnit\Infrastructure\Http\Dto\CreateResidentUnitRequestDto;
 use App\Shared\Domain\Exception\InvalidArgumentException;
 use App\Shared\Infrastructure\Symfony\ApiController;
-use App\Context\ResidentUnit\Infrastructure\Http\Dto\CreateResidentUnitRequestDto;
 use Symfony\Component\HttpFoundation\Response;
+use Throwable;
 
 final class ResidentUnitCreateController extends ApiController
 {
     /**
-     * @throws \Throwable
+     * @throws Throwable
      */
     public function __invoke(CreateResidentUnitRequestDto $requestDto): Response
     {

@@ -6,9 +6,9 @@ namespace App\Context\ResidentUnit\Infrastructure\Http\Controller;
 
 use App\Context\ResidentUnit\Application\UseCase\CreateUnitWithRecipients\CreateResidentUnitWithRecipientsCommand;
 use App\Context\ResidentUnit\Domain\Exception\ResidentUnitAlreadyExistsException;
+use App\Context\ResidentUnit\Infrastructure\Http\Dto\CreateResidentUnitWithRecipientsRequestDto;
 use App\Shared\Domain\Exception\InvalidArgumentException;
 use App\Shared\Infrastructure\Symfony\ApiController;
-use App\Context\ResidentUnit\Infrastructure\Http\Dto\CreateResidentUnitWithRecipientsRequestDto;
 use Symfony\Component\HttpFoundation\Response;
 
 final class ResidentUnitCreateWithRecipientsController extends ApiController

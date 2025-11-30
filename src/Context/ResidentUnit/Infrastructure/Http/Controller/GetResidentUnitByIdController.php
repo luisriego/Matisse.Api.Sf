@@ -9,11 +9,12 @@ use App\Shared\Domain\Exception\ResourceNotFoundException;
 use App\Shared\Infrastructure\Symfony\ApiController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Response;
+use Throwable;
 
 final class GetResidentUnitByIdController extends ApiController
 {
     /**
-     * @throws \Throwable
+     * @throws Throwable
      */
     public function __invoke(string $id): JsonResponse
     {

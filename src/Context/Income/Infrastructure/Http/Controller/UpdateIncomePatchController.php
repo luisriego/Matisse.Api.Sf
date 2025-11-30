@@ -5,9 +5,9 @@ declare(strict_types=1);
 namespace App\Context\Income\Infrastructure\Http\Controller;
 
 use App\Context\Income\Application\UseCase\UpdateIncome\UpdateIncomeCommand;
+use App\Context\Income\Infrastructure\Http\Dto\UpdateIncomeRequestDto;
 use App\Shared\Domain\Exception\ResourceNotFoundException;
 use App\Shared\Infrastructure\Symfony\ApiController;
-use App\Context\Income\Infrastructure\Http\Dto\UpdateIncomeRequestDto;
 use Symfony\Component\HttpFoundation\Response;
 
 final class UpdateIncomePatchController extends ApiController
