@@ -50,11 +50,11 @@ class DoctrineIncomeRepository extends ServiceEntityRepository implements Income
     {
         $qb = $this->createQueryBuilder('i');
         $qb->where('i.isActive = true')
-           ->andWhere('i.dueDate >= :startDate')
-           ->andWhere('i.dueDate <= :endDate')
-           ->orderBy('i.dueDate', 'ASC')
-           ->setParameter('startDate', $dateRange->startDate()->format('Y-m-d'))
-           ->setParameter('endDate', $dateRange->endDate()->format('Y-m-d'));
+            ->andWhere('i.dueDate >= :startDate')
+            ->andWhere('i.dueDate <= :endDate')
+            ->orderBy('i.dueDate', 'ASC')
+            ->setParameter('startDate', $dateRange->startDate()->format('Y-m-d'))
+            ->setParameter('endDate', $dateRange->endDate()->format('Y-m-d'));
 
         return $qb->getQuery()->getResult();
     }
@@ -63,11 +63,11 @@ class DoctrineIncomeRepository extends ServiceEntityRepository implements Income
     {
         $qb = $this->createQueryBuilder('i');
         $qb->where('i.isActive = false')
-           ->andWhere('i.dueDate >= :startDate')
-           ->andWhere('i.dueDate <= :endDate')
-           ->orderBy('i.dueDate', 'ASC')
-           ->setParameter('startDate', $dateRange->startDate()->format('Y-m-d'))
-           ->setParameter('endDate', $dateRange->endDate()->format('Y-m-d'));
+            ->andWhere('i.dueDate >= :startDate')
+            ->andWhere('i.dueDate <= :endDate')
+            ->orderBy('i.dueDate', 'ASC')
+            ->setParameter('startDate', $dateRange->startDate()->format('Y-m-d'))
+            ->setParameter('endDate', $dateRange->endDate()->format('Y-m-d'));
 
         return $qb->getQuery()->getResult();
     }

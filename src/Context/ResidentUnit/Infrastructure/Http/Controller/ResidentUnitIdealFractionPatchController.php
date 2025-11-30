@@ -12,11 +12,12 @@ use App\Shared\Infrastructure\Symfony\ApiController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Attribute\MapRequestPayload;
+use Throwable;
 
 final class ResidentUnitIdealFractionPatchController extends ApiController
 {
     /**
-     * @throws \Throwable
+     * @throws Throwable
      */
     public function __invoke(string $id, #[MapRequestPayload] PatchIdealFractionRequestDto $request): JsonResponse
     {

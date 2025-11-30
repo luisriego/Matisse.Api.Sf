@@ -10,6 +10,7 @@ use App\Context\Expense\Domain\RecurringExpenseRepository;
 use App\Shared\Application\QueryHandler;
 use DateMalformedStringException;
 use DateTimeImmutable;
+
 use function in_array;
 use function sprintf;
 

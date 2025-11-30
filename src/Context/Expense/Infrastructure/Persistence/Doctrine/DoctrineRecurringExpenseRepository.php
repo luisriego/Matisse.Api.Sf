@@ -12,6 +12,8 @@ use DateTime;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
 
+use function sprintf;
+
 class DoctrineRecurringExpenseRepository extends ServiceEntityRepository implements RecurringExpenseRepository
 {
     public function __construct(ManagerRegistry $registry)
@@ -23,7 +25,7 @@ class DoctrineRecurringExpenseRepository extends ServiceEntityRepository impleme
     {
         return $this->findBy(['isActive' => true]);
     }
-    
+
     public function flush(): void
     {
         $this->getEntityManager()->flush();
@@ -51,7 +53,7 @@ class DoctrineRecurringExpenseRepository extends ServiceEntityRepository impleme
     {
         if (null === $recurringExpense = $this->find($id)) {
             throw new ResourceNotFoundException(
-                sprintf('Resource of type [%s] with ID [%s] not found', RecurringExpense::class, $id)
+                sprintf('Resource of type [%s] with ID [%s] not found', RecurringExpense::class, $id),
             );
         }
 
@@ -78,13 +80,13 @@ class DoctrineRecurringExpenseRepository extends ServiceEntityRepository impleme
                 $qb->expr()->orX(
                     $qb->expr()->andX(
                         're.startDate <= :endDate',
-                        're.endDate IS NULL'
+                        're.endDate IS NULL',
                     ),
                     $qb->expr()->andX(
                         're.startDate <= :endDate',
-                        're.endDate >= :startDate'
-                    )
-                )
+                        're.endDate >= :startDate',
+                    ),
+                ),
             )
             ->setParameter('isActive', true)
             ->setParameter('startDate', $dateRange->startDate())
@@ -100,8 +102,8 @@ class DoctrineRecurringExpenseRepository extends ServiceEntityRepository impleme
 
     public function findByYear(int $year): array
     {
-        $yearStart = new DateTime("$year-01-01 00:00:00");
-        $yearEnd = new DateTime("$year-12-31 23:59:59");
+        $yearStart = new DateTime("{$year}-01-01 00:00:00");
+        $yearEnd = new DateTime("{$year}-12-31 23:59:59");
 
         $qb = $this->createQueryBuilder('re');
 
@@ -109,7 +111,7 @@ class DoctrineRecurringExpenseRepository extends ServiceEntityRepository impleme
             ->andWhere('re.startDate <= :yearEnd')
             ->andWhere($qb->expr()->orX(
                 're.endDate IS NULL',
-                're.endDate >= :yearStart'
+                're.endDate >= :yearStart',
             ))
             ->setParameter('isActive', true)
             ->setParameter('yearStart', $yearStart)

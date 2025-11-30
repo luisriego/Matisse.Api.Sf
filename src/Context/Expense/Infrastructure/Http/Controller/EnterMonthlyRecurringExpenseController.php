@@ -11,11 +11,12 @@ use App\Shared\Domain\Exception\ResourceNotFoundException;
 use App\Shared\Infrastructure\Symfony\ApiController;
 use Exception;
 use Symfony\Component\HttpFoundation\Response;
+use Throwable;
 
 final class EnterMonthlyRecurringExpenseController extends ApiController
 {
     /**
-     * @throws Exception|\Throwable
+     * @throws Exception|Throwable
      */
     public function __invoke(EnterMonthlyRecurringExpenseRequestDto $dto): Response
     {
