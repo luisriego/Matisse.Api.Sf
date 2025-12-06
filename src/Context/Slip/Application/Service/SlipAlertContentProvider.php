@@ -4,14 +4,20 @@ declare(strict_types=1);
 
 namespace App\Context\Slip\Application\Service;
 
+use function number_format;
+
 final class SlipAlertContentProvider
 {
     public function provide(
         string $anomalyType,
-        string $amountStr,
-        string $minStr,
-        string $maxStr,
+        int $amount,
+        int $min,
+        int $max,
     ): array {
+        $amountStr = number_format($amount / 100, 2, ',', '.');
+        $minStr = number_format($min / 100, 2, ',', '.');
+        $maxStr = number_format($max / 100, 2, ',', '.');
+
         if ($anomalyType === 'muito baixo') {
             return [
                 'title' => 'Alerta: Total de Slip Baixo',

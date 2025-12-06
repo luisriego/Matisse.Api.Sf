@@ -21,24 +21,13 @@ RUN echo "alias vv='bin/console messenger:consume async -vv'" >> /home/appuser/.
 
 # Install packages and PHP extensions
 RUN apt update \
-    # common libraries and extensions
     && apt install -y git acl openssl openssh-client wget zip \
     && apt install -y libpng-dev zlib1g-dev libzip-dev libxml2-dev libicu-dev \
     && docker-php-ext-install intl pdo zip \
-    # Para PostgreSQL
     && apt-get install -y libpq-dev \
     && docker-php-ext-install pdo_pgsql \
-    # for MySQL
     && docker-php-ext-install pdo_mysql \
-    # common libraries and extensions
     && apt install -y git acl openssl openssh-client wget zip dos2unix \
-#    # XDEBUG and APCu
-#    && pecl install xdebug \
-#    && pecl install apcu \
-#    && docker-php-ext-enable --ini-name 05-opcache.ini opcache \
-#    && docker-php-ext-enable xdebug \
-#    && docker-php-ext-enable apcu
-    # XDEBUG y APCu - usando estrategia alternativa
     && pecl channel-update pecl.php.net \
     && pecl install -f xdebug-3.3.1 \
     && pecl install -f apcu \

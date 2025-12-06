@@ -67,7 +67,7 @@ class FindAccountQueryHandlerTest extends TestCase
         $result = ($this->handler)($query);
 
         // Assert
-        $this->assertEquals($accountData, $result);
+        $this->assertSame($accountData, $result);
     }
 
     public function testFindAccountNotFound(): void

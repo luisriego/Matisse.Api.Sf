@@ -11,9 +11,13 @@ use DateMalformedStringException;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Attribute\MapRequestPayload;
+use Throwable;
 
 final class RecordGasReadingPutController extends ApiController
 {
+    /**
+     * @throws Throwable
+     */
     public function __invoke(#[MapRequestPayload] RecordGasReadingRequestDto $dto): JsonResponse
     {
         $this->dispatch($dto->toCommand());

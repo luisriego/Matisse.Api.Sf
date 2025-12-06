@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Context\Slip\Application\Service;
 
+use App\Context\Slip\Domain\Service\SlipAnomalyDetector;
 use App\Context\Slip\Domain\ValueObject\SlipAmount;
 use App\Shared\Application\TextGeneratorInterface;
 use Psr\Log\LoggerInterface;
@@ -18,11 +19,16 @@ use const JSON_ERROR_NONE;
 
 class SlipAlertService
 {
+    private SlipAnomalyDetector $anomalyDetector;
     private TextGeneratorInterface $textGenerator;
     private LoggerInterface $logger;
 
-    public function __construct(TextGeneratorInterface $textGenerator, LoggerInterface $logger)
-    {
+    public function __construct(
+        SlipAnomalyDetector $anomalyDetector,
+        TextGeneratorInterface $textGenerator,
+        LoggerInterface $logger,
+    ) {
+        $this->anomalyDetector = $anomalyDetector;
         $this->textGenerator = $textGenerator;
         $this->logger = $logger;
     }
@@ -37,9 +43,8 @@ class SlipAlertService
     public function checkAndGenerateAnomalyAlert(
         SlipAmount $amount,
     ): ?stdClass {
-        // --- Lógica Correcta ---
-        $minExpected = new SlipAmount(500000);  // Representa 5000.00
-        $maxExpected = new SlipAmount(1000000); // Representa 10000.00
+        $minExpected = new SlipAmount($this->anomalyDetector->getMinExpectedAmount()->value());
+        $maxExpected = new SlipAmount($this->anomalyDetector->getMaxExpectedAmount()->value());
 
         if ($amount->value() >= $minExpected->value() && $amount->value() <= $maxExpected->value()) {
             return null; // O valor está dentro do intervalo esperado.

@@ -4,39 +4,16 @@ declare(strict_types=1);
 
 namespace App\Context\Slip\Infrastructure\Http\Dto;
 
-use App\Context\Slip\Domain\ValueObject\SlipAmount;
-use App\Shared\Domain\Exception\InvalidArgumentException;
-use RuntimeException;
-use Symfony\Component\HttpFoundation\Request;
+use App\Context\Slip\Application\UseCase\CheckSlipTotalAnomaly\CheckSlipTotalAnomalyCommand;
 
-use function is_numeric;
-use function json_decode;
-use function round;
-
-class SlipCheckTotalRequestDto
+final readonly class SlipCheckTotalRequestDto
 {
-    public SlipAmount $amount; // <-- La propiedad DEBE ser de tipo SlipAmount
+    public function __construct(
+        public int $amount,
+    ) {}
 
-    public static function fromRequest(Request $request): self
+    public function toCommand(): CheckSlipTotalAnomalyCommand
     {
-        $data = json_decode($request->getContent(), true);
-        $dto = new self();
-
-        try {
-            $rawAmount = $data['amount'] ?? null;
-
-            if (!is_numeric($rawAmount)) {
-                throw new InvalidArgumentException("O valor 'amount' deve ser numérico.");
-            }
-
-            $intValue = (int) round((float) $rawAmount);
-
-            // Aquí está la magia: creamos el objeto y lo asignamos.
-            $dto->amount = new SlipAmount($intValue);
-        } catch (InvalidArgumentException $e) {
-            throw new RuntimeException('Erro de validação do DTO: ' . $e->getMessage(), 0, $e);
-        }
-
-        return $dto;
+        return new CheckSlipTotalAnomalyCommand($this->amount);
     }
 }

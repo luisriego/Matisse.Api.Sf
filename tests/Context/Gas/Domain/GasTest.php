@@ -82,13 +82,13 @@ class GasTest extends TestCase
 
         // Recalculate expected price based on default values and conversions
         $expectedPricePerM3 = ($amount->toFloat() / $capacity->toM3()) * (1 + $buffer->toFactor());
-        $this->assertEquals($expectedPricePerM3, $gas->pricePerM3());
+        $this->assertSame($expectedPricePerM3, $gas->pricePerM3());
 
         $events = $gas->pullDomainEvents();
         $this->assertCount(1, $events);
         $this->assertInstanceOf(GasPriceWasDefined::class, $events[0]);
         $this->assertSame($gas->id()->value(), $events[0]->aggregateId());
-        $this->assertEquals($expectedPricePerM3, $events[0]->pricePerM3);
+        $this->assertSame($expectedPricePerM3, $events[0]->pricePerM3);
     }
 
     public function test_it_should_throw_exception_for_invalid_reading_in_record_reading(): void
