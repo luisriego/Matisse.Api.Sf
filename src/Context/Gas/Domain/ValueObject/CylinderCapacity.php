@@ -17,10 +17,7 @@ final class CylinderCapacity extends IntValueObject
         parent::__construct($value);
     }
 
-    public function toM3(): float
-    {
-        return $this->value * self::KG_TO_M3_CONVERSION_FACTOR;
-    }
+
 
     private function ensureIsGreaterThanZero(int $value): void
     {

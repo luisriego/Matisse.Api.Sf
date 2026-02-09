@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace App\Context\Gas\Application\UseCase\RecordGasReading;
 
+use App\Context\EventStore\Domain\StoredEventRepository;
+use App\Context\Gas\Domain\Bus\GasPriceWasDefined;
 use App\Context\Gas\Domain\Gas;
 use App\Context\Gas\Domain\ValueObject\GasId;
 use App\Context\Gas\Domain\ValueObject\ReadingInM3;
@@ -16,7 +18,10 @@ use DateMalformedStringException;
 
 final readonly class RecordGasReadingCommandHandler implements CommandHandler
 {
-    public function __construct(private EventBus $eventBus) {}
+    public function __construct(
+        private EventBus $eventBus,
+        private StoredEventRepository $storedEventRepository
+    ) {}
 
     /**
      * @throws DateMalformedStringException
@@ -29,12 +34,21 @@ final readonly class RecordGasReadingCommandHandler implements CommandHandler
         $month = new Month($command->month());
         $reading = new ReadingInM3($command->reading());
 
+        $priceEvents = $this->storedEventRepository->findByEventType(GasPriceWasDefined::eventName());
+        $lastPriceEvent = end($priceEvents);
+        $price = null;
+
+        if (false !== $lastPriceEvent) {
+            $price = $lastPriceEvent->toPrimitives()['pricePerM3'];
+        }
+
         $gas = Gas::recordReading(
             $id,
             $residentUnitId,
             $year,
             $month,
             $reading,
+            $price,
         );
 
         $events = $gas->pullDomainEvents();

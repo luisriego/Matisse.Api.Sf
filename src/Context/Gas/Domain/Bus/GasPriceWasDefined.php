@@ -16,7 +16,7 @@ final readonly class GasPriceWasDefined extends DomainEvent
      */
     public function __construct(
         string $id,
-        public float $pricePerM3,
+        public int $pricePerM3,
         ?string $eventId = null,
         ?string $occurredOn = null, // Can be a date string or null
     ) {

@@ -21,7 +21,7 @@ final class Gas extends AggregateRoot
 {
     public function __construct(
         private readonly GasId $id,
-        private readonly ?float $pricePerM3 = null,
+        private readonly ?int $pricePerM3 = null,
     ) {}
 
     /**
@@ -32,15 +32,12 @@ final class Gas extends AggregateRoot
         CylinderCapacity $capacity,
         BufferPercentage $buffer,
     ): self {
-        $cylinderCapacityInM3 = $capacity->toM3();
-        $billAmount = $amount->toFloat();
+        $pricePerM3 = (int) (($amount->toInt() * 2) / $capacity->value());
 
-        $pricePerM3 = $billAmount / $cylinderCapacityInM3;
+        $bufferValue = $buffer->value();
 
-        $bufferFactor = $buffer->toFactor();
-
-        if ($bufferFactor > 0) {
-            $pricePerM3 += $pricePerM3 * $bufferFactor;
+        if ($bufferValue > 0) {
+            $pricePerM3 += (int) (($pricePerM3 * $bufferValue) / 100);
         }
 
         $gasId = new GasId(GasId::random()->value());
@@ -64,6 +61,7 @@ final class Gas extends AggregateRoot
         Year $year,
         Month $month,
         ReadingInM3 $reading,
+        ?int $price,
     ): self {
         $gas = new self($id);
         $gas->record(new GasReadingWasRecorded(
@@ -72,6 +70,7 @@ final class Gas extends AggregateRoot
             $year->value(),
             $month->value(),
             $reading->value(),
+            $price,
         ));
 
         return $gas;
@@ -82,7 +81,7 @@ final class Gas extends AggregateRoot
         return $this->id;
     }
 
-    public function pricePerM3(): ?float
+    public function pricePerM3(): ?int
     {
         return $this->pricePerM3;
     }
