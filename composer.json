@@ -87,6 +87,9 @@
         ],
         "fix:standards": [
             "tools/php-cs-fixer/vendor/bin/php-cs-fixer fix src --verbose --show-progress=dots"
+        ],
+        "test:mutation": [
+            "vendor/bin/infection --configuration=infection.json.dist --threads=4 --min-msi=60 --min-covered-msi=70"
         ]
     },
     "conflict": {

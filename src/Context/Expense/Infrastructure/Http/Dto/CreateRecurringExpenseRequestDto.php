@@ -9,17 +9,17 @@ use Symfony\Component\HttpFoundation\Request;
 
 class CreateRecurringExpenseRequestDto implements RequestDto
 {
-    public string $id;
-    public int $amount;
-    public string $type;
-    public string $accountId;
-    public int $dueDay;
-    public array $monthsOfYear;
-    public string $startDate;
-    public string $endDate;
-    public string $description;
-    public string $notes;
-    public bool $hasPredefinedAmount;
+    public readonly string $id;
+    public readonly int $amount;
+    public readonly string $type;
+    public readonly string $accountId;
+    public readonly int $dueDay;
+    public readonly array $monthsOfYear;
+    public readonly string $startDate;
+    public readonly string $endDate;
+    public readonly string $description;
+    public readonly string $notes;
+    public readonly bool $hasPredefinedAmount;
 
     public function __construct(Request $request)
     {

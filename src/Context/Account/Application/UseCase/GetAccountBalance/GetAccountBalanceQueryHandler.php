@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Context\Account\Application\UseCase\GetAccountBalance;
 
 use App\Context\Account\Domain\Bus\InitialBalanceSet;
+use App\Context\EventStore\Domain\DomainEventRegistry;
 use App\Context\EventStore\Domain\StoredEvent;
 use App\Context\EventStore\Domain\StoredEventRepository;
 use App\Context\Expense\Domain\Bus\ExpenseWasEntered;
@@ -18,6 +19,7 @@ readonly class GetAccountBalanceQueryHandler implements QueryHandler
 {
     public function __construct(
         private StoredEventRepository $eventRepository,
+        private DomainEventRegistry $domainEventRegistry,
     ) {}
 
     public function __invoke(GetAccountBalanceQuery $query): int
@@ -40,7 +42,7 @@ readonly class GetAccountBalanceQueryHandler implements QueryHandler
             /** @var StoredEvent $latestInitialBalanceStoredEvent */
             $latestInitialBalanceStoredEvent = end($initialBalanceEvents);
             /** @var InitialBalanceSet $initialBalanceEvent */
-            $initialBalanceEvent = $latestInitialBalanceStoredEvent->toDomainEvent();
+            $initialBalanceEvent = $latestInitialBalanceStoredEvent->toDomainEvent($this->domainEventRegistry);
 
             $balance = $initialBalanceEvent->amount();
             $eventsStartDate = new DateTimeImmutable($initialBalanceEvent->date());
@@ -58,7 +60,7 @@ readonly class GetAccountBalanceQueryHandler implements QueryHandler
 
         // 3. Filter events by accountId in PHP
         foreach ($transactionEvents as $storedEvent) {
-            $domainEvent = $storedEvent->toDomainEvent();
+            $domainEvent = $storedEvent->toDomainEvent($this->domainEventRegistry);
             $primitives = $domainEvent->toPrimitives();
 
             // Skip if the event is not for the requested account

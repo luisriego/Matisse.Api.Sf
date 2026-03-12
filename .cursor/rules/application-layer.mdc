@@ -1,0 +1,39 @@
+---
+description: Rules for the Application layer (CQRS, handlers, use cases)
+globs: "**/Context/**/Application/**/*.php"
+alwaysApply: false
+---
+
+# Application layer — CQRS and use cases
+
+## Structure
+- Each use case in its own folder: `Application/UseCase/{ActionName}/`.
+- Files: `{Action}Command.php`, `{Action}CommandHandler.php` or `{Data}Query.php`, `{Data}QueryHandler.php`.
+
+## Commands and Queries
+- **Commands:** data objects (readonly when possible) representing an intent to change state. No logic.
+- **Queries:** data objects representing a read. Handlers return DTOs or simple types, not exposed domain entities.
+- Handlers receive only the Command/Query and dependencies via constructor (repositories, event bus, etc.).
+
+## Command Handlers
+1. Build value objects from the command.
+2. Load aggregates via repository (Domain interfaces).
+3. Invoke aggregate methods (factory or behavior).
+4. Persist with `$repository->save($aggregate, $flush)`.
+5. Publish events with `$eventBus->publish(...$aggregate->pullDomainEvents())`.
+- Single `save()` with flush at the end; avoid double `save()` with flush.
+
+```php
+// Typical flow
+$account = Account::create($id, $code, $name);
+$this->accountRepository->save($account, true);
+$this->bus->publish(...$account->pullDomainEvents());
+```
+
+## Query Handlers
+- Tagged with `#[AsMessageHandler(bus: 'query.bus')]`.
+- May use repositories or domain query services; do not modify state.
+- Return response DTOs or associative arrays, not entities.
+
+## Dependencies
+- Application layer **only** depends on Domain (and Shared). Do not inject Infrastructure implementations directly; use interfaces defined in Domain.

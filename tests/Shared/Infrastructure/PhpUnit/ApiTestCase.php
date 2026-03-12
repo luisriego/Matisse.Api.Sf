@@ -12,7 +12,6 @@ use App\Tests\Context\User\Domain\ValueObject\UserIdMother;
 use App\Tests\Context\User\Domain\ValueObject\UserNameMother;
 use Doctrine\ORM\EntityManagerInterface;
 use Lexik\Bundle\JWTAuthenticationBundle\Services\JWTTokenManagerInterface;
-use Doctrine\ORM\Tools\SchemaTool;
 use Symfony\Bundle\FrameworkBundle\KernelBrowser;
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 use Symfony\Component\Dotenv\Dotenv;
@@ -22,7 +21,29 @@ abstract class ApiTestCase extends WebTestCase
 {
     protected ?KernelBrowser $client = null;
     protected ?EntityManagerInterface $entityManager = null;
-    protected ?User $authenticatedUser = null; // <-- AÑADIDO
+    protected ?User $authenticatedUser = null;
+
+    /**
+     * Truncate all tables once per test class.
+     * DAMA doctrine-test-bundle then wraps each individual test in a transaction
+     * with automatic rollback, so no per-test reset is needed.
+     */
+    public static function setUpBeforeClass(): void
+    {
+        parent::setUpBeforeClass();
+
+        static::bootKernel(['environment' => 'test']);
+        $entityManager = static::getContainer()->get('doctrine.orm.entity_manager');
+        $connection = $entityManager->getConnection();
+
+        $connection->executeStatement('SET session_replication_role = replica');
+        foreach ($entityManager->getMetadataFactory()->getAllMetadata() as $meta) {
+            $connection->executeStatement(sprintf('TRUNCATE TABLE %s CASCADE', $meta->getTableName()));
+        }
+        $connection->executeStatement('SET session_replication_role = DEFAULT');
+
+        static::ensureKernelShutdown();
+    }
 
     protected function setUp(): void
     {
@@ -36,8 +57,6 @@ abstract class ApiTestCase extends WebTestCase
 
         $this->client = static::createClient();
         $this->entityManager = static::getContainer()->get('doctrine.orm.entity_manager');
-
-        $this->resetDatabase();
     }
 
     protected function createAuthenticatedClient(string $email = 'test@example.com', string $password = 'password'): KernelBrowser
@@ -46,12 +65,6 @@ abstract class ApiTestCase extends WebTestCase
 
         $passwordHasher = $container->get(UserPasswordHasherInterface::class);
         $jwtManager = $container->get('lexik_jwt_authentication.jwt_manager');
-
-        $existingUser = $this->entityManager->getRepository(User::class)->findOneBy(['email' => $email]);
-        if ($existingUser) {
-            $this->entityManager->remove($existingUser);
-            $this->entityManager->flush();
-        }
 
         $user = User::create(
             UserIdMother::create(),
@@ -65,7 +78,7 @@ abstract class ApiTestCase extends WebTestCase
         $this->entityManager->persist($user);
         $this->entityManager->flush();
 
-        $this->authenticatedUser = $user; // <-- AÑADIDO
+        $this->authenticatedUser = $user;
 
         $token = $jwtManager->create($user);
 
@@ -74,18 +87,9 @@ abstract class ApiTestCase extends WebTestCase
         return $this->client;
     }
 
-    // AÑADIDO
     protected function getAuthenticatedUser(): ?User
     {
         return $this->authenticatedUser;
-    }
-
-    private function resetDatabase(): void
-    {
-        $schemaTool = new SchemaTool($this->entityManager);
-        $metadata = $this->entityManager->getMetadataFactory()->getAllMetadata();
-        $schemaTool->dropSchema($metadata);
-        $schemaTool->createSchema($metadata);
     }
 
     protected static function getKernelClass(): string
@@ -102,7 +106,6 @@ abstract class ApiTestCase extends WebTestCase
             $this->entityManager = null;
         }
 
-        // Force the kernel to shut down, ensuring a clean state for the next test.
         static::ensureKernelShutdown();
     }
 }

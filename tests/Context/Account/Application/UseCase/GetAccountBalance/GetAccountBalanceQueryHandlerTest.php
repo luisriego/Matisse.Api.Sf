@@ -7,6 +7,7 @@ namespace App\Tests\Context\Account\Application\UseCase\GetAccountBalance;
 use App\Context\Account\Application\UseCase\GetAccountBalance\GetAccountBalanceQuery;
 use App\Context\Account\Application\UseCase\GetAccountBalance\GetAccountBalanceQueryHandler;
 use App\Context\Account\Domain\Bus\InitialBalanceSet;
+use App\Context\EventStore\Domain\DomainEventRegistry;
 use App\Context\EventStore\Domain\StoredEvent;
 use App\Context\EventStore\Domain\StoredEventRepository;
 use App\Context\Expense\Domain\Bus\ExpenseWasEntered;
@@ -20,6 +21,7 @@ use PHPUnit\Framework\TestCase;
 class GetAccountBalanceQueryHandlerTest extends TestCase
 {
     private MockObject|StoredEventRepository $storedEventRepository;
+    private MockObject|DomainEventRegistry $domainEventRegistry;
     private GetAccountBalanceQueryHandler $handler;
 
     protected function setUp(): void
@@ -27,7 +29,8 @@ class GetAccountBalanceQueryHandlerTest extends TestCase
         parent::setUp();
 
         $this->storedEventRepository = $this->createMock(StoredEventRepository::class);
-        $this->handler = new GetAccountBalanceQueryHandler($this->storedEventRepository);
+        $this->domainEventRegistry = $this->createMock(DomainEventRegistry::class);
+        $this->handler = new GetAccountBalanceQueryHandler($this->storedEventRepository, $this->domainEventRegistry);
     }
 
     /** @test */

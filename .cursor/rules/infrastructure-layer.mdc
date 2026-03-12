@@ -1,0 +1,47 @@
+---
+description: Rules for Infrastructure (controllers, DTOs, Doctrine)
+globs: "**/Context/**/Infrastructure/**/*.php"
+alwaysApply: false
+---
+
+# Infrastructure layer
+
+## HTTP Controllers
+- Prefer **direct injection** of CommandHandler or QueryHandler (do not extend ApiController to dispatch to the bus if a dedicated handler already exists).
+- Class `final readonly`, method `__invoke(...)` with the request DTO.
+- Build Command/Query from DTO and call the handler; return `JsonResponse` with appropriate status (201 created, 200 OK, etc.).
+- Validate input in the DTO or before building the command.
+
+```php
+// Preferred pattern
+final readonly class ExpenseEnterPutController
+{
+    public function __construct(
+        private EnterExpenseCommandHandler $commandHandler,
+        private SerializerInterface $serializer,
+    ) {}
+
+    public function __invoke(EnterExpenseRequestDto $request): Response
+    {
+        $command = new EnterExpenseCommand(...);
+        $result = ($this->commandHandler)($command);
+        return new JsonResponse($this->serializer->normalize($result), Response::HTTP_CREATED);
+    }
+}
+```
+
+## Request DTOs
+- Implement the project's `RequestDto` interface.
+- Prefer `readonly` properties when the flow allows it.
+- Location: `Infrastructure/Http/Dto/`. Naming: `{ActionOrResource}RequestDto`.
+
+## Routes
+- Each context defines its routes in `Infrastructure/Http/routes.yaml`.
+- Consistent API prefix (e.g. `api/v1/`). Loaded from `config/routes.yaml` via glob per context.
+
+## Doctrine Repositories
+- Implementations in `Infrastructure/Persistence/Doctrine/`: `Doctrine{Aggregate}Repository` implementing the Domain interface.
+- Mapping in XML (`.orm.xml`) in the same context. Do not put business logic in the repository.
+
+## Event subscribers
+- Domain event subscribers (event bus) explicitly tagged in the context YAML (e.g. `app.domain.event_subscriber`), do not rely only on global autoconfigure.

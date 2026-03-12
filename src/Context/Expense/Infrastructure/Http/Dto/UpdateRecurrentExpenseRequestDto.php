@@ -9,14 +9,14 @@ use Symfony\Component\HttpFoundation\Request;
 
 class UpdateRecurrentExpenseRequestDto implements RequestDto
 {
-    public ?int $amount;
-    public ?string $type;
-    public ?int $dueDay;
-    public ?array $monthsOfYear;
-    public ?string $startDate;
-    public ?string $endDate;
-    public ?string $description;
-    public ?string $notes;
+    public readonly ?int $amount;
+    public readonly ?string $type;
+    public readonly ?int $dueDay;
+    public readonly ?array $monthsOfYear;
+    public readonly ?string $startDate;
+    public readonly ?string $endDate;
+    public readonly ?string $description;
+    public readonly ?string $notes;
 
     public function __construct(Request $request)
     {

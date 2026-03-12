@@ -9,5 +9,8 @@ use DateTime;
 
 class ExpenseDueDate extends DateTimeValueObject
 {
-    public static function fromDateTime(DateTime $dueDate): void {}
+    public static function fromDateTime(DateTime $dueDate): self
+    {
+        return new self($dueDate);
+    }
 }

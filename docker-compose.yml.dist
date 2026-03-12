@@ -3,6 +3,7 @@ services:
     container_name: matisse-app
     build:
       context: ./docker
+      target: development
       args:
         UID: $U_ID
     volumes:
@@ -33,7 +34,7 @@ services:
       - database_data:/var/lib/postgresql/data
 #      - ./databases:/docker-entrypoint-initdb.d
     ports:
-      - "5432:5432"
+      - "5433:5432"  # 5433 en host para evitar conflicto con otro PostgreSQL en 5432
     networks:
       - matisse-network
 

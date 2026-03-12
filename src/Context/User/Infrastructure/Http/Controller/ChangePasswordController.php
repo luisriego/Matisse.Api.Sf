@@ -5,18 +5,21 @@ declare(strict_types=1);
 namespace App\Context\User\Infrastructure\Http\Controller;
 
 use App\Context\User\Application\UseCase\ChangePassword\ChangePasswordCommand;
+use App\Context\User\Application\UseCase\ChangePassword\ChangePasswordCommandHandler;
 use App\Context\User\Infrastructure\Http\Dto\ChangePasswordRequestDto;
 use App\Shared\Domain\Exception\InvalidArgumentException;
-use App\Shared\Infrastructure\Symfony\ApiController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Response;
-use Symfony\Component\Messenger\Exception\HandlerFailedException;
 use Symfony\Component\Security\Core\User\UserInterface;
 use Symfony\Component\Security\Http\Attribute\CurrentUser;
 use Throwable;
 
-final class ChangePasswordController extends ApiController
+final readonly class ChangePasswordController
 {
+    public function __construct(
+        private ChangePasswordCommandHandler $commandHandler,
+    ) {}
+
     /**
      * @throws Throwable
      */
@@ -27,33 +30,15 @@ final class ChangePasswordController extends ApiController
         }
 
         try {
-            $this->dispatch(new ChangePasswordCommand(
-                $user->getUserIdentifier(), // The email
+            ($this->commandHandler)(new ChangePasswordCommand(
+                $user->getUserIdentifier(),
                 $requestDto->oldPassword(),
                 $requestDto->newPassword(),
             ));
-        } catch (HandlerFailedException $e) {
-            throw $this->unwrap($e);
+        } catch (InvalidArgumentException $e) {
+            return new JsonResponse(['error' => $e->getMessage()], Response::HTTP_BAD_REQUEST);
         }
 
         return new JsonResponse(['message' => 'Password changed successfully.'], Response::HTTP_OK);
-    }
-
-    public function exceptions(): array
-    {
-        return [
-            InvalidArgumentException::class => Response::HTTP_BAD_REQUEST,
-        ];
-    }
-
-    private function unwrap(Throwable $e): Throwable
-    {
-        $previous = $e->getPrevious();
-
-        if ($previous instanceof HandlerFailedException) {
-            return $this->unwrap($previous);
-        }
-
-        return $previous ?? $e;
     }
 }

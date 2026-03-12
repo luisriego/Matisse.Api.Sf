@@ -18,9 +18,9 @@ use const FILTER_VALIDATE_BOOL;
 
 class SlipGenerationRequestDto implements RequestDto
 {
-    public int $year;
-    public int $month;
-    public bool $isForced = false;
+    public readonly int $year;
+    public readonly int $month;
+    public readonly bool $isForced;
 
     public function __construct(Request $request)
     {

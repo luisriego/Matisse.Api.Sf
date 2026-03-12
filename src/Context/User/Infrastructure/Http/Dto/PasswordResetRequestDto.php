@@ -16,7 +16,7 @@ use const JSON_THROW_ON_ERROR;
 
 final class PasswordResetRequestDto implements RequestDto
 {
-    private string $email;
+    private readonly string $email;
 
     public function __construct(Request $request)
     {

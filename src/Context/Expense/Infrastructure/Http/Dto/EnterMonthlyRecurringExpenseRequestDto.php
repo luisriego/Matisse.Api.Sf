@@ -19,11 +19,11 @@ use function json_decode;
 
 final class EnterMonthlyRecurringExpenseRequestDto implements RequestDto
 {
-    public ExpenseId $id;
-    public RecurringExpenseId $recurringExpenseId;
-    public AccountId $accountId;
-    public ExpenseAmount $amount;
-    public ExpenseDueDate $date;
+    public readonly ExpenseId $id;
+    public readonly RecurringExpenseId $recurringExpenseId;
+    public readonly AccountId $accountId;
+    public readonly ExpenseAmount $amount;
+    public readonly ExpenseDueDate $date;
 
     /**
      * @throws Exception

@@ -4,10 +4,6 @@ declare(strict_types=1);
 
 namespace App\Context\EventStore\Domain;
 
-use App\Context\Account\Domain\Bus\InitialBalanceSet;
-use App\Context\Expense\Domain\Bus\ExpenseWasEntered;
-use App\Context\Gas\Domain\Bus\GasPriceWasDefined;
-use App\Context\Income\Domain\Bus\IncomeWasEntered;
 use App\Shared\Domain\Event\DomainEvent;
 use App\Shared\Domain\ValueObject\Uuid;
 use DateTimeImmutable;
@@ -17,8 +13,6 @@ use function class_exists;
 use function sprintf;
 
 use const DATE_ATOM;
-
-// Importar el nuevo evento
 
 class StoredEvent
 {
@@ -82,16 +76,9 @@ class StoredEvent
         return $this->occurredAt;
     }
 
-    public function toDomainEvent(): DomainEvent
+    public function toDomainEvent(DomainEventRegistry $registry): DomainEvent
     {
-        $eventClassMap = [
-            IncomeWasEntered::eventName() => IncomeWasEntered::class,
-            ExpenseWasEntered::eventName() => ExpenseWasEntered::class,
-            InitialBalanceSet::eventName() => InitialBalanceSet::class, // Añadir el mapeo para InitialBalanceSet
-            GasPriceWasDefined::eventName() => GasPriceWasDefined::class,
-        ];
-
-        $eventClassName = $eventClassMap[$this->eventType()] ?? null;
+        $eventClassName = $registry->getClassForEventType($this->eventType());
 
         if ($eventClassName === null || !class_exists($eventClassName)) {
             throw new RuntimeException(sprintf('Event class for type "%s" not found or not mapped.', $this->eventType()));

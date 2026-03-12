@@ -9,12 +9,12 @@ use Symfony\Component\HttpFoundation\Request;
 
 class EnterExpenseWithDescriptionRequestDto implements RequestDto
 {
-    public string $id;
-    public int $amount;
-    public string $type;
-    public string $accountId;
-    public string $dueDate;
-    public string $description;
+    public readonly string $id;
+    public readonly int $amount;
+    public readonly string $type;
+    public readonly string $accountId;
+    public readonly string $dueDate;
+    public readonly string $description;
 
     public function __construct(Request $request)
     {

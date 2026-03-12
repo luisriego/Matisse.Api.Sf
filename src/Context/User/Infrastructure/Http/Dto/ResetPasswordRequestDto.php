@@ -16,7 +16,7 @@ use const JSON_THROW_ON_ERROR;
 
 final class ResetPasswordRequestDto implements RequestDto
 {
-    private string $newPassword;
+    private readonly string $newPassword;
 
     public function __construct(Request $request)
     {

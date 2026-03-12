@@ -5,54 +5,40 @@ declare(strict_types=1);
 namespace App\Context\User\Infrastructure\Http\Controller;
 
 use App\Context\User\Application\UseCase\PasswordReset\ResetPasswordCommand;
+use App\Context\User\Application\UseCase\PasswordReset\ResetPasswordCommandHandler;
 use App\Context\User\Infrastructure\Http\Dto\ResetPasswordRequestDto;
 use App\Shared\Domain\Exception\InvalidArgumentException;
 use App\Shared\Domain\Exception\ResourceNotFoundException;
-use App\Shared\Infrastructure\Symfony\ApiController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Response;
-use Symfony\Component\Messenger\Exception\HandlerFailedException;
 use Throwable;
 
-final class ResetPasswordController extends ApiController
+final readonly class ResetPasswordController
 {
+    public function __construct(
+        private ResetPasswordCommandHandler $commandHandler,
+    ) {}
+
     /**
      * @throws Throwable
      */
     public function __invoke(string $userId, string $token, ResetPasswordRequestDto $requestDto): JsonResponse
     {
         try {
-            $this->dispatch(new ResetPasswordCommand(
+            ($this->commandHandler)(new ResetPasswordCommand(
                 $userId,
                 $token,
                 $requestDto->newPassword(),
             ));
-        } catch (HandlerFailedException $e) {
-            throw $this->unwrap($e);
+        } catch (ResourceNotFoundException $e) {
+            return new JsonResponse(['error' => $e->getMessage()], Response::HTTP_NOT_FOUND);
+        } catch (InvalidArgumentException $e) {
+            return new JsonResponse(['error' => $e->getMessage()], Response::HTTP_BAD_REQUEST);
         }
 
         return new JsonResponse(
             ['message' => 'Sua senha foi redefinida com sucesso. Você já pode fazer login.'],
             Response::HTTP_OK,
         );
-    }
-
-    public function exceptions(): array
-    {
-        return [
-            ResourceNotFoundException::class => Response::HTTP_NOT_FOUND,
-            InvalidArgumentException::class => Response::HTTP_BAD_REQUEST,
-        ];
-    }
-
-    private function unwrap(Throwable $e): Throwable
-    {
-        $previous = $e->getPrevious();
-
-        if ($previous instanceof HandlerFailedException) {
-            return $this->unwrap($previous);
-        }
-
-        return $previous ?? $e;
     }
 }

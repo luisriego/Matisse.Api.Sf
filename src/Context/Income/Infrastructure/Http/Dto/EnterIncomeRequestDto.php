@@ -10,13 +10,13 @@ use Symfony\Component\HttpFoundation\Request;
 
 class EnterIncomeRequestDto implements RequestDto
 {
-    public string $id;
-    public string $residentUnitId;
-    public int $amount;
-    public string $type;
-    public string $accountId; // Added accountId
-    public string $dueDate;
-    public ?string $description;
+    public readonly string $id;
+    public readonly string $residentUnitId;
+    public readonly int $amount;
+    public readonly string $type;
+    public readonly string $accountId;
+    public readonly string $dueDate;
+    public readonly ?string $description;
 
     public function __construct(Request $request)
     {

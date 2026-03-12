@@ -1,0 +1,42 @@
+---
+description: Rules for the Domain layer (DDD, aggregates, VOs, events)
+globs: "**/Context/**/Domain/**/*.php"
+alwaysApply: false
+---
+
+# Domain layer — DDD
+
+## Location and dependencies
+- All domain code lives in `src/Context/{BoundedContext}/Domain/`.
+- **No dependencies** on Symfony, Doctrine, or Application/Infrastructure. Only PHP and `src/Shared/Domain`.
+
+## Aggregates
+- Aggregate Root extends `App\Shared\Domain\AggregateRoot`.
+- Relevant state changes are communicated with `$this->record(new XxxWasYyy(...))`.
+- Use static factory methods for creation: `Aggregate::create(...)` and return the instance (do not construct from outside with bare `new` and no logic).
+
+```php
+// Good: factory method that records event
+public static function create(AccountId $id, AccountCode $code, AccountName $name): self
+{
+    $account = new self($id->value(), $code->value(), $name->value());
+    $account->record(new AccountWasCreated(...));
+    return $account;
+}
+```
+
+## Value Objects
+- Immutable. Prefer `readonly` on properties.
+- Validate in constructor; throw domain exception if value is invalid.
+- Location: `Domain/` or `Domain/ValueObject/`. Descriptive names (e.g. `AccountCode`, `ExpenseDueDate`).
+
+## Domain Events
+- Classes in `Domain/Bus/`. Naming: `{Aggregate}Was{PastTenseAction}` (e.g. `AccountWasCreated`, `ExpenseWasEntered`).
+- Extend the project's event base (e.g. `readonly class`, static `eventName()`, `fromPrimitives()` if reconstructed from EventStore).
+
+## Repositories
+- Only **interfaces** in Domain: `{AggregateName}Repository` (e.g. `AccountRepository`).
+- Minimal methods needed: e.g. `save()`, `findOneByIdOrFail()`; do not expose persistence details.
+
+## Domain exceptions
+- In `Domain/Exception/`. Naming: `{Description}Exception` (e.g. `AccountNotFoundException`). Clear messages for debugging.

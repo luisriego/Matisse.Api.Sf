@@ -9,7 +9,7 @@ use Symfony\Component\HttpFoundation\Request;
 
 class CompensateExpenseRequestDto implements RequestDto
 {
-    public ?int $amount;
+    public readonly ?int $amount;
 
     public function __construct(Request $request)
     {

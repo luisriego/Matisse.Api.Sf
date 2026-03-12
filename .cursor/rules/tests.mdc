@@ -1,0 +1,30 @@
+---
+description: Test conventions (structure, Object Mothers, naming)
+globs: "tests/**/*.php"
+alwaysApply: false
+---
+
+# Tests
+
+## Structure
+- Mirror `src/`: tests under `tests/Context/{BoundedContext}/` with the same layers (Application, Domain, Infrastructure).
+- Unit tests: `tests/Context/{BC}/Application/` and `tests/Context/{BC}/Domain/`.
+- HTTP integration: `tests/Context/{BC}/Infrastructure/` (controllers).
+
+## Naming
+- Class: `{ClassUnderTest}Test` (e.g. `CreateAccountCommandHandlerTest`, `AccountTest`).
+- Methods: descriptive of the scenario; `test_` prefix or `@test` annotations per project config.
+
+## Object Mothers
+- Use Mothers for valid test data: `tests/Context/{BC}/Domain/` or dedicated folder (e.g. `UserMother`, `SlipMother`).
+- Mothers return entities, value objects, or arrays ready for tests; avoid duplicating fragile construction in each test.
+
+## Unit tests (handlers / domain)
+- Mock repositories and external dependencies (Mockery or PHPUnit mocks).
+- Arrange–Act–Assert. Cover happy path and errors (domain exceptions, not found, etc.).
+- Do not touch the database in pure unit tests.
+
+## Integration tests (controllers)
+- Extend the project's test base (e.g. `ApiTestCase`) and run real HTTP requests.
+- Where possible, use transactions/rollback (e.g. dama/doctrine-test-bundle) instead of DROP/CREATE schema per test to keep speed.
+- Assert HTTP response and, when relevant, side effects (events stored, state in DB).

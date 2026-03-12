@@ -16,10 +16,10 @@ use const JSON_THROW_ON_ERROR;
 
 final class CreateUserRequestDto implements RequestDto
 {
-    private string $id;
-    private string $name;
-    private string $email;
-    private string $password;
+    private readonly string $id;
+    private readonly string $name;
+    private readonly string $email;
+    private readonly string $password;
 
     public function __construct(Request $request)
     {

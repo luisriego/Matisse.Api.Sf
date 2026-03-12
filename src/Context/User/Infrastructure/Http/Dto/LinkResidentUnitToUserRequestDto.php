@@ -9,7 +9,7 @@ use Symfony\Component\HttpFoundation\Request;
 
 final class LinkResidentUnitToUserRequestDto implements RequestDto
 {
-    public ?string $residentUnitId;
+    public readonly ?string $residentUnitId;
 
     public function __construct(Request $request)
     {

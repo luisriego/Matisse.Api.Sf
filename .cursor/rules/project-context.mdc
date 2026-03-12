@@ -1,0 +1,28 @@
+---
+description: Project context and working agreement with the agent
+alwaysApply: true
+---
+
+# Expresate.Matisse.Api — Context and agreement
+
+## Responses
+- Always respond in **Spanish** (user preference).
+
+## Working agreement
+- Follow the agreement in [AGENT.md](AGENT.md): mutual respect, business rules in [docs/BUSSINESS_RULES.md](docs/BUSSINESS_RULES.md), and do not apply code changes without explicit user approval when so indicated.
+- Technical conventions are in [docs/GUIDELINES.md](docs/GUIDELINES.md).
+- For architectural overview, request/response flow, bounded contexts, strengths and known tech debt see [docs/ARCHITECTURE_REVIEW.md](docs/ARCHITECTURE_REVIEW.md).
+- For architectural overview, flow, and known issues see [docs/ARCHITECTURE_REVIEW.md](docs/ARCHITECTURE_REVIEW.md).
+
+## Project architecture
+- **Stack:** PHP 8.3, Symfony 6.4, Doctrine ORM 3, PostgreSQL 16.
+- **Patterns:** Hexagonal + DDD + CQRS + partial Event Sourcing.
+- **Structure:** Bounded Contexts under `src/Context/{Context}/` with three layers:
+  - `Domain/` — aggregates, value objects, events, repository interfaces (no external dependencies).
+  - `Application/` — use cases: Commands/Queries and their Handlers (orchestrate domain).
+  - `Infrastructure/` — HTTP controllers, DTOs, Doctrine repositories, normalizers.
+- Shared code in `src/Shared/`. Tests mirror `src/` under `tests/`.
+
+## Naming and style
+- PSR-12, PHP CS Fixer (`.php-cs-fixer.dist.php`). PascalCase for classes/files; camelCase for methods/variables; SCREAMING_SNAKE_CASE for constants.
+- Strict typing: declare types on properties, parameters, and return values.

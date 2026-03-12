@@ -193,7 +193,7 @@ class Expense extends AggregateRoot
 
     public function activate(bool $isActive): void
     {
-        $this->isActive = true;
+        $this->isActive = $isActive;
     }
 
     public function deactivate(): void

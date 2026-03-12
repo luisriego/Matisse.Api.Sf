@@ -9,9 +9,8 @@ use Symfony\Component\HttpFoundation\Request;
 
 class UpdateIncomeRequestDto implements RequestDto
 {
-    public string $id;
-    public ?string $dueDate;
-    public ?string $description;
+    public readonly ?string $dueDate;
+    public readonly ?string $description;
 
     public function __construct(Request $request)
     {
