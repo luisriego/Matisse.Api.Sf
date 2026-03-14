@@ -5,37 +5,37 @@ declare(strict_types=1);
 namespace App\Context\User\Infrastructure\Http\Controller;
 
 use App\Context\User\Application\UseCase\FindUser\FindUserQuery;
-use App\Context\User\Domain\User;
-use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use App\Shared\Infrastructure\Symfony\ApiController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Response;
-use Symfony\Component\Messenger\MessageBusInterface; // Importar HandledStamp
-use Symfony\Component\Messenger\Stamp\HandledStamp;
-use Symfony\Component\Serializer\SerializerInterface;
+use Symfony\Component\Messenger\MessageBusInterface;
+use Symfony\Component\Serializer\Normalizer\NormalizerInterface;
 
-final class FindUserController extends AbstractController
+final class FindUserController extends ApiController
 {
     public function __construct(
-        private readonly MessageBusInterface $queryBus,
-        private readonly SerializerInterface $serializer,
-    ) {}
+        MessageBusInterface $commandBus,
+        MessageBusInterface $queryBus,
+        private readonly NormalizerInterface $normalizer,
+    ) {
+        parent::__construct($commandBus, $queryBus);
+    }
 
     public function __invoke(string $id): JsonResponse
     {
-        $envelope = $this->queryBus->dispatch(new FindUserQuery($id));
-
-        /** @var HandledStamp $stamp */
-        $stamp = $envelope->last(HandledStamp::class);
-
-        /** @var User|null $user */
-        $user = $stamp->getResult();
+        $user = $this->ask(new FindUserQuery($id));
 
         if (null === $user) {
             return new JsonResponse(null, Response::HTTP_NOT_FOUND);
         }
 
-        $data = $this->serializer->normalize($user);
+        $data = $this->normalizer->normalize($user);
 
         return new JsonResponse($data, Response::HTTP_OK);
+    }
+
+    public function exceptions(): array
+    {
+        return [];
     }
 }
