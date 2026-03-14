@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\Tests\Context\Expense\Domain;
 
-use App\Context\Expense\Domain\Bus\ExpenseWasCompensated;
+use App\Context\Expense\Domain\Event\ExpenseWasCompensated;
 use PHPUnit\Framework\TestCase;
 
 class CompensateExpenseTest extends TestCase

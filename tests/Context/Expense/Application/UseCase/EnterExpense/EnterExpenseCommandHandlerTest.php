@@ -7,7 +7,7 @@ namespace App\Tests\Context\Expense\Application\UseCase\EnterExpense;
 use App\Context\Account\Domain\AccountRepository;
 use App\Context\Expense\Application\UseCase\EnterExpense\EnterExpenseCommand;
 use App\Context\Expense\Application\UseCase\EnterExpense\EnterExpenseCommandHandler;
-use App\Context\Expense\Domain\Bus\ExpenseWasEntered;
+use App\Context\Expense\Domain\Event\ExpenseWasEntered;
 use App\Context\Expense\Domain\ExpenseRepository;
 use App\Context\Expense\Domain\ValueObject\ExpenseTypeRepository;
 use App\Shared\Domain\Event\EventBus;

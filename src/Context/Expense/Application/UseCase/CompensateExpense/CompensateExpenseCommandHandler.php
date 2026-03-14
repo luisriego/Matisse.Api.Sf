@@ -51,13 +51,13 @@ readonly class CompensateExpenseCommandHandler implements CommandHandler
             $expense->type(),
             $expense->account(),
             new ExpenseDueDate($expense->dueDate()),
-            true, // Assuming compensated expense is active
+            true,
             $expense->description() ? new ExpenseDescription($expense->description()) : null,
         );
 
         // 6) remove the old one, then save and publish the new expense
         $this->expenseRepo->remove($expense, false);
         $this->expenseRepo->save($newExpense, true);
-        $this->bus->publish(...$newExpense->pullDomainEvents());
+        $newExpense->publishDomainEvents($this->bus);
     }
 }

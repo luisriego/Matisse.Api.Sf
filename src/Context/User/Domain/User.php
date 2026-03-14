@@ -5,16 +5,14 @@ declare(strict_types=1);
 namespace App\Context\User\Domain;
 
 use App\Context\ResidentUnit\Domain\ResidentUnit;
-use App\Context\User\Domain\Event\CreateUserDomainEvent;
+use App\Context\User\Domain\Event\UserWasRegistered;
 use App\Context\User\Domain\ValueObject\Email;
 use App\Context\User\Domain\ValueObject\Password;
 use App\Context\User\Domain\ValueObject\UserId;
 use App\Context\User\Domain\ValueObject\UserName;
 use App\Shared\Domain\AggregateRoot;
-use App\Shared\Domain\ValueObject\Uuid as CustomUuid;
 use DateTime;
 use DateTimeImmutable;
-use DateTimeInterface;
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
 use Symfony\Component\Security\Core\User\UserInterface; // Importar ResidentUnit
@@ -75,12 +73,11 @@ class User extends AggregateRoot implements UserInterface, PasswordAuthenticated
         $user->setResidentUnit($residentUnit);
 
         $user->record(
-            new CreateUserDomainEvent(
+            new UserWasRegistered(
                 $user->id,
                 $user->name,
                 $user->email,
-                CustomUuid::random()->value(),
-                (new DateTimeImmutable())->format(DateTimeInterface::ATOM),
+                $user->confirmationToken,
             ),
         );
 

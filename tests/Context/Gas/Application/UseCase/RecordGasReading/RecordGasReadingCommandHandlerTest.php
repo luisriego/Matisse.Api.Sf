@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace App\Tests\Context\Gas\Application\UseCase\RecordGasReading;
 
 use App\Context\Gas\Application\UseCase\RecordGasReading\RecordGasReadingCommandHandler;
-use App\Context\Gas\Domain\Bus\GasReadingWasRecorded;
+use App\Context\Gas\Domain\Event\GasReadingWasRecorded;
 use App\Shared\Domain\Event\EventBus;
 use DateMalformedStringException;
 use PHPUnit\Framework\MockObject\MockObject;

@@ -4,9 +4,7 @@ declare(strict_types=1);
 
 namespace App\Context\User\Application\UseCase\Registration;
 
-use App\Context\ResidentUnit\Domain\ResidentUnit;
 use App\Context\ResidentUnit\Domain\ResidentUnitRepository;
-use App\Context\User\Application\Service\UserMailerInterface;
 use App\Context\User\Domain\User;
 use App\Context\User\Domain\UserRepository;
 use App\Context\User\Domain\ValueObject\Email;
@@ -14,9 +12,10 @@ use App\Context\User\Domain\ValueObject\Password;
 use App\Context\User\Domain\ValueObject\UserId;
 use App\Context\User\Domain\ValueObject\UserName;
 use App\Shared\Application\CommandHandler;
+use App\Shared\Domain\Event\EventBus;
 use App\Shared\Domain\Exception\ResourceAlreadyExistException;
-use App\Shared\Domain\Exception\ResourceNotFoundException; // Importar ResidentUnitRepository
-use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface; // Importar ResidentUnit
+use App\Shared\Domain\Exception\ResourceNotFoundException;
+use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 
 use function sprintf;
 
@@ -25,7 +24,7 @@ final class RegisterUserCommandHandler implements CommandHandler
     public function __construct(
         private readonly UserRepository $userRepository,
         private readonly UserPasswordHasherInterface $userPasswordHasher,
-        private readonly UserMailerInterface $userMailer,
+        private readonly EventBus $eventBus,
         private readonly ResidentUnitRepository $residentUnitRepository,
     ) {}
 
@@ -61,13 +60,6 @@ final class RegisterUserCommandHandler implements CommandHandler
         );
 
         $this->userRepository->save($user, true);
-
-        // Enviar el email de confirmación
-        $this->userMailer->sendConfirmationEmail(
-            $user->getEmail(),
-            $user->getName(),
-            $user->getId(),
-            $user->getConfirmationToken(),
-        );
+        $user->publishDomainEvents($this->eventBus);
     }
 }

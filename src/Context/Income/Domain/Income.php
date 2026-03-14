@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\Context\Income\Domain;
 
-use App\Context\Income\Domain\Bus\IncomeWasEntered;
+use App\Context\Income\Domain\Event\IncomeWasEntered;
 use App\Context\Income\Domain\ValueObject\IncomeAmount;
 use App\Context\Income\Domain\ValueObject\IncomeDueDate;
 use App\Context\Income\Domain\ValueObject\IncomeId;

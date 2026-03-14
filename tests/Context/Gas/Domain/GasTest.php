@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace App\Tests\Context\Gas\Domain;
 
-use App\Context\Gas\Domain\Bus\GasPriceWasDefined;
-use App\Context\Gas\Domain\Bus\GasReadingWasRecorded;
+use App\Context\Gas\Domain\Event\GasPriceWasDefined;
+use App\Context\Gas\Domain\Event\GasReadingWasRecorded;
 use App\Context\Gas\Domain\Gas;
 use App\Context\Gas\Domain\ValueObject\BufferPercentage;
 use App\Context\Gas\Domain\ValueObject\CylinderCapacity;

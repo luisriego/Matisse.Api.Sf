@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\Context\Expense\Domain;
 
-use App\Context\Expense\Domain\Bus\RecurringExpenseWasCreated;
+use App\Context\Expense\Domain\Event\RecurringExpenseWasCreated;
 use App\Context\Expense\Domain\ValueObject\ExpenseAmount;
 use App\Context\Expense\Domain\ValueObject\ExpenseDueDay;
 use App\Context\Expense\Domain\ValueObject\ExpenseEndDate;

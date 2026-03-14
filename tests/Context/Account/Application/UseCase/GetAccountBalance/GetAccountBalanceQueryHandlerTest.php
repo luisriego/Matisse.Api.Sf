@@ -6,12 +6,12 @@ namespace App\Tests\Context\Account\Application\UseCase\GetAccountBalance;
 
 use App\Context\Account\Application\UseCase\GetAccountBalance\GetAccountBalanceQuery;
 use App\Context\Account\Application\UseCase\GetAccountBalance\GetAccountBalanceQueryHandler;
-use App\Context\Account\Domain\Bus\InitialBalanceSet;
+use App\Context\Account\Domain\Event\InitialBalanceSet;
 use App\Context\EventStore\Domain\DomainEventRegistry;
 use App\Context\EventStore\Domain\StoredEvent;
 use App\Context\EventStore\Domain\StoredEventRepository;
-use App\Context\Expense\Domain\Bus\ExpenseWasEntered;
-use App\Context\Income\Domain\Bus\IncomeWasEntered;
+use App\Context\Expense\Domain\Event\ExpenseWasEntered;
+use App\Context\Income\Domain\Event\IncomeWasEntered;
 use App\Shared\Domain\ValueObject\Uuid;
 use App\Tests\Context\Account\Domain\AccountIdMother;
 use DateTimeImmutable;

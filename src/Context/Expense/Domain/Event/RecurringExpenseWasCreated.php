@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace App\Context\Expense\Domain\Bus;
+namespace App\Context\Expense\Domain\Event;
 
 use App\Shared\Domain\Event\DomainEvent;
 use App\Shared\Domain\ValueObject\Uuid;
@@ -13,7 +13,7 @@ final readonly class RecurringExpenseWasCreated extends DomainEvent
 {
     public function __construct(
         string $id,
-        private ?string $accountId, // Made nullable
+        private ?string $accountId,
         private int $amount,
         private string $typeId,
         private int $dueDay,
@@ -59,7 +59,7 @@ final readonly class RecurringExpenseWasCreated extends DomainEvent
     ): DomainEvent {
         return new self(
             $aggregateId,
-            $body['accountId'] ?? null, // Handle nullable
+            $body['accountId'] ?? null,
             $body['amount'],
             $body['typeId'],
             $body['dueDay'],

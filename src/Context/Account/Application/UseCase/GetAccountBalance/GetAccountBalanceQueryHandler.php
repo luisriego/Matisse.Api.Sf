@@ -4,12 +4,12 @@ declare(strict_types=1);
 
 namespace App\Context\Account\Application\UseCase\GetAccountBalance;
 
-use App\Context\Account\Domain\Bus\InitialBalanceSet;
+use App\Context\Account\Domain\Event\InitialBalanceSet;
 use App\Context\EventStore\Domain\DomainEventRegistry;
 use App\Context\EventStore\Domain\StoredEvent;
 use App\Context\EventStore\Domain\StoredEventRepository;
-use App\Context\Expense\Domain\Bus\ExpenseWasEntered;
-use App\Context\Income\Domain\Bus\IncomeWasEntered;
+use App\Context\Expense\Domain\Event\ExpenseWasEntered;
+use App\Context\Income\Domain\Event\IncomeWasEntered;
 use App\Shared\Application\QueryHandler;
 use DateTimeImmutable;
 

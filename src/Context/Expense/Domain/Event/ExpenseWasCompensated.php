@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace App\Context\Expense\Domain\Bus;
+namespace App\Context\Expense\Domain\Event;
 
 use App\Shared\Domain\Event\DomainEvent;
 use DateTimeImmutable;
@@ -17,7 +17,7 @@ final readonly class ExpenseWasCompensated extends DomainEvent
         private string $type,
         private string $accountId,
         private string $dueDate,
-        private ?string $residentUnitId = null, // Added parameter
+        private ?string $residentUnitId = null,
         ?string $eventId = null,
         ?DateTimeImmutable $occurredOn = null,
     ) {
@@ -43,7 +43,7 @@ final readonly class ExpenseWasCompensated extends DomainEvent
             $body['type'],
             $body['accountId'],
             $body['dueDate'],
-            $body['residentUnitId'] ?? null, // Added parameter
+            $body['residentUnitId'] ?? null,
             $eventId,
             new DateTimeImmutable($occurredOn),
         );
@@ -61,7 +61,7 @@ final readonly class ExpenseWasCompensated extends DomainEvent
             'type' => $this->type,
             'accountId' => $this->accountId,
             'dueDate' => $this->dueDate,
-            'residentUnitId' => $this->residentUnitId, // Added to primitives
+            'residentUnitId' => $this->residentUnitId,
         ];
     }
 }

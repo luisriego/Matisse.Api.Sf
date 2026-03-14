@@ -6,17 +6,23 @@ namespace App\Context\User\Domain\Event;
 
 use App\Shared\Domain\Event\DomainEvent;
 use DateTimeImmutable;
+use Symfony\Component\Uid\Uuid as SfUuid;
 
-final readonly class CreateUserDomainEvent extends DomainEvent
+final readonly class UserWasRegistered extends DomainEvent
 {
     public function __construct(
         string $id,
         private string $name,
         private string $email,
-        string $eventId,
-        string $occurredOn,
+        private string $confirmationToken,
+        ?string $eventId = null,
+        ?DateTimeImmutable $occurredOn = null,
     ) {
-        parent::__construct($id, $eventId, new DateTimeImmutable($occurredOn));
+        parent::__construct(
+            $id,
+            $eventId ?? SfUuid::v4()->toRfc4122(),
+            $occurredOn ?? new DateTimeImmutable(),
+        );
     }
 
     public static function fromPrimitives(
@@ -29,14 +35,15 @@ final readonly class CreateUserDomainEvent extends DomainEvent
             $aggregateId,
             $body['name'],
             $body['email'],
+            $body['confirmationToken'],
             $eventId,
-            $occurredOn,
+            new DateTimeImmutable($occurredOn),
         );
     }
 
     public static function eventName(): string
     {
-        return 'user.created';
+        return 'user.registered';
     }
 
     public function toPrimitives(): array
@@ -44,6 +51,7 @@ final readonly class CreateUserDomainEvent extends DomainEvent
         return [
             'name' => $this->name,
             'email' => $this->email,
+            'confirmationToken' => $this->confirmationToken,
         ];
     }
 
@@ -55,5 +63,10 @@ final readonly class CreateUserDomainEvent extends DomainEvent
     public function email(): string
     {
         return $this->email;
+    }
+
+    public function confirmationToken(): string
+    {
+        return $this->confirmationToken;
     }
 }

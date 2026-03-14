@@ -31,9 +31,6 @@ final class DefineGasPriceCommandHandler implements CommandHandler
         $buffer = new BufferPercentage($bufferPercentageValue);
 
         $gas = Gas::definePrice($amount, $capacity, $buffer);
-
-        $events = $gas->pullDomainEvents();
-
-        $this->eventBus->publish(...$events);
+        $gas->publishDomainEvents($this->eventBus);
     }
 }

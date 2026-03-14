@@ -53,8 +53,7 @@ final readonly class EnterMonthlyRecurringExpenseCommandHandler implements Comma
 
         $expense->setRecurringExpense($recurringExpense);
 
-        $this->expenseRepository->save($expense, true); // Flush immediately
-
-        $this->eventBus->publish(...$expense->pullDomainEvents());
+        $this->expenseRepository->save($expense, true);
+        $expense->publishDomainEvents($this->eventBus);
     }
 }

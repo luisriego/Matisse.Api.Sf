@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace App\Context\Account\Domain\Bus;
+namespace App\Context\Account\Domain\Event;
 
 use App\Shared\Domain\Event\DomainEvent;
 use DateTimeImmutable;

@@ -6,7 +6,7 @@ namespace App\Tests\Context\Gas\Application\UseCase\CalculateGasPrice;
 
 use App\Context\Gas\Application\UseCase\CalculateGasPrice\DefineGasPriceCommand;
 use App\Context\Gas\Application\UseCase\CalculateGasPrice\DefineGasPriceCommandHandler;
-use App\Context\Gas\Domain\Bus\GasPriceWasDefined;
+use App\Context\Gas\Domain\Event\GasPriceWasDefined;
 use App\Context\Gas\Domain\ValueObject\BufferPercentage;
 use App\Context\Gas\Domain\ValueObject\CylinderCapacity;
 use App\Context\Gas\Domain\ValueObject\GasAmount;

@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Shared\Domain;
 
 use App\Shared\Domain\Event\DomainEvent;
+use App\Shared\Domain\Event\EventBus;
 
 abstract class AggregateRoot
 {
@@ -21,6 +22,13 @@ abstract class AggregateRoot
     final public function hasDomainEvents(): bool
     {
         return !empty($this->domainEvents);
+    }
+
+    final public function publishDomainEvents(EventBus $bus): void
+    {
+        if ($this->hasDomainEvents()) {
+            $bus->publish(...$this->pullDomainEvents());
+        }
     }
 
     final protected function record(DomainEvent $domainEvent): void

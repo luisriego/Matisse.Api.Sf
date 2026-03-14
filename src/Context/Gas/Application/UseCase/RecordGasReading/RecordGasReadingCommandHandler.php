@@ -37,8 +37,6 @@ final readonly class RecordGasReadingCommandHandler implements CommandHandler
             $reading,
         );
 
-        $events = $gas->pullDomainEvents();
-
-        $this->eventBus->publish(...$events);
+        $gas->publishDomainEvents($this->eventBus);
     }
 }

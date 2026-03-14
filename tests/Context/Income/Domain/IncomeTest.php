@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\Tests\Context\Income\Domain;
 
-use App\Context\Income\Domain\Bus\IncomeWasEntered;
+use App\Context\Income\Domain\Event\IncomeWasEntered;
 use App\Context\Income\Domain\Income;
 use App\Context\Income\Domain\IncomeType;
 use App\Context\Income\Domain\ValueObject\IncomeAmount;

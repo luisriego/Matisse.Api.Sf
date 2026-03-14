@@ -90,19 +90,10 @@ class EnterIncomeCommandHandlerTest extends TestCase
             ->with($typeId)
             ->willReturn($incomeTypeMock);
 
-        // Track save calls with matcher
-        $saveCallCount = 0;
         $this->incomeRepository
-            ->expects(self::exactly(2))
+            ->expects(self::once())
             ->method('save')
-            ->willReturnCallback(function(Income $income, bool $flush) use (&$saveCallCount) {
-                $saveCallCount++;
-                if ($saveCallCount === 1) {
-                    self::assertFalse($flush, 'First save should not flush');
-                } elseif ($saveCallCount === 2) {
-                    self::assertTrue($flush, 'Second save should flush');
-                }
-            });
+            ->with(self::isInstanceOf(Income::class), true);
 
         $this->eventBus
             ->expects(self::once())
@@ -150,18 +141,10 @@ class EnterIncomeCommandHandlerTest extends TestCase
             ->with($typeId)
             ->willReturn($incomeTypeMock);
 
-        $saveCallCount = 0;
         $this->incomeRepository
-            ->expects(self::exactly(2))
+            ->expects(self::once())
             ->method('save')
-            ->willReturnCallback(function(Income $income, bool $flush) use (&$saveCallCount) {
-                $saveCallCount++;
-                if ($saveCallCount === 1) {
-                    self::assertFalse($flush);
-                } elseif ($saveCallCount === 2) {
-                    self::assertTrue($flush);
-                }
-            });
+            ->with(self::isInstanceOf(Income::class), true);
 
         $this->eventBus
             ->expects(self::once())
@@ -390,7 +373,7 @@ class EnterIncomeCommandHandlerTest extends TestCase
         $this->incomeRepository
             ->expects(self::once())
             ->method('save')
-            ->with(self::isInstanceOf(Income::class), false);
+            ->with(self::isInstanceOf(Income::class), true);
 
         // Simulate event bus failure
         $this->eventBus

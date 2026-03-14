@@ -2,72 +2,73 @@
 
 declare(strict_types=1);
 
-namespace App\Context\Income\Domain\Bus;
+namespace App\Context\Expense\Domain\Event;
 
 use App\Shared\Domain\Event\DomainEvent;
 use DateMalformedStringException;
 use DateTimeImmutable;
 use Symfony\Component\Uid\Uuid as SfUuid;
 
-final readonly class IncomeWasEntered extends DomainEvent
+final readonly class ExpenseWasEntered extends DomainEvent
 {
-    private string $accountId;
-
-    public function __construct(
-        string $aggregateId,
-        private int $amount,
-        private string $residentUnitId,
-        private string $type,
-        string $accountId, // Added accountId to constructor
-        private string $dueDate,
-        private ?string $description,
-        ?string $eventId = null,
-        ?DateTimeImmutable $occurredOn = null,
-    ) {
-        $this->accountId = $accountId;
-        parent::__construct(
-            $aggregateId,
-            $eventId ?? SfUuid::v4()->toRfc4122(),
-            $occurredOn ?? new DateTimeImmutable(),
-        );
-    }
-
     /**
      * @throws DateMalformedStringException
      */
+    public function __construct(
+        string $aggregateId,
+        private int $amount,
+        private string $type,
+        private string $accountId,
+        private string $dueDate,
+        private ?string $description,
+        private ?string $residentUnitId = null,
+        ?string $eventId = null,
+        ?string $occurredOn = null,
+    ) {
+        $occurredOnObject = $occurredOn === null
+            ? new DateTimeImmutable()
+            : new DateTimeImmutable($occurredOn);
+
+        parent::__construct(
+            $aggregateId,
+            $eventId ?? SfUuid::v4()->toRfc4122(),
+            $occurredOnObject,
+        );
+    }
+
     public static function fromPrimitives(
         string $aggregateId,
         array $body,
         string $eventId,
         string $occurredOn,
-    ): DomainEvent {
+    ): self {
         return new self(
             $aggregateId,
             $body['amount'],
-            $body['residentUnitId'],
             $body['type'],
-            $body['accountId'], // Added accountId
+            $body['accountId'],
             $body['dueDate'],
             $body['description'] ?? null,
+            $body['residentUnitId'] ?? null,
             $eventId,
-            new DateTimeImmutable($occurredOn),
+            $occurredOn,
         );
     }
 
     public static function eventName(): string
     {
-        return 'income.entered';
+        return 'expense.entered';
     }
 
     public function toPrimitives(): array
     {
         return [
             'amount' => $this->amount,
-            'residentUnitId' => $this->residentUnitId,
             'type' => $this->type,
-            'accountId' => $this->accountId, // Added accountId
+            'accountId' => $this->accountId,
             'dueDate' => $this->dueDate,
             'description' => $this->description,
+            'residentUnitId' => $this->residentUnitId,
         ];
     }
 }

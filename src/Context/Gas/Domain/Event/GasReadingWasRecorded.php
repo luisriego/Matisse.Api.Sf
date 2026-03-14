@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace App\Context\Gas\Domain\Bus;
+namespace App\Context\Gas\Domain\Event;
 
 use App\Shared\Domain\Event\DomainEvent;
 use DateMalformedStringException;

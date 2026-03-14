@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\Tests\Context\User\Domain;
 
-use App\Context\User\Domain\Event\CreateUserDomainEvent;
+use App\Context\User\Domain\Event\UserWasRegistered;
 use App\Context\User\Domain\User;
 use App\Tests\Context\User\Domain\ValueObject\EmailMother;
 use App\Tests\Context\User\Domain\ValueObject\PasswordMother;
@@ -40,6 +40,6 @@ final class UserTest extends TestCase
         $events = $user->pullDomainEvents();
 
         $this->assertCount(1, $events);
-        $this->assertInstanceOf(CreateUserDomainEvent::class, $events[0]);
+        $this->assertInstanceOf(UserWasRegistered::class, $events[0]);
     }
 }

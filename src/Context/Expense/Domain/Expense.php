@@ -5,8 +5,8 @@ declare(strict_types=1);
 namespace App\Context\Expense\Domain;
 
 use App\Context\Account\Domain\Account;
-use App\Context\Expense\Domain\Bus\ExpenseWasCompensated;
-use App\Context\Expense\Domain\Bus\ExpenseWasEntered;
+use App\Context\Expense\Domain\Event\ExpenseWasCompensated;
+use App\Context\Expense\Domain\Event\ExpenseWasEntered;
 use App\Context\Expense\Domain\ValueObject\ExpenseAmount;
 use App\Context\Expense\Domain\ValueObject\ExpenseDescription;
 use App\Context\Expense\Domain\ValueObject\ExpenseDueDate;

@@ -7,7 +7,7 @@ namespace App\Tests\Context\Account\Application\UseCase\SetInitialBalance;
 use App\Context\Account\Application\UseCase\SetInitialBalance\SetInitialBalanceCommand;
 use App\Context\Account\Application\UseCase\SetInitialBalance\SetInitialBalanceCommandHandler;
 use App\Context\Account\Domain\AccountRepository;
-use App\Context\Account\Domain\Bus\InitialBalanceSet;
+use App\Context\Account\Domain\Event\InitialBalanceSet;
 use App\Shared\Application\EventStore; // Changed from EventBus
 use App\Tests\Context\Account\Domain\AccountIdMother;
 use App\Tests\Context\Account\Domain\AccountMother;

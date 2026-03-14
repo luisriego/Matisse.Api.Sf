@@ -4,9 +4,9 @@ declare(strict_types=1);
 
 namespace App\Tests\Context\Account\Infrastructure\Http\Controller;
 
-use App\Context\Account\Domain\Bus\InitialBalanceSet;
+use App\Context\Account\Domain\Event\InitialBalanceSet;
 use App\Context\EventStore\Domain\StoredEventRepository;
-use App\Context\Expense\Domain\Bus\ExpenseWasEntered;
+use App\Context\Expense\Domain\Event\ExpenseWasEntered;
 use App\Tests\Context\Account\Domain\AccountMother;
 use App\Tests\Context\Expense\Domain\ExpenseTypeMother;
 use App\Tests\Shared\Domain\UuidMother;

@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace App\Context\Gas\Domain\Bus;
+namespace App\Context\Gas\Domain\Event;
 
 use App\Shared\Domain\Event\DomainEvent;
 use DateMalformedStringException;
@@ -18,14 +18,11 @@ final readonly class GasPriceWasDefined extends DomainEvent
         string $id,
         public float $pricePerM3,
         ?string $eventId = null,
-        ?string $occurredOn = null, // Can be a date string or null
+        ?string $occurredOn = null,
     ) {
         parent::__construct(
             $id,
             $eventId ?? Uuid::v4()->toRfc4122(),
-            // If $occurredOn is a string, create a DateTimeImmutable from it.
-            // If $occurredOn is null, create a new DateTimeImmutable for "now".
-            // In both cases, we pass the OBJECT to the parent, not a string.
             $occurredOn ? new DateTimeImmutable($occurredOn) : new DateTimeImmutable(),
         );
     }

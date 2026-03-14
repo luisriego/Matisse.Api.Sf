@@ -14,6 +14,7 @@ final readonly class EnqueueSlipNotificationOnSlipWasSubmitted implements EventS
 {
     public function __construct(private MessageBusInterface $bus) {}
 
+    /** @param SlipWasSubmitted $event */
     public function __invoke(DomainEvent $event): void
     {
         $this->bus->dispatch(new SendSlipNotification(

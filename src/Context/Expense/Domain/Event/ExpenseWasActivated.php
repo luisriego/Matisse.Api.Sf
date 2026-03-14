@@ -2,30 +2,25 @@
 
 declare(strict_types=1);
 
-namespace App\Context\Account\Domain\Bus;
+namespace App\Context\Expense\Domain\Event;
 
 use App\Shared\Domain\Event\DomainEvent;
 use DateMalformedStringException;
 use DateTimeImmutable;
-use Symfony\Component\Uid\Uuid as SfUuid;
 
-final readonly class AccountWasEnabled extends DomainEvent
+final readonly class ExpenseWasActivated extends DomainEvent
 {
     public function __construct(
         string $id,
         ?string $eventId = null,
         ?DateTimeImmutable $occurredOn = null,
     ) {
-        parent::__construct(
-            $id,
-            $eventId ?? SfUuid::v4()->toRfc4122(),
-            $occurredOn ?? new DateTimeImmutable(),
-        );
+        parent::__construct($id, $eventId, $occurredOn);
     }
 
     public static function eventName(): string
     {
-        return 'account.enabled';
+        return 'expense.activated';
     }
 
     public function toPrimitives(): array

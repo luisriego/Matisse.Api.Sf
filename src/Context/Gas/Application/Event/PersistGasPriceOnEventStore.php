@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace App\Context\Gas\Application\Event;
 
 use App\Context\EventStore\Domain\StoredEventRepository;
-use App\Context\Gas\Domain\Bus\GasPriceWasDefined;
+use App\Context\Gas\Domain\Event\GasPriceWasDefined;
 use Symfony\Component\Messenger\Attribute\AsMessageHandler;
 
 #[AsMessageHandler]

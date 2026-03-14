@@ -6,8 +6,8 @@ namespace App\Tests\Context\Expense\Application\UseCase\CompensateExpense;
 
 use App\Context\Expense\Application\UseCase\CompensateExpense\CompensateExpenseCommand;
 use App\Context\Expense\Application\UseCase\CompensateExpense\CompensateExpenseCommandHandler;
-use App\Context\Expense\Domain\Bus\ExpenseWasCompensated;
-use App\Context\Expense\Domain\Bus\ExpenseWasEntered;
+use App\Context\Expense\Domain\Event\ExpenseWasCompensated;
+use App\Context\Expense\Domain\Event\ExpenseWasEntered;
 use App\Context\Expense\Domain\ExpenseRepository;
 use App\Shared\Domain\Event\EventBus;
 use App\Tests\Context\Expense\Domain\ExpenseMother;

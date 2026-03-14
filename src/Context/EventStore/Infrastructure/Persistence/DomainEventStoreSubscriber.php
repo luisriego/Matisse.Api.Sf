@@ -12,6 +12,7 @@ final readonly class DomainEventStoreSubscriber implements EventSubscriber
 {
     public function __construct(private EventStore $eventStore) {}
 
+    /** @param DomainEvent $event Any domain event — persisted to the event store */
     public function __invoke(DomainEvent $event): void
     {
         $this->eventStore->append($event);

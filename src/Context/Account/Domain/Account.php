@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace App\Context\Account\Domain;
 
-use App\Context\Account\Domain\Bus\AccountWasDisabled;
-use App\Context\Account\Domain\Bus\AccountWasEnabled;
+use App\Context\Account\Domain\Event\AccountWasDisabled;
+use App\Context\Account\Domain\Event\AccountWasEnabled;
 use App\Context\Expense\Domain\Expense;
 use App\Context\Expense\Domain\ExpenseType;
 use App\Shared\Domain\AggregateRoot;

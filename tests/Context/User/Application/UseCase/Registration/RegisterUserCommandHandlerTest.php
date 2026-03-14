@@ -6,18 +6,18 @@ namespace App\Tests\Context\User\Application\UseCase\Registration;
 
 use App\Context\ResidentUnit\Domain\ResidentUnit;
 use App\Context\ResidentUnit\Domain\ResidentUnitRepository;
-use App\Context\User\Application\Service\UserMailerInterface;
 use App\Context\User\Application\UseCase\Registration\RegisterUserCommand;
 use App\Context\User\Application\UseCase\Registration\RegisterUserCommandHandler;
+use App\Context\User\Domain\Event\UserWasRegistered;
 use App\Context\User\Domain\User;
 use App\Context\User\Domain\UserRepository;
+use App\Shared\Domain\Event\EventBus;
 use App\Shared\Domain\Exception\ResourceAlreadyExistException;
 use App\Shared\Domain\Exception\ResourceNotFoundException;
 use App\Tests\Context\User\Domain\ValueObject\EmailMother;
 use App\Tests\Context\User\Domain\ValueObject\PasswordMother;
 use App\Tests\Context\User\Domain\ValueObject\UserIdMother;
 use App\Tests\Context\User\Domain\ValueObject\UserNameMother;
-use Exception;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
@@ -26,31 +26,29 @@ final class RegisterUserCommandHandlerTest extends TestCase
 {
     private MockObject|UserRepository $userRepository;
     private MockObject|UserPasswordHasherInterface $passwordHasher;
-    private MockObject|UserMailerInterface $userMailer;
-    private MockObject|ResidentUnitRepository $residentUnitRepository; // Añadido: Mock para ResidentUnitRepository
+    private MockObject|EventBus $eventBus;
+    private MockObject|ResidentUnitRepository $residentUnitRepository;
     private RegisterUserCommandHandler $handler;
 
     protected function setUp(): void
     {
         $this->userRepository = $this->createMock(UserRepository::class);
         $this->passwordHasher = $this->createMock(UserPasswordHasherInterface::class);
-        $this->userMailer = $this->createMock(UserMailerInterface::class);
-        $this->residentUnitRepository = $this->createMock(ResidentUnitRepository::class); // Añadido: Creación del mock
+        $this->eventBus = $this->createMock(EventBus::class);
+        $this->residentUnitRepository = $this->createMock(ResidentUnitRepository::class);
 
         $this->handler = new RegisterUserCommandHandler(
             $this->userRepository,
             $this->passwordHasher,
-            $this->userMailer,
+            $this->eventBus,
             $this->residentUnitRepository
         );
     }
 
-    public function test_it_should_register_a_user_and_send_confirmation_email(): void
+    public function test_it_should_register_a_user_and_publish_event(): void
     {
-        // 1. Prepare test data
         $command = $this->createRegisterUserCommand();
 
-        // 2. Set mock expectations
         $this->userRepository
             ->expects($this->once())
             ->method('findByEmail')
@@ -67,31 +65,27 @@ final class RegisterUserCommandHandlerTest extends TestCase
             ->method('hashPassword')
             ->willReturn('hashed_password');
 
-        $this->userMailer
+        $this->eventBus
             ->expects($this->once())
-            ->method('sendConfirmationEmail')
-            ->with(
-                $command->email(),
-                $command->name(),
-                $this->callback(fn ($v) => is_string($v)), // userId
-                $this->callback(fn ($v) => is_string($v))  // confirmationToken
-            );
+            ->method('publish')
+            ->with($this->callback(function (UserWasRegistered $event) use ($command) {
+                return $event->email() === $command->email()
+                    && $event->name() === $command->name()
+                    && is_string($event->aggregateId())
+                    && is_string($event->confirmationToken());
+            }));
 
-        // Si el comando no tiene residentUnitId, el repositorio no debería ser llamado para buscar
         $this->residentUnitRepository->expects($this->never())->method('findOneById');
 
-        // 3. Invoke the handler
         ($this->handler)($command);
     }
 
-    public function test_it_should_register_a_user_with_resident_unit_id_and_send_confirmation_email(): void
+    public function test_it_should_register_a_user_with_resident_unit_id(): void
     {
-        // 1. Prepare test data
         $residentUnitId = 'some-resident-unit-id';
         $command = $this->createRegisterUserCommand($residentUnitId);
         $residentUnit = $this->createMock(ResidentUnit::class);
 
-        // 2. Set mock expectations
         $this->userRepository
             ->expects($this->once())
             ->method('findByEmail')
@@ -114,30 +108,21 @@ final class RegisterUserCommandHandlerTest extends TestCase
             ->method('hashPassword')
             ->willReturn('hashed_password');
 
-        $this->userMailer
+        $this->eventBus
             ->expects($this->once())
-            ->method('sendConfirmationEmail')
-            ->with(
-                $command->email(),
-                $command->name(),
-                $this->callback(fn ($v) => is_string($v)), // userId
-                $this->callback(fn ($v) => is_string($v))  // confirmationToken
-            );
+            ->method('publish')
+            ->with($this->isInstanceOf(UserWasRegistered::class));
 
-        // 3. Invoke the handler
         ($this->handler)($command);
     }
 
     public function test_it_should_throw_exception_when_user_already_exists(): void
     {
-        // 1. Expect the exception
         $this->expectException(ResourceAlreadyExistException::class);
 
-        // 2. Prepare test data
         $command = $this->createRegisterUserCommand();
         $existingUser = $this->createMock(User::class);
 
-        // 3. Set mock expectations
         $this->userRepository
             ->expects($this->once())
             ->method('findByEmail')
@@ -145,23 +130,19 @@ final class RegisterUserCommandHandlerTest extends TestCase
             ->willReturn($existingUser);
 
         $this->userRepository->expects($this->never())->method('save');
-        $this->userMailer->expects($this->never())->method('sendConfirmationEmail');
-        $this->residentUnitRepository->expects($this->never())->method('findOneById'); // No debería buscar ResidentUnit si el usuario ya existe
+        $this->eventBus->expects($this->never())->method('publish');
+        $this->residentUnitRepository->expects($this->never())->method('findOneById');
 
-        // 4. Invoke the handler
         ($this->handler)($command);
     }
 
     public function test_it_should_throw_exception_when_resident_unit_not_found(): void
     {
-        // 1. Expect the exception
         $this->expectException(ResourceNotFoundException::class);
 
-        // 2. Prepare test data
         $residentUnitId = 'non-existent-resident-unit-id';
         $command = $this->createRegisterUserCommand($residentUnitId);
 
-        // 3. Set mock expectations
         $this->userRepository
             ->expects($this->once())
             ->method('findByEmail')
@@ -175,46 +156,9 @@ final class RegisterUserCommandHandlerTest extends TestCase
             ->willReturn(null);
 
         $this->userRepository->expects($this->never())->method('save');
-        $this->userMailer->expects($this->never())->method('sendConfirmationEmail');
+        $this->eventBus->expects($this->never())->method('publish');
 
-        // 4. Invoke the handler
         ($this->handler)($command);
-    }
-
-    public function test_it_should_still_register_user_when_email_fails_to_send(): void
-    {
-        // 1. Prepare test data
-        $command = $this->createRegisterUserCommand();
-
-        // 2. Set mock expectations
-        $this->userRepository
-            ->expects($this->once())
-            ->method('findByEmail')
-            ->with($command->email())
-            ->willReturn(null);
-
-        $this->userRepository
-            ->expects($this->once())
-            ->method('save')
-            ->with($this->isInstanceOf(User::class));
-
-        $this->passwordHasher
-            ->expects($this->once())
-            ->method('hashPassword')
-            ->willReturn('hashed_password');
-
-        $this->userMailer
-            ->expects($this->once())
-            ->method('sendConfirmationEmail')
-            ->willThrowException(new Exception('Email service is down'));
-
-        $this->residentUnitRepository->expects($this->never())->method('findOneById'); // No debería buscar ResidentUnit si el comando no tiene residentUnitId
-
-        try {
-            ($this->handler)($command);
-        } catch (Exception $e) {
-            $this->assertSame('Email service is down', $e->getMessage());
-        }
     }
 
     private function createRegisterUserCommand(?string $residentUnitId = null): RegisterUserCommand
@@ -224,7 +168,7 @@ final class RegisterUserCommandHandlerTest extends TestCase
             UserNameMother::create()->value(),
             EmailMother::create()->value(),
             PasswordMother::create()->value(),
-            $residentUnitId // Añadido: Pasar residentUnitId al comando
+            $residentUnitId
         );
     }
 }

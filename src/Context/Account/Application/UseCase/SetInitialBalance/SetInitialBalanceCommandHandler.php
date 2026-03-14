@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace App\Context\Account\Application\UseCase\SetInitialBalance;
 
 use App\Context\Account\Domain\AccountRepository;
-use App\Context\Account\Domain\Bus\InitialBalanceSet;
+use App\Context\Account\Domain\Event\InitialBalanceSet;
 use App\Shared\Application\CommandHandler;
 use App\Shared\Application\EventStore;
 
