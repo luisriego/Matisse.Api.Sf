@@ -2,6 +2,5 @@ framework:
     messenger:
         transports:
             events: 'in-memory://'
-
         routing:
             'App\Shared\Domain\Event\DomainEvent': events

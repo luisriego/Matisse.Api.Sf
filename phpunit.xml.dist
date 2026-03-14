@@ -12,6 +12,10 @@
          bootstrap="tests/bootstrap.php"
          cacheDirectory=".phpunit.cache"
 >
+    <extensions>
+        <bootstrap class="DAMA\DoctrineTestBundle\PHPUnit\PHPUnitExtension"/>
+    </extensions>
+
     <php>
         <ini name="display_errors" value="1" />
         <ini name="error_reporting" value="-1" />

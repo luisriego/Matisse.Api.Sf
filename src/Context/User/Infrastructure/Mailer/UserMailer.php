@@ -35,4 +35,24 @@ final class UserMailer implements UserMailerInterface
 
         $this->mailer->send($email);
     }
+
+    /**
+     * @throws TransportExceptionInterface
+     */
+    public function sendPasswordResetEmail(string $userEmail, string $userName, string $userId, string $passwordResetToken): void
+    {
+        $resetUrl = sprintf('http://localhost:1000/api/v1/users/reset-password/%s/%s', $userId, $passwordResetToken);
+
+        $email = (new Email())
+            ->from('no-reply@example.com')
+            ->to($userEmail)
+            ->subject('Redefinir sua senha')
+            ->html(sprintf(
+                '<p>Olá %s,</p><p>Você solicitou a redefinição de senha. Clique no link abaixo para continuar:</p><p><a href="%s">Redefinir senha</a></p>',
+                $userName,
+                $resetUrl,
+            ));
+
+        $this->mailer->send($email);
+    }
 }

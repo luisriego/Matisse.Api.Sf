@@ -20,11 +20,6 @@ final class ActivateUserControllerTest extends ApiTestCase
     {
         parent::setUp();
         $this->entityManager = $this->client->getContainer()->get('doctrine.orm.entity_manager');
-
-        $schemaTool = new SchemaTool($this->entityManager);
-        $metadata = $this->entityManager->getMetadataFactory()->getAllMetadata();
-        $schemaTool->dropSchema($metadata);
-        $schemaTool->createSchema($metadata);
     }
 
     public function test_it_should_activate_a_user_with_a_valid_token(): void

@@ -20,8 +20,8 @@ use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
 use Symfony\Component\Security\Core\User\UserInterface; // Importar ResidentUnit
 
 use function array_unique;
-use function sha1;
-use function uniqid;
+use function bin2hex;
+use function random_bytes;
 
 class User extends AggregateRoot implements UserInterface, PasswordAuthenticatedUserInterface
 {
@@ -56,7 +56,7 @@ class User extends AggregateRoot implements UserInterface, PasswordAuthenticated
         $this->id = (string) $id->value();
         $this->name = $name->value();
         $this->email = $email->value();
-        $this->confirmationToken = sha1(uniqid('', true));
+        $this->confirmationToken = bin2hex(random_bytes(32));
         $this->isActive = false;
         $this->createdAt = new DateTimeImmutable();
         $this->markAsUpdated();
@@ -79,7 +79,6 @@ class User extends AggregateRoot implements UserInterface, PasswordAuthenticated
                 $user->id,
                 $user->name,
                 $user->email,
-                $user->getPassword(),
                 CustomUuid::random()->value(),
                 (new DateTimeImmutable())->format(DateTimeInterface::ATOM),
             ),
@@ -123,9 +122,21 @@ class User extends AggregateRoot implements UserInterface, PasswordAuthenticated
         return $this->passwordResetToken;
     }
 
+    public function getPasswordResetRequestedAt(): ?DateTime
+    {
+        return $this->passwordResetRequestedAt;
+    }
+
+    public function clearPasswordResetToken(): void
+    {
+        $this->passwordResetToken = null;
+        $this->passwordResetRequestedAt = null;
+        $this->markAsUpdated();
+    }
+
     public function requestPasswordReset(): void
     {
-        $this->passwordResetToken = sha1(uniqid('', true));
+        $this->passwordResetToken = bin2hex(random_bytes(32));
         $this->passwordResetRequestedAt = new DateTime();
         $this->markAsUpdated();
     }

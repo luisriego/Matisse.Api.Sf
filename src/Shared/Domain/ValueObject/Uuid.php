@@ -42,8 +42,6 @@ readonly class Uuid implements Stringable
         return $this->value() === $other->value();
     }
 
-    public function toRfc4122(): void {}
-
     protected function ensureIsValidUuid(string $id): void
     {
         if (!SfUuid::isValid($id)) {

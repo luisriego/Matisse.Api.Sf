@@ -196,7 +196,7 @@ class RecurringExpense extends AggregateRoot
         $this->expenseType = $type;
     }
 
-    public function UpdateDueDay(?int $dueDay): void
+    public function updateDueDay(?int $dueDay): void
     {
         if (null !== $dueDay) {
             $this->dueDay = $dueDay;

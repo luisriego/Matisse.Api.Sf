@@ -10,6 +10,7 @@ use App\Tests\Context\User\Domain\ValueObject\EmailMother;
 use App\Tests\Context\User\Domain\ValueObject\PasswordMother;
 use App\Tests\Context\User\Domain\ValueObject\UserIdMother;
 use App\Tests\Context\User\Domain\ValueObject\UserNameMother;
+use DAMA\DoctrineTestBundle\Doctrine\DBAL\StaticDriver;
 use Doctrine\ORM\EntityManagerInterface;
 use Lexik\Bundle\JWTAuthenticationBundle\Services\JWTTokenManagerInterface;
 use Symfony\Bundle\FrameworkBundle\KernelBrowser;
@@ -42,6 +43,13 @@ abstract class ApiTestCase extends WebTestCase
         }
         $connection->executeStatement('SET session_replication_role = DEFAULT');
 
+        // Commit the TRUNCATE so DAMA's per-test beginTransaction() works on a clean slate.
+        // Only needed the first time the connection is created (it starts with an outer BEGIN).
+        $nativeConn = $connection->getNativeConnection();
+        if ($nativeConn instanceof \PDO && $nativeConn->inTransaction()) {
+            StaticDriver::commit();
+        }
+
         static::ensureKernelShutdown();
     }
 
@@ -59,7 +67,7 @@ abstract class ApiTestCase extends WebTestCase
         $this->entityManager = static::getContainer()->get('doctrine.orm.entity_manager');
     }
 
-    protected function createAuthenticatedClient(string $email = 'test@example.com', string $password = 'password'): KernelBrowser
+    protected function createAuthenticatedClient(?string $email = null, string $password = 'password'): KernelBrowser
     {
         $container = static::getContainer();
 

@@ -13,7 +13,6 @@ final readonly class CreateUserDomainEvent extends DomainEvent
         string $id,
         private string $name,
         private string $email,
-        private string $password,
         string $eventId,
         string $occurredOn,
     ) {
@@ -30,7 +29,6 @@ final readonly class CreateUserDomainEvent extends DomainEvent
             $aggregateId,
             $body['name'],
             $body['email'],
-            $body['password'],
             $eventId,
             $occurredOn,
         );
@@ -46,7 +44,6 @@ final readonly class CreateUserDomainEvent extends DomainEvent
         return [
             'name' => $this->name,
             'email' => $this->email,
-            'password' => $this->password,
         ];
     }
 
@@ -58,10 +55,5 @@ final readonly class CreateUserDomainEvent extends DomainEvent
     public function email(): string
     {
         return $this->email;
-    }
-
-    public function password(): string
-    {
-        return $this->password;
     }
 }

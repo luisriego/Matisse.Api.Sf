@@ -73,8 +73,8 @@ final class RegisterUserCommandHandlerTest extends TestCase
             ->with(
                 $command->email(),
                 $command->name(),
-                $this->isType('string'), // userId
-                $this->isType('string')  // confirmationToken
+                $this->callback(fn ($v) => is_string($v)), // userId
+                $this->callback(fn ($v) => is_string($v))  // confirmationToken
             );
 
         // Si el comando no tiene residentUnitId, el repositorio no debería ser llamado para buscar
@@ -120,8 +120,8 @@ final class RegisterUserCommandHandlerTest extends TestCase
             ->with(
                 $command->email(),
                 $command->name(),
-                $this->isType('string'), // userId
-                $this->isType('string')  // confirmationToken
+                $this->callback(fn ($v) => is_string($v)), // userId
+                $this->callback(fn ($v) => is_string($v))  // confirmationToken
             );
 
         // 3. Invoke the handler

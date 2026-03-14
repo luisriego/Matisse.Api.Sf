@@ -30,7 +30,7 @@ final class PasswordResetRequestCommandHandler implements CommandHandler
         }
 
         // Generate and save the password reset token
-        $user->generatePasswordResetToken();
+        $user->requestPasswordReset();
         $this->userRepository->save($user, true);
 
         // Send the password reset email

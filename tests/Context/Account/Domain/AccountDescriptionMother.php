@@ -16,7 +16,9 @@ final class AccountDescriptionMother
         }
 
         $faker = MotherCreator::random();
-        $description = $faker->realText(mt_rand(10, 255));
+        do {
+            $description = $faker->realText(mt_rand(50, 255));
+        } while (mb_strlen($description) < 10);
 
         return new AccountDescription($description);
     }

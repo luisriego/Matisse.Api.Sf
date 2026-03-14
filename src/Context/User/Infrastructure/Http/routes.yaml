@@ -47,3 +47,13 @@ user_upload_avatar:
     path: /api/v1/users/{id}/avatar
     controller: App\Context\User\Infrastructure\Http\Controller\UploadAvatarController
     methods: ['POST']
+
+user_password_reset_request:
+    path: /api/v1/users/password-reset-request
+    controller: App\Context\User\Infrastructure\Http\Controller\PasswordResetRequestController
+    methods: ['POST']
+
+user_password_reset:
+    path: /api/v1/users/{userId}/password-reset/{token}
+    controller: App\Context\User\Infrastructure\Http\Controller\ResetPasswordController
+    methods: ['POST']

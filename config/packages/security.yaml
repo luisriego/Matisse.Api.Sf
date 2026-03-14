@@ -19,6 +19,7 @@ security:
         api:
             pattern: ^/api
             stateless: true
+            user_checker: App\Context\User\Infrastructure\Security\UserIsActiveChecker
             jwt: ~
 
     role_hierarchy:
@@ -26,11 +27,13 @@ security:
         ROLE_SUPER_ADMIN: [ ROLE_ADMIN, ROLE_ALLOWED_TO_SWITCH ]
 
     access_control:
-        - { path: ^/.*/health-check,        roles: PUBLIC_ACCESS }
-        - { path: ^/api/v1/login_check,     roles: PUBLIC_ACCESS }
-        - { path: ^/api/v1/users/register,      roles: PUBLIC_ACCESS }
-        - { path: ^/api/v1/users/activate,      roles: PUBLIC_ACCESS }
-        - { path: ^/api,                    roles: '%env(API_ACCESS_ROLE)%' }
+        - { path: ^/.*/health-check,                        roles: PUBLIC_ACCESS }
+        - { path: ^/api/v1/login_check,                     roles: PUBLIC_ACCESS }
+        - { path: ^/api/v1/users/register,                  roles: PUBLIC_ACCESS }
+        - { path: ^/api/v1/users/activate,                  roles: PUBLIC_ACCESS }
+        - { path: ^/api/v1/users/password-reset-request,    roles: PUBLIC_ACCESS }
+        - { path: ^/api/v1/users/.*/password-reset,         roles: PUBLIC_ACCESS }
+        - { path: ^/api,                                    roles: '%env(API_ACCESS_ROLE)%' }
 
 when@test:
     security:

@@ -4,10 +4,8 @@ declare(strict_types=1);
 
 namespace App\Context\EventStore\Infrastructure;
 
-use App\Context\Account\Domain\Bus\AccountWasCreated;
 use App\Context\Account\Domain\Bus\AccountWasDisabled;
 use App\Context\Account\Domain\Bus\AccountWasEnabled;
-use App\Context\Account\Domain\Bus\AccountWasUpdated;
 use App\Context\Account\Domain\Bus\InitialBalanceSet;
 use App\Context\Expense\Domain\Bus\ExpenseWasActivated;
 use App\Context\Expense\Domain\Bus\ExpenseWasCompensated;
@@ -32,8 +30,6 @@ final class DomainEventRegistryMap implements DomainEventRegistry
             ExpenseWasCompensated::eventName()      => ExpenseWasCompensated::class,
             RecurringExpenseWasCreated::eventName() => RecurringExpenseWasCreated::class,
             InitialBalanceSet::eventName()          => InitialBalanceSet::class,
-            AccountWasCreated::eventName()          => AccountWasCreated::class,
-            AccountWasUpdated::eventName()          => AccountWasUpdated::class,
             AccountWasDisabled::eventName()         => AccountWasDisabled::class,
             AccountWasEnabled::eventName()          => AccountWasEnabled::class,
             GasPriceWasDefined::eventName()         => GasPriceWasDefined::class,

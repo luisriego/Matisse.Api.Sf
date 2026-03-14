@@ -4,23 +4,21 @@ declare(strict_types=1);
 
 namespace App\Context\Expense\Application\Query;
 
-use App\Context\Expense\Application\GetRecurringExpensesByYearUseCase;
 use App\Context\Expense\Domain\RecurringExpense;
+use App\Context\Expense\Domain\RecurringExpenseRepository;
+use App\Shared\Application\QueryHandler;
 
-class GetRecurringExpensesByYearQueryHandler
+final readonly class GetRecurringExpensesByYearQueryHandler implements QueryHandler
 {
-    private GetRecurringExpensesByYearUseCase $getRecurringExpensesByYearUseCase;
-
-    public function __construct(GetRecurringExpensesByYearUseCase $getRecurringExpensesByYearUseCase)
-    {
-        $this->getRecurringExpensesByYearUseCase = $getRecurringExpensesByYearUseCase;
-    }
+    public function __construct(
+        private RecurringExpenseRepository $recurringExpenseRepository,
+    ) {}
 
     /**
      * @return RecurringExpense[]
      */
     public function __invoke(GetRecurringExpensesByYearQuery $query): array
     {
-        return ($this->getRecurringExpensesByYearUseCase)($query->year());
+        return $this->recurringExpenseRepository->findByYear($query->year());
     }
 }
