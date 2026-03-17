@@ -38,9 +38,20 @@ class SlipGenerationCommandHandler implements CommandHandler
     {
         $expenseYear = $command->year();
         $expenseMonth = $command->month();
+        $isForced = $command->isForced();
 
         // 1. Check if generation is allowed according to business rules.
-        $this->generationPolicy->check($expenseYear, $expenseMonth, $command->isForced());
+        // Auto-force backfills for past months to avoid policy rejections on historical generation
+        $now = new DateTimeImmutable('now');
+        $nowYear = (int) $now->format('Y');
+        $nowMonth = (int) $now->format('m');
+        $isPastMonth = ($expenseYear < $nowYear) || ($expenseYear === $nowYear && $expenseMonth < $nowMonth);
+
+        if ($isPastMonth) {
+            $isForced = true;
+        }
+
+        $this->generationPolicy->check($expenseYear, $expenseMonth, $isForced);
 
         // 2. Determine date ranges. The due date is for the month after the expenses.
         $expenseRange = DateRange::fromMonth($expenseYear, $expenseMonth);

@@ -59,7 +59,7 @@ final class SlipGenerationCommandHandlerTest extends TestCase
     public function it_generates_and_persists_slips_correctly(): void
     {
         // Arrange
-        $year = 2025;
+        $year = 2099;
         $month = 7;
         $command = new SlipGenerationCommand($year, $month);
         $expenseRange = DateRange::fromMonth($year, $month);
