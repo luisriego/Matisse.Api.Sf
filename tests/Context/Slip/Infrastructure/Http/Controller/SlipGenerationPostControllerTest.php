@@ -33,4 +33,22 @@ final class SlipGenerationPostControllerTest extends ApiTestCase
 
         $this->assertResponseStatusCodeSame(Response::HTTP_CREATED);
     }
+
+    public function test_it_should_return_bad_request_on_invalid_target_month_format(): void
+    {
+        $payload = [
+            'targetMonth' => 'invalid-date',
+        ];
+
+        $this->client->request(
+            'POST',
+            '/api/v1/slips/generation',
+            [],
+            [],
+            ['CONTENT_TYPE' => 'application/json'],
+            json_encode($payload)
+        );
+
+        $this->assertResponseStatusCodeSame(Response::HTTP_BAD_REQUEST);
+    }
 }
