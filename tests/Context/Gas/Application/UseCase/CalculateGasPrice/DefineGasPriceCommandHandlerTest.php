@@ -10,6 +10,7 @@ use App\Context\Gas\Domain\Event\GasPriceWasDefined;
 use App\Context\Gas\Domain\ValueObject\BufferPercentage;
 use App\Context\Gas\Domain\ValueObject\CylinderCapacity;
 use App\Context\Gas\Domain\ValueObject\GasAmount;
+use App\Shared\Application\EventStore;
 use App\Shared\Domain\Event\EventBus;
 use App\Shared\Domain\Exception\InvalidArgumentException;
 use DateMalformedStringException;
@@ -20,13 +21,15 @@ use RuntimeException;
 class DefineGasPriceCommandHandlerTest extends TestCase
 {
     private EventBus&MockObject $eventBus;
+    private EventStore&MockObject $eventStore;
     private DefineGasPriceCommandHandler $handler;
 
     protected function setUp(): void
     {
         parent::setUp();
         $this->eventBus = $this->createMock(EventBus::class);
-        $this->handler = new DefineGasPriceCommandHandler($this->eventBus);
+        $this->eventStore = $this->createMock(EventStore::class);
+        $this->handler = new DefineGasPriceCommandHandler($this->eventBus, $this->eventStore);
     }
 
     /**
@@ -49,6 +52,7 @@ class DefineGasPriceCommandHandlerTest extends TestCase
             (new CylinderCapacity($cylinderCapacityInKg))->toM3()
         ) * (1 + (new BufferPercentage($bufferPercentage))->toFactor());
 
+        $this->eventStore->expects(self::once())->method('append');
         $this->eventBus
             ->expects(self::once())
             ->method('publish')
@@ -73,6 +77,7 @@ class DefineGasPriceCommandHandlerTest extends TestCase
             (new CylinderCapacity(45))->toM3()
         ) * (1 + (new BufferPercentage(10))->toFactor());
 
+        $this->eventStore->expects(self::once())->method('append');
         $this->eventBus
             ->expects(self::once())
             ->method('publish')
@@ -105,6 +110,7 @@ class DefineGasPriceCommandHandlerTest extends TestCase
             (new CylinderCapacity($cylinderCapacityInKg))->toM3()
         ) * (1 + (new BufferPercentage($bufferPercentage))->toFactor());
 
+        $this->eventStore->expects(self::once())->method('append');
         $this->eventBus
             ->expects(self::once())
             ->method('publish')
@@ -137,6 +143,7 @@ class DefineGasPriceCommandHandlerTest extends TestCase
             (new CylinderCapacity($cylinderCapacityInKg))->toM3()
         ) * (1 + (new BufferPercentage($bufferPercentage))->toFactor());
 
+        $this->eventStore->expects(self::once())->method('append');
         $this->eventBus
             ->expects(self::once())
             ->method('publish')
@@ -196,6 +203,7 @@ class DefineGasPriceCommandHandlerTest extends TestCase
     {
         $command = DefineGasPriceCommandMother::create();
 
+        $this->eventStore->expects(self::once())->method('append');
         $this->eventBus
             ->expects(self::once())
             ->method('publish')

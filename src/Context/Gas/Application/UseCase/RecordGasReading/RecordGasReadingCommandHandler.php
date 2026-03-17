@@ -9,6 +9,7 @@ use App\Context\Gas\Domain\ValueObject\GasId;
 use App\Context\Gas\Domain\ValueObject\ReadingInM3;
 use App\Context\ResidentUnit\Domain\ResidentUnitId;
 use App\Shared\Application\CommandHandler;
+use App\Shared\Application\EventStore;
 use App\Shared\Domain\Event\EventBus;
 use App\Shared\Domain\ValueObject\Month;
 use App\Shared\Domain\ValueObject\Year;
@@ -16,7 +17,10 @@ use DateMalformedStringException;
 
 final readonly class RecordGasReadingCommandHandler implements CommandHandler
 {
-    public function __construct(private EventBus $eventBus) {}
+    public function __construct(
+        private EventBus $eventBus,
+        private EventStore $eventStore,
+    ) {}
 
     /**
      * @throws DateMalformedStringException
@@ -37,6 +41,9 @@ final readonly class RecordGasReadingCommandHandler implements CommandHandler
             $reading,
         );
 
-        $gas->publishDomainEvents($this->eventBus);
+        foreach ($gas->pullDomainEvents() as $event) {
+            $this->eventStore->append($event);
+            $this->eventBus->publish($event);
+        }
     }
 }

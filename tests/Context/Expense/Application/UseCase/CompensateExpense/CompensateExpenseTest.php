@@ -63,20 +63,8 @@ class CompensateExpenseTest extends TestCase
             ->method('remove')
             ->with($originalExpense, false);
 
-        // Expect publish to be called twice, and verify events for each call
-        $this->eventBus->expects($this->exactly(2))
-            ->method('publish')
-            ->willReturnCallback(function (...$events) {
-                // First call: ExpenseWasCompensated
-                if (count($events) === 1 && $events[0] instanceof ExpenseWasCompensated) {
-                    return;
-                }
-                // Second call: ExpenseWasEntered
-                if (count($events) === 1 && $events[0] instanceof ExpenseWasEntered) {
-                    return;
-                }
-                $this->fail('Unexpected call to publish() with events: ' . print_r($events, true));
-            });
+        // Expect publish is NO LONGER called by CommandHandler directly
+        $this->eventBus->expects($this->never())->method('publish');
 
         ($this->handler)($command);
 

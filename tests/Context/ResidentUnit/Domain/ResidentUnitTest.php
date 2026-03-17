@@ -4,7 +4,11 @@ declare(strict_types=1);
 
 namespace App\Tests\Context\ResidentUnit\Domain;
 
+use App\Context\ResidentUnit\Domain\Event\ResidentUnitIdealFractionWasChanged;
+use App\Context\ResidentUnit\Domain\Event\ResidentUnitRecipientsWereReplaced;
+use App\Context\ResidentUnit\Domain\Event\ResidentUnitRecipientWasAppended;
 use App\Context\ResidentUnit\Domain\ResidentUnit;
+use App\Context\ResidentUnit\Domain\ResidentUnitIdealFraction;
 use App\Tests\Shared\Infrastructure\PhpUnit\UnitTestCase;
 
 final class ResidentUnitTest extends UnitTestCase
@@ -59,6 +63,12 @@ final class ResidentUnitTest extends UnitTestCase
             $newTimestamp,
             'The updatedAt timestamp should be more recent after appending a recipient.'
         );
+
+        $events = $residentUnit->pullDomainEvents();
+        self::assertCount(1, $events);
+        self::assertInstanceOf(ResidentUnitRecipientWasAppended::class, $events[0]);
+        self::assertSame('Nuevo Vecino', $events[0]->name);
+        self::assertSame('vecino@example.com', $events[0]->email);
     }
 
     // NUEVO: Test para 'replaceRecipients'
@@ -86,6 +96,11 @@ final class ResidentUnitTest extends UnitTestCase
         self::assertCount(2, $finalRecipients);
         self::assertSame('prop@example.com', $finalRecipients[0]['email']);
         self::assertGreaterThan($initialTimestamp, $newTimestamp, 'Timestamp should be updated after replacing recipients.');
+
+        $events = $residentUnit->pullDomainEvents();
+        self::assertCount(2, $events); // One for append, one for replace
+        self::assertInstanceOf(ResidentUnitRecipientsWereReplaced::class, $events[1]);
+        self::assertSame($newRecipients, $events[1]->recipients);
     }
 
     public function test_it_should_add_multiple_recipients_sequentially(): void
@@ -127,5 +142,21 @@ final class ResidentUnitTest extends UnitTestCase
         self::assertTrue($residentUnit->idealFractionMustNotBeMoreThan1(0.5, 0.3));
         self::assertTrue($residentUnit->idealFractionMustNotBeMoreThan1(0.5, 0.5));
         self::assertFalse($residentUnit->idealFractionMustNotBeMoreThan1(0.5, 0.6));
+    }
+
+    public function test_it_should_change_ideal_fraction_and_record_event(): void
+    {
+        $residentUnit = ResidentUnitMother::create();
+        $residentUnit->pullDomainEvents(); // clear previous events
+
+        $newFraction = new ResidentUnitIdealFraction(0.75);
+        $residentUnit->changeIdealFraction($newFraction);
+
+        self::assertSame(0.75, $residentUnit->idealFraction());
+
+        $events = $residentUnit->pullDomainEvents();
+        self::assertCount(1, $events);
+        self::assertInstanceOf(ResidentUnitIdealFractionWasChanged::class, $events[0]);
+        self::assertSame(0.75, $events[0]->idealFraction);
     }
 }

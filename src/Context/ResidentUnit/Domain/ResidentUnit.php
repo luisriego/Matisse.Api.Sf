@@ -4,8 +4,12 @@ declare(strict_types=1);
 
 namespace App\Context\ResidentUnit\Domain;
 
+use App\Context\ResidentUnit\Domain\Event\ResidentUnitIdealFractionWasChanged;
+use App\Context\ResidentUnit\Domain\Event\ResidentUnitRecipientsWereReplaced;
+use App\Context\ResidentUnit\Domain\Event\ResidentUnitRecipientWasAppended;
 use App\Context\User\Domain\User;
 use App\Shared\Domain\AggregateRoot;
+use DateMalformedStringException;
 use DateTime;
 use DateTimeImmutable;
 use Doctrine\Common\Collections\ArrayCollection;
@@ -111,16 +115,24 @@ class ResidentUnit extends AggregateRoot
         return $this->notificationRecipients;
     }
 
+    /**
+     * @throws DateMalformedStringException
+     */
     public function replaceRecipients(array $recipients): void
     {
         $this->notificationRecipients = $recipients;
         $this->markAsUpdated();
+        $this->record(new ResidentUnitRecipientsWereReplaced($this->id, $this->notificationRecipients));
     }
 
+    /**
+     * @throws DateMalformedStringException
+     */
     public function appendRecipient(string $name, string $email): void
     {
         $this->notificationRecipients[] = ['name' => $name, 'email' => $email];
         $this->markAsUpdated();
+        $this->record(new ResidentUnitRecipientWasAppended($this->id, $name, $email));
     }
 
     /**
@@ -157,9 +169,13 @@ class ResidentUnit extends AggregateRoot
         return $this;
     }
 
+    /**
+     * @throws DateMalformedStringException
+     */
     public function changeIdealFraction(ResidentUnitIdealFraction $idealFraction): void
     {
         $this->idealFraction = $idealFraction->value();
         $this->markAsUpdated();
+        $this->record(new ResidentUnitIdealFractionWasChanged($this->id, $this->idealFraction));
     }
 }

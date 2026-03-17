@@ -6,6 +6,7 @@ namespace App\Tests\Context\Gas\Application\UseCase\RecordGasReading;
 
 use App\Context\Gas\Application\UseCase\RecordGasReading\RecordGasReadingCommandHandler;
 use App\Context\Gas\Domain\Event\GasReadingWasRecorded;
+use App\Shared\Application\EventStore;
 use App\Shared\Domain\Event\EventBus;
 use DateMalformedStringException;
 use PHPUnit\Framework\MockObject\MockObject;
@@ -15,13 +16,15 @@ use RuntimeException;
 class RecordGasReadingCommandHandlerTest extends TestCase
 {
     private EventBus&MockObject $eventBus;
+    private EventStore&MockObject $eventStore;
     private RecordGasReadingCommandHandler $handler;
 
     protected function setUp(): void
     {
         parent::setUp();
         $this->eventBus = $this->createMock(EventBus::class);
-        $this->handler = new RecordGasReadingCommandHandler($this->eventBus);
+        $this->eventStore = $this->createMock(EventStore::class);
+        $this->handler = new RecordGasReadingCommandHandler($this->eventBus, $this->eventStore);
     }
 
     /**
@@ -31,6 +34,7 @@ class RecordGasReadingCommandHandlerTest extends TestCase
     {
         $command = RecordGasReadingCommandMother::create();
 
+        $this->eventStore->expects(self::once())->method('append');
         $this->eventBus
             ->expects(self::once())
             ->method('publish')
@@ -77,6 +81,7 @@ class RecordGasReadingCommandHandlerTest extends TestCase
     {
         $command = RecordGasReadingCommandMother::create();
 
+        $this->eventStore->expects(self::once())->method('append');
         $this->eventBus
             ->expects(self::once())
             ->method('publish')

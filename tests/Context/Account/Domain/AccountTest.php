@@ -39,7 +39,9 @@ final class AccountTest extends TestCase
         self::assertNull($account->updatedAt());
 
         $newName = AccountNameMother::create();
-        $account->updateName($newName);
+        $newCode = AccountCodeMother::create();
+        $newDescription = new AccountDescription(MotherCreator::random()->sentence(3));
+        $account->updateDetails($newCode, $newName, $newDescription);
 
         self::assertNotNull($account->updatedAt());
     }

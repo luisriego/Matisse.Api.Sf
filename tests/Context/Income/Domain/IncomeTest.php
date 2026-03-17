@@ -69,7 +69,7 @@ class IncomeTest extends TestCase
         $income = IncomeMother::create();
         $newType = new IncomeType('new-type-id', 'NEW_CODE', 'New Type Name');
 
-        $income->setIncomeType($newType);
+        $income->categorizeAs($newType);
 
         $this->assertSame($newType, $income->incomeType());
     }
@@ -79,7 +79,7 @@ class IncomeTest extends TestCase
         $income = IncomeMother::create();
         $newDueDate = new DateTime('+10 days');
 
-        $income->updateDueDate($newDueDate);
+        $income->changeDueDate($newDueDate);
 
         $this->assertSame($newDueDate, $income->dueDate());
     }
@@ -89,7 +89,7 @@ class IncomeTest extends TestCase
         $income = IncomeMother::create();
         $newDescription = 'Updated Description';
 
-        $income->updateDescription($newDescription);
+        $income->changeDescription($newDescription);
 
         $this->assertSame($newDescription, $income->description());
     }

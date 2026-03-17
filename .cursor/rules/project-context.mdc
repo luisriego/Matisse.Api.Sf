@@ -26,3 +26,14 @@ alwaysApply: true
 ## Naming and style
 - PSR-12, PHP CS Fixer (`.php-cs-fixer.dist.php`). PascalCase for classes/files; camelCase for methods/variables; SCREAMING_SNAKE_CASE for constants.
 - Strict typing: declare types on properties, parameters, and return values.
+
+## Architectural agreements (do not propose the opposite)
+
+### ExpenseEnterPutController and commands that return a value
+- **Agreement:** `ExpenseEnterPutController` remains **as is**: it injects `EnterExpenseCommandHandler` and `NormalizerInterface`, calls the handler, normalizes the `Expense` and returns **201 + body** with the created resource. It is not changed to `ApiController` + `dispatch()` with empty response nor is `dispatchAndReturn` added to `ApiController` for this case.
+- **Rationale:** It is more pragmatic (the frontend needs the body) and more consistent with CQRS: the command bus is used only for fire-and-forget; the only controller that needs the result uses the handler directly.
+- **Agent obligation:** Do not suggest or implement for this controller: (1) migration to ApiController with 201 response without body, or (2) adding `dispatchAndReturn` in ApiController to return the expense. If the user asks to do so, recall this agreement and warn before applying.
+
+### Combinados: register in English
+- **Agreement:** All "Combinados" are registered in **English** to avoid ambiguity when using them (identifiers, names, codes, etc.).
+- **Agent obligation:** When creating, proposing or referencing Combinados, always use English. If the user asks to register them in Spanish or another language, recall this agreement and warn before applying.

@@ -5,6 +5,9 @@ declare(strict_types=1);
 namespace App\Context\Slip\Domain;
 
 use App\Context\ResidentUnit\Domain\ResidentUnit;
+use App\Context\Slip\Domain\Event\SlipWasCancelled;
+use App\Context\Slip\Domain\Event\SlipWasMarkedAsOverdue;
+use App\Context\Slip\Domain\Event\SlipWasPaid;
 use App\Context\Slip\Domain\Event\SlipWasSubmitted;
 use App\Context\Slip\Domain\ValueObject\SlipAmount;
 use App\Context\Slip\Domain\ValueObject\SlipDueDate;
@@ -101,20 +104,32 @@ class Slip extends AggregateRoot
         );
     }
 
+    /**
+     * @throws DateMalformedStringException
+     */
     public function markAsPaid(): void
     {
         $this->status = SlipStatus::PAID;
         $this->paidAt = new DateTimeImmutable();
+        $this->record(new SlipWasPaid($this->id));
     }
 
+    /**
+     * @throws DateMalformedStringException
+     */
     public function markAsOverdue(): void
     {
         $this->status = SlipStatus::OVERDUE;
+        $this->record(new SlipWasMarkedAsOverdue($this->id));
     }
 
+    /**
+     * @throws DateMalformedStringException
+     */
     public function markAsCancelled(): void
     {
         $this->status = SlipStatus::CANCELLED;
+        $this->record(new SlipWasCancelled($this->id));
     }
 
     /**

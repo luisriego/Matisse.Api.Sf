@@ -11,7 +11,7 @@ interface EventSubscriber
      *
      * Implementations should narrow the type in their own docblock:
      *
-     *   @param ConcreteEvent $event
+     * @param ConcreteEvent $event
      */
     public function __invoke(DomainEvent $event): void;
 

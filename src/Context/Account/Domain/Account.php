@@ -4,11 +4,13 @@ declare(strict_types=1);
 
 namespace App\Context\Account\Domain;
 
+use App\Context\Account\Domain\Event\AccountDetailsWereUpdated;
 use App\Context\Account\Domain\Event\AccountWasDisabled;
 use App\Context\Account\Domain\Event\AccountWasEnabled;
 use App\Context\Expense\Domain\Expense;
 use App\Context\Expense\Domain\ExpenseType;
 use App\Shared\Domain\AggregateRoot;
+use DateMalformedStringException;
 use DateTime;
 use DateTimeImmutable;
 use Doctrine\Common\Collections\ArrayCollection;
@@ -48,8 +50,8 @@ class Account extends AggregateRoot
         AccountName $name,
         AccountDescription $description,
     ): self {
-        $account =  new self($id->value(), $code->value(), $name->value());
-        $account->updateDescription($description);
+        $account = new self($id->value(), $code->value(), $name->value());
+        $account->description = $description->value();
 
         return $account;
     }
@@ -111,22 +113,25 @@ class Account extends AggregateRoot
         $this->expenseTypes->removeElement($expenseType);
     }
 
-    public function updateCode(AccountCode $code): void
-    {
+    /**
+     * @throws DateMalformedStringException
+     */
+    public function updateDetails(
+        AccountCode $code,
+        AccountName $name,
+        AccountDescription $description,
+    ): void {
         $this->code = $code->value();
-        $this->markAsUpdated();
-    }
-
-    public function updateName(AccountName $name): void
-    {
         $this->name = $name->value();
-        $this->markAsUpdated();
-    }
-
-    public function updateDescription(AccountDescription $description): void
-    {
         $this->description = $description->value();
         $this->markAsUpdated();
+
+        $this->record(new AccountDetailsWereUpdated(
+            $this->id(),
+            $this->code,
+            $this->name,
+            $this->description,
+        ));
     }
 
     public function enable(): void
