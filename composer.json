@@ -6,6 +6,7 @@
     "require": {
         "php": ">=8.3",
         "ext-ctype": "*",
+        "ext-fileinfo": "*",
         "ext-iconv": "*",
         "api-platform/doctrine-orm": "^4.1",
         "api-platform/symfony": "^4.1",
@@ -16,6 +17,7 @@
         "google/cloud-document-ai": "^2.5",
         "guzzlehttp/guzzle": "^7.10",
         "lexik/jwt-authentication-bundle": "^3.1",
+        "nelmio/api-doc-bundle": "^5.9",
         "nelmio/cors-bundle": "^2.5",
         "phpdocumentor/reflection-docblock": "^5.6",
         "phpstan/phpdoc-parser": "^2.1",
@@ -38,8 +40,7 @@
         "symfony/uid": "6.4.*",
         "symfony/validator": "6.4.*",
         "symfony/workflow": "^6.4",
-        "symfony/yaml": "6.4.*",
-        "ext-fileinfo": "*"
+        "symfony/yaml": "6.4.*"
     },
     "config": {
         "allow-plugins": {
