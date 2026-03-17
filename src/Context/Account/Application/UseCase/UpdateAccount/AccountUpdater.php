@@ -22,9 +22,7 @@ final readonly class AccountUpdater
     ): void {
         $account = $this->accountRepository->findOneByIdOrFail($accountId->value());
 
-        $account->updateCode($accountCode);
-        $account->updateName($accountName);
-        $account->updateDescription($accountDescription);
+        $account->updateDetails($accountCode, $accountName, $accountDescription);
 
         $this->accountRepository->save($account, true);
     }

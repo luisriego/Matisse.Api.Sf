@@ -4,12 +4,17 @@ declare(strict_types=1);
 
 namespace App\Context\Income\Domain;
 
+use App\Context\Income\Domain\Event\IncomeDescriptionWasChanged;
+use App\Context\Income\Domain\Event\IncomeDueDateWasChanged;
+use App\Context\Income\Domain\Event\IncomeWasCategorized;
+use App\Context\Income\Domain\Event\IncomeWasPaid;
 use App\Context\Income\Domain\Event\IncomeWasEntered;
 use App\Context\Income\Domain\ValueObject\IncomeAmount;
 use App\Context\Income\Domain\ValueObject\IncomeDueDate;
 use App\Context\Income\Domain\ValueObject\IncomeId;
 use App\Context\ResidentUnit\Domain\ResidentUnit;
 use App\Shared\Domain\AggregateRoot;
+use DateMalformedStringException;
 use DateTime;
 use DateTimeImmutable;
 
@@ -87,6 +92,17 @@ class Income extends AggregateRoot
         return $this->paidAt;
     }
 
+    /**
+     * @throws DateMalformedStringException
+     */
+    public function markAsPaid(): void
+    {
+        if (null === $this->paidAt) {
+            $this->paidAt = new DateTimeImmutable();
+            $this->record(new IncomeWasPaid($this->id()));
+        }
+    }
+
     public function residentUnit(): ResidentUnit
     {
         return $this->residentUnit;
@@ -107,19 +123,39 @@ class Income extends AggregateRoot
         return $this->createdAt;
     }
 
-    public function setIncomeType(?IncomeType $incomeType): void
+    /**
+     * @throws DateMalformedStringException
+     */
+    public function categorizeAs(?IncomeType $incomeType): void
     {
         $this->incomeType = $incomeType;
+        if ($incomeType !== null) {
+            $this->record(new IncomeWasCategorized($this->id(), $incomeType->id()));
+        }
     }
 
-    public function updateDueDate(DateTime $dueDate): void
+    /**
+     * @throws DateMalformedStringException
+     */
+    public function changeDueDate(DateTime $dueDate): void
     {
         $this->dueDate = $dueDate;
+        $this->record(new IncomeDueDateWasChanged(
+            $this->id(),
+            $this->dueDate->format('Y-m-d')
+        ));
     }
 
-    public function updateDescription(string $description): void
+    /**
+     * @throws DateMalformedStringException
+     */
+    public function changeDescription(string $description): void
     {
         $this->description = $description;
+        $this->record(new IncomeDescriptionWasChanged(
+            $this->id(),
+            $this->description
+        ));
     }
 
     public function toArray(): array

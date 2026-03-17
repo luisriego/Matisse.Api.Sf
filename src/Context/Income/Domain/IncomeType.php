@@ -82,7 +82,7 @@ class IncomeType
     public function removeIncome(Income $income): void
     {
         if ($this->incomes->removeElement($income)) {
-            $income->setIncomeType(null);
+            $income->categorizeAs(null);
         }
     }
 

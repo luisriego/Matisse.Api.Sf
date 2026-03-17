@@ -58,12 +58,12 @@ class UpdateIncomeCommandHandlerTest extends TestCase
 
         $incomeMock
             ->expects(self::once())
-            ->method('updateDueDate')
+            ->method('changeDueDate')
             ->with(self::callback(fn($dt) => $dt instanceof DateTime && $dt->format('Y-m-d') === $dueDate));
 
         $incomeMock
             ->expects(self::once())
-            ->method('updateDescription')
+            ->method('changeDescription')
             ->with($description);
 
         $this->incomeRepository
@@ -99,12 +99,12 @@ class UpdateIncomeCommandHandlerTest extends TestCase
 
         $incomeMock
             ->expects(self::once())
-            ->method('updateDueDate')
+            ->method('changeDueDate')
             ->with(self::callback(fn($dt) => $dt instanceof DateTime && $dt->format('Y-m-d') === $dueDate));
 
         $incomeMock
             ->expects(self::never())
-            ->method('updateDescription');
+            ->method('changeDescription');
 
         $this->incomeRepository
             ->expects(self::once())
@@ -139,11 +139,11 @@ class UpdateIncomeCommandHandlerTest extends TestCase
 
         $incomeMock
             ->expects(self::never())
-            ->method('updateDueDate');
+            ->method('changeDueDate');
 
         $incomeMock
             ->expects(self::once())
-            ->method('updateDescription')
+            ->method('changeDescription')
             ->with($description);
 
         $this->incomeRepository
@@ -178,11 +178,11 @@ class UpdateIncomeCommandHandlerTest extends TestCase
 
         $incomeMock
             ->expects(self::never())
-            ->method('updateDueDate');
+            ->method('changeDueDate');
 
         $incomeMock
             ->expects(self::never())
-            ->method('updateDescription');
+            ->method('changeDescription');
 
         $this->incomeRepository
             ->expects(self::once())

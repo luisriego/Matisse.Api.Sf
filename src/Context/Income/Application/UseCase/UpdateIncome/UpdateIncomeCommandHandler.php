@@ -27,11 +27,11 @@ readonly class UpdateIncomeCommandHandler implements CommandHandler
 
         if (null !== $command->dueDate()) {
             $dueDate = new IncomeDueDate(new DateTime($command->dueDate()));
-            $income->updateDueDate($dueDate->toDateTime());
+            $income->changeDueDate($dueDate->toDateTime());
         }
 
         if (null !== $command->description()) {
-            $income->updateDescription($command->description());
+            $income->changeDescription($command->description());
         }
 
         $this->incomeRepository->save($income, true);
