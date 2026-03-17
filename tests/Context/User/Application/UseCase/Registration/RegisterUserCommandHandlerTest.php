@@ -58,22 +58,23 @@ final class RegisterUserCommandHandlerTest extends TestCase
         $this->userRepository
             ->expects($this->once())
             ->method('save')
-            ->with($this->isInstanceOf(User::class));
+            ->with($this->callback(function (User $user) use ($command) {
+                $events = $user->pullDomainEvents();
+                if (count($events) !== 1) return false;
+                $event = $events[0];
+                return $event instanceof UserWasRegistered
+                    && $event->email() === $command->email()
+                    && $event->name() === $command->name()
+                    && is_string($event->aggregateId())
+                    && is_string($event->confirmationToken());
+            }));
 
         $this->passwordHasher
             ->expects($this->once())
             ->method('hashPassword')
             ->willReturn('hashed_password');
 
-        $this->eventBus
-            ->expects($this->once())
-            ->method('publish')
-            ->with($this->callback(function (UserWasRegistered $event) use ($command) {
-                return $event->email() === $command->email()
-                    && $event->name() === $command->name()
-                    && is_string($event->aggregateId())
-                    && is_string($event->confirmationToken());
-            }));
+        $this->eventBus->expects($this->never())->method('publish');
 
         $this->residentUnitRepository->expects($this->never())->method('findOneById');
 
@@ -101,17 +102,17 @@ final class RegisterUserCommandHandlerTest extends TestCase
         $this->userRepository
             ->expects($this->once())
             ->method('save')
-            ->with($this->isInstanceOf(User::class));
+            ->with($this->callback(function (User $user) {
+                $events = $user->pullDomainEvents();
+                return count($events) === 1 && $events[0] instanceof UserWasRegistered;
+            }));
 
         $this->passwordHasher
             ->expects($this->once())
             ->method('hashPassword')
             ->willReturn('hashed_password');
 
-        $this->eventBus
-            ->expects($this->once())
-            ->method('publish')
-            ->with($this->isInstanceOf(UserWasRegistered::class));
+        $this->eventBus->expects($this->never())->method('publish');
 
         ($this->handler)($command);
     }

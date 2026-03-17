@@ -41,6 +41,6 @@ readonly class EnterIncomeCommandHandler implements CommandHandler
         $income = Income::create($id, $amount, $residentUnit, $type, $accountId, $dueDate, $descriptionValue);
 
         $this->incomeRepository->save($income, true);
-        $income->publishDomainEvents($this->bus);
+// $income->publishDomainEvents($this->bus); // Handled automatically by DomainEventCollectorSubscriber
     }
 }

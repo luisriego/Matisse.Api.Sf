@@ -93,11 +93,12 @@ class EnterIncomeCommandHandlerTest extends TestCase
         $this->incomeRepository
             ->expects(self::once())
             ->method('save')
-            ->with(self::isInstanceOf(Income::class), true);
+            ->with($this->callback(function (Income $income) {
+                $events = $income->pullDomainEvents();
+                return count($events) === 1; // It has IncomeWasEntered
+            }), true);
 
-        $this->eventBus
-            ->expects(self::once())
-            ->method('publish');
+        $this->eventBus->expects(self::never())->method('publish');
 
         ($this->handler)($command);
     }
@@ -144,11 +145,12 @@ class EnterIncomeCommandHandlerTest extends TestCase
         $this->incomeRepository
             ->expects(self::once())
             ->method('save')
-            ->with(self::isInstanceOf(Income::class), true);
+            ->with($this->callback(function (Income $income) {
+                $events = $income->pullDomainEvents();
+                return count($events) === 1;
+            }), true);
 
-        $this->eventBus
-            ->expects(self::once())
-            ->method('publish');
+        $this->eventBus->expects(self::never())->method('publish');
 
         ($this->handler)($command);
     }
@@ -335,55 +337,5 @@ class EnterIncomeCommandHandlerTest extends TestCase
         ($this->handler)($command);
     }
 
-    /** @test
-     * @throws Exception
-     */
-    public function test_it_handles_event_bus_publish_failure(): void
-    {
-        $incomeId = IncomeIdMother::create();
-        $amount = 1500;
-        $residentUnitId = 'resident-unit-id';
-        $typeId = 'income-type-id';
-        $dueDate = (new DateTime('+30 days'))->format('Y-m-d');
-
-        $command = new EnterIncomeCommand(
-            $incomeId->value(),
-            $amount,
-            $residentUnitId,
-            $typeId,
-            UuidMother::create(),
-            $dueDate,
-            null
-        );
-
-        $residentUnitMock = $this->createMock(ResidentUnit::class);
-        $residentUnitMock->method('id')->willReturn($residentUnitId);
-        $incomeTypeMock = $this->createMock(IncomeType::class);
-
-        $this->residentUnitRepository
-            ->expects(self::once())
-            ->method('findOneByIdOrFail')
-            ->willReturn($residentUnitMock);
-
-        $this->incomeTypeRepository
-            ->expects(self::once())
-            ->method('findOneByIdOrFail')
-            ->willReturn($incomeTypeMock);
-
-        $this->incomeRepository
-            ->expects(self::once())
-            ->method('save')
-            ->with(self::isInstanceOf(Income::class), true);
-
-        // Simulate event bus failure
-        $this->eventBus
-            ->expects(self::once())
-            ->method('publish')
-            ->willThrowException(new RuntimeException('Event bus failure'));
-
-        $this->expectException(RuntimeException::class);
-        $this->expectExceptionMessage('Event bus failure');
-
-        ($this->handler)($command);
-    }
+        // Test removed because CommandHandler no longer publishes directly
 }

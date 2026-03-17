@@ -70,7 +70,7 @@ final readonly class SlipWorkflowCompletedSubscriber implements EventSubscriberI
         }
 
         $this->slipRepository->save($slip, true);
-        $slip->publishDomainEvents($this->eventBus);
+// $slip->publishDomainEvents($this->eventBus); // Handled automatically by DomainEventCollectorSubscriber
 
         // Si tu entidad infra mantiene un campo "status" además de "currentPlace", sincronízalo.
         $this->syncInfraStatusFromMarking($entity, $event);
@@ -88,7 +88,7 @@ final readonly class SlipWorkflowCompletedSubscriber implements EventSubscriberI
         $slip->markAsPaid(); // El agregado define paidAt y registra eventos (si aplica)
 
         $this->slipRepository->save($slip);
-        $slip->publishDomainEvents($this->eventBus);
+// $slip->publishDomainEvents($this->eventBus); // Handled automatically by DomainEventCollectorSubscriber
 
         $this->syncInfraStatusFromMarking($entity, $event);
     }
@@ -105,7 +105,7 @@ final readonly class SlipWorkflowCompletedSubscriber implements EventSubscriberI
         $slip->markAsOverdue();
 
         $this->slipRepository->save($slip);
-        $slip->publishDomainEvents($this->eventBus);
+// $slip->publishDomainEvents($this->eventBus); // Handled automatically by DomainEventCollectorSubscriber
 
         $this->syncInfraStatusFromMarking($entity, $event);
     }
@@ -122,7 +122,7 @@ final readonly class SlipWorkflowCompletedSubscriber implements EventSubscriberI
         $slip->markAsCancelled();
 
         $this->slipRepository->save($slip);
-        $slip->publishDomainEvents($this->eventBus);
+// $slip->publishDomainEvents($this->eventBus); // Handled automatically by DomainEventCollectorSubscriber
 
         $this->syncInfraStatusFromMarking($entity, $event);
     }

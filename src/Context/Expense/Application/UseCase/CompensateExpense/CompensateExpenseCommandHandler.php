@@ -27,22 +27,19 @@ readonly class CompensateExpenseCommandHandler implements CommandHandler
         $expenseId = new ExpenseId($command->id());
         $expense = $this->expenseRepo->findOneByIdOrFail($expenseId->value());
 
+        $initialAmount = $expense->amount();
+
         // 2) apply domain logic (records ExpenseWasCompensated)
         $expense->compensate();
 
-        // Check if any events were recorded, meaning compensation actually happened
-        $domainEvents = $expense->pullDomainEvents();
-
-        if (empty($domainEvents)) {
-            // If no events, it means compensate() returned early (e.g., no account)
+        // Check if compensation actually happened by comparing the amount
+        if ($expense->amount() === $initialAmount) {
+            // If amount hasn't changed, it means compensate() returned early (e.g., no account)
             return;
         }
 
         // 3) persist new state
         $this->expenseRepo->save($expense, false);
-
-        // 4) publish all new domain events
-        $this->bus->publish(...$domainEvents);
 
         // 5) now I need to recreate the Expense with the compensated amount $command->amount()
         $newExpense = Expense::create(
@@ -58,6 +55,6 @@ readonly class CompensateExpenseCommandHandler implements CommandHandler
         // 6) remove the old one, then save and publish the new expense
         $this->expenseRepo->remove($expense, false);
         $this->expenseRepo->save($newExpense, true);
-        $newExpense->publishDomainEvents($this->bus);
+// $newExpense->publishDomainEvents($this->bus); // Handled automatically by DomainEventCollectorSubscriber
     }
 }

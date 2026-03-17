@@ -24,28 +24,24 @@ final class GetIncomesByMonthControllerTest extends ApiTestCase
 
     public function test_it_should_return_incomes_for_a_given_month(): void
     {
-        // 1. Create incomes for the test scenario, using the current year to avoid past date errors
-        $currentDate = new DateTime();
+        // 1. Create incomes for the test scenario, using future dates to avoid past date errors
+        $currentDate = new DateTime('+5 days');
         $year = (int)$currentDate->format('Y');
-        $month = (int)$currentDate->format('m');
+        $testMonth = (int)$currentDate->format('m');
+        $day = (int)$currentDate->format('d');
         
-        // To ensure we are testing a future month if we are at the end of the year
-        if ($month >= 11) {
-            $year += 1;
-            $month = 1;
-        }
-
-        $testMonth = $month;
-        $nextMonth = $month + 1;
+        $nextMonthDate = (clone $currentDate)->modify('+1 month');
+        $nextMonthYear = (int)$nextMonthDate->format('Y');
+        $nextMonth = (int)$nextMonthDate->format('m');
 
         // Income that should be found
         $incomeInTestMonth = IncomeMother::create(
-            dueDate: new IncomeDueDate(new DateTime("$year-$testMonth-15"))
+            dueDate: new IncomeDueDate(new DateTime("$year-$testMonth-$day"))
         );
 
         // Income that should NOT be found
         $incomeInNextMonth = IncomeMother::create(
-            dueDate: new IncomeDueDate(new DateTime("$year-$nextMonth-15"))
+            dueDate: new IncomeDueDate(new DateTime("$nextMonthYear-$nextMonth-15"))
         );
 
         // 2. Persist all entities

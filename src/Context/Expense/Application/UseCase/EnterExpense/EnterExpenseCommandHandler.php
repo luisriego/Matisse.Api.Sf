@@ -48,7 +48,7 @@ readonly class EnterExpenseCommandHandler implements CommandHandler
         $expense = Expense::create($id, $amount, $type, $account, $dueDate, $isActive, $description, $residentUnitId);
 
         $this->expenseRepo->save($expense, true);
-        $expense->publishDomainEvents($this->bus);
+// $expense->publishDomainEvents($this->bus); // Handled automatically by DomainEventCollectorSubscriber
 
         return $expense;
     }
