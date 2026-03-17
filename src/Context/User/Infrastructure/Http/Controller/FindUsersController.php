@@ -20,12 +20,15 @@ final class FindUsersController extends ApiController
     ) {
         parent::__construct($commandBus, $queryBus);
     }
+
     public function __invoke(): JsonResponse
     {
         $users = $this->ask(new FindUsersQuery());
         $data = $this->normalizer->normalize($users);
+
         return new JsonResponse($data ?? [], Response::HTTP_OK);
     }
+
     public function exceptions(): array
     {
         return [];

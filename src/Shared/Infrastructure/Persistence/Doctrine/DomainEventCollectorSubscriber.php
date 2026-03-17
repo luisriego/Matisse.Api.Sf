@@ -11,7 +11,6 @@ use Doctrine\Bundle\DoctrineBundle\Attribute\AsDoctrineListener;
 use Doctrine\ORM\Event\PostFlushEventArgs;
 use Doctrine\ORM\Event\PreFlushEventArgs;
 use Doctrine\ORM\Events;
-use DateTimeImmutable;
 
 #[AsDoctrineListener(event: Events::preFlush)]
 #[AsDoctrineListener(event: Events::postFlush)]
@@ -42,7 +41,7 @@ final class DomainEventCollectorSubscriber
     public function postFlush(PostFlushEventArgs $args): void
     {
         $eventsToDispatch = $this->collectedEvents;
-        
+
         // Limpiamos el array ANTES de despachar para evitar ciclos infinitos si un dispatch causa otro flush
         $this->collectedEvents = [];
 
@@ -62,12 +61,12 @@ final class DomainEventCollectorSubscriber
                 $domainEvent->aggregateId(),
                 $domainEvent::eventName(),
                 $domainEvent->toPrimitives(),
-                $domainEvent->occurredOn()
+                $domainEvent->occurredOn(),
             );
 
             // Persistir en la misma transaccion de UnitOfWork (Outbox atomico)
             $em->persist($storedEvent);
-            
+
             // Retener el evento de dominio original para ser despachado a los listeners post-transaccion
             $this->collectedEvents[] = $domainEvent;
         }

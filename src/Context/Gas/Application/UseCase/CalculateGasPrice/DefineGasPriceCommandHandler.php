@@ -20,7 +20,7 @@ final class DefineGasPriceCommandHandler implements CommandHandler
 
     public function __construct(
         private readonly EventBus $eventBus,
-        private readonly EventStore $eventStore
+        private readonly EventStore $eventStore,
     ) {}
 
     /**
@@ -35,6 +35,7 @@ final class DefineGasPriceCommandHandler implements CommandHandler
         $buffer = new BufferPercentage($bufferPercentageValue);
 
         $gas = Gas::definePrice($amount, $capacity, $buffer);
+
         foreach ($gas->pullDomainEvents() as $event) {
             $this->eventStore->append($event);
             $this->eventBus->publish($event);

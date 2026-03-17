@@ -19,7 +19,7 @@ final readonly class RecordGasReadingCommandHandler implements CommandHandler
 {
     public function __construct(
         private EventBus $eventBus,
-        private EventStore $eventStore
+        private EventStore $eventStore,
     ) {}
 
     /**

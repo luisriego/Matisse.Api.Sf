@@ -10,9 +10,9 @@ use App\Context\Account\Domain\Event\AccountWasEnabled;
 use App\Context\Expense\Domain\Expense;
 use App\Context\Expense\Domain\ExpenseType;
 use App\Shared\Domain\AggregateRoot;
+use DateMalformedStringException;
 use DateTime;
 use DateTimeImmutable;
-use DateMalformedStringException;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 

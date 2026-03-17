@@ -22,8 +22,10 @@ final class UpdateUserController extends ApiController
             $data['gender'],
             $data['phoneNumber'],
         ));
+
         return new Response('', Response::HTTP_NO_CONTENT);
     }
+
     public function exceptions(): array
     {
         return [

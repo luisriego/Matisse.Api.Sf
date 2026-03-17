@@ -7,8 +7,8 @@ namespace App\Context\Income\Domain;
 use App\Context\Income\Domain\Event\IncomeDescriptionWasChanged;
 use App\Context\Income\Domain\Event\IncomeDueDateWasChanged;
 use App\Context\Income\Domain\Event\IncomeWasCategorized;
-use App\Context\Income\Domain\Event\IncomeWasPaid;
 use App\Context\Income\Domain\Event\IncomeWasEntered;
+use App\Context\Income\Domain\Event\IncomeWasPaid;
 use App\Context\Income\Domain\ValueObject\IncomeAmount;
 use App\Context\Income\Domain\ValueObject\IncomeDueDate;
 use App\Context\Income\Domain\ValueObject\IncomeId;
@@ -129,6 +129,7 @@ class Income extends AggregateRoot
     public function categorizeAs(?IncomeType $incomeType): void
     {
         $this->incomeType = $incomeType;
+
         if ($incomeType !== null) {
             $this->record(new IncomeWasCategorized($this->id(), $incomeType->id()));
         }
@@ -142,7 +143,7 @@ class Income extends AggregateRoot
         $this->dueDate = $dueDate;
         $this->record(new IncomeDueDateWasChanged(
             $this->id(),
-            $this->dueDate->format('Y-m-d')
+            $this->dueDate->format('Y-m-d'),
         ));
     }
 
@@ -154,7 +155,7 @@ class Income extends AggregateRoot
         $this->description = $description;
         $this->record(new IncomeDescriptionWasChanged(
             $this->id(),
-            $this->description
+            $this->description,
         ));
     }
 

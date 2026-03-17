@@ -55,6 +55,6 @@ readonly class CompensateExpenseCommandHandler implements CommandHandler
         // 6) remove the old one, then save and publish the new expense
         $this->expenseRepo->remove($expense, false);
         $this->expenseRepo->save($newExpense, true);
-// $newExpense->publishDomainEvents($this->bus); // Handled automatically by DomainEventCollectorSubscriber
+        // $newExpense->publishDomainEvents($this->bus); // Handled automatically by DomainEventCollectorSubscriber
     }
 }

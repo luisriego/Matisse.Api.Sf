@@ -9,7 +9,7 @@ use Symfony\Component\HttpFoundation\Response;
 
 use function sprintf;
 
- // Import Response class
+// Import Response class
 
 final class ResidentUnitAlreadyExistsException extends Exception
 {

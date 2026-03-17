@@ -13,7 +13,9 @@ final readonly class SendConfirmationEmailOnUserWasRegistered implements EventSu
 {
     public function __construct(private UserMailerInterface $userMailer) {}
 
-    /** @param UserWasRegistered $event */
+    /**
+     * @param UserWasRegistered $event
+     */
     public function __invoke(DomainEvent $event): void
     {
         $this->userMailer->sendConfirmationEmail(

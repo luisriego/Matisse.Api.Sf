@@ -60,6 +60,6 @@ final class RegisterUserCommandHandler implements CommandHandler
         );
 
         $this->userRepository->save($user, true);
-// $user->publishDomainEvents($this->eventBus); // Handled automatically by DomainEventCollectorSubscriber
+        // $user->publishDomainEvents($this->eventBus); // Handled automatically by DomainEventCollectorSubscriber
     }
 }
