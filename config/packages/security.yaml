@@ -28,6 +28,7 @@ security:
 
     access_control:
         - { path: ^/.*/health-check,                        roles: PUBLIC_ACCESS }
+        - { path: ^/api/doc,                                roles: PUBLIC_ACCESS }
         - { path: ^/api/v1/login_check,                     roles: PUBLIC_ACCESS }
         - { path: ^/api/v1/users/register,                  roles: PUBLIC_ACCESS }
         - { path: ^/api/v1/users/activate,                  roles: PUBLIC_ACCESS }
