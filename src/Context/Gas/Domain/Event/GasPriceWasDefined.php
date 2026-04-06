@@ -7,6 +7,7 @@ namespace App\Context\Gas\Domain\Event;
 use App\Shared\Domain\Event\DomainEvent;
 use DateMalformedStringException;
 use DateTimeImmutable;
+use RuntimeException;
 use Symfony\Component\Uid\Uuid;
 
 final readonly class GasPriceWasDefined extends DomainEvent
@@ -16,7 +17,7 @@ final readonly class GasPriceWasDefined extends DomainEvent
      */
     public function __construct(
         string $id,
-        public float $pricePerM3,
+        public int $pricePerM3InCents,
         ?string $eventId = null,
         ?string $occurredOn = null,
     ) {
@@ -38,9 +39,11 @@ final readonly class GasPriceWasDefined extends DomainEvent
         string $eventId,
         string $occurredOn,
     ): self {
+        $cents = self::extractPricePerM3InCentsFromPayload($body);
+
         return new self(
             $aggregateId,
-            $body['pricePerM3'],
+            $cents,
             $eventId,
             $occurredOn,
         );
@@ -49,7 +52,24 @@ final readonly class GasPriceWasDefined extends DomainEvent
     public function toPrimitives(): array
     {
         return [
-            'pricePerM3' => $this->pricePerM3,
+            'pricePerM3InCents' => $this->pricePerM3InCents,
         ];
+    }
+
+    /**
+     * @param array<string, mixed> $body
+     */
+    private static function extractPricePerM3InCentsFromPayload(array $body): int
+    {
+        if (isset($body['pricePerM3InCents']) && is_numeric($body['pricePerM3InCents'])) {
+            return (int) $body['pricePerM3InCents'];
+        }
+
+        // Legacy: pricePerM3 was stored as Reals per m³ (float)
+        if (isset($body['pricePerM3']) && is_numeric($body['pricePerM3'])) {
+            return (int) round((float) $body['pricePerM3'] * 100);
+        }
+
+        throw new RuntimeException('GasPriceWasDefined payload must contain pricePerM3InCents or legacy pricePerM3.');
     }
 }

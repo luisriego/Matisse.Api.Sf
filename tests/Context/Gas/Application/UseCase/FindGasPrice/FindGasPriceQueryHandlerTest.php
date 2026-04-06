@@ -27,16 +27,15 @@ final class FindGasPriceQueryHandlerTest extends TestCase
         $handler(new FindGasPriceQuery());
     }
 
-    // NUEVO: Test para payload malformado
     public function test_it_should_throw_exception_if_payload_is_malformed(): void
     {
         $this->expectException(RuntimeException::class);
-        $this->expectExceptionMessage('Payload inválido no evento GasPriceWasDefined');
+        $this->expectExceptionMessage('GasPriceWasDefined payload must contain pricePerM3InCents or legacy pricePerM3.');
 
         $malformedEvent = StoredEvent::create(
             Uuid::random()->value(),
             'gas.price.was.defined',
-            ['wrong_key' => 123] // Payload sin 'pricePerM3'
+            ['wrong_key' => 123],
         );
 
         $repository = $this->createMock(StoredEventRepository::class);
@@ -46,35 +45,63 @@ final class FindGasPriceQueryHandlerTest extends TestCase
         $handler(new FindGasPriceQuery());
     }
 
-    // NUEVO: DataProvider con los casos límite
-    public static function priceValuesProvider(): array
-    {
-        return [
-            'positive float' => [5.87, 587],
-            'zero value' => [0.0, 0],
-            'null value' => [null, 0],
-            'non-numeric string' => ['hola', 0],
-            'negative float' => [-10.50, -1050],
-            'integer value' => [5, 500],
-        ];
-    }
-
-    // MODIFICADO: Test ahora usa el DataProvider
-    #[DataProvider('priceValuesProvider')]
-    public function test_it_should_return_correct_price_in_cents_for_various_inputs(mixed $priceInPayload, int $expectedCents): void
+    public function test_it_should_return_price_when_payload_uses_cents_key(): void
     {
         $event = StoredEvent::create(
             Uuid::random()->value(),
             'gas.price.was.defined',
-            ['pricePerM3' => $priceInPayload]
+            ['pricePerM3InCents' => 2600],
         );
 
         $repository = $this->createMock(StoredEventRepository::class);
         $repository->method('findByEventType')->willReturn([$event]);
 
         $handler = new FindGasPriceQueryHandler($repository);
-        $result = $handler(new FindGasPriceQuery());
+        $this->assertSame(2600, $handler(new FindGasPriceQuery()));
+    }
 
-        $this->assertSame($expectedCents, $result);
+    /**
+     * @return iterable<string, array{0: mixed, 1: int}>
+     */
+    public static function legacyPricePerM3RealsProvider(): iterable
+    {
+        yield 'positive float Reals per m³' => [5.87, 587];
+        yield 'zero Reals' => [0.0, 0];
+        yield 'integer as Reals' => [5, 500];
+        yield 'negative Reals' => [-10.50, -1050];
+    }
+
+    #[DataProvider('legacyPricePerM3RealsProvider')]
+    public function test_it_should_convert_legacy_price_per_m3_reals_to_cents(mixed $pricePerM3Reals, int $expectedCents): void
+    {
+        $event = StoredEvent::create(
+            Uuid::random()->value(),
+            'gas.price.was.defined',
+            ['pricePerM3' => $pricePerM3Reals],
+        );
+
+        $repository = $this->createMock(StoredEventRepository::class);
+        $repository->method('findByEventType')->willReturn([$event]);
+
+        $handler = new FindGasPriceQueryHandler($repository);
+        $this->assertSame($expectedCents, $handler(new FindGasPriceQuery()));
+    }
+
+    public function test_cents_key_takes_precedence_over_legacy_key(): void
+    {
+        $event = StoredEvent::create(
+            Uuid::random()->value(),
+            'gas.price.was.defined',
+            [
+                'pricePerM3InCents' => 2600,
+                'pricePerM3' => 1.0,
+            ],
+        );
+
+        $repository = $this->createMock(StoredEventRepository::class);
+        $repository->method('findByEventType')->willReturn([$event]);
+
+        $handler = new FindGasPriceQueryHandler($repository);
+        $this->assertSame(2600, $handler(new FindGasPriceQuery()));
     }
 }

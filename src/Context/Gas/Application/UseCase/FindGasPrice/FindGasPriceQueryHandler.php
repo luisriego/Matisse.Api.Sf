@@ -11,6 +11,7 @@ use RuntimeException;
 
 use function array_key_exists;
 use function end;
+use function is_numeric;
 use function round;
 
 final readonly class FindGasPriceQueryHandler implements QueryHandler
@@ -28,12 +29,19 @@ final readonly class FindGasPriceQueryHandler implements QueryHandler
         $latestEvent = end($events);
         $payload = $latestEvent->payload();
 
-        if (!array_key_exists('pricePerM3', $payload)) { // <-- CORREGIDO
-            throw new RuntimeException('Payload inválido no evento GasPriceWasDefined. A chave "pricePerM3" está faltando.');
+        if (!is_array($payload)) {
+            throw new RuntimeException('GasPriceWasDefined payload is invalid.');
         }
 
-        $priceAsFloat = (float) $payload['pricePerM3'];
+        if (array_key_exists('pricePerM3InCents', $payload) && is_numeric($payload['pricePerM3InCents'])) {
+            return (int) $payload['pricePerM3InCents'];
+        }
 
-        return (int) round($priceAsFloat * 100);
+        // Legacy: pricePerM3 stored as Reals per m³ (float)
+        if (array_key_exists('pricePerM3', $payload) && is_numeric($payload['pricePerM3'])) {
+            return (int) round((float) $payload['pricePerM3'] * 100);
+        }
+
+        throw new RuntimeException('GasPriceWasDefined payload must contain pricePerM3InCents or legacy pricePerM3.');
     }
 }

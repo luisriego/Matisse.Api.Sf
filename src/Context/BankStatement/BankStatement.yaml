@@ -1,0 +1,34 @@
+services:
+    _defaults:
+        autowire: true
+        autoconfigure: true
+
+    App\Context\BankStatement\Infrastructure\Http\Controller\:
+        public: true
+        resource: './Infrastructure/Http/Controller/'
+        tags: ['controller.service_arguments']
+
+    App\Context\BankStatement\:
+        resource: './'
+        exclude:
+            - './Infrastructure/Http/Controller/'
+            - './BankStatement.yaml'
+
+    App\Context\BankStatement\Application\Matcher\ExpenseHistoryMatcherInterface:
+        alias: App\Context\BankStatement\Infrastructure\Matcher\ExpenseHistoryMatcher
+
+    App\Context\BankStatement\Application\Matcher\EmbeddingVectorClientInterface:
+        alias: App\Context\BankStatement\Infrastructure\Matcher\OllamaEmbeddingVectorClient
+
+    App\Context\BankStatement\Infrastructure\Matcher\OllamaEmbeddingVectorClient:
+        arguments:
+            $ollamaHost: '%env(OLLAMA_HOST)%'
+            $embeddingModel: '%env(OLLAMA_EMBEDDING_MODEL)%'
+
+    # Semantic embedding matcher: bind interface to Ollama implementation
+    App\Context\BankStatement\Application\Matcher\EmbeddingMatcherInterface:
+        alias: App\Context\BankStatement\Infrastructure\Matcher\OllamaEmbeddingsMatcher
+
+    App\Context\BankStatement\Infrastructure\Matcher\OllamaEmbeddingsMatcher:
+        arguments:
+            $embeddingModel: '%env(OLLAMA_EMBEDDING_MODEL)%'

@@ -8,6 +8,11 @@ gas_reading_record:
     controller: App\Context\Gas\Infrastructure\Http\Controller\RecordGasReadingPutController
     methods: ['PUT']
 
+gas_price_set:
+    path: /api/v1/gas/price/direct
+    controller: App\Context\Gas\Infrastructure\Http\Controller\SetGasPricePutController
+    methods: ['PUT']
+
 gas_price:
     path: /api/v1/gas/price
     controller: App\Context\Gas\Infrastructure\Http\Controller\FindGasPriceController

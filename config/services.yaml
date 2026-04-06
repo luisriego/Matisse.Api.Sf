@@ -12,6 +12,7 @@ imports:
     - { resource: '../src/Context/EventStore/event.yaml'}
     - { resource: '../src/Context/User/user.yaml' }
     - { resource: '../src/Context/Gas/gas.yaml'}
+    - { resource: '../src/Context/BankStatement/BankStatement.yaml'}
 
 services:
     _defaults:
@@ -33,6 +34,7 @@ services:
             - '../src/Context/*/Domain/Entity/'
             - '../src/Context/*/Infrastructure/Persistence/Entity/'
             - '../src/Context/*/Infrastructure/Http/Controller/'
+            - '../src/Context/BankStatement/'
 
     App\Shared\:
         resource: '../src/Shared/'

@@ -1,0 +1,4 @@
+bank_ofx_ingest:
+    path: /api/v1/bank/ofx-ingest
+    controller: App\Context\BankStatement\Infrastructure\Http\Controller\OfxIngestPostController
+    methods: ['POST']

@@ -78,17 +78,38 @@ class GasTest extends TestCase
 
         $this->assertInstanceOf(Gas::class, $gas);
         $this->assertNotNull($gas->id());
-        $this->assertIsFloat($gas->pricePerM3());
+        $this->assertIsInt($gas->pricePerM3InCents());
 
-        // Recalculate expected price based on default values and conversions
-        $expectedPricePerM3 = ($amount->toFloat() / $capacity->toM3()) * (1 + $buffer->toFactor());
-        $this->assertEquals($expectedPricePerM3, $gas->pricePerM3());
+        $billCents = $amount->value();
+        $kg = $capacity->value();
+        $bufferPct = $buffer->value();
+        $expectedPricePerM3InCents = (int) round((2 * $billCents * (100 + $bufferPct)) / ($kg * 100));
+
+        $this->assertSame($expectedPricePerM3InCents, $gas->pricePerM3InCents());
 
         $events = $gas->pullDomainEvents();
         $this->assertCount(1, $events);
         $this->assertInstanceOf(GasPriceWasDefined::class, $events[0]);
         $this->assertSame($gas->id()->value(), $events[0]->aggregateId());
-        $this->assertEquals($expectedPricePerM3, $events[0]->pricePerM3);
+        $this->assertSame($expectedPricePerM3InCents, $events[0]->pricePerM3InCents);
+    }
+
+    /**
+     * @throws DateMalformedStringException
+     */
+    public function test_it_should_set_direct_gas_price(): void
+    {
+        $pricePerM3InCents = 2600;
+
+        $gas = Gas::setDirectPrice($pricePerM3InCents);
+
+        $this->assertSame($pricePerM3InCents, $gas->pricePerM3InCents());
+
+        $events = $gas->pullDomainEvents();
+        $this->assertCount(1, $events);
+        $this->assertInstanceOf(GasPriceWasDefined::class, $events[0]);
+        $this->assertSame($gas->id()->value(), $events[0]->aggregateId());
+        $this->assertSame($pricePerM3InCents, $events[0]->pricePerM3InCents);
     }
 
     public function test_it_should_throw_exception_for_invalid_reading_in_record_reading(): void
