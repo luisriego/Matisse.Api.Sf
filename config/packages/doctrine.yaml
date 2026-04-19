@@ -1,6 +1,11 @@
 doctrine:
     dbal:
         url: '%env(resolve:DATABASE_URL)%'
+        types:
+            vector: App\Shared\Infrastructure\Doctrine\Type\VectorType
+
+        mapping_types:
+            vector: vector
 
         # IMPORTANT: You MUST configure your server version,
         # either here or in the DATABASE_URL env var (see .env file)
@@ -72,6 +77,13 @@ doctrine:
                 dir: '%kernel.project_dir%/src/Context/Slip/Infrastructure/Persistence/Doctrine'
                 prefix: 'App\Context\Slip\Domain'
                 alias: Slip
+
+            BankStatement:
+                is_bundle: false
+                type: xml
+                dir: '%kernel.project_dir%/src/Context/BankStatement/Infrastructure/Persistence/Doctrine'
+                prefix: 'App\Context\BankStatement\Domain'
+                alias: BankStatement
 
 when@prod:
     doctrine:

@@ -19,4 +19,19 @@ interface IncomeRepository
     public function findActiveByDateRange(DateRange $dateRange): array;
 
     public function findInactiveByDateRange(DateRange $dateRange): array;
+
+    /**
+     * All incomes whose dueDate falls within the range (active or not).
+     *
+     * @return Income[]
+     */
+    public function findByDueDateInRange(DateRange $dateRange): array;
+
+    /** Incomes whose dueDate falls in the range (inclusive), any active flag. */
+    public function countInDueDateRange(DateRange $dateRange): int;
+
+    /**
+     * Incomes in range with a non-empty description (memo text for credit SQL history matching).
+     */
+    public function countWithNonEmptyDescriptionInDueDateRange(DateRange $dateRange): int;
 }

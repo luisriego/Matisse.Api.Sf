@@ -1,4 +1,25 @@
+bank_ofx_matching_context:
+    path: /api/v1/bank/ofx-matching-context
+    controller: App\Context\BankStatement\Infrastructure\Http\Controller\OfxMatchingContextGetController
+    methods: ['GET']
+
 bank_ofx_ingest:
     path: /api/v1/bank/ofx-ingest
     controller: App\Context\BankStatement\Infrastructure\Http\Controller\OfxIngestPostController
+    methods: ['POST']
+
+# Alias for frontends that call this path (same handler as bank_ofx_ingest).
+bank_import_statement:
+    path: /api/v1/imports/bank-statement
+    controller: App\Context\BankStatement\Infrastructure\Http\Controller\OfxIngestPostController
+    methods: ['POST']
+
+bank_ofx_confirm:
+    path: /api/v1/bank/ofx-confirm
+    controller: App\Context\BankStatement\Infrastructure\Http\Controller\OfxConfirmPostController
+    methods: ['POST']
+
+bank_ofx_verify_income:
+    path: /api/v1/bank/ofx-verify-income
+    controller: App\Context\BankStatement\Infrastructure\Http\Controller\OfxVerifyIncomePostController
     methods: ['POST']

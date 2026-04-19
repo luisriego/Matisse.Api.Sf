@@ -7,9 +7,15 @@ namespace App\Tests\Context\BankStatement\Application\UseCase\PreviewBankStateme
 use App\Context\BankStatement\Application\Matcher\EmbeddingCandidateDto;
 use App\Context\BankStatement\Application\Matcher\EmbeddingMatcherInterface;
 use App\Context\BankStatement\Application\Matcher\ExpenseHistoryMatcherInterface;
+use App\Context\BankStatement\Application\Matcher\IncomeCreditHistoryMatcherInterface;
+use App\Context\BankStatement\Application\UseCase\ConfirmBankOfxLines\ConfirmLineDto;
 use App\Context\BankStatement\Application\UseCase\PreviewBankStatement\PreviewBankStatementQuery;
 use App\Context\BankStatement\Application\UseCase\PreviewBankStatement\PreviewBankStatementQueryHandler;
+use App\Context\BankStatement\Infrastructure\Matcher\CreditMemoClassifier;
 use App\Context\BankStatement\Infrastructure\Ofx\OfxParser;
+use App\Context\Expense\Domain\Expense;
+use App\Context\Expense\Domain\ExpenseRepository;
+use App\Tests\Context\Expense\Domain\ExpenseMother;
 use PHPUnit\Framework\TestCase;
 
 final class PreviewBankStatementQueryHandlerTest extends TestCase
@@ -109,10 +115,86 @@ final class PreviewBankStatementQueryHandlerTest extends TestCase
         self::assertSame([], $result->credits[0]->embeddingCandidates);
     }
 
+    public function test_credit_preview_classifies_boleto_memo_as_settlement(): void
+    {
+        $handler = $this->buildHandler(embeddingCandidates: []);
+
+        $result = $handler(new PreviewBankStatementQuery(self::MINIMAL_OFX));
+
+        $credit = $result->credits[0];
+        self::assertSame(ConfirmLineDto::CREDIT_KIND_BOLETO_SETTLEMENT, $credit->suggestedCreditKind);
+        self::assertSame('pre_filled', $credit->status);
+        self::assertGreaterThanOrEqual(0.75, $credit->creditClassificationConfidence);
+        self::assertStringStartsWith('memo_pattern:settlement:', (string) $credit->creditClassificationSource);
+    }
+
+    public function test_credit_preview_classifies_yield_memo_as_other(): void
+    {
+        $ofx = str_replace(
+            '<MEMO>BOLETOS RECEBIDOS</MEMO>',
+            '<MEMO>RENDIMENTOS REND PAGO APLIC AUT MAIS</MEMO>',
+            self::MINIMAL_OFX,
+        );
+
+        $handler = $this->buildHandler(embeddingCandidates: []);
+
+        $result = $handler(new PreviewBankStatementQuery($ofx));
+
+        $credit = $result->credits[0];
+        self::assertSame(ConfirmLineDto::CREDIT_KIND_OTHER, $credit->suggestedCreditKind);
+        self::assertSame('pre_filled', $credit->status);
+        self::assertStringStartsWith('memo_pattern:other:', (string) $credit->creditClassificationSource);
+    }
+
+    public function test_debit_preview_hydrates_suggested_fields_from_top_embedding_match(): void
+    {
+        $matched = ExpenseMother::create(id: 'expense-uuid-1');
+
+        $candidate = new EmbeddingCandidateDto(
+            candidateId: 'expense-uuid-1',
+            label:       'COPASA água mensal',
+            score:       0.92,
+            embeddingModel: 'nomic-embed-text',
+        );
+
+        $handler = $this->buildHandler(embeddingCandidates: [$candidate], embeddingMatchedExpense: $matched);
+
+        $result = $handler(new PreviewBankStatementQuery(self::MINIMAL_OFX));
+
+        $expensePreview = $result->expenses[0];
+        self::assertSame($matched->type()->id(), $expensePreview->suggestedExpenseTypeId);
+        self::assertSame($matched->account()->id(), $expensePreview->suggestedAccountId);
+        self::assertSame('pre_filled', $expensePreview->status);
+        self::assertFalse($expensePreview->isNew);
+        self::assertGreaterThanOrEqual(0.92, $expensePreview->confidence);
+    }
+
+    public function test_debit_preview_does_not_hydrate_from_embedding_when_score_below_threshold(): void
+    {
+        $matched = ExpenseMother::create(id: 'expense-uuid-1');
+        $candidate = new EmbeddingCandidateDto(
+            candidateId: 'expense-uuid-1',
+            label:       'weak',
+            score:       0.50,
+            embeddingModel: 'nomic-embed-text',
+        );
+
+        $handler = $this->buildHandler(embeddingCandidates: [$candidate], embeddingMatchedExpense: $matched);
+
+        $result = $handler(new PreviewBankStatementQuery(self::MINIMAL_OFX));
+
+        $expensePreview = $result->expenses[0];
+        self::assertNull($expensePreview->suggestedExpenseTypeId);
+        self::assertNull($expensePreview->suggestedAccountId);
+        self::assertSame('needs_review', $expensePreview->status);
+    }
+
     // --- helpers ---
 
-    /** @param EmbeddingCandidateDto[] $embeddingCandidates */
-    private function buildHandler(array $embeddingCandidates): PreviewBankStatementQueryHandler
+    /**
+     * @param EmbeddingCandidateDto[] $embeddingCandidates
+     */
+    private function buildHandler(array $embeddingCandidates, ?Expense $embeddingMatchedExpense = null): PreviewBankStatementQueryHandler
     {
         $parser = new OfxParser();
 
@@ -127,6 +209,29 @@ final class PreviewBankStatementQueryHandlerTest extends TestCase
         $embeddingMatcher = $this->createMock(EmbeddingMatcherInterface::class);
         $embeddingMatcher->method('findSimilar')->willReturn($embeddingCandidates);
 
-        return new PreviewBankStatementQueryHandler($parser, $historyMatcher, $embeddingMatcher);
+        $expenseRepository = $this->createMock(ExpenseRepository::class);
+        if ($embeddingMatchedExpense !== null) {
+            $expenseRepository->method('findOneById')->willReturnCallback(
+                static fn (string $id): ?Expense => $id === $embeddingMatchedExpense->id() ? $embeddingMatchedExpense : null,
+            );
+        } else {
+            $expenseRepository->method('findOneById')->willReturn(null);
+        }
+
+        $incomeCreditMatcher = $this->createMock(IncomeCreditHistoryMatcherInterface::class);
+        $incomeCreditMatcher->method('match')->willReturn([
+            'assignments' => [],
+            'confidence'  => 0.0,
+            'isNew'       => true,
+        ]);
+
+        return new PreviewBankStatementQueryHandler(
+            $parser,
+            $historyMatcher,
+            $embeddingMatcher,
+            $expenseRepository,
+            new CreditMemoClassifier(),
+            $incomeCreditMatcher,
+        );
     }
 }

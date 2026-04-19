@@ -16,6 +16,8 @@ interface ExpenseRepository
 
     public function findOneByIdOrFail(string $id): Expense;
 
+    public function findOneById(string $id): ?Expense;
+
     public function findAll(): array;
 
     public function findActiveByDateRange(DateRange $dateRange): array;
@@ -23,4 +25,12 @@ interface ExpenseRepository
     public function findInactiveByDateRange(DateRange $dateRange): array;
 
     public function findByRecurringExpenseAndMonthYear(string $recurringExpenseId, int $month, int $year): ?Expense;
+
+    /** Active expenses whose dueDate falls in the range (inclusive). */
+    public function countActiveInDueDateRange(DateRange $dateRange): int;
+
+    /**
+     * Active expenses in range with a non-empty description (memo text for SQL history matching).
+     */
+    public function countActiveWithNonEmptyDescriptionInDueDateRange(DateRange $dateRange): int;
 }

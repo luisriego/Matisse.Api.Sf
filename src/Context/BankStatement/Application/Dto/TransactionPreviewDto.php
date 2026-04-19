@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Context\BankStatement\Application\Dto;
 
 use App\Context\BankStatement\Application\Matcher\EmbeddingCandidateDto;
+use OpenApi\Attributes as OA;
 
 /**
  * Preview of a single bank transaction, enriched with historical matching data.
@@ -13,11 +14,58 @@ use App\Context\BankStatement\Application\Matcher\EmbeddingCandidateDto;
  *   - "needs_review"   : no history found (isNew=true) or low confidence → user MUST fill in.
  *   - "pre_filled"     : high-confidence match → form pre-filled from history (user can still change).
  */
+#[OA\Schema(
+    schema: 'TransactionPreview',
+    properties: [
+        new OA\Property(property: 'fitId',                      type: 'string',  example: 'FIT-20260310-001'),
+        new OA\Property(property: 'bankAccountId',              type: 'string',  format: 'uuid'),
+        new OA\Property(property: 'type',                       type: 'string',  enum: ['DEBIT', 'CREDIT']),
+        new OA\Property(property: 'amountInCents',              type: 'integer', example: 15000),
+        new OA\Property(property: 'postedAt',                   type: 'string',  format: 'date', example: '2026-03-10'),
+        new OA\Property(property: 'memo',                       type: 'string',  example: 'COPASA AGUA'),
+        new OA\Property(property: 'status',                     type: 'string',  enum: ['needs_review', 'pre_filled']),
+        new OA\Property(property: 'isNew',                      type: 'boolean'),
+        new OA\Property(property: 'confidence',                 type: 'number',  format: 'float', example: 0.9),
+        new OA\Property(
+            property: 'pastAssignments',
+            type: 'array',
+            items: new OA\Items(ref: '#/components/schemas/PastAssignment'),
+        ),
+        new OA\Property(property: 'suggestedExpenseTypeId',    type: 'string',  format: 'uuid', nullable: true),
+        new OA\Property(property: 'suggestedExpenseTypeName',  type: 'string',  nullable: true, example: 'Água'),
+        new OA\Property(property: 'suggestedRecurringExpenseId', type: 'string', format: 'uuid', nullable: true),
+        new OA\Property(property: 'suggestedAccountId',        type: 'string',  format: 'uuid', nullable: true),
+        new OA\Property(property: 'suggestedResidentUnitId',   type: 'string',  format: 'uuid', nullable: true),
+        new OA\Property(
+            property: 'embeddingCandidates',
+            type: 'array',
+            items: new OA\Items(ref: '#/components/schemas/EmbeddingCandidate'),
+            description: 'Top-K semantic candidates sorted by cosine score (empty = service unavailable)',
+        ),
+        new OA\Property(property: 'suggestedCreditKind', type: 'string', nullable: true,
+            enum: ['boleto_settlement', 'other'],
+            description: 'CREDIT lines only. Suggested creditKind for /bank/ofx-confirm (memo rules + income history).'),
+        new OA\Property(property: 'creditClassificationSource', type: 'string', nullable: true,
+            example: 'memo_pattern:other:RENDIMENTO',
+            description: 'How suggestedCreditKind was inferred (null = unknown).'),
+        new OA\Property(property: 'creditClassificationConfidence', type: 'number', format: 'float', example: 0.92),
+        new OA\Property(property: 'suggestedIncomeTypeId', type: 'string', format: 'uuid', nullable: true,
+            description: 'CREDIT lines: best guess from similar past incomes (optional).'),
+        new OA\Property(property: 'suggestedIncomeTypeName', type: 'string', nullable: true),
+        new OA\Property(
+            property: 'pastIncomeAssignments',
+            type: 'array',
+            items: new OA\Items(ref: '#/components/schemas/IncomePastAssignment'),
+            description: 'CREDIT lines: ranked similar past incomes ([] for DEBIT lines).',
+        ),
+    ],
+)]
 final readonly class TransactionPreviewDto
 {
     /**
      * @param PastAssignmentDto[]      $pastAssignments
      * @param EmbeddingCandidateDto[]  $embeddingCandidates  Top-K semantic candidates ([] when unavailable)
+     * @param IncomePastAssignmentDto[] $pastIncomeAssignments
      */
     public function __construct(
         public readonly string $fitId,
@@ -39,5 +87,11 @@ final readonly class TransactionPreviewDto
         public readonly ?string $suggestedResidentUnitId,
         /** Semantic embedding candidates sorted by cosine score (empty = service unavailable) */
         public readonly array $embeddingCandidates = [],
+        public readonly ?string $suggestedCreditKind = null,
+        public readonly ?string $creditClassificationSource = null,
+        public readonly float $creditClassificationConfidence = 0.0,
+        public readonly ?string $suggestedIncomeTypeId = null,
+        public readonly ?string $suggestedIncomeTypeName = null,
+        public readonly array $pastIncomeAssignments = [],
     ) {}
 }

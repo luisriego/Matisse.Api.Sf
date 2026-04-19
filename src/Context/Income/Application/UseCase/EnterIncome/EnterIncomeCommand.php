@@ -11,11 +11,21 @@ final readonly class EnterIncomeCommand implements Command
     public function __construct(
         private string $id,
         private int $amount,
-        private string $residentUnitId,
+        private ?string $residentUnitId,
         private string $type,
         private string $accountId, // Added accountId
         private string $dueDate,
         private ?string $description = null,
+        /**
+         * Skip the "dueDate must be today or future" invariant.
+         * Meant for bank CREDIT lines whose postedAt already happened.
+         */
+        private bool $allowPastDueDate = false,
+        /**
+         * If set, the income is created and immediately marked as paid using this date.
+         * Meant for bank CREDIT lines (the bank already settled the money).
+         */
+        private ?string $paidAt = null,
     ) {}
 
     public function id(): string
@@ -28,7 +38,7 @@ final readonly class EnterIncomeCommand implements Command
         return $this->amount;
     }
 
-    public function residentUnitId(): string
+    public function residentUnitId(): ?string
     {
         return $this->residentUnitId;
     }
@@ -51,5 +61,15 @@ final readonly class EnterIncomeCommand implements Command
     public function description(): ?string
     {
         return $this->description;
+    }
+
+    public function allowPastDueDate(): bool
+    {
+        return $this->allowPastDueDate;
+    }
+
+    public function paidAt(): ?string
+    {
+        return $this->paidAt;
     }
 }

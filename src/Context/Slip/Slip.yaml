@@ -18,3 +18,6 @@ services:
 
     App\Context\Slip\Application\UseCase\GetSlipDetails\GetSlipDetailsQueryHandler:
         tags: ['messenger.message_handler']
+
+    App\Context\Slip\Domain\SlipRepository:
+        alias: App\Context\Slip\Infrastructure\Persistence\Doctrine\DoctrineSlipRepository

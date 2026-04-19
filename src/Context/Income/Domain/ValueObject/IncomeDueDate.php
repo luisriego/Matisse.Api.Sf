@@ -13,9 +13,11 @@ use function trim;
 
 class IncomeDueDate extends DateTimeValueObject
 {
-    public function __construct(DateTime $value)
+    public function __construct(DateTime $value, bool $allowPast = false)
     {
-        $this->ensureIsFutureDate($value);
+        if (!$allowPast) {
+            $this->ensureIsFutureDate($value);
+        }
         parent::__construct($value);
     }
 
@@ -42,6 +44,23 @@ class IncomeDueDate extends DateTimeValueObject
     public static function fromString(string $date): self
     {
         return new self(new DateTime($date));
+    }
+
+    /**
+     * Factory intended for incomes originated by bank statement CREDIT lines,
+     * where the posted date has already occurred. Skips the future-date invariant.
+     */
+    public static function fromBankCredit(DateTime $postedAt): self
+    {
+        return new self($postedAt, allowPast: true);
+    }
+
+    /**
+     * @throws DateMalformedStringException
+     */
+    public static function fromBankCreditString(string $postedAt): self
+    {
+        return new self(new DateTime($postedAt), allowPast: true);
     }
 
     public function isInPast(): bool

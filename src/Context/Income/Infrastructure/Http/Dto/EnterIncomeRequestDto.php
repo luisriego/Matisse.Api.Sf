@@ -11,7 +11,7 @@ use Symfony\Component\HttpFoundation\Request;
 class EnterIncomeRequestDto implements RequestDto
 {
     public readonly string $id;
-    public readonly string $residentUnitId;
+    public readonly ?string $residentUnitId;
     public readonly int $amount;
     public readonly string $type;
     public readonly string $accountId;

@@ -3,6 +3,14 @@ services:
         autowire: true
         autoconfigure: true
 
+    _instanceof:
+        App\Shared\Application\QueryHandler:
+            tags: [{ name: 'messenger.message_handler', bus: 'query.bus' }]
+        App\Shared\Application\CommandHandler:
+            tags: [{ name: 'messenger.message_handler', bus: 'command.bus' }]
+        App\Shared\Domain\Event\EventSubscriber:
+            tags: ['app.event_subscriber']
+
     App\Context\BankStatement\Infrastructure\Http\Controller\:
         public: true
         resource: './Infrastructure/Http/Controller/'
@@ -13,6 +21,23 @@ services:
         exclude:
             - './Infrastructure/Http/Controller/'
             - './BankStatement.yaml'
+
+    App\Context\BankStatement\Domain\BankTransactionImportRepository:
+        alias: App\Context\BankStatement\Infrastructure\Persistence\Doctrine\DoctrineBankTransactionImportRepository
+
+    App\Context\BankStatement\Application\Matcher\IncomeCreditHistoryMatcherInterface:
+        alias: App\Context\BankStatement\Infrastructure\Matcher\IncomeCreditHistoryMatcher
+
+    App\Context\BankStatement\Application\UseCase\ConfirmBankOfxLines\ConfirmBankOfxLinesCommandHandler:
+        arguments:
+            $defaultCreditIncomeTypeId: '%env(default::DEFAULT_BANK_CREDIT_INCOME_TYPE_ID)%'
+
+    App\Context\BankStatement\Domain\ExpenseEmbeddingRepository:
+        alias: App\Context\BankStatement\Infrastructure\Persistence\Doctrine\DoctrineExpenseEmbeddingRepository
+
+    App\Context\BankStatement\Infrastructure\Console\ReindexExpenseEmbeddingsCommand:
+        arguments:
+            $embeddingModel: '%env(OLLAMA_EMBEDDING_MODEL)%'
 
     App\Context\BankStatement\Application\Matcher\ExpenseHistoryMatcherInterface:
         alias: App\Context\BankStatement\Infrastructure\Matcher\ExpenseHistoryMatcher
@@ -30,5 +55,9 @@ services:
         alias: App\Context\BankStatement\Infrastructure\Matcher\OllamaEmbeddingsMatcher
 
     App\Context\BankStatement\Infrastructure\Matcher\OllamaEmbeddingsMatcher:
+        arguments:
+            $embeddingModel: '%env(OLLAMA_EMBEDDING_MODEL)%'
+
+    App\Context\BankStatement\Infrastructure\EventSubscriber\IndexExpenseEmbeddingOnEntered:
         arguments:
             $embeddingModel: '%env(OLLAMA_EMBEDDING_MODEL)%'

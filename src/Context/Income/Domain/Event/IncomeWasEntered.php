@@ -16,7 +16,7 @@ final readonly class IncomeWasEntered extends DomainEvent
     public function __construct(
         string $aggregateId,
         private int $amount,
-        private string $residentUnitId,
+        private ?string $residentUnitId,
         private string $type,
         string $accountId,
         private string $dueDate,
@@ -44,7 +44,7 @@ final readonly class IncomeWasEntered extends DomainEvent
         return new self(
             $aggregateId,
             $body['amount'],
-            $body['residentUnitId'],
+            $body['residentUnitId'] ?? null,
             $body['type'],
             $body['accountId'],
             $body['dueDate'],
