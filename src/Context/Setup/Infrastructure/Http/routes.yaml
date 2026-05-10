@@ -1,0 +1,19 @@
+setup_status:
+    path: /api/v1/setup/status
+    controller: App\Context\Setup\Infrastructure\Http\Controller\SetupStatusGetController
+    methods: ['GET']
+
+setup_initial_balances_preview:
+    path: /api/v1/setup/initial-balances/preview
+    controller: App\Context\Setup\Infrastructure\Http\Controller\InitialBalancesPreviewPostController
+    methods: ['POST']
+
+setup_initial_balances_confirm:
+    path: /api/v1/setup/initial-balances/confirm
+    controller: App\Context\Setup\Infrastructure\Http\Controller\InitialBalancesConfirmPostController
+    methods: ['POST']
+
+setup_opening_reference_month:
+    path: /api/v1/setup/opening-reference-month
+    controller: App\Context\Setup\Infrastructure\Http\Controller\OpeningReferenceMonthPostController
+    methods: ['POST']

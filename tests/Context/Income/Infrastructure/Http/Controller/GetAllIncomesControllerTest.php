@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Tests\Context\Income\Infrastructure\Http\Controller;
 
 use App\Context\Income\Infrastructure\Http\Controller\GetAllIncomesController;
+use App\Tests\Context\Account\Domain\AccountMother;
 use App\Tests\Context\Income\Domain\IncomeMother;
 use App\Tests\Shared\Infrastructure\PhpUnit\ApiTestCase;
 use Symfony\Component\HttpFoundation\Response;
@@ -23,8 +24,13 @@ final class GetAllIncomesControllerTest extends ApiTestCase
     public function test_it_should_return_all_incomes(): void
     {
         // 1. Create a couple of incomes
-        $income1 = IncomeMother::create();
-        $income2 = IncomeMother::create();
+        $account1 = AccountMother::create();
+        $account2 = AccountMother::create();
+        $income1 = IncomeMother::create(accountId: $account1->id());
+        $income2 = IncomeMother::create(accountId: $account2->id());
+
+        $this->entityManager->persist($account1);
+        $this->entityManager->persist($account2);
 
         $this->entityManager->persist($income1->residentUnit());
         $this->entityManager->persist($income1->incomeType());

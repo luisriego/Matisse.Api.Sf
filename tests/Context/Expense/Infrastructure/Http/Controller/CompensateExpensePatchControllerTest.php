@@ -54,19 +54,9 @@ final class CompensateExpensePatchControllerTest extends ApiTestCase
         // 5. Assert the changes in the database
         $this->entityManager->clear();
 
-        // Assert that the original expense was removed
-        $removedExpense = $this->entityManager->find(Expense::class, $originalExpenseId);
-        $this->assertNull($removedExpense);
-
-        // Assert that a new expense was created with the compensated amount
-        // We need to query for it, as we don't know its new ID.
-        $query = $this->entityManager->createQuery(
-            'SELECT e FROM App\Context\Expense\Domain\Expense e WHERE e.amount = :amount'
-        )->setParameter('amount', $compensatedAmount);
-        
-        $newExpenses = $query->getResult();
-
-        $this->assertCount(1, $newExpenses);
-        $this->assertEquals($compensatedAmount, $newExpenses[0]->amount());
+        // Assert that the original expense remains and only its amount changes
+        $updatedExpense = $this->entityManager->find(Expense::class, $originalExpenseId);
+        $this->assertNotNull($updatedExpense);
+        $this->assertEquals($compensatedAmount, $updatedExpense->amount());
     }
 }

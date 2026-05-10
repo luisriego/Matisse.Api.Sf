@@ -13,6 +13,8 @@ imports:
     - { resource: '../src/Context/User/user.yaml' }
     - { resource: '../src/Context/Gas/gas.yaml'}
     - { resource: '../src/Context/BankStatement/BankStatement.yaml'}
+    - { resource: '../src/Context/Ledger/ledger.yaml'}
+    - { resource: '../src/Context/Setup/setup.yaml'}
 
 services:
     _defaults:
@@ -111,3 +113,7 @@ services:
         arguments:
             $ollamaHost: '%env(OLLAMA_HOST)%'
             $logger: '@logger'
+
+    App\Shared\Infrastructure\SetupRequiredListener:
+        tags:
+            - { name: kernel.event_listener, event: kernel.request, method: onKernelRequest, priority: 10 }

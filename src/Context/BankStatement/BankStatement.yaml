@@ -32,6 +32,16 @@ services:
         arguments:
             $defaultCreditIncomeTypeId: '%env(default::DEFAULT_BANK_CREDIT_INCOME_TYPE_ID)%'
 
+    App\Context\BankStatement\Application\Service\SettlementIncomeSplitMap:
+        arguments:
+            $enabled: '%env(bool:SETTLEMENT_INCOME_SPLIT_ENABLED)%'
+            $mapping:
+                base: { accountId: '%env(default::SETTLEMENT_SPLIT_BASE_ACCOUNT_ID)%', incomeTypeId: '%env(default::SETTLEMENT_SPLIT_BASE_INCOME_TYPE_ID)%' }
+                syndic: { accountId: '%env(default::SETTLEMENT_SPLIT_SYNDIC_ACCOUNT_ID)%', incomeTypeId: '%env(default::SETTLEMENT_SPLIT_SYNDIC_INCOME_TYPE_ID)%' }
+                extra: { accountId: '%env(default::SETTLEMENT_SPLIT_EXTRA_ACCOUNT_ID)%', incomeTypeId: '%env(default::SETTLEMENT_SPLIT_EXTRA_INCOME_TYPE_ID)%' }
+                reserve: { accountId: '%env(default::SETTLEMENT_SPLIT_RESERVE_ACCOUNT_ID)%', incomeTypeId: '%env(default::SETTLEMENT_SPLIT_RESERVE_INCOME_TYPE_ID)%' }
+                gas: { accountId: '%env(default::SETTLEMENT_SPLIT_GAS_ACCOUNT_ID)%', incomeTypeId: '%env(default::SETTLEMENT_SPLIT_GAS_INCOME_TYPE_ID)%' }
+
     App\Context\BankStatement\Domain\ExpenseEmbeddingRepository:
         alias: App\Context\BankStatement\Infrastructure\Persistence\Doctrine\DoctrineExpenseEmbeddingRepository
 

@@ -31,6 +31,7 @@ class Income extends AggregateRoot
         private ?IncomeType $incomeType,
         private DateTime $dueDate,
         private ?string $description = null,
+        private ?string $accountId = null,
     ) {
         $this->createdAt = new DateTimeImmutable();
         $this->isActive = true;
@@ -41,17 +42,18 @@ class Income extends AggregateRoot
         IncomeAmount $amount,
         ?ResidentUnit $residentUnit,
         IncomeType $type,
-        string $accountId, // Added accountId
+        string $accountId,
         IncomeDueDate $dueDate,
         ?string $description = null,
     ): self {
-        $income =  new self(
+        $income = new self(
             $id->value(),
             $amount->value(),
             $residentUnit,
             $type,
             $dueDate->toDateTime(),
             $description,
+            $accountId,
         );
 
         $income->record(new IncomeWasEntered(
@@ -59,7 +61,7 @@ class Income extends AggregateRoot
             amount: $amount->value(),
             residentUnitId: $residentUnit?->id(),
             type: $type->id(),
-            accountId: $accountId, // Pass accountId to the event
+            accountId: $accountId,
             dueDate: $dueDate->toDateTime()->format('Y-m-d'),
             description: $description,
         ));
@@ -80,6 +82,11 @@ class Income extends AggregateRoot
     public function incomeType(): ?IncomeType
     {
         return $this->incomeType;
+    }
+
+    public function accountId(): ?string
+    {
+        return $this->accountId;
     }
 
     public function dueDate(): DateTime
@@ -169,6 +176,7 @@ class Income extends AggregateRoot
             'paidAt' => $this->paidAt?->format('Y-m-d'),
             'residentUnitId' => $this->residentUnit?->id(),
             'description' => $this->description,
+            'account' => $this->accountId !== null ? ['id' => $this->accountId] : null,
         ];
     }
 }

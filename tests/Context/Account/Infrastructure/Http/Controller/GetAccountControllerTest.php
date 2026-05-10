@@ -45,7 +45,6 @@ final class GetAccountControllerTest extends ApiTestCase
 
         $this->assertIsArray($data);
         $this->assertEquals($account->id(), $data['id']);
-        $this->assertEquals($account->code(), $data['code']);
         $this->assertEquals($account->name(), $data['name']);
     }
 

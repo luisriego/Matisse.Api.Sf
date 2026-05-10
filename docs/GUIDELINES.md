@@ -84,7 +84,7 @@ Each Bounded Context (e.g., `Account`, `User`, `Order`) resides in its own direc
         -   Aggregate Roots (e.g., `Account.php`).
     -   *Convention:* Noun representing the concept.
         -   Entities (if not ARs).
-        -   Value Objects (e.g., `AccountId.php`, `AccountCode.php`, `EmailAddress.php`).
+        -   Value Objects (e.g., `AccountId.php`, `AccountName.php`, `EmailAddress.php`).
     -   *Convention:* Descriptive name, often ending with `Id` for identifiers.
         -   Repository Interfaces (e.g., `AccountRepository.php`).
     -   *Convention:* `{AggregateName}Repository.php`.
@@ -258,7 +258,7 @@ Domain-Driven Design (DDD) is an approach to software development that focuses o
 
 -   **Importance:** This is the practice of crafting a common, rigorous language shared by the development team, domain experts, users, and the code itself. This language should be based on the domain model.
 -   **Usage:** The Ubiquitous Language should be used everywhere:
--   Naming of classes, methods, and variables (e.g., `Account`, `AccountCode`, `debit()`, `credit()`).
+-   Naming of classes, methods, and variables (e.g., `Account`, `AccountName`, `debit()`, `credit()`).
 -   In team discussions, documentation, and user stories.
 -   This reduces ambiguity and miscommunication.
 
@@ -271,7 +271,7 @@ Domain-Driven Design (DDD) is an approach to software development that focuses o
 -   **Global Unique ID:** The Aggregate Root must have a globally unique identifier.
 -   **Reference by ID:** Aggregates should reference other Aggregates only by their unique ID, not by holding direct object references. This promotes loose coupling and helps maintain transaction boundaries.
 -   **Transactional Consistency:** Operations on an Aggregate should be atomic. A transaction should not span multiple Aggregates. If business rules require coordination between Aggregates, use eventual consistency mediated by Domain Events.
--   **Example:** The `Account` entity (`src/Context/Account/Domain/Account.php`) is an Aggregate Root. It groups related value objects (like `AccountId`, `AccountCode`, `AccountName`, `AccountBalance`) and ensures its internal consistency.
+-   **Example:** The `Account` entity (`src/Context/Account/Domain/Account.php`) is an Aggregate Root. It groups related value objects (like `AccountId`, `AccountName`) and ensures its internal consistency.
 -   **Invariants:** The Aggregate Root is responsible for enforcing invariants (business rules that must always be true) for all objects within its boundary. For example, an `Account` AR might ensure that its balance never drops below a certain limit.
 
 #### Entities
@@ -287,7 +287,7 @@ Domain-Driven Design (DDD) is an approach to software development that focuses o
 -   **Immutability:** Value Objects should be immutable once created. If a change is needed, a new Value Object instance should be created. This makes them safer and easier to reason about.
 -   **Examples:**
 -   `src/Context/Account/Domain/ValueObject/AccountId.php`
--   `src/Context/Account/Domain/ValueObject/AccountCode.php`
+-   `src/Context/Account/Domain/AccountName.php`
 -   `src/Context/Account/Domain/ValueObject/AccountName.php`
 -   Base Value Objects in `src/Shared/Domain/` like `SimpleUuid.php` (often used as a base for ID VOs) and `StringValueObject.php` provide common functionality.
 

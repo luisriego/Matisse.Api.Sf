@@ -19,7 +19,6 @@ final readonly class AccountUpdaterPatchController
     {
         $command = new UpdateAccountCommand(
             $id,
-            $requestDto->code,
             $requestDto->name,
             $requestDto->description,
         );

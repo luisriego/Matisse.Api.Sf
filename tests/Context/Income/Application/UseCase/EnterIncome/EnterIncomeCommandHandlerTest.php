@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Tests\Context\Income\Application\UseCase\EnterIncome;
 
+use App\Context\Account\Domain\AccountRepository;
 use App\Context\Income\Application\UseCase\EnterIncome\EnterIncomeCommand;
 use App\Context\Income\Application\UseCase\EnterIncome\EnterIncomeCommandHandler;
 use App\Context\Income\Domain\Income;
@@ -14,6 +15,8 @@ use App\Context\ResidentUnit\Domain\ResidentUnit;
 use App\Context\ResidentUnit\Domain\ResidentUnitRepository;
 use App\Shared\Domain\Event\EventBus;
 use App\Shared\Domain\Exception\DueDateMustBeInTheFutureException;
+use App\Tests\Context\Account\Domain\AccountIdMother;
+use App\Tests\Context\Account\Domain\AccountMother;
 use App\Tests\Context\Income\Domain\IncomeIdMother;
 use App\Tests\Shared\Domain\UuidMother;
 use DateMalformedStringException;
@@ -28,6 +31,7 @@ class EnterIncomeCommandHandlerTest extends TestCase
     private IncomeRepository&MockObject $incomeRepository;
     private IncomeTypeRepository&MockObject $incomeTypeRepository;
     private ResidentUnitRepository&MockObject $residentUnitRepository;
+    private AccountRepository&MockObject $accountRepository;
     private EventBus&MockObject $eventBus;
     private EnterIncomeCommandHandler $handler;
 
@@ -40,12 +44,14 @@ class EnterIncomeCommandHandlerTest extends TestCase
         $this->incomeRepository = $this->createMock(IncomeRepository::class);
         $this->incomeTypeRepository = $this->createMock(IncomeTypeRepository::class);
         $this->residentUnitRepository = $this->createMock(ResidentUnitRepository::class);
+        $this->accountRepository = $this->createMock(AccountRepository::class);
         $this->eventBus = $this->createMock(EventBus::class);
 
         $this->handler = new EnterIncomeCommandHandler(
             $this->incomeRepository,
             $this->incomeTypeRepository,
             $this->residentUnitRepository,
+            $this->accountRepository,
             $this->eventBus
         );
     }
@@ -89,6 +95,12 @@ class EnterIncomeCommandHandlerTest extends TestCase
             ->method('findOneByIdOrFail')
             ->with($typeId)
             ->willReturn($incomeTypeMock);
+
+        $this->accountRepository
+            ->expects(self::once())
+            ->method('findOneByIdOrFail')
+            ->with($accountId)
+            ->willReturn(AccountMother::create(AccountIdMother::create($accountId)));
 
         $this->incomeRepository
             ->expects(self::once())
@@ -141,6 +153,12 @@ class EnterIncomeCommandHandlerTest extends TestCase
             ->method('findOneByIdOrFail')
             ->with($typeId)
             ->willReturn($incomeTypeMock);
+
+        $this->accountRepository
+            ->expects(self::once())
+            ->method('findOneByIdOrFail')
+            ->with($accountId)
+            ->willReturn(AccountMother::create(AccountIdMother::create($accountId)));
 
         $this->incomeRepository
             ->expects(self::once())
@@ -224,14 +242,15 @@ class EnterIncomeCommandHandlerTest extends TestCase
      */
     public function test_it_propagates_date_malformed_exception(): void
     {
-        $incomeId = IncomeIdMother::create();
+        $incomeId   = IncomeIdMother::create();
+        $accountId  = UuidMother::create();
 
         $command = new EnterIncomeCommand(
             $incomeId->value(),
             1000,
             'resident-unit-id',
             'type-id',
-            UuidMother::create(),
+            $accountId,
             'invalid-date',
             'description'
         );
@@ -249,6 +268,12 @@ class EnterIncomeCommandHandlerTest extends TestCase
             ->method('findOneByIdOrFail')
             ->willReturn($incomeTypeMock);
 
+        $this->accountRepository
+            ->expects(self::once())
+            ->method('findOneByIdOrFail')
+            ->with($accountId)
+            ->willReturn(AccountMother::create(AccountIdMother::create($accountId)));
+
         $this->expectException(DateMalformedStringException::class);
 
         ($this->handler)($command);
@@ -259,7 +284,8 @@ class EnterIncomeCommandHandlerTest extends TestCase
      */
     public function test_it_propagates_due_date_must_be_in_future_exception(): void
     {
-        $incomeId = IncomeIdMother::create();
+        $incomeId   = IncomeIdMother::create();
+        $accountId  = UuidMother::create();
         $pastDate = (new DateTime('-1 day'))->format('Y-m-d');
 
         $command = new EnterIncomeCommand(
@@ -267,7 +293,7 @@ class EnterIncomeCommandHandlerTest extends TestCase
             1000,
             'resident-unit-id',
             'type-id',
-            UuidMother::create(),
+            $accountId,
             $pastDate,
             'description'
         );
@@ -285,6 +311,12 @@ class EnterIncomeCommandHandlerTest extends TestCase
             ->method('findOneByIdOrFail')
             ->willReturn($incomeTypeMock);
 
+        $this->accountRepository
+            ->expects(self::once())
+            ->method('findOneByIdOrFail')
+            ->with($accountId)
+            ->willReturn(AccountMother::create(AccountIdMother::create($accountId)));
+
         $this->expectException(DueDateMustBeInTheFutureException::class);
 
         ($this->handler)($command);
@@ -299,6 +331,7 @@ class EnterIncomeCommandHandlerTest extends TestCase
         $amount = 1500;
         $residentUnitId = 'resident-unit-id';
         $typeId = 'income-type-id';
+        $accountId = UuidMother::create();
         $dueDate = (new DateTime('+30 days'))->format('Y-m-d');
 
         $command = new EnterIncomeCommand(
@@ -306,7 +339,7 @@ class EnterIncomeCommandHandlerTest extends TestCase
             $amount,
             $residentUnitId,
             $typeId,
-            UuidMother::create(),
+            $accountId,
             $dueDate,
             null
         );
@@ -325,6 +358,12 @@ class EnterIncomeCommandHandlerTest extends TestCase
             ->method('findOneByIdOrFail')
             ->willReturn($incomeTypeMock);
 
+        $this->accountRepository
+            ->expects(self::once())
+            ->method('findOneByIdOrFail')
+            ->with($accountId)
+            ->willReturn(AccountMother::create(AccountIdMother::create($accountId)));
+
         // Simulate repository save failure
         $this->incomeRepository
             ->expects(self::once())
@@ -336,6 +375,4 @@ class EnterIncomeCommandHandlerTest extends TestCase
 
         ($this->handler)($command);
     }
-
-        // Test removed because CommandHandler no longer publishes directly
 }

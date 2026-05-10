@@ -13,7 +13,6 @@ class CreateAccountTest extends TestCase
 
         $this->assertInstanceOf(Account::class, $account);
         $this->assertNotEmpty($account->id());
-        $this->assertNotEmpty($account->code());
         $this->assertNotEmpty($account->name());
     }
 }

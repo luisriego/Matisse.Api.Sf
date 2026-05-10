@@ -4,21 +4,15 @@ declare(strict_types=1);
 
 namespace App\Context\Expense\Application\UseCase\CompensateExpense;
 
-use App\Context\Expense\Domain\Expense;
 use App\Context\Expense\Domain\ExpenseRepository;
 use App\Context\Expense\Domain\ValueObject\ExpenseAmount;
-use App\Context\Expense\Domain\ValueObject\ExpenseDescription;
-use App\Context\Expense\Domain\ValueObject\ExpenseDueDate;
 use App\Context\Expense\Domain\ValueObject\ExpenseId;
 use App\Shared\Application\CommandHandler;
-use App\Shared\Domain\Event\EventBus;
-use Symfony\Component\Uid\Uuid;
 
 readonly class CompensateExpenseCommandHandler implements CommandHandler
 {
     public function __construct(
         private ExpenseRepository $expenseRepo,
-        private EventBus $bus,
     ) {}
 
     public function __invoke(CompensateExpenseCommand $command): void
@@ -38,23 +32,11 @@ readonly class CompensateExpenseCommandHandler implements CommandHandler
             return;
         }
 
-        // 3) persist new state
-        $this->expenseRepo->save($expense, false);
-
-        // 5) now I need to recreate the Expense with the compensated amount $command->amount()
-        $newExpense = Expense::create(
-            new ExpenseId(Uuid::v4()->toRfc4122()),
-            new ExpenseAmount($command->amount()),
-            $expense->type(),
-            $expense->account(),
-            new ExpenseDueDate($expense->dueDate()),
-            true,
-            $expense->description() ? new ExpenseDescription($expense->description()) : null,
-        );
-
-        // 6) remove the old one, then save and publish the new expense
-        $this->expenseRepo->remove($expense, false);
-        $this->expenseRepo->save($newExpense, true);
+        // 3) apply corrected amount on the same aggregate to avoid duplicates.
+        // This keeps the same expense ID and prevents "compensate + recreate" duplication bugs.
+        $newAmount = new ExpenseAmount($command->amount());
+        $expense->updateAmount($newAmount->value());
+        $this->expenseRepo->save($expense, true);
         // $newExpense->publishDomainEvents($this->bus); // Handled automatically by DomainEventCollectorSubscriber
     }
 }

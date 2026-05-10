@@ -17,9 +17,9 @@ alwaysApply: false
 
 ```php
 // Good: factory method that records event
-public static function create(AccountId $id, AccountCode $code, AccountName $name): self
+public static function create(AccountId $id, AccountName $name): self
 {
-    $account = new self($id->value(), $code->value(), $name->value());
+    $account = new self($id->value(), $name->value());
     $account->record(new AccountWasCreated(...));
     return $account;
 }
@@ -28,7 +28,7 @@ public static function create(AccountId $id, AccountCode $code, AccountName $nam
 ## Value Objects
 - Immutable. Prefer `readonly` on properties.
 - Validate in constructor; throw domain exception if value is invalid.
-- Location: `Domain/` or `Domain/ValueObject/`. Descriptive names (e.g. `AccountCode`, `ExpenseDueDate`).
+- Location: `Domain/` or `Domain/ValueObject/`. Descriptive names (e.g. `AccountName`, `ExpenseDueDate`).
 
 ## Domain Events
 - Classes in `Domain/Bus/`. Naming: `{Aggregate}Was{PastTenseAction}` (e.g. `AccountWasCreated`, `ExpenseWasEntered`).

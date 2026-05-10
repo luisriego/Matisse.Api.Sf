@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace App\Tests\Context\Account\Infrastructure\Http\Controller;
 
 use App\Context\Account\Domain\Account;
-use App\Tests\Context\Account\Domain\AccountCodeMother;
 use App\Tests\Shared\Domain\UuidMother;
 use App\Tests\Shared\Infrastructure\PhpUnit\ApiTestCase;
 use Symfony\Component\HttpFoundation\Response;
@@ -21,12 +20,12 @@ final class AccountCreatorPutControllerTest extends ApiTestCase
     public function test_it_should_create_account(): void
     {
         $accountId = UuidMother::create();
-        $accountCode = AccountCodeMother::create()->value();
 
         $payload = [
-            'id' => $accountId,
-            'code' => $accountCode,
-            'name' => 'Test Account',
+            'id'                     => $accountId,
+            'name'                   => 'Test Account',
+            'initialBalanceAmount'   => 250_000,
+            'initialBalanceDate'     => '2026-01-05',
         ];
 
         $this->client->request(
@@ -35,7 +34,7 @@ final class AccountCreatorPutControllerTest extends ApiTestCase
             [],
             [],
             ['CONTENT_TYPE' => 'application/json'],
-            json_encode($payload)
+            json_encode($payload, JSON_THROW_ON_ERROR),
         );
 
         $this->assertResponseStatusCodeSame(Response::HTTP_CREATED);
@@ -46,7 +45,30 @@ final class AccountCreatorPutControllerTest extends ApiTestCase
         $createdAccount = $this->entityManager->find(Account::class, $accountId);
 
         $this->assertNotNull($createdAccount);
-        $this->assertEquals($payload['code'], $createdAccount->code());
         $this->assertEquals($payload['name'], $createdAccount->name());
+
+        $this->client->request('GET', '/api/v1/accounts/' . $accountId . '/balance');
+        $this->assertResponseStatusCodeSame(Response::HTTP_OK);
+        $balancePayload = json_decode((string) $this->client->getResponse()->getContent(), true, 512, JSON_THROW_ON_ERROR);
+        $this->assertSame(250_000, $balancePayload['balance']);
+    }
+
+    public function test_it_returns_400_when_initial_balance_is_missing(): void
+    {
+        $payload = [
+            'id'   => UuidMother::create(),
+            'name' => 'Test Account',
+        ];
+
+        $this->client->request(
+            'PUT',
+            '/api/v1/accounts/create',
+            [],
+            [],
+            ['CONTENT_TYPE' => 'application/json'],
+            json_encode($payload, JSON_THROW_ON_ERROR),
+        );
+
+        $this->assertResponseStatusCodeSame(Response::HTTP_BAD_REQUEST);
     }
 }

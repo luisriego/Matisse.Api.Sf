@@ -13,6 +13,9 @@ use function sprintf;
 
 readonly class MonthlyExpenseAggregatorService
 {
+    private const string GAS_EXPENSE_TYPE_CODE = 'SP3GA';
+    private const string WATER_EXPENSE_TYPE_CODE = 'SP2AG';
+
     public function __construct(private LoggerInterface $logger) {}
 
     /**
@@ -24,6 +27,7 @@ readonly class MonthlyExpenseAggregatorService
      *     equal: int,
      *     fraction: int,
      *     individual: int,
+     *     individualByUnit: array<string, int>,
      *     grandTotal: int
      * }
      */
@@ -33,6 +37,7 @@ readonly class MonthlyExpenseAggregatorService
             'equal' => 0,
             'fraction' => 0,
             'individual' => 0,
+            'individualByUnit' => [],
             'grandTotal' => 0,
         ];
 
@@ -64,20 +69,81 @@ readonly class MonthlyExpenseAggregatorService
 
             $amount = $expense->amount();
             $totals['grandTotal'] += $amount;
+            $classification = $this->classifyForSlip($expense);
+            if (!$classification['included']) {
+                continue;
+            }
 
-            switch (mb_strtoupper((string) $expenseType->distributionMethod())) {
+            $method = $classification['bucket'];
+
+            switch ($method) {
                 case 'EQUAL':
                     $totals['equal'] += $amount;
                     break;
                 case 'FRACTION':
                     $totals['fraction'] += $amount;
                     break;
-                default: // Incluye 'INDIVIDUAL' y cualquier otro método no reconocido
+                case 'INDIVIDUAL':
                     $totals['individual'] += $amount;
+                    $unitId = $expense->residentUnitId();
+                    if ($unitId !== null) {
+                        $totals['individualByUnit'][$unitId] = ($totals['individualByUnit'][$unitId] ?? 0) + $amount;
+                    } else {
+                        $this->logger->warning(sprintf(
+                            '[MonthlyExpenseAggregator] Gasto INDIVIDUAL sin residentUnitId (expense %s). No se asignará a ninguna unidad en el boleto.',
+                            $expense->id(),
+                        ));
+                    }
+                    break;
+                default:
+                    $totals['individual'] += $amount;
+                    $this->logger->warning(sprintf(
+                        '[MonthlyExpenseAggregator] Método de distribución no reconocido "%s" en gasto %s; se trata como individual agregado sin unidad.',
+                        $method,
+                        $expense->id(),
+                    ));
                     break;
             }
         }
 
         return $totals;
+    }
+
+    /**
+     * @return array{included: bool, bucket: string, reason: string}
+     */
+    public function classifyForSlip(Expense $expense): array
+    {
+        $expenseType = $expense->type();
+        if ($expenseType === null) {
+            return [
+                'included' => false,
+                'bucket' => 'excluded',
+                'reason' => 'missing_expense_type',
+            ];
+        }
+
+        $code = mb_strtoupper((string) $expenseType->code());
+        if ($code === self::GAS_EXPENSE_TYPE_CODE) {
+            return [
+                'included' => false,
+                'bucket' => 'excluded',
+                'reason' => 'gas_settled_by_consumption',
+            ];
+        }
+
+        if ($code === self::WATER_EXPENSE_TYPE_CODE) {
+            return [
+                'included' => true,
+                'bucket' => 'FRACTION',
+                'reason' => 'water_by_fraction_rule',
+            ];
+        }
+
+        return [
+            'included' => true,
+            'bucket' => 'EQUAL',
+            'reason' => 'default_equal_rule',
+        ];
     }
 }

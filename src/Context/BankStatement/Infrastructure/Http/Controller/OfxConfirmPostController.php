@@ -136,6 +136,8 @@ final class OfxConfirmPostController extends AbstractController
             $result = ($this->handler)(new ConfirmBankOfxLinesCommand(
                 bankAccountId: $request->bankAccountId,
                 lines:         $lines,
+                settlementExtraFeePerUnitCents: $request->settlementExtraFeePerUnitCents,
+                settlementReserveFundPerUnitCents: $request->settlementReserveFundPerUnitCents,
             ));
         } catch (BoletoSettlementMismatchException $mismatch) {
             return new JsonResponse(
@@ -153,6 +155,7 @@ final class OfxConfirmPostController extends AbstractController
             'settlementMonth'                  => $result->settlementMonth,
             'settlementExpectedSlipTotalCents' => $result->settlementExpectedSlipTotalCents,
             'settlementValidatedAgainstSlips'  => $result->settlementValidatedAgainstSlips,
+            'settlementSplitIncomeIds'         => $result->settlementSplitIncomeIds,
         ], Response::HTTP_CREATED);
     }
 }

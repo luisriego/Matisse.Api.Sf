@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Tests\Context\Income\Infrastructure\Http\Controller;
 
 use App\Context\EventStore\Domain\StoredEventRepository;
+use App\Tests\Context\Account\Domain\AccountMother;
 use App\Tests\Context\Income\Domain\IncomeTypeMother;
 use App\Tests\Context\ResidentUnit\Domain\ResidentUnitMother;
 use App\Tests\Shared\Domain\UuidMother;
@@ -34,6 +35,8 @@ final class IncomeEnterPutControllerTest extends ApiTestCase
         $this->entityManager->persist($residentUnit);
         $incomeType = IncomeTypeMother::create();
         $this->entityManager->persist($incomeType);
+        $account = AccountMother::create();
+        $this->entityManager->persist($account);
         $this->entityManager->flush();
 
         $futureDate = (new DateTimeImmutable())->modify('+1 day')->format('Y-m-d');
@@ -43,7 +46,7 @@ final class IncomeEnterPutControllerTest extends ApiTestCase
             'amount' => 5000,
             'residentUnitId' => $residentUnit->id(),
             'type' => $incomeType->id(),
-            'accountId' => UuidMother::create(),
+            'accountId' => $account->id(),
             'dueDate' => $futureDate,
             'description' => 'Test Income Description',
         ];

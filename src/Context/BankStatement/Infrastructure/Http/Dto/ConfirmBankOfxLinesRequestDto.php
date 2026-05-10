@@ -14,11 +14,19 @@ final class ConfirmBankOfxLinesRequestDto implements RequestDto
     /** @var ConfirmLineRequestDto[] */
     public readonly array $lines;
 
+    public readonly ?int $settlementExtraFeePerUnitCents;
+
+    public readonly ?int $settlementReserveFundPerUnitCents;
+
     public function __construct(Request $request)
     {
         $data = $request->toArray();
 
         $this->bankAccountId = (string) ($data['bankAccountId'] ?? '');
+        $this->settlementExtraFeePerUnitCents = isset($data['settlementExtraFeePerUnitCents'])
+            ? (int) $data['settlementExtraFeePerUnitCents'] : null;
+        $this->settlementReserveFundPerUnitCents = isset($data['settlementReserveFundPerUnitCents'])
+            ? (int) $data['settlementReserveFundPerUnitCents'] : null;
 
         $this->lines = array_map(
             static fn (array $line) => new ConfirmLineRequestDto(

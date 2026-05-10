@@ -6,6 +6,7 @@ namespace App\Tests\Context\Income\Infrastructure\Http\Controller;
 
 use App\Context\Income\Domain\ValueObject\IncomeDueDate;
 use App\Context\Income\Infrastructure\Http\Controller\GetIncomesByMonthController;
+use App\Tests\Context\Account\Domain\AccountMother;
 use App\Tests\Context\Income\Domain\IncomeMother;
 use App\Tests\Shared\Infrastructure\PhpUnit\ApiTestCase;
 use DateTime;
@@ -33,18 +34,24 @@ final class GetIncomesByMonthControllerTest extends ApiTestCase
         $nextMonthDate = (clone $currentDate)->modify('+1 month');
         $nextMonthYear = (int)$nextMonthDate->format('Y');
         $nextMonth = (int)$nextMonthDate->format('m');
+        $accountInTestMonth = AccountMother::create();
+        $accountInNextMonth = AccountMother::create();
 
         // Income that should be found
         $incomeInTestMonth = IncomeMother::create(
+            accountId: $accountInTestMonth->id(),
             dueDate: new IncomeDueDate(new DateTime("$year-$testMonth-$day"))
         );
 
         // Income that should NOT be found
         $incomeInNextMonth = IncomeMother::create(
+            accountId: $accountInNextMonth->id(),
             dueDate: new IncomeDueDate(new DateTime("$nextMonthYear-$nextMonth-15"))
         );
 
         // 2. Persist all entities
+        $this->entityManager->persist($accountInTestMonth);
+        $this->entityManager->persist($accountInNextMonth);
         $this->entityManager->persist($incomeInTestMonth->residentUnit());
         $this->entityManager->persist($incomeInTestMonth->incomeType());
         $this->entityManager->persist($incomeInTestMonth);

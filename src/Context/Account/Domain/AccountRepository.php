@@ -9,4 +9,10 @@ interface AccountRepository
     public function save(Account $account, bool $flush = true): void;
 
     public function findOneByIdOrFail(string $id): Account;
+
+    /** @return Account[] */
+    public function findAll(): array;
+
+    /** @return Account[] */
+    public function findAllActive(): array;
 }

@@ -36,4 +36,9 @@ final class DoctrineAccountRepository extends ServiceEntityRepository implements
 
         return $account;
     }
+
+    public function findAllActive(): array
+    {
+        return $this->findBy(['isActive' => true]);
+    }
 }

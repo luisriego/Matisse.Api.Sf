@@ -1,0 +1,15 @@
+services:
+    _defaults:
+        autowire: true
+        autoconfigure: true
+
+    App\Context\Ledger\Infrastructure\Http\Controller\:
+        public: true
+        resource: './Infrastructure/Http/Controller/'
+        tags: ['controller.service_arguments']
+
+    App\Context\Ledger\:
+        resource: './'
+        exclude:
+            - './Infrastructure/Http/Controller/'
+            - './ledger.yaml'

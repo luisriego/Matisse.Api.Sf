@@ -30,5 +30,11 @@ final readonly class ConfirmBankOfxLinesResult
          * False when expected was zero: bank amount accepted as initial income without slip check.
          */
         public readonly ?bool $settlementValidatedAgainstSlips = null,
+        /**
+         * When boleto settlement was split into several incomes: rows with component key, income id and amount.
+         *
+         * @var list<array{component: string, incomeId: string, amountCents: int}>
+         */
+        public readonly array $settlementSplitIncomeIds = [],
     ) {}
 }

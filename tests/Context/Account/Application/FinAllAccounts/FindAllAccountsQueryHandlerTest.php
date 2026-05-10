@@ -39,7 +39,6 @@ class FindAllAccountsQueryHandlerTest extends TestCase
 
         $account1Data = [
             'id' => $account1->id(),
-            'code' => $account1->code(),
             'name' => $account1->name(),
             'description' => $account1->description(),
             'isActive' => $account1->isActive(),
@@ -47,7 +46,6 @@ class FindAllAccountsQueryHandlerTest extends TestCase
 
         $account2Data = [
             'id' => $account2->id(),
-            'code' => $account2->code(),
             'name' => $account2->name(),
             'description' => $account2->description(),
             'isActive' => $account2->isActive(),

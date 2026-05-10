@@ -9,7 +9,6 @@
             <generator strategy="NONE"/>
         </id>
 
-        <field name="code" column="code" type="string" length="16" unique="true" />
         <field name="name" column="name" type="string" length="100" />
         <field name="description" column="description" type="text" nullable="true" />
         <field name="isActive" column="is_active" type="boolean" />

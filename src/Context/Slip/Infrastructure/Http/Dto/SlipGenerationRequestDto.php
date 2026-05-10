@@ -22,12 +22,14 @@ class SlipGenerationRequestDto implements RequestDto
     public readonly int $year;
     public readonly int $month;
     public readonly bool $isForced;
+    public readonly int $extraFeePerUnitCents;
+    public readonly int $reserveFundPerUnitCents;
 
     public function __construct(Request $request)
     {
         $monthValue = $request->get('targetMonth');
 
-        if (!is_string($monthValue) || false === preg_match('/^\d{4}-\d{2}$/', $monthValue)) {
+        if (!is_string($monthValue) || 1 !== preg_match('/^\d{4}-\d{2}$/', $monthValue)) {
             throw new InvalidArgumentException('Invalid targetMonth. Expected YYYY-MM.');
         }
 
@@ -40,8 +42,10 @@ class SlipGenerationRequestDto implements RequestDto
         $this->year = $year;
         $this->month = $month;
 
-        // Accept both JSON boolean true and string values like "true", "1", "on"
         $this->isForced = filter_var($request->get('force', false), FILTER_VALIDATE_BOOL);
+
+        $this->extraFeePerUnitCents = (int) $request->get('extraFee', 0);
+        $this->reserveFundPerUnitCents = (int) $request->get('reserveFund', 0);
     }
 
     public function toCommand(): SlipGenerationCommand
@@ -50,6 +54,8 @@ class SlipGenerationRequestDto implements RequestDto
             $this->year,
             $this->month,
             $this->isForced,
+            $this->extraFeePerUnitCents,
+            $this->reserveFundPerUnitCents,
         );
     }
 }

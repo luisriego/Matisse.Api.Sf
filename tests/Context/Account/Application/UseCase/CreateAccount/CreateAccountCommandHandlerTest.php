@@ -7,51 +7,62 @@ namespace App\Tests\Context\Account\Application\UseCase\CreateAccount;
 use App\Context\Account\Application\UseCase\CreateAccount\AccountCreator;
 use App\Context\Account\Application\UseCase\CreateAccount\CreateAccountCommand;
 use App\Context\Account\Application\UseCase\CreateAccount\CreateAccountCommandHandler;
-use App\Context\Account\Domain\AccountCode;
 use App\Context\Account\Domain\AccountId;
 use App\Context\Account\Domain\AccountName;
+use App\Context\Account\Domain\Event\InitialBalanceSet;
+use App\Shared\Application\EventStore;
 use App\Tests\Context\Account\AccountModuleUnitTestCase;
-use App\Tests\Context\Account\Domain\AccountCodeMother;
 use App\Tests\Context\Account\Domain\AccountIdMother;
 use App\Tests\Context\Account\Domain\AccountMother;
 use App\Tests\Context\Account\Domain\AccountNameMother;
+use Mockery;
 
 final class CreateAccountCommandHandlerTest extends AccountModuleUnitTestCase
 {
     private CreateAccountCommandHandler $handler;
     private AccountCreator $creator;
 
+    /** @var EventStore&Mockery\MockInterface */
+    private EventStore $eventStore;
+
     protected function setUp(): void
     {
         parent::setUp();
 
-        $this->creator = new AccountCreator($this->repository(), $this->eventBus());
-        $this->handler = new CreateAccountCommandHandler($this->creator);
+        $this->eventStore = $this->mock(EventStore::class);
+        $this->creator    = new AccountCreator($this->repository());
+        $this->handler    = new CreateAccountCommandHandler($this->creator, $this->eventStore);
     }
 
     /** @test  */
-    public function test_it_should_create_an_account(): void
+    public function test_it_should_create_an_account_and_record_initial_balance(): void
     {
-        $id = AccountIdMother::create();
-        $code = AccountCodeMother::create();
+        $id   = AccountIdMother::create();
         $name = AccountNameMother::create();
 
         $command = new CreateAccountCommand(
             $id->value(),
-            $code->value(),
-            $name->value()
+            $name->value(),
+            12_500,
+            '2026-03-15',
         );
 
-        // Create actual Account object
         $account = AccountMother::create(
             new AccountId($command->id()),
-            new AccountCode($command->code()),
-            new AccountName($command->name())
+            new AccountName($command->name()),
         );
 
-        // Pass the Account object directly
         $this->shouldSave($account);
-        $this->shouldPublishDomainEvents([]);
+
+        $this->eventStore
+            ->shouldReceive('append')
+            ->once()
+            ->with(Mockery::on(static function ($event) use ($command): bool {
+                return $event instanceof InitialBalanceSet
+                    && $event->aggregateId() === $command->id()
+                    && $event->amount() === 12_500
+                    && $event->date() === '2026-03-15';
+            }));
 
         $this->handler->__invoke($command);
     }

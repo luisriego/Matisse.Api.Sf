@@ -9,6 +9,7 @@ use App\Context\Expense\Domain\RecurringExpenseRepository;
 use App\Context\ResidentUnit\Domain\ResidentUnitRepository;
 use App\Context\Slip\Domain\Service\SlipFactory;
 use App\Context\Slip\Domain\Service\SlipGenerationPolicy;
+use App\Context\Slip\Domain\SlipGenerationParameterSnapshotRepository;
 use App\Context\Slip\Domain\SlipRepository;
 use App\Shared\Application\CommandHandler;
 use App\Shared\Domain\ValueObject\DateRange;
@@ -16,7 +17,6 @@ use DateMalformedStringException;
 use DateTimeImmutable;
 use Symfony\Component\Messenger\Attribute\AsMessageHandler;
 
-use function array_merge;
 use function sprintf;
 
 #[AsMessageHandler]
@@ -29,6 +29,7 @@ class SlipGenerationCommandHandler implements CommandHandler
         private readonly ResidentUnitRepository $residentUnitRepository,
         private readonly SlipGenerationPolicy $generationPolicy,
         private readonly SlipFactory $slipFactory,
+        private readonly SlipGenerationParameterSnapshotRepository $slipGenerationParameterSnapshotRepository,
     ) {}
 
     /**
@@ -66,17 +67,19 @@ class SlipGenerationCommandHandler implements CommandHandler
         // 4. Get all expenses for the period.
         $expenses = $this->expenseRepository->findActiveByDateRange($expenseRange);
         $recurringExpenses = $this->recurringExpenseRepository->findActiveForDateRange($expenseRange);
-        $allExpenses = array_merge($expenses, $recurringExpenses);
 
         // 5. Get all active residential units
         $residentUnits = $this->residentUnitRepository->findAllActive();
 
         // 6. Use the factory to create the slip aggregates.
         $slips = $this->slipFactory->createFromExpensesAndUnits(
-            $allExpenses,
+            $expenses,
+            $recurringExpenses,
             $residentUnits,
             $expenseYear,
             $expenseMonth,
+            $command->extraFeePerUnitCents(),
+            $command->reserveFundPerUnitCents(),
         );
 
         // 7. Persist the new slips.
@@ -84,8 +87,12 @@ class SlipGenerationCommandHandler implements CommandHandler
             $this->slipRepository->save($slip, false);
         }
 
-        if (!empty($slips)) {
-            $this->slipRepository->flush();
-        }
+        $this->slipGenerationParameterSnapshotRepository->upsertForExpenseMonth(
+            $expenseYear,
+            $expenseMonth,
+            $command->extraFeePerUnitCents(),
+            $command->reserveFundPerUnitCents(),
+        );
+        $this->slipRepository->flush();
     }
 }

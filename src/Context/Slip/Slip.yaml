@@ -21,3 +21,6 @@ services:
 
     App\Context\Slip\Domain\SlipRepository:
         alias: App\Context\Slip\Infrastructure\Persistence\Doctrine\DoctrineSlipRepository
+
+    App\Context\Slip\Domain\SlipGenerationParameterSnapshotRepository:
+        alias: App\Context\Slip\Infrastructure\Persistence\Doctrine\DoctrineSlipGenerationParameterSnapshotRepository

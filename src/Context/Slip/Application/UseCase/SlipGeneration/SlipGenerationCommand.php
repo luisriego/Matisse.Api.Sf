@@ -12,6 +12,8 @@ final readonly class SlipGenerationCommand implements Command
         private int $year,
         private int $month,
         private bool $isForced = false,
+        private int $extraFeePerUnitCents = 0,
+        private int $reserveFundPerUnitCents = 0,
     ) {}
 
     public function year(): int
@@ -27,5 +29,15 @@ final readonly class SlipGenerationCommand implements Command
     public function isForced(): bool
     {
         return $this->isForced;
+    }
+
+    public function extraFeePerUnitCents(): int
+    {
+        return $this->extraFeePerUnitCents;
+    }
+
+    public function reserveFundPerUnitCents(): int
+    {
+        return $this->reserveFundPerUnitCents;
     }
 }

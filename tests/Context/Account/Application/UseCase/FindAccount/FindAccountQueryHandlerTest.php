@@ -39,7 +39,6 @@ class FindAccountQueryHandlerTest extends TestCase
         $accountId = $account->id();
         $accountData = [
             'id' => $accountId,
-            'code' => $account->code(),
             'name' => $account->name(),
             'description' => $account->description(),
             'isActive' => $account->isActive(),
