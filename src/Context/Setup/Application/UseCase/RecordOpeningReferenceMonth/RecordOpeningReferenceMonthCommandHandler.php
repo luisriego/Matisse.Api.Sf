@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Context\Setup\Application\UseCase\RecordOpeningReferenceMonth;
 
+use App\Context\Setup\Application\Service\SetupFinalizationService;
 use App\Context\Setup\Domain\Event\OpeningReferenceMonthWasRecorded;
 use App\Context\Setup\Domain\SyndicAllocationRule;
 use App\Shared\Application\CommandHandler;
@@ -17,7 +18,8 @@ use function preg_match;
 final readonly class RecordOpeningReferenceMonthCommandHandler implements CommandHandler
 {
     public function __construct(
-        private EventStore $eventStore,
+        private readonly EventStore $eventStore,
+        private readonly SetupFinalizationService $setupFinalization,
     ) {}
 
     public function __invoke(RecordOpeningReferenceMonthCommand $command): void
@@ -69,5 +71,7 @@ final readonly class RecordOpeningReferenceMonthCommandHandler implements Comman
             $command->expectedBoletoTotalCents(),
             $command->optionalGasTotalCents(),
         ));
+
+        $this->setupFinalization->tryFinalizeWhenCoreComplete();
     }
 }

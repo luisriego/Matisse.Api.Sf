@@ -47,6 +47,8 @@ final class ResetDevDataCommand extends Command
         'account.initial_balance.set',
         // Opening reference month / demonstrative baseline for analysis and clients.
         'setup.opening_reference_month.was.recorded',
+        // Condominium marked operational; never re-apply SETUP_REQUIRED after this.
+        'setup.was.completed',
     ];
 
     public function __construct(
@@ -163,7 +165,7 @@ final class ResetDevDataCommand extends Command
             ));
         }
 
-        $io->success('Movement data reset completed: kept users/accounts/income_type/expense_type and only event_store base events (gas.price.was.defined + account.initial_balance.set); wiped expenses/incomes/slips/import artifacts and all other events.');
+        $io->success('Movement data reset completed: kept base event_store rows (gas, account initial balance, setup milestones); wiped movements tables and other events.');
 
         return Command::SUCCESS;
     }

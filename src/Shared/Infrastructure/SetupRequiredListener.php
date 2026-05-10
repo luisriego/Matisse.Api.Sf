@@ -12,6 +12,8 @@ use Symfony\Component\HttpKernel\Event\RequestEvent;
 
 use function str_starts_with;
 
+use App\Context\Setup\Application\Service\SetupFinalizationService;
+
 final class SetupRequiredListener
 {
     /**
@@ -33,6 +35,7 @@ final class SetupRequiredListener
     ];
 
     public function __construct(
+        private readonly SetupFinalizationService $setupFinalization,
         private readonly SetupStatusChecker $checker,
         #[Autowire('%kernel.environment%')]
         private readonly string $kernelEnvironment,
@@ -60,7 +63,10 @@ final class SetupRequiredListener
             }
         }
 
-        if ($this->checker->isComplete()) {
+        // One-time: after core steps are satisfied, record setup.was.completed (legacy DBs + first OFX request).
+        $this->setupFinalization->tryFinalizeWhenCoreComplete();
+
+        if ($this->setupFinalization->isFinalized()) {
             return;
         }
 

@@ -13,13 +13,23 @@ use App\Context\Gas\Domain\Event\GasPriceWasDefined;
 use App\Context\Gas\Domain\Event\GasReadingWasRecorded;
 use App\Context\ResidentUnit\Domain\ResidentUnitRepository;
 use App\Context\Setup\Domain\Event\OpeningReferenceMonthWasRecorded;
+use App\Context\Setup\Domain\Event\SetupWasCompleted;
 use App\Context\Setup\Domain\OpeningSetupAggregateId;
 use DateTimeImmutable;
 
-use function end;
-
 final class SetupStatusChecker
 {
+    /**
+     * Steps that must be complete before the app is operational (OFX import, slips, etc.).
+     * initialExpenses is part of the wizard but is NOT a blocker: expenses can be entered
+     * later in normal operation.
+     */
+    private const CORE_STEP_KEYS = [
+        'initialBalances',
+        'gasPrice',
+        'gasReadings',
+    ];
+
     public function __construct(
         private readonly StoredEventRepository $eventRepository,
         private readonly AccountRepository $accountRepository,
@@ -36,23 +46,53 @@ final class SetupStatusChecker
             'openingReferenceMonth' => $this->checkOpeningReferenceMonth(),
         ];
 
-        $complete   = !in_array('pending', $steps, true);
-        $currentStep = $this->resolveCurrentStep($steps);
-        $message     = $complete ? null : $this->resolveMessage($steps);
+        $coreComplete      = $this->areCoreStepsComplete($steps);
+        $fullyOnboarded    = $coreComplete && ($steps['openingReferenceMonth'] === 'complete');
+        $complete          = $coreComplete;
+        $currentStep       = $this->resolveCurrentStep($steps);
+        $message           = $this->resolveStatusMessage($steps, $coreComplete);
         $openingReference = $this->latestOpeningReference();
 
         return [
-            'complete'    => $complete,
-            'currentStep' => $currentStep,
-            'steps'       => $steps,
-            'message'     => $message,
-            'openingReference' => $openingReference,
+            'setupFinalized'     => $this->isSetupFinalized(),
+            'complete'           => $complete,
+            'fullyOnboarded'     => $fullyOnboarded,
+            'currentStep'        => $currentStep,
+            'steps'              => $steps,
+            'message'            => $message,
+            'openingReference'   => $openingReference,
         ];
     }
 
     public function isComplete(): bool
     {
         return $this->status()['complete'];
+    }
+
+    public function isSetupFinalized(): bool
+    {
+        $events = $this->eventRepository->findByEventTypesAndOccurredBetweenAndAggregateId(
+            [SetupWasCompleted::eventName()],
+            new DateTimeImmutable('1900-01-01'),
+            null,
+            OpeningSetupAggregateId::VALUE,
+        );
+
+        return $events !== [];
+    }
+
+    /**
+     * @param array<string, string> $steps
+     */
+    private function areCoreStepsComplete(array $steps): bool
+    {
+        foreach (self::CORE_STEP_KEYS as $key) {
+            if ($steps[$key] === 'pending') {
+                return false;
+            }
+        }
+
+        return true;
     }
 
     private function checkInitialBalances(): string
@@ -147,8 +187,21 @@ final class SetupStatusChecker
             return null;
         }
 
+        // occurred_at is second-precision in persistence: tie-break by referenceMonth (YYYY-MM sorts chronologically).
+        usort(
+            $events,
+            static function (StoredEvent $a, StoredEvent $b): int {
+                $byTime = $a->occurredAt() <=> $b->occurredAt();
+                if (0 !== $byTime) {
+                    return $byTime;
+                }
+
+                return ($a->payload()['referenceMonth'] ?? '') <=> ($b->payload()['referenceMonth'] ?? '');
+            },
+        );
+
         /** @var StoredEvent $last */
-        $last = end($events);
+        $last = $events[\array_key_last($events)];
 
         return array_merge(
             $last->payload(),
@@ -165,7 +218,7 @@ final class SetupStatusChecker
 
     private function resolveCurrentStep(array $steps): int
     {
-        $order = ['initialBalances', 'gasPrice', 'gasReadings', 'initialExpenses', 'openingReferenceMonth'];
+        $order = [...self::CORE_STEP_KEYS, 'openingReferenceMonth'];
         foreach ($order as $index => $key) {
             if ($steps[$key] === 'pending') {
                 return $index + 1;
@@ -175,7 +228,26 @@ final class SetupStatusChecker
         return 5;
     }
 
-    private function resolveMessage(array $steps): string
+    /**
+     * @param array<string, string> $steps
+     */
+    private function resolveStatusMessage(array $steps, bool $coreComplete): ?string
+    {
+        if (!$coreComplete) {
+            return $this->resolveCoreBlockingMessage($steps);
+        }
+
+        if ($steps['openingReferenceMonth'] === 'pending') {
+            return 'Configure a previsão / demonstrativo do mês de referência quando possível; já pode usar importação OFX e o resto da aplicação.';
+        }
+
+        return null;
+    }
+
+    /**
+     * @param array<string, string> $steps
+     */
+    private function resolveCoreBlockingMessage(array $steps): string
     {
         if ($steps['initialBalances'] === 'pending') {
             return 'Faltan los saldos iniciales de las cuentas. El total debe coincidir con el saldo bancario.';
@@ -188,9 +260,6 @@ final class SetupStatusChecker
         }
         if ($steps['initialExpenses'] === 'pending') {
             return 'Falta registrar al menos un gasto del mes de corte para poder generar slips.';
-        }
-        if ($steps['openingReferenceMonth'] === 'pending') {
-            return 'Falta registrar la previsión / parámetros del mes de referencia inicial (paso de demostrativo).';
         }
 
         return '';

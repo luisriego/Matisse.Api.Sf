@@ -17,3 +17,8 @@ setup_opening_reference_month:
     path: /api/v1/setup/opening-reference-month
     controller: App\Context\Setup\Infrastructure\Http\Controller\OpeningReferenceMonthPostController
     methods: ['POST']
+
+setup_finalize:
+    path: /api/v1/setup/finalize
+    controller: App\Context\Setup\Infrastructure\Http\Controller\SetupFinalizePostController
+    methods: ['POST']

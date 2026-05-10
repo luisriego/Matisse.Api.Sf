@@ -16,6 +16,7 @@ use App\Context\Gas\Domain\Event\GasPriceWasDefined;
 use App\Context\Gas\Domain\Event\GasReadingWasRecorded;
 use App\Context\Income\Domain\Event\IncomeWasEntered;
 use App\Context\Setup\Domain\Event\OpeningReferenceMonthWasRecorded;
+use App\Context\Setup\Domain\Event\SetupWasCompleted;
 
 final class DomainEventRegistryMap implements DomainEventRegistry
 {
@@ -36,6 +37,7 @@ final class DomainEventRegistryMap implements DomainEventRegistry
             GasPriceWasDefined::eventName()         => GasPriceWasDefined::class,
             GasReadingWasRecorded::eventName()      => GasReadingWasRecorded::class,
             OpeningReferenceMonthWasRecorded::eventName() => OpeningReferenceMonthWasRecorded::class,
+            SetupWasCompleted::eventName() => SetupWasCompleted::class,
         ];
     }
 
