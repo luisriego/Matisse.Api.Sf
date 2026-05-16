@@ -27,9 +27,14 @@ use Symfony\Component\HttpFoundation\Response;
                     property: 'creditLines',
                     type: 'array',
                     items: new OA\Items(
-                        required: ['fitId', 'amountInCents', 'memo'],
+                        required: ['importLineKey', 'amountInCents', 'memo'],
                         properties: [
-                            new OA\Property(property: 'fitId',         type: 'string',  example: 'FIT-CR-001'),
+                            new OA\Property(
+                                property: 'importLineKey',
+                                type: 'string',
+                                example: 'CR-20260310-001',
+                                description: 'Echo from preview. Older payloads may use the previous JSON property name for this field.',
+                            ),
                             new OA\Property(property: 'amountInCents', type: 'integer', example: 25000),
                             new OA\Property(property: 'memo',          type: 'string',  example: 'BOLETOS RECEBIDOS 10/03S'),
                         ],
@@ -80,7 +85,7 @@ final class OfxVerifyIncomePostController extends ApiController
     {
         $creditLines = array_map(
             static fn (array $line) => new CreditLineDto(
-                fitId:         $line['fitId'],
+                importLineKey: $line['importLineKey'],
                 amountInCents: $line['amountInCents'],
                 memo:          $line['memo'],
             ),

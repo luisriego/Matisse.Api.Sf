@@ -17,20 +17,30 @@ use Symfony\Component\HttpFoundation\Response;
 #[OA\Post(
     path: '/api/v1/bank/ofx-confirm',
     operationId: 'bankOfxConfirm',
-    summary: 'Confirm reviewed OFX lines — persists expenses / incomes (idempotent by fitId + bankAccountId).',
+    summary: 'Confirm reviewed OFX lines — persists expenses / incomes.',
     requestBody: new OA\RequestBody(
         required: true,
         content: new OA\JsonContent(
             required: ['bankAccountId', 'lines'],
             properties: [
-                new OA\Property(property: 'bankAccountId', type: 'string', format: 'uuid'),
+                new OA\Property(
+                    property: 'bankAccountId',
+                    type: 'string',
+                    description: 'Bank reference from the OFX file (e.g. ACCTID). Optional for booking if the condominium already has active ledger accounts or DEFAULT_BANK_LEDGER_ACCOUNT_ID / setup openingReference.ledgerAccountId.',
+                    example: '3033132774',
+                ),
                 new OA\Property(
                     property: 'lines',
                     type: 'array',
                     items: new OA\Items(
-                        required: ['fitId', 'amountInCents', 'postedAt', 'memo', 'accountId', 'dueDate'],
+                        required: ['importLineKey', 'amountInCents', 'postedAt', 'memo', 'dueDate'],
                         properties: [
-                            new OA\Property(property: 'fitId',              type: 'string',  example: 'FIT-20260310-001'),
+                            new OA\Property(
+                                property: 'importLineKey',
+                                type: 'string',
+                                example: '20260310001',
+                                description: 'Echo importLineKey from /bank/ofx-ingest. Older payloads may use the previous JSON property name for this field.',
+                            ),
                             new OA\Property(property: 'amountInCents',      type: 'integer', example: 15000),
                             new OA\Property(property: 'postedAt',           type: 'string',  format: 'date', example: '2026-03-10'),
                             new OA\Property(property: 'memo',               type: 'string',  example: 'COPASA AGUA'),
@@ -44,7 +54,11 @@ use Symfony\Component\HttpFoundation\Response;
                                 description: 'Required for expense lines.'),
                             new OA\Property(property: 'incomeTypeId',       type: 'string',  format: 'uuid', nullable: true,
                                 description: 'Settlement lines fall back to DEFAULT_BANK_CREDIT_INCOME_TYPE_ID env; "other" credits require it explicitly.'),
-                            new OA\Property(property: 'accountId',          type: 'string',  format: 'uuid'),
+                            new OA\Property(
+                                property: 'accountId',
+                                type: 'string',
+                                description: 'Ledger Account UUID when known. If empty: DEFAULT_BANK_LEDGER_ACCOUNT_ID, then setup ledgerAccountId only if it is not classified as gas/auxiliary, then chart order (principal / current-account names first, gas-reserve-syndic last).',
+                            ),
                             new OA\Property(property: 'dueDate',            type: 'string',  format: 'date', example: '2026-03-10'),
                             new OA\Property(property: 'description',        type: 'string',  nullable: true, example: 'Conta de água março'),
                             new OA\Property(property: 'recurringExpenseId', type: 'string',  format: 'uuid', nullable: true),
@@ -60,18 +74,10 @@ use Symfony\Component\HttpFoundation\Response;
     responses: [
         new OA\Response(
             response: 201,
-            description: 'Lines processed. Returns counters, any skipped fitIds, and the consolidated income id (if a settlement batch was created).',
+            description: 'Lines processed. Returns counters and the consolidated income id (if a settlement batch was created).',
             content: new OA\JsonContent(
                 properties: [
                     new OA\Property(property: 'imported',             type: 'integer', example: 10),
-                    new OA\Property(property: 'skipped',              type: 'integer', example: 2,
-                        description: 'Lines already imported in a previous call (idempotency).'),
-                    new OA\Property(
-                        property: 'skippedFitIds',
-                        type: 'array',
-                        items: new OA\Items(type: 'string'),
-                        example: ['FIT-20260301-001'],
-                    ),
                     new OA\Property(property: 'consolidatedIncomeId', type: 'string', format: 'uuid', nullable: true,
                         description: 'Id of the single consolidated income built from all boleto_settlement lines (if any).'),
                     new OA\Property(property: 'settlementMonth',      type: 'string', nullable: true, example: '2026-03',
@@ -94,12 +100,6 @@ use Symfony\Component\HttpFoundation\Response;
                     new OA\Property(property: 'expectedCents',   type: 'integer', example: 100000),
                     new OA\Property(property: 'receivedCents',   type: 'integer', example: 70000),
                     new OA\Property(property: 'diffCents',       type: 'integer', example: -30000),
-                    new OA\Property(
-                        property: 'fitIds',
-                        type: 'array',
-                        items: new OA\Items(type: 'string'),
-                        example: ['FIT-CR-001', 'FIT-CR-002'],
-                    ),
                 ],
             ),
         ),
@@ -115,7 +115,7 @@ final class OfxConfirmPostController extends AbstractController
     {
         $lines = array_map(
             static fn ($line) => new ConfirmLineDto(
-                fitId:              $line->fitId,
+                importLineKey:      $line->importLineKey,
                 amountInCents:      $line->amountInCents,
                 postedAt:           $line->postedAt,
                 memo:               $line->memo,
@@ -149,8 +149,6 @@ final class OfxConfirmPostController extends AbstractController
 
         return new JsonResponse([
             'imported'                         => $result->imported,
-            'skipped'                          => $result->skipped,
-            'skippedFitIds'                    => $result->skippedFitIds,
             'consolidatedIncomeId'             => $result->consolidatedIncomeId,
             'settlementMonth'                  => $result->settlementMonth,
             'settlementExpectedSlipTotalCents' => $result->settlementExpectedSlipTotalCents,

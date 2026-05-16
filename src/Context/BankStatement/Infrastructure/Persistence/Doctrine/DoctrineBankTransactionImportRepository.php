@@ -33,33 +33,33 @@ final class DoctrineBankTransactionImportRepository extends ServiceEntityReposit
         }
     }
 
-    public function existsByFitId(string $fitId, string $bankAccountId): bool
+    public function existsByImportLineKey(string $importLineKey, string $bankAccountId): bool
     {
         return (int) $this->createQueryBuilder('i')
             ->select('COUNT(i.id)')
-            ->where('i.fitId = :fitId')
+            ->where('i.importLineKey = :importLineKey')
             ->andWhere('i.bankAccountId = :bankAccountId')
-            ->setParameter('fitId', $fitId)
+            ->setParameter('importLineKey', $importLineKey)
             ->setParameter('bankAccountId', $bankAccountId)
             ->getQuery()
             ->getSingleScalarResult() > 0;
     }
 
-    public function findImportedFitIds(string $bankAccountId, array $fitIds): array
+    public function findImportedLineKeys(string $bankAccountId, array $importLineKeys): array
     {
-        if (empty($fitIds)) {
+        if (empty($importLineKeys)) {
             return [];
         }
 
         $rows = $this->createQueryBuilder('i')
-            ->select('i.fitId')
+            ->select('i.importLineKey')
             ->where('i.bankAccountId = :bankAccountId')
-            ->andWhere('i.fitId IN (:fitIds)')
+            ->andWhere('i.importLineKey IN (:importLineKeys)')
             ->setParameter('bankAccountId', $bankAccountId)
-            ->setParameter('fitIds', $fitIds)
+            ->setParameter('importLineKeys', $importLineKeys)
             ->getQuery()
             ->getArrayResult();
 
-        return array_map(static fn (array $row) => $row['fitId'], $rows);
+        return array_map(static fn (array $row) => $row['importLineKey'], $rows);
     }
 }

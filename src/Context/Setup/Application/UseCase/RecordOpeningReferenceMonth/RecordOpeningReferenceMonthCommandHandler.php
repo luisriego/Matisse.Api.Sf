@@ -70,6 +70,7 @@ final readonly class RecordOpeningReferenceMonthCommandHandler implements Comman
             $command->expectedSyndicShareTotalCents(),
             $command->expectedBoletoTotalCents(),
             $command->optionalGasTotalCents(),
+            $command->ledgerAccountId(),
         ));
 
         $this->setupFinalization->tryFinalizeWhenCoreComplete();

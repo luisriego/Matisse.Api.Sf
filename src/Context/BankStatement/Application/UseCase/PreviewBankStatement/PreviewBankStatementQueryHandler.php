@@ -145,7 +145,7 @@ final readonly class PreviewBankStatementQueryHandler implements QueryHandler
         $displayIsNew      = $isNew && !$fromEmbedding;
 
         return new TransactionPreviewDto(
-            fitId: $transaction->fitId,
+            importLineKey: $transaction->importLineKey,
             bankAccountId: $transaction->bankAccountId,
             type: $transaction->type,
             amountInCents: $transaction->absAmountInCents(),
@@ -205,7 +205,7 @@ final readonly class PreviewBankStatementQueryHandler implements QueryHandler
             : $history['confidence'];
 
         return new TransactionPreviewDto(
-            fitId: $transaction->fitId,
+            importLineKey: $transaction->importLineKey,
             bankAccountId: $transaction->bankAccountId,
             type: $transaction->type,
             amountInCents: $transaction->absAmountInCents(),

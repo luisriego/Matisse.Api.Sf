@@ -104,7 +104,7 @@ final class OfxParser
             $type   = $this->extractTag($block, 'TRNTYPE') ?? 'DEBIT';
             $dtRaw  = $this->extractTag($block, 'DTPOSTED') ?? '';
             $amount = $this->extractTag($block, 'TRNAMT') ?? '0';
-            $fitId  = $this->extractTag($block, 'FITID') ?? uniqid('ofx_', true);
+            $importLineKey = $this->extractTag($block, 'FITID') ?? uniqid('ofx_', true);
             $memo   = $this->extractTag($block, 'MEMO') ?? '';
 
             $amountFloat  = (float) str_replace(',', '.', $amount);
@@ -112,7 +112,7 @@ final class OfxParser
             $signedCents  = $type === 'CREDIT' ? $amountCents : -$amountCents;
 
             $transactions[] = new BankTransaction(
-                fitId: $fitId,
+                importLineKey: $importLineKey,
                 bankAccountId: $accountId,
                 type: $type,
                 amountInCents: $signedCents,

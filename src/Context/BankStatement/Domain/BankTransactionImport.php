@@ -8,7 +8,7 @@ use DateTimeImmutable;
 use InvalidArgumentException;
 
 /**
- * Records that a bank transaction (identified by fitId) was successfully
+ * Records that a bank transaction line (stable import line key, e.g. OFX FITID) was successfully
  * imported either as an Expense (DEBIT) or as an Income (CREDIT),
  * preventing duplicate imports.
  *
@@ -17,7 +17,7 @@ use InvalidArgumentException;
 class BankTransactionImport
 {
     private string $id;
-    private string $fitId;
+    private string $importLineKey;
     private string $bankAccountId;
     private DateTimeImmutable $importedAt;
     private ?string $expenseId;
@@ -25,7 +25,7 @@ class BankTransactionImport
 
     public function __construct(
         string $id,
-        string $fitId,
+        string $importLineKey,
         string $bankAccountId,
         ?string $expenseId = null,
         ?string $incomeId = null,
@@ -36,9 +36,9 @@ class BankTransactionImport
             );
         }
 
-        $this->id            = $id;
-        $this->fitId         = $fitId;
-        $this->bankAccountId = $bankAccountId;
+        $this->id             = $id;
+        $this->importLineKey  = $importLineKey;
+        $this->bankAccountId  = $bankAccountId;
         $this->expenseId     = $expenseId;
         $this->incomeId      = $incomeId;
         $this->importedAt    = new DateTimeImmutable();
@@ -49,9 +49,9 @@ class BankTransactionImport
         return $this->id;
     }
 
-    public function fitId(): string
+    public function importLineKey(): string
     {
-        return $this->fitId;
+        return $this->importLineKey;
     }
 
     public function bankAccountId(): string

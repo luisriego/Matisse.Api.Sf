@@ -17,6 +17,7 @@ final readonly class RecordOpeningReferenceMonthCommand implements Command
         private ?int $expectedSyndicShareTotalCents,
         private ?int $expectedBoletoTotalCents,
         private ?int $optionalGasTotalCents,
+        private ?string $ledgerAccountId,
     ) {}
 
     public function referenceMonth(): string
@@ -57,5 +58,10 @@ final readonly class RecordOpeningReferenceMonthCommand implements Command
     public function optionalGasTotalCents(): ?int
     {
         return $this->optionalGasTotalCents;
+    }
+
+    public function ledgerAccountId(): ?string
+    {
+        return $this->ledgerAccountId;
     }
 }

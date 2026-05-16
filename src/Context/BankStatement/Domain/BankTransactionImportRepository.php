@@ -10,8 +10,8 @@ interface BankTransactionImportRepository
 
     public function save(BankTransactionImport $import, bool $flush = true): void;
 
-    public function existsByFitId(string $fitId, string $bankAccountId): bool;
+    public function existsByImportLineKey(string $importLineKey, string $bankAccountId): bool;
 
-    /** @return string[] fitIds already imported for the given bank account */
-    public function findImportedFitIds(string $bankAccountId, array $fitIds): array;
+    /** @return string[] import line keys already persisted for the given bank account */
+    public function findImportedLineKeys(string $bankAccountId, array $importLineKeys): array;
 }

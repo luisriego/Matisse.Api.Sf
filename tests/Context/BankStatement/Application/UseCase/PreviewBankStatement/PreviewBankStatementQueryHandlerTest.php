@@ -68,7 +68,7 @@ final class PreviewBankStatementQueryHandlerTest extends TestCase
 
         self::assertCount(1, $result->expenses);
         self::assertCount(1, $result->credits);
-        self::assertSame('20260305001', $result->expenses[0]->fitId);
+        self::assertSame('20260305001', $result->expenses[0]->importLineKey);
         self::assertSame(15000, $result->expenses[0]->amountInCents);
         self::assertSame('2026-03-05', $result->expenses[0]->postedAt);
         self::assertSame('needs_review', $result->expenses[0]->status);

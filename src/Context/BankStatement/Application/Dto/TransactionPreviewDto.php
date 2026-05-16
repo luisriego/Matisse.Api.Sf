@@ -17,8 +17,15 @@ use OpenApi\Attributes as OA;
 #[OA\Schema(
     schema: 'TransactionPreview',
     properties: [
-        new OA\Property(property: 'fitId',                      type: 'string',  example: 'FIT-20260310-001'),
-        new OA\Property(property: 'bankAccountId',              type: 'string',  format: 'uuid'),
+        new OA\Property(
+            property: 'importLineKey',
+            type: 'string',
+            example: '20260310001',
+            description: 'Stable key for this statement line (idempotency). Echo the value from /bank/ofx-ingest.',
+        ),
+        new OA\Property(property: 'bankAccountId',              type: 'string',
+            description: 'OFX ACCTID from the file (not the ledger Account UUID).',
+            example: '3033132774'),
         new OA\Property(property: 'type',                       type: 'string',  enum: ['DEBIT', 'CREDIT']),
         new OA\Property(property: 'amountInCents',              type: 'integer', example: 15000),
         new OA\Property(property: 'postedAt',                   type: 'string',  format: 'date', example: '2026-03-10'),
@@ -68,7 +75,7 @@ final readonly class TransactionPreviewDto
      * @param IncomePastAssignmentDto[] $pastIncomeAssignments
      */
     public function __construct(
-        public readonly string $fitId,
+        public readonly string $importLineKey,
         public readonly string $bankAccountId,
         public readonly string $type,
         public readonly int $amountInCents,

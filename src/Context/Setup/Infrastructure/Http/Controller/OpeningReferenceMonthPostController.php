@@ -10,6 +10,7 @@ use App\Shared\Infrastructure\Symfony\ApiController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\Uid\Uuid;
 
 use function array_key_exists;
 use function is_int;
@@ -51,6 +52,7 @@ final class OpeningReferenceMonthPostController extends ApiController
             $this->optionalInt($data, 'expectedSyndicShareTotalCents'),
             $this->optionalInt($data, 'expectedBoletoTotalCents'),
             $this->optionalInt($data, 'optionalGasTotalCents'),
+            $this->optionalLedgerAccountId($data),
         );
 
         $this->dispatch($command);
@@ -72,6 +74,23 @@ final class OpeningReferenceMonthPostController extends ApiController
         }
 
         return $data[$key];
+    }
+
+    /**
+     * @param array<string, mixed> $data
+     */
+    private function optionalLedgerAccountId(array $data): ?string
+    {
+        if (!array_key_exists('ledgerAccountId', $data) || $data['ledgerAccountId'] === null || $data['ledgerAccountId'] === '') {
+            return null;
+        }
+
+        $id = (string) $data['ledgerAccountId'];
+        if (!Uuid::isValid($id)) {
+            throw new InvalidDataException('ledgerAccountId must be a valid UUID when provided.');
+        }
+
+        return $id;
     }
 
     public function exceptions(): array

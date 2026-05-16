@@ -9,7 +9,7 @@ use App\Shared\Domain\ValueObject\DateTimeValueObject;
 final readonly class BankTransaction
 {
     /**
-     * @param string               $fitId         Unique bank transaction ID (OFX FITID)
+     * @param string               $importLineKey Chave técnica estável da linha no extrato (idempotência); não é conta contábil.
      * @param string               $bankAccountId Bank account number from OFX ACCTID
      * @param string               $type          DEBIT or CREDIT
      * @param int                  $amountInCents Signed amount in cents (negative for DEBIT)
@@ -17,7 +17,7 @@ final readonly class BankTransaction
      * @param string               $memo          Raw description from bank (OFX MEMO)
      */
     public function __construct(
-        public readonly string $fitId,
+        public readonly string $importLineKey,
         public readonly string $bankAccountId,
         public readonly string $type,
         public readonly int $amountInCents,

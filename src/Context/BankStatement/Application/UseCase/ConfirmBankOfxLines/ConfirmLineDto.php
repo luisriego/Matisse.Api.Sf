@@ -22,7 +22,7 @@ final readonly class ConfirmLineDto
     public const CREDIT_KIND_OTHER             = 'other';
 
     public function __construct(
-        public readonly string  $fitId,
+        public readonly string  $importLineKey,
         public readonly int     $amountInCents,
         public readonly string  $postedAt,
         public readonly string  $memo,

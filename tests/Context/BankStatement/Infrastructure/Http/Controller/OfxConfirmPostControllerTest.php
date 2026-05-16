@@ -4,10 +4,13 @@ declare(strict_types=1);
 
 namespace App\Tests\Context\BankStatement\Infrastructure\Http\Controller;
 
-use App\Context\BankStatement\Application\Service\SettlementIncomeSplitMap;
+use App\Context\Account\Domain\AccountName;
+use App\Context\Account\Domain\AccountRepository;
+use App\Context\BankStatement\Application\Service\SettlementAccountResolver;
 use App\Context\BankStatement\Application\UseCase\ConfirmBankOfxLines\ConfirmBankOfxLinesCommandHandler;
-use App\Context\BankStatement\Domain\BankTransactionImportRepository;
 use App\Context\Income\Domain\IncomeRepository;
+use App\Context\Income\Domain\ValueObject\IncomeTypeName;
+use App\Context\Setup\Application\Service\SetupStatusChecker;
 use App\Context\ResidentUnit\Domain\ResidentUnitIdealFraction;
 use App\Context\ResidentUnit\Domain\ResidentUnitVO;
 use App\Context\Slip\Domain\Slip;
@@ -26,16 +29,13 @@ use Symfony\Component\HttpFoundation\Response;
 final class OfxConfirmPostControllerTest extends ApiTestCase
 {
     private const BANK_ACCOUNT_ID = '3033132774';
-    private const FIT_ID_A        = 'FIT-TEST-001';
-    private const FIT_ID_B        = 'FIT-TEST-002';
-
-    private ?BankTransactionImportRepository $importRepository = null;
+    private const LINE_KEY_A        = 'FIT-TEST-001';
+    private const LINE_KEY_B        = 'FIT-TEST-002';
 
     protected function setUp(): void
     {
         parent::setUp();
         $this->createAuthenticatedClient();
-        $this->importRepository = self::getContainer()->get(BankTransactionImportRepository::class);
     }
 
     public function test_it_imports_confirmed_lines_and_returns_created(): void
@@ -46,7 +46,7 @@ final class OfxConfirmPostControllerTest extends ApiTestCase
         $this->entityManager->persist($expenseType);
         $this->entityManager->flush();
 
-        $payload = $this->buildPayload($expenseType->id(), $account->id(), [self::FIT_ID_A]);
+        $payload = $this->buildPayload($expenseType->id(), $account->id(), [self::LINE_KEY_A]);
 
         $this->client->request(
             'POST',
@@ -61,13 +61,11 @@ final class OfxConfirmPostControllerTest extends ApiTestCase
 
         $data = json_decode($this->client->getResponse()->getContent(), true);
         $this->assertSame(1, $data['imported']);
-        $this->assertSame(0, $data['skipped']);
-        $this->assertSame([], $data['skippedFitIds']);
         $this->assertNull($data['consolidatedIncomeId']);
         $this->assertNull($data['settlementMonth']);
     }
 
-    public function test_it_skips_already_imported_fitids_idempotency(): void
+    public function test_it_accepts_legacy_json_property_alias_for_import_line_key(): void
     {
         $account     = AccountMother::create();
         $expenseType = ExpenseTypeMother::create();
@@ -75,41 +73,33 @@ final class OfxConfirmPostControllerTest extends ApiTestCase
         $this->entityManager->persist($expenseType);
         $this->entityManager->flush();
 
-        $payload = $this->buildPayload($expenseType->id(), $account->id(), [self::FIT_ID_A, self::FIT_ID_B]);
+        $payload = [
+            'bankAccountId' => self::BANK_ACCOUNT_ID,
+            'lines'         => [
+                [
+                    'fitId'         => 'LEGACY-ALIAS-001',
+                    'amountInCents' => 15000,
+                    'postedAt'      => '2026-03-15',
+                    'memo'          => 'Legacy key test',
+                    'expenseTypeId' => $expenseType->id(),
+                    'accountId'     => $account->id(),
+                    'dueDate'       => '2026-03-15',
+                ],
+            ],
+        ];
 
-        $this->client->request('POST', '/api/v1/bank/ofx-confirm', [], [], ['CONTENT_TYPE' => 'application/json'], json_encode($payload, JSON_THROW_ON_ERROR));
+        $this->client->request(
+            'POST',
+            '/api/v1/bank/ofx-confirm',
+            [],
+            [],
+            ['CONTENT_TYPE' => 'application/json'],
+            json_encode($payload, JSON_THROW_ON_ERROR),
+        );
+
         $this->assertResponseStatusCodeSame(Response::HTTP_CREATED);
-
-        $this->client->request('POST', '/api/v1/bank/ofx-confirm', [], [], ['CONTENT_TYPE' => 'application/json'], json_encode($payload, JSON_THROW_ON_ERROR));
-        $this->assertResponseStatusCodeSame(Response::HTTP_CREATED);
-
-        $data = json_decode($this->client->getResponse()->getContent(), true);
-        $this->assertSame(0, $data['imported']);
-        $this->assertSame(2, $data['skipped']);
-        $this->assertContains(self::FIT_ID_A, $data['skippedFitIds']);
-        $this->assertContains(self::FIT_ID_B, $data['skippedFitIds']);
-    }
-
-    public function test_it_partially_skips_already_imported_fitids(): void
-    {
-        $account     = AccountMother::create();
-        $expenseType = ExpenseTypeMother::create();
-        $this->entityManager->persist($account);
-        $this->entityManager->persist($expenseType);
-        $this->entityManager->flush();
-
-        $payloadA = $this->buildPayload($expenseType->id(), $account->id(), [self::FIT_ID_A]);
-        $this->client->request('POST', '/api/v1/bank/ofx-confirm', [], [], ['CONTENT_TYPE' => 'application/json'], json_encode($payloadA, JSON_THROW_ON_ERROR));
-        $this->assertResponseStatusCodeSame(Response::HTTP_CREATED);
-
-        $payloadAB = $this->buildPayload($expenseType->id(), $account->id(), [self::FIT_ID_A, self::FIT_ID_B]);
-        $this->client->request('POST', '/api/v1/bank/ofx-confirm', [], [], ['CONTENT_TYPE' => 'application/json'], json_encode($payloadAB, JSON_THROW_ON_ERROR));
-        $this->assertResponseStatusCodeSame(Response::HTTP_CREATED);
-
         $data = json_decode($this->client->getResponse()->getContent(), true);
         $this->assertSame(1, $data['imported']);
-        $this->assertSame(1, $data['skipped']);
-        $this->assertSame([self::FIT_ID_A], $data['skippedFitIds']);
     }
 
     public function test_it_consolidates_settlement_credits_and_marks_paid_on_latest_posted_date(): void
@@ -129,7 +119,7 @@ final class OfxConfirmPostControllerTest extends ApiTestCase
             'bankAccountId' => self::BANK_ACCOUNT_ID,
             'lines'         => [
                 [
-                    'fitId'         => 'FIT-CR-001',
+                    'importLineKey' => 'FIT-CR-001',
                     'amountInCents' => 30000,
                     'postedAt'      => '2026-03-04',
                     'memo'          => 'BOLETOS RECEBIDOS',
@@ -140,7 +130,7 @@ final class OfxConfirmPostControllerTest extends ApiTestCase
                     'dueDate'       => '2026-03-04',
                 ],
                 [
-                    'fitId'         => 'FIT-CR-002',
+                    'importLineKey' => 'FIT-CR-002',
                     'amountInCents' => 70000,
                     'postedAt'      => '2026-03-09',
                     'memo'          => 'BOLETOS RECEBIDOS',
@@ -166,7 +156,6 @@ final class OfxConfirmPostControllerTest extends ApiTestCase
 
         $data = json_decode($this->client->getResponse()->getContent(), true);
         $this->assertSame(2, $data['imported']);
-        $this->assertSame(0, $data['skipped']);
         $this->assertNotNull($data['consolidatedIncomeId']);
         $this->assertSame('2026-02', $data['settlementMonth']);
 
@@ -198,7 +187,7 @@ final class OfxConfirmPostControllerTest extends ApiTestCase
             'bankAccountId' => self::BANK_ACCOUNT_ID,
             'lines'         => [
                 [
-                    'fitId'         => 'FIT-CR-GREEN',
+                    'importLineKey' => 'FIT-CR-GREEN',
                     'amountInCents' => 636116,
                     'postedAt'      => '2026-03-09',
                     'memo'          => 'BOLETOS RECEBIDOS',
@@ -248,7 +237,7 @@ final class OfxConfirmPostControllerTest extends ApiTestCase
             'bankAccountId' => self::BANK_ACCOUNT_ID,
             'lines'         => [
                 [
-                    'fitId'         => 'FIT-CR-SHORT',
+                    'importLineKey' => 'FIT-CR-SHORT',
                     'amountInCents' => 70000, // received 70000
                     'postedAt'      => '2026-03-09',
                     'memo'          => 'BOLETOS RECEBIDOS',
@@ -278,7 +267,6 @@ final class OfxConfirmPostControllerTest extends ApiTestCase
         $this->assertSame(100000, $data['expectedCents']);
         $this->assertSame(70000,  $data['receivedCents']);
         $this->assertSame(-30000, $data['diffCents']);
-        $this->assertSame(['FIT-CR-SHORT'], $data['fitIds']);
 
         $incomeRepository = self::getContainer()->get(IncomeRepository::class);
         $this->assertCount(0, $incomeRepository->findAll(), 'Mismatch must not persist any income.');
@@ -304,7 +292,7 @@ final class OfxConfirmPostControllerTest extends ApiTestCase
             'bankAccountId' => self::BANK_ACCOUNT_ID,
             'lines'         => [
                 [
-                    'fitId'         => 'FIT-APR-001',
+                    'importLineKey' => 'FIT-APR-001',
                     'amountInCents' => 162758,
                     'postedAt'      => '2026-04-06',
                     'memo'          => 'BOLETOS RECEBIDOS 06/04S',
@@ -315,7 +303,7 @@ final class OfxConfirmPostControllerTest extends ApiTestCase
                     'dueDate'       => '2026-04-06',
                 ],
                 [
-                    'fitId'         => 'FIT-APR-002',
+                    'importLineKey' => 'FIT-APR-002',
                     'amountInCents' => 168046,
                     'postedAt'      => '2026-04-08',
                     'memo'          => 'BOLETOS RECEBIDOS 08/04S',
@@ -326,7 +314,7 @@ final class OfxConfirmPostControllerTest extends ApiTestCase
                     'dueDate'       => '2026-04-08',
                 ],
                 [
-                    'fitId'         => 'FIT-APR-003',
+                    'importLineKey' => 'FIT-APR-003',
                     'amountInCents' => 501624,
                     'postedAt'      => '2026-04-09',
                     'memo'          => 'BOLETOS RECEBIDOS 09/04S',
@@ -352,7 +340,6 @@ final class OfxConfirmPostControllerTest extends ApiTestCase
 
         $data = json_decode($this->client->getResponse()->getContent(), true);
         $this->assertSame(3, $data['imported']);
-        $this->assertSame(0, $data['skipped']);
         $this->assertSame(832428, $data['settlementExpectedSlipTotalCents']);
         $this->assertTrue($data['settlementValidatedAgainstSlips']);
 
@@ -371,27 +358,25 @@ final class OfxConfirmPostControllerTest extends ApiTestCase
 
     public function test_it_splits_real_april_2026_settlement_into_target_accounts(): void
     {
-        $accountBase    = AccountMother::create();
-        $accountSyndic  = AccountMother::create();
-        $accountExtra   = AccountMother::create();
-        $accountReserve = AccountMother::create();
-        $accountGas     = AccountMother::create();
-        $this->entityManager->persist($accountBase);
-        $this->entityManager->persist($accountSyndic);
+        // Accounts with names matching SettlementAccountResolver patterns.
+        $accountPrincipal = AccountMother::create(name: new AccountName('Conta Principal'));
+        $accountPrincipal->enable();
+        $accountExtra = AccountMother::create(name: new AccountName('Fundo de Obra'));
+        $accountExtra->enable();
+        $accountReserve = AccountMother::create(name: new AccountName('Fundo de Reserva'));
+        $accountReserve->enable();
+        $accountGas = AccountMother::create(name: new AccountName('Conta Gás'));
+        $accountGas->enable();
+        $this->entityManager->persist($accountPrincipal);
         $this->entityManager->persist($accountExtra);
         $this->entityManager->persist($accountReserve);
         $this->entityManager->persist($accountGas);
 
-        $incomeTypeBase    = IncomeTypeMother::create();
-        $incomeTypeSyndic  = IncomeTypeMother::create();
-        $incomeTypeExtra   = IncomeTypeMother::create();
-        $incomeTypeReserve = IncomeTypeMother::create();
-        $incomeTypeGas     = IncomeTypeMother::create();
-        $this->entityManager->persist($incomeTypeBase);
-        $this->entityManager->persist($incomeTypeSyndic);
-        $this->entityManager->persist($incomeTypeExtra);
-        $this->entityManager->persist($incomeTypeReserve);
-        $this->entityManager->persist($incomeTypeGas);
+        // Income types with names matching SettlementAccountResolver patterns.
+        $incomeTypeCondominial = IncomeTypeMother::create(name: new IncomeTypeName('Taxa Condominial'));
+        $incomeTypeCotaExtra   = IncomeTypeMother::create(name: new IncomeTypeName('Cota Extra'));
+        $this->entityManager->persist($incomeTypeCondominial);
+        $this->entityManager->persist($incomeTypeCotaExtra);
 
         // Five active units (same shape as condominium example).
         $residentUnits = [
@@ -407,23 +392,17 @@ final class OfxConfirmPostControllerTest extends ApiTestCase
 
         $this->entityManager->flush();
 
-        // Force split map in test container (independent of .env).
-        $splitMap = new SettlementIncomeSplitMap(
+        // Wire SettlementAccountResolver with enabled=true resolving from DB by name.
+        $resolver = new SettlementAccountResolver(
+            self::getContainer()->get(AccountRepository::class),
+            self::getContainer()->get(\App\Context\Income\Domain\IncomeTypeRepository::class),
             true,
-            [
-                'base'    => ['accountId' => $accountBase->id(), 'incomeTypeId' => $incomeTypeBase->id()],
-                'syndic'  => ['accountId' => $accountSyndic->id(), 'incomeTypeId' => $incomeTypeSyndic->id()],
-                'extra'   => ['accountId' => $accountExtra->id(), 'incomeTypeId' => $incomeTypeExtra->id()],
-                'reserve' => ['accountId' => $accountReserve->id(), 'incomeTypeId' => $incomeTypeReserve->id()],
-                'gas'     => ['accountId' => $accountGas->id(), 'incomeTypeId' => $incomeTypeGas->id()],
-            ],
         );
-        $this->assertTrue($splitMap->shouldSplit());
-        self::getContainer()->set(SettlementIncomeSplitMap::class, $splitMap);
+        $this->assertTrue($resolver->shouldSplit());
+        self::getContainer()->set(SettlementAccountResolver::class, $resolver);
         self::getContainer()->set(
             ConfirmBankOfxLinesCommandHandler::class,
             new ConfirmBankOfxLinesCommandHandler(
-                self::getContainer()->get(\App\Context\BankStatement\Domain\BankTransactionImportRepository::class),
                 self::getContainer()->get(\App\Context\Slip\Domain\SlipRepository::class),
                 self::getContainer()->get(\Symfony\Component\Messenger\MessageBusInterface::class),
                 self::getContainer()->get(\App\Context\Slip\Domain\SlipGenerationParameterSnapshotRepository::class),
@@ -431,7 +410,10 @@ final class OfxConfirmPostControllerTest extends ApiTestCase
                 self::getContainer()->get(\App\Context\Expense\Domain\ExpenseRepository::class),
                 self::getContainer()->get(\App\Context\Expense\Domain\RecurringExpenseRepository::class),
                 self::getContainer()->get(\App\Context\ResidentUnit\Domain\ResidentUnitRepository::class),
-                $splitMap,
+                $resolver,
+                self::getContainer()->get(SetupStatusChecker::class),
+                self::getContainer()->get(AccountRepository::class),
+                null,
                 null,
             ),
         );
@@ -473,36 +455,36 @@ final class OfxConfirmPostControllerTest extends ApiTestCase
             bankAccountId: self::BANK_ACCOUNT_ID,
             lines: [
                 new \App\Context\BankStatement\Application\UseCase\ConfirmBankOfxLines\ConfirmLineDto(
-                    fitId: 'FIT-APR-SPLIT-001',
+                    importLineKey: 'FIT-APR-SPLIT-001',
                     amountInCents: 162758,
                     postedAt: '2026-04-06',
                     memo: 'BOLETOS RECEBIDOS 06/04S',
-                    accountId: $accountBase->id(),
+                    accountId: $accountPrincipal->id(),
                     dueDate: '2026-04-06',
                     lineType: 'income',
-                    incomeTypeId: $incomeTypeBase->id(),
+                    incomeTypeId: $incomeTypeCondominial->id(),
                     creditKind: 'boleto_settlement',
                 ),
                 new \App\Context\BankStatement\Application\UseCase\ConfirmBankOfxLines\ConfirmLineDto(
-                    fitId: 'FIT-APR-SPLIT-002',
+                    importLineKey: 'FIT-APR-SPLIT-002',
                     amountInCents: 168046,
                     postedAt: '2026-04-08',
                     memo: 'BOLETOS RECEBIDOS 08/04S',
-                    accountId: $accountBase->id(),
+                    accountId: $accountPrincipal->id(),
                     dueDate: '2026-04-08',
                     lineType: 'income',
-                    incomeTypeId: $incomeTypeBase->id(),
+                    incomeTypeId: $incomeTypeCondominial->id(),
                     creditKind: 'boleto_settlement',
                 ),
                 new \App\Context\BankStatement\Application\UseCase\ConfirmBankOfxLines\ConfirmLineDto(
-                    fitId: 'FIT-APR-SPLIT-003',
+                    importLineKey: 'FIT-APR-SPLIT-003',
                     amountInCents: 501624,
                     postedAt: '2026-04-09',
                     memo: 'BOLETOS RECEBIDOS 09/04S',
-                    accountId: $accountBase->id(),
+                    accountId: $accountPrincipal->id(),
                     dueDate: '2026-04-09',
                     lineType: 'income',
-                    incomeTypeId: $incomeTypeBase->id(),
+                    incomeTypeId: $incomeTypeCondominial->id(),
                     creditKind: 'boleto_settlement',
                 ),
             ],
@@ -543,20 +525,16 @@ final class OfxConfirmPostControllerTest extends ApiTestCase
             $this->assertSame($row['amountCents'], $income->amount());
 
             $expectedAccountId = match ($row['component']) {
-                'base' => $accountBase->id(),
-                'syndic' => $accountSyndic->id(),
-                'extra' => $accountExtra->id(),
-                'reserve' => $accountReserve->id(),
-                'gas' => $accountGas->id(),
-                default => null,
+                'base', 'syndic' => $accountPrincipal->id(),
+                'extra'          => $accountExtra->id(),
+                'reserve'        => $accountReserve->id(),
+                'gas'            => $accountGas->id(),
+                default          => null,
             };
             $expectedIncomeTypeId = match ($row['component']) {
-                'base' => $incomeTypeBase->id(),
-                'syndic' => $incomeTypeSyndic->id(),
-                'extra' => $incomeTypeExtra->id(),
-                'reserve' => $incomeTypeReserve->id(),
-                'gas' => $incomeTypeGas->id(),
-                default => null,
+                'base', 'syndic', 'reserve', 'gas' => $incomeTypeCondominial->id(),
+                'extra'                             => $incomeTypeCotaExtra->id(),
+                default                             => null,
             };
 
             $this->assertSame($expectedAccountId, $income->accountId());
@@ -577,7 +555,7 @@ final class OfxConfirmPostControllerTest extends ApiTestCase
             'bankAccountId' => self::BANK_ACCOUNT_ID,
             'lines'         => [
                 [
-                    'fitId'         => 'FIT-OTHER-001',
+                    'importLineKey' => 'FIT-OTHER-001',
                     'amountInCents' => 1250,
                     'postedAt'      => '2026-03-31',
                     'memo'          => 'RENDIMENTO POUPANCA',
@@ -614,7 +592,7 @@ final class OfxConfirmPostControllerTest extends ApiTestCase
         $this->assertSame('2026-03-31', $incomes[0]->paidAt()?->format('Y-m-d'));
     }
 
-    public function test_settlement_idempotency_does_not_duplicate_consolidated_income(): void
+    public function test_repeated_settlement_confirm_creates_another_consolidated_income(): void
     {
         $account    = AccountMother::create();
         $incomeType = IncomeTypeMother::create();
@@ -627,7 +605,7 @@ final class OfxConfirmPostControllerTest extends ApiTestCase
             'bankAccountId' => self::BANK_ACCOUNT_ID,
             'lines'         => [
                 [
-                    'fitId'         => 'FIT-CR-IDEMP',
+                    'importLineKey' => 'FIT-CR-IDEMP',
                     'amountInCents' => 50000,
                     'postedAt'      => '2026-03-09',
                     'memo'          => 'BOLETOS RECEBIDOS',
@@ -647,37 +625,35 @@ final class OfxConfirmPostControllerTest extends ApiTestCase
         $this->assertResponseStatusCodeSame(Response::HTTP_CREATED);
 
         $data = json_decode($this->client->getResponse()->getContent(), true);
-        $this->assertSame(0, $data['imported']);
-        $this->assertSame(1, $data['skipped']);
-        $this->assertNull($data['consolidatedIncomeId'], 'No new consolidated income on a fully-duplicated settlement.');
+        $this->assertSame(1, $data['imported']);
+        $this->assertNotNull($data['consolidatedIncomeId']);
 
         $incomeRepository = self::getContainer()->get(IncomeRepository::class);
-        $this->assertCount(1, $incomeRepository->findAll());
+        $this->assertCount(2, $incomeRepository->findAll());
     }
 
     protected function tearDown(): void
     {
-        $this->importRepository = null;
         parent::tearDown();
     }
 
-    /** @param string[] $fitIds */
-    private function buildPayload(string $expenseTypeId, string $accountId, array $fitIds): array
+    /** @param string[] $lineKeys */
+    private function buildPayload(string $expenseTypeId, string $accountId, array $lineKeys): array
     {
         return [
             'bankAccountId' => self::BANK_ACCOUNT_ID,
             'lines'         => array_map(
-                static fn (string $fitId) => [
-                    'fitId'         => $fitId,
+                static fn (string $lineKey) => [
+                    'importLineKey' => $lineKey,
                     'amountInCents' => 15000,
                     'postedAt'      => '2026-03-15',
-                    'memo'          => 'TEST TRANSACTION ' . $fitId,
+                    'memo'          => 'TEST TRANSACTION ' . $lineKey,
                     'expenseTypeId' => $expenseTypeId,
                     'accountId'     => $accountId,
                     'dueDate'       => '2026-03-15',
-                    'description'   => 'Test import ' . $fitId,
+                    'description'   => 'Test import ' . $lineKey,
                 ],
-                $fitIds,
+                $lineKeys,
             ),
         ];
     }

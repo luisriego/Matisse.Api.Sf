@@ -9,9 +9,14 @@ use OpenApi\Attributes as OA;
 
 #[OA\Schema(
     schema: 'ConfirmLine',
-    required: ['fitId', 'amountInCents', 'postedAt', 'memo', 'accountId', 'dueDate'],
+    required: ['importLineKey', 'amountInCents', 'postedAt', 'memo', 'dueDate'],
     properties: [
-        new OA\Property(property: 'fitId',              type: 'string',  example: 'FIT-20260310-001'),
+        new OA\Property(
+            property: 'importLineKey',
+            type: 'string',
+            example: '20260310001',
+            description: 'Stable key for this line from preview. Older clients may send the previous JSON property name for this field; the server accepts both.',
+        ),
         new OA\Property(property: 'amountInCents',      type: 'integer', example: 15000),
         new OA\Property(property: 'postedAt',           type: 'string',  format: 'date', example: '2026-03-10'),
         new OA\Property(property: 'memo',               type: 'string',  example: 'COPASA AGUA'),
@@ -21,7 +26,12 @@ use OpenApi\Attributes as OA;
             description: 'Required for expense lines; ignored for income lines.'),
         new OA\Property(property: 'incomeTypeId',       type: 'string',  format: 'uuid', nullable: true,
             description: 'Used for income lines. Falls back to DEFAULT_BANK_CREDIT_INCOME_TYPE_ID env if null.'),
-        new OA\Property(property: 'accountId',          type: 'string',  format: 'uuid'),
+        new OA\Property(
+            property: 'accountId',
+            type: 'string',
+            nullable: true,
+            description: 'Ledger account UUID when known. If empty: env DEFAULT_BANK_LEDGER_ACCOUNT_ID, non-auxiliary setup ledgerAccountId, then principal-style account names before gas/reserve/syndic.',
+        ),
         new OA\Property(property: 'dueDate',            type: 'string',  format: 'date', example: '2026-03-10'),
         new OA\Property(property: 'description',        type: 'string',  nullable: true),
         new OA\Property(property: 'recurringExpenseId', type: 'string',  format: 'uuid', nullable: true),
@@ -35,7 +45,7 @@ use OpenApi\Attributes as OA;
 final readonly class ConfirmLineRequestDto
 {
     public function __construct(
-        public readonly string  $fitId,
+        public readonly string  $importLineKey,
         public readonly int     $amountInCents,
         public readonly string  $postedAt,
         public readonly string  $memo,

@@ -4,19 +4,21 @@ declare(strict_types=1);
 
 namespace App\Context\BankStatement\Application\UseCase\ConfirmBankOfxLines;
 
-use App\Context\BankStatement\Application\Service\SettlementIncomeSplitMap;
-use App\Context\BankStatement\Domain\BankTransactionImport;
-use App\Context\BankStatement\Domain\BankTransactionImportRepository;
+use App\Context\Account\Domain\Account;
+use App\Context\Account\Domain\AccountRepository;
+use App\Context\BankStatement\Application\Service\SettlementAccountResolver;
 use App\Context\BankStatement\Domain\Exception\BoletoSettlementMismatchException;
 use App\Context\Expense\Application\UseCase\EnterExpense\EnterExpenseCommand;
 use App\Context\Expense\Domain\ExpenseRepository;
 use App\Context\Expense\Domain\RecurringExpenseRepository;
 use App\Context\Income\Application\UseCase\EnterIncome\EnterIncomeCommand;
 use App\Context\ResidentUnit\Domain\ResidentUnitRepository;
+use App\Context\Setup\Application\Service\SetupStatusChecker;
 use App\Context\Slip\Domain\Service\SlipGenerationBreakdownBuilder;
 use App\Context\Slip\Domain\SlipGenerationParameterSnapshotRepository;
 use App\Context\Slip\Domain\SlipRepository;
 use App\Shared\Application\CommandHandler;
+use App\Shared\Domain\Exception\ResourceNotFoundException;
 use App\Shared\Domain\ValueObject\DateRange;
 use DateMalformedStringException;
 use DateTimeImmutable;
@@ -25,11 +27,11 @@ use Symfony\Component\Messenger\MessageBusInterface;
 use Symfony\Component\Uid\Uuid;
 
 use function array_filter;
-use function array_flip;
-use function array_map;
 use function array_values;
 use function count;
+use function preg_match;
 use function sprintf;
+use function trim;
 
 final class ConfirmBankOfxLinesCommandHandler implements CommandHandler
 {
@@ -45,7 +47,6 @@ final class ConfirmBankOfxLinesCommandHandler implements CommandHandler
     ];
 
     public function __construct(
-        private readonly BankTransactionImportRepository $importRepository,
         private readonly SlipRepository $slipRepository,
         private readonly MessageBusInterface $commandBus,
         private readonly SlipGenerationParameterSnapshotRepository $slipGenerationParameterSnapshotRepository,
@@ -53,29 +54,29 @@ final class ConfirmBankOfxLinesCommandHandler implements CommandHandler
         private readonly ExpenseRepository $expenseRepository,
         private readonly RecurringExpenseRepository $recurringExpenseRepository,
         private readonly ResidentUnitRepository $residentUnitRepository,
-        private readonly SettlementIncomeSplitMap $settlementIncomeSplitMap,
+        private readonly SettlementAccountResolver $settlementAccountResolver,
+        private readonly SetupStatusChecker $setupStatusChecker,
+        private readonly AccountRepository $accountRepository,
         /**
          * Default income type id used for bank CREDIT lines when the client did not send one.
          * Set via environment variable DEFAULT_BANK_CREDIT_INCOME_TYPE_ID.
          * Null = the client MUST send incomeTypeId for every income line (or it will fail).
          */
         private readonly ?string $defaultCreditIncomeTypeId = null,
+        /**
+         * Optional ledger Account UUID when credit lines omit accountId and setup has no ledgerAccountId.
+         * Env: DEFAULT_BANK_LEDGER_ACCOUNT_ID. If unset, prefers a "principal" account by name; auxiliary/gas accounts are last resort.
+         */
+        private readonly ?string $defaultBankLedgerAccountId = null,
     ) {}
 
     public function __invoke(ConfirmBankOfxLinesCommand $command): ConfirmBankOfxLinesResult
     {
-        $fitIds          = array_map(static fn (ConfirmLineDto $l) => $l->fitId, $command->lines);
-        $alreadyImported = $this->importRepository->findImportedFitIds($command->bankAccountId, $fitIds);
-        $skippedSet      = array_flip($alreadyImported);
+        $lines = $command->lines;
 
-        $fresh = array_values(array_filter(
-            $command->lines,
-            static fn (ConfirmLineDto $l) => !isset($skippedSet[$l->fitId]),
-        ));
-
-        $expenses       = array_values(array_filter($fresh, static fn (ConfirmLineDto $l) => !$l->isIncome()));
-        $settlements    = array_values(array_filter($fresh, static fn (ConfirmLineDto $l) => $l->isBoletoSettlement()));
-        $otherCredits   = array_values(array_filter($fresh, static fn (ConfirmLineDto $l) => $l->isOtherCredit()));
+        $expenses       = array_values(array_filter($lines, static fn (ConfirmLineDto $l) => !$l->isIncome()));
+        $settlements    = array_values(array_filter($lines, static fn (ConfirmLineDto $l) => $l->isBoletoSettlement()));
+        $otherCredits   = array_values(array_filter($lines, static fn (ConfirmLineDto $l) => $l->isOtherCredit()));
 
         $imported                           = 0;
         $consolidatedIncomeId               = null;
@@ -102,41 +103,17 @@ final class ConfirmBankOfxLinesCommandHandler implements CommandHandler
         }
 
         foreach ($expenses as $line) {
-            $expenseId = $this->dispatchExpense($line);
-            $this->importRepository->save(
-                new BankTransactionImport(
-                    id:            Uuid::v4()->toRfc4122(),
-                    fitId:         $line->fitId,
-                    bankAccountId: $command->bankAccountId,
-                    expenseId:     $expenseId,
-                ),
-                flush: false,
-            );
+            $this->dispatchExpense($line, $command->bankAccountId);
             ++$imported;
         }
 
         foreach ($otherCredits as $line) {
-            $incomeId = $this->dispatchIndividualIncome($line);
-            $this->importRepository->save(
-                new BankTransactionImport(
-                    id:            Uuid::v4()->toRfc4122(),
-                    fitId:         $line->fitId,
-                    bankAccountId: $command->bankAccountId,
-                    incomeId:      $incomeId,
-                ),
-                flush: false,
-            );
+            $this->dispatchIndividualIncome($line, $command->bankAccountId);
             ++$imported;
-        }
-
-        if ($imported > 0) {
-            $this->importRepository->flush();
         }
 
         return new ConfirmBankOfxLinesResult(
             imported:                        $imported,
-            skipped:                         count($alreadyImported),
-            skippedFitIds:                   array_values($alreadyImported),
             consolidatedIncomeId:            $consolidatedIncomeId,
             settlementMonth:                 $settlementMonthStr,
             settlementExpectedSlipTotalCents: $settlementExpectedSlipTotalCents,
@@ -149,13 +126,15 @@ final class ConfirmBankOfxLinesCommandHandler implements CommandHandler
     // Expense
     // ---------------------------------------------------------------------
 
-    private function dispatchExpense(ConfirmLineDto $line): string
+    private function dispatchExpense(ConfirmLineDto $line, string $bankAccountId): void
     {
         if ($line->expenseTypeId === null || $line->expenseTypeId === '') {
             throw new InvalidArgumentException(
-                sprintf('expenseTypeId is required for expense line "%s".', $line->fitId),
+                'Cada línea de gasto debe incluir expenseTypeId.',
             );
         }
+
+        $accountId = $this->resolveLedgerAccountId($line->accountId, $bankAccountId);
 
         $expenseId = Uuid::v4()->toRfc4122();
 
@@ -163,46 +142,156 @@ final class ConfirmBankOfxLinesCommandHandler implements CommandHandler
             id:             $expenseId,
             amount:         $line->amountInCents,
             type:           $line->expenseTypeId,
-            accountId:      $line->accountId,
+            accountId:      $accountId,
             dueDate:        $line->dueDate,
             isActive:       true,
             description:    $line->description ?? $line->memo,
             residentUnitId: $line->residentUnitId,
         ));
-
-        return $expenseId;
     }
 
     // ---------------------------------------------------------------------
     // "Other" credit: one income per line, no validation.
     // ---------------------------------------------------------------------
 
-    private function dispatchIndividualIncome(ConfirmLineDto $line): string
+    private function dispatchIndividualIncome(ConfirmLineDto $line, string $importBankAccountId): void
     {
         if ($line->incomeTypeId === null || $line->incomeTypeId === '') {
-            throw new InvalidArgumentException(sprintf(
-                '"other" credit line "%s" requires an explicit incomeTypeId (no default applies to non-settlement credits).',
-                $line->fitId,
-            ));
+            throw new InvalidArgumentException(
+                'Las líneas de crédito tipo «otro» requieren incomeTypeId.',
+            );
         }
 
         $incomeId = Uuid::v4()->toRfc4122();
 
         $postedAt = $line->postedAt !== '' ? $line->postedAt : $line->dueDate;
+        $accountId = $this->resolveLedgerAccountId($line->accountId, $importBankAccountId);
 
         $this->commandBus->dispatch(new EnterIncomeCommand(
             id:               $incomeId,
             amount:           $line->amountInCents,
             residentUnitId:   $line->residentUnitId,
             type:             $line->incomeTypeId,
-            accountId:        $line->accountId,
+            accountId:        $accountId,
             dueDate:          $postedAt,
             description:      $line->description ?? $line->memo,
             allowPastDueDate: true,
             paidAt:           $postedAt,
         ));
+    }
 
-        return $incomeId;
+    /**
+     * Cuenta del razón para movimiento bancario genérico: UUID en línea → env → setup (si no es cuenta gas/auxiliar) →
+     * plan de cuentas (nombre «principal» primero, gas/reserva/síndico al final) → último recurso ledger del setup → bank UUID.
+     */
+    private function resolveLedgerAccountId(string $lineAccountId, string $importBankAccountId): string
+    {
+        $t = trim($lineAccountId);
+        if ($t !== '' && Uuid::isValid($t)) {
+            return $t;
+        }
+
+        $default = trim((string) ($this->defaultBankLedgerAccountId ?? ''));
+        if ($default !== '' && Uuid::isValid($default)) {
+            return $default;
+        }
+
+        $openingLedger = $this->openingReferenceLedgerAccountId();
+        if ($openingLedger !== null) {
+            try {
+                $openingAccount = $this->accountRepository->findOneByIdOrFail($openingLedger);
+                if ($this->accountDefaultBookingTier($openingAccount) < 2) {
+                    return $openingLedger;
+                }
+            } catch (ResourceNotFoundException) {
+            }
+        }
+
+        $fromChart = $this->pickPreferredDefaultLedgerAccountId();
+        if ($fromChart !== null) {
+            return $fromChart;
+        }
+
+        if ($openingLedger !== null) {
+            return $openingLedger;
+        }
+
+        $b = trim($importBankAccountId);
+        if ($b !== '' && Uuid::isValid($b)) {
+            return $b;
+        }
+
+        throw new InvalidArgumentException(
+            'No hay cuentas en el razón; cree al menos una o defina DEFAULT_BANK_LEDGER_ACCOUNT_ID.',
+        );
+    }
+
+    private function openingReferenceLedgerAccountId(): ?string
+    {
+        $opening = $this->setupStatusChecker->status()['openingReference'] ?? null;
+        if (!\is_array($opening)) {
+            return null;
+        }
+        $ledgerId = trim((string) ($opening['ledgerAccountId'] ?? ''));
+        if ($ledgerId === '' || !Uuid::isValid($ledgerId)) {
+            return null;
+        }
+
+        return $ledgerId;
+    }
+
+    /**
+     * Elige cuenta por defecto: nombres que sugieren «principal / caja corriente» primero; gas, reserva, síndico, etc. al final.
+     */
+    private function pickPreferredDefaultLedgerAccountId(): ?string
+    {
+        $accounts = $this->accountRepository->findAllActive();
+        if ($accounts === []) {
+            $accounts = $this->accountRepository->findAll();
+        }
+        if ($accounts === []) {
+            return null;
+        }
+        usort($accounts, fn (Account $a, Account $b): int => $this->compareAccountsForDefaultBankBooking($a, $b));
+
+        return $accounts[0]->id();
+    }
+
+    private function compareAccountsForDefaultBankBooking(Account $a, Account $b): int
+    {
+        return [
+            $this->accountDefaultBookingTier($a),
+            strtolower((string) $a->name()),
+            $a->id(),
+        ] <=> [
+            $this->accountDefaultBookingTier($b),
+            strtolower((string) $b->name()),
+            $b->id(),
+        ];
+    }
+
+    /**
+     * 0 = cuenta principal (por nombre); 1 = genérica; 2 = gas / reserva / síndico / extra — último recurso para ingresos genéricos.
+     */
+    private function accountDefaultBookingTier(Account $account): int
+    {
+        $n = strtolower((string) $account->name());
+
+        if (preg_match(
+            '/conta\s+principal|cuenta\s+principal|caja\s+corriente|conta\s+corrente|\bprincipal\b|^principal$|main\s+account|cc\s+banco/i',
+            $n,
+        ) === 1) {
+            return 0;
+        }
+
+        if (preg_match(
+            '/\b(gas|gás|gnv|gravame|reserva|fundo\s+de\s+reserva|syndic|s[ií]ndico|taxa\s+extra|quota\s+extra)\b/i',
+            $n,
+        ) === 1) {
+            return 2;
+        }
+
+        return 1;
     }
 
     // ---------------------------------------------------------------------
@@ -236,7 +325,7 @@ final class ConfirmBankOfxLinesCommandHandler implements CommandHandler
 
         if ($incomeTypeId === null || $incomeTypeId === '') {
             throw new InvalidArgumentException(
-                'No incomeTypeId available for boleto settlement: provide it per line or configure DEFAULT_BANK_CREDIT_INCOME_TYPE_ID.',
+                'Liquidação de boletos: falta incomeTypeId (por linha) ou variável DEFAULT_BANK_CREDIT_INCOME_TYPE_ID no servidor.',
             );
         }
 
@@ -261,8 +350,6 @@ final class ConfirmBankOfxLinesCommandHandler implements CommandHandler
 
         [$expectedYear, $expectedMonth] = $this->previousMonthOf($settlementYear, $settlementMonth);
 
-        $fitIds = array_map(static fn (ConfirmLineDto $l) => $l->fitId, $settlements);
-
         $validatedAgainstSlips = $expectedCents > 0;
         if ($validatedAgainstSlips && $expectedCents !== $receivedCents) {
             throw new BoletoSettlementMismatchException(
@@ -270,7 +357,6 @@ final class ConfirmBankOfxLinesCommandHandler implements CommandHandler
                 receivedCents:   $receivedCents,
                 settlementYear:  $expectedYear,
                 settlementMonth: $expectedMonth,
-                fitIds:          $fitIds,
             );
         }
 
@@ -278,7 +364,7 @@ final class ConfirmBankOfxLinesCommandHandler implements CommandHandler
         $periodLabel     = sprintf('%02d/%04d', $expectedMonth, $expectedYear);
         $splitIncomeRows = [];
 
-        if ($this->settlementIncomeSplitMap->shouldSplit()) {
+        if ($this->settlementAccountResolver->shouldSplit()) {
             $splitIncomeRows = $this->dispatchSplitSettlementIncomes(
                 $receivedCents,
                 $expectedYear,
@@ -290,7 +376,7 @@ final class ConfirmBankOfxLinesCommandHandler implements CommandHandler
             );
             $primaryIncomeId = $splitIncomeRows[0]['incomeId'] ?? null;
             if ($primaryIncomeId === null) {
-                throw new InvalidArgumentException('Settlement split produced no income rows.');
+                throw new InvalidArgumentException('Divisão de liquidação: não foi gerada nenhuma linha de ingresso.');
             }
         } else {
             $primaryIncomeId = Uuid::v4()->toRfc4122();
@@ -301,24 +387,15 @@ final class ConfirmBankOfxLinesCommandHandler implements CommandHandler
                 amount:           $receivedCents,
                 residentUnitId:   null,
                 type:             $incomeTypeId,
-                accountId:        $settlements[0]->accountId,
+                accountId:        $this->resolveLedgerAccountId(
+                    $settlements[0]->accountId,
+                    $bankAccountId,
+                ),
                 dueDate:          $paidAt,
                 description:      $descriptionText,
                 allowPastDueDate: true,
                 paidAt:           $paidAt,
             ));
-        }
-
-        foreach ($settlements as $line) {
-            $this->importRepository->save(
-                new BankTransactionImport(
-                    id:            Uuid::v4()->toRfc4122(),
-                    fitId:         $line->fitId,
-                    bankAccountId: $bankAccountId,
-                    incomeId:      $primaryIncomeId,
-                ),
-                flush: false,
-            );
         }
 
         return [
@@ -348,8 +425,8 @@ final class ConfirmBankOfxLinesCommandHandler implements CommandHandler
 
         if ($extra === null || $reserve === null) {
             throw new InvalidArgumentException(
-                'Settlement income split is enabled but slip extra/reserve parameters are unknown for this expense month. '
-                . 'Regenerate slips after upgrading, or send settlementExtraFeePerUnitCents and settlementReserveFundPerUnitCents on this confirm request.',
+                'Divisão de liquidação ativa: faltam parâmetros de taxa extra/reserva para o mês de despesa. '
+                . 'Gere novamente os boletos ou envie settlementExtraFeePerUnitCents e settlementReserveFundPerUnitCents neste confirm.',
             );
         }
 
@@ -372,12 +449,12 @@ final class ConfirmBankOfxLinesCommandHandler implements CommandHandler
                 $reserve,
             );
         } catch (DateMalformedStringException $e) {
-            throw new InvalidArgumentException('Invalid slip breakdown date context: ' . $e->getMessage(), 0, $e);
+            throw new InvalidArgumentException('Data inválida no breakdown de boletos: ' . $e->getMessage(), 0, $e);
         }
 
         if (isset($breakdown['error'])) {
             throw new InvalidArgumentException(
-                (string) ($breakdown['message'] ?? 'Cannot compute slip breakdown for settlement split.'),
+                (string) ($breakdown['message'] ?? 'Não foi possível calcular o breakdown para a divisão da liquidação.'),
             );
         }
 
@@ -401,10 +478,10 @@ final class ConfirmBankOfxLinesCommandHandler implements CommandHandler
                 continue;
             }
 
-            $map        = $this->settlementIncomeSplitMap->accountAndTypeFor($componentKey);
+            $map        = $this->settlementAccountResolver->accountAndTypeFor($componentKey);
             $incomeId   = Uuid::v4()->toRfc4122();
-            $label      = $this->componentEnglishLabel($componentKey);
-            $description = sprintf('Boleto settlement — %s (%s)', $periodLabel, $label);
+            $label      = $this->componentLabelPtBr($componentKey);
+            $description = sprintf('Liquidação de boletos — %s (%s)', $periodLabel, $label);
 
             $this->commandBus->dispatch(new EnterIncomeCommand(
                 id:               $incomeId,
@@ -427,22 +504,22 @@ final class ConfirmBankOfxLinesCommandHandler implements CommandHandler
 
         if ($out === []) {
             throw new InvalidArgumentException(
-                'Settlement split has no positive component amounts; keep SETTLEMENT_INCOME_SPLIT_ENABLED=0 or fix slip data.',
+                'Divisão da liquidação sem valores positivos; desative SETTLEMENT_INCOME_SPLIT_ENABLED ou corrija dados dos boletos.',
             );
         }
 
         return $out;
     }
 
-    private function componentEnglishLabel(string $componentKey): string
+    private function componentLabelPtBr(string $componentKey): string
     {
         return match ($componentKey) {
-            'base' => 'base share',
-            'syndic' => 'syndic share',
-            'extra' => 'extra fee',
-            'reserve' => 'reserve fund',
-            'gas' => 'gas',
-            default => $componentKey,
+            'base'    => 'cota base',
+            'syndic'  => 'quota síndico',
+            'extra'   => 'taxa extra',
+            'reserve' => 'fundo de reserva',
+            'gas'     => 'gás',
+            default   => $componentKey,
         };
     }
 

@@ -30,7 +30,7 @@ final class ConfirmBankOfxLinesRequestDto implements RequestDto
 
         $this->lines = array_map(
             static fn (array $line) => new ConfirmLineRequestDto(
-                fitId:              (string) ($line['fitId'] ?? ''),
+                importLineKey:      (string) ($line['importLineKey'] ?? $line['fitId'] ?? ''),
                 amountInCents:      (int) ($line['amountInCents'] ?? 0),
                 postedAt:           (string) ($line['postedAt'] ?? ''),
                 memo:               (string) ($line['memo'] ?? ''),

@@ -47,6 +47,55 @@ final class OpeningReferenceMonthPostControllerTest extends ApiTestCase
         $this->assertSame(25000, $data['openingReference']['extraFeePerUnitCents']);
     }
 
+    public function test_it_records_optional_ledger_account_id(): void
+    {
+        $ledgerId = 'a1000001-0000-4000-8000-000000000001';
+        $body = [
+            'referenceMonth' => '2026-03',
+            'syndicAllocationRule' => 'equal_parts',
+            'extraFeePerUnitCents' => 0,
+            'reserveFundPerUnitCents' => 0,
+            'ledgerAccountId' => $ledgerId,
+        ];
+
+        $this->client->request(
+            'POST',
+            '/api/v1/setup/opening-reference-month',
+            [],
+            [],
+            ['CONTENT_TYPE' => 'application/json'],
+            json_encode($body, JSON_THROW_ON_ERROR),
+        );
+
+        $this->assertResponseStatusCodeSame(Response::HTTP_CREATED);
+
+        $this->client->request('GET', '/api/v1/setup/status');
+        $data = json_decode($this->client->getResponse()->getContent(), true);
+        $this->assertSame($ledgerId, $data['openingReference']['ledgerAccountId']);
+    }
+
+    public function test_it_rejects_invalid_ledger_account_id(): void
+    {
+        $body = [
+            'referenceMonth' => '2026-01',
+            'syndicAllocationRule' => 'equal_parts',
+            'extraFeePerUnitCents' => 0,
+            'reserveFundPerUnitCents' => 0,
+            'ledgerAccountId' => 'not-a-uuid',
+        ];
+
+        $this->client->request(
+            'POST',
+            '/api/v1/setup/opening-reference-month',
+            [],
+            [],
+            ['CONTENT_TYPE' => 'application/json'],
+            json_encode($body, JSON_THROW_ON_ERROR),
+        );
+
+        $this->assertResponseStatusCodeSame(Response::HTTP_BAD_REQUEST);
+    }
+
     public function test_it_rejects_invalid_allocation_rule(): void
     {
         $body = [

@@ -16,15 +16,11 @@ use RuntimeException;
  */
 final class BoletoSettlementMismatchException extends RuntimeException
 {
-    /**
-     * @param string[] $fitIds fitIds of the settlement lines considered
-     */
     public function __construct(
         public readonly int    $expectedCents,
         public readonly int    $receivedCents,
         public readonly int    $settlementYear,
         public readonly int    $settlementMonth,
-        public readonly array  $fitIds,
     ) {
         parent::__construct(sprintf(
             'Boleto settlement mismatch for %04d-%02d: expected %d cents, received %d cents (diff %+d).',
@@ -48,7 +44,6 @@ final class BoletoSettlementMismatchException extends RuntimeException
             'expectedCents'   => $this->expectedCents,
             'receivedCents'   => $this->receivedCents,
             'diffCents'       => $this->diffCents(),
-            'fitIds'          => $this->fitIds,
         ];
     }
 }

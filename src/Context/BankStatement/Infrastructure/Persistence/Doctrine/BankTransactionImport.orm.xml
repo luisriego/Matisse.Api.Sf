@@ -9,7 +9,7 @@
             <generator strategy="NONE"/>
         </id>
 
-        <field name="fitId"         column="fit_id"          type="string"            length="64"  unique="false" />
+        <field name="importLineKey" column="fit_id"          type="string"            length="64"  unique="false" />
         <field name="bankAccountId" column="bank_account_id" type="string"            length="64"                 />
         <field name="expenseId"     column="expense_id"      type="uuid"              nullable="true"             />
         <field name="incomeId"      column="income_id"       type="uuid"              nullable="true"             />

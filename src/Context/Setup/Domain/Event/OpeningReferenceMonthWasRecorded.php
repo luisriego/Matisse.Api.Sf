@@ -27,6 +27,8 @@ final readonly class OpeningReferenceMonthWasRecorded extends DomainEvent
         private ?int $expectedSyndicShareTotalCents = null,
         private ?int $expectedBoletoTotalCents = null,
         private ?int $optionalGasTotalCents = null,
+        /** Ledger bank Account UUID for OFX credits when the line omits accountId and the credit month matches referenceMonth. */
+        private ?string $ledgerAccountId = null,
         ?string $eventId = null,
         ?DateTimeImmutable $occurredOn = null,
     ) {
@@ -51,6 +53,7 @@ final readonly class OpeningReferenceMonthWasRecorded extends DomainEvent
         ?int $expectedSyndicShareTotalCents = null,
         ?int $expectedBoletoTotalCents = null,
         ?int $optionalGasTotalCents = null,
+        ?string $ledgerAccountId = null,
     ): self {
         return new self(
             OpeningSetupAggregateId::VALUE,
@@ -62,12 +65,13 @@ final readonly class OpeningReferenceMonthWasRecorded extends DomainEvent
             $expectedSyndicShareTotalCents,
             $expectedBoletoTotalCents,
             $optionalGasTotalCents,
+            $ledgerAccountId,
         );
     }
 
     public function toPrimitives(): array
     {
-        return [
+        $primitives = [
             'referenceMonth' => $this->referenceMonth,
             'syndicAllocationRule' => $this->syndicAllocationRule,
             'extraFeePerUnitCents' => $this->extraFeePerUnitCents,
@@ -77,6 +81,12 @@ final readonly class OpeningReferenceMonthWasRecorded extends DomainEvent
             'expectedBoletoTotalCents' => $this->expectedBoletoTotalCents,
             'optionalGasTotalCents' => $this->optionalGasTotalCents,
         ];
+
+        if ($this->ledgerAccountId !== null && $this->ledgerAccountId !== '') {
+            $primitives['ledgerAccountId'] = $this->ledgerAccountId;
+        }
+
+        return $primitives;
     }
 
     /**
@@ -98,6 +108,8 @@ final readonly class OpeningReferenceMonthWasRecorded extends DomainEvent
             array_key_exists('expectedSyndicShareTotalCents', $body) ? (int) $body['expectedSyndicShareTotalCents'] : null,
             array_key_exists('expectedBoletoTotalCents', $body) ? (int) $body['expectedBoletoTotalCents'] : null,
             array_key_exists('optionalGasTotalCents', $body) ? (int) $body['optionalGasTotalCents'] : null,
+            isset($body['ledgerAccountId']) && $body['ledgerAccountId'] !== '' && $body['ledgerAccountId'] !== null
+                ? (string) $body['ledgerAccountId'] : null,
             $eventId,
             new DateTimeImmutable($occurredOn),
         );
@@ -111,5 +123,10 @@ final readonly class OpeningReferenceMonthWasRecorded extends DomainEvent
     public function syndicAllocationRule(): SyndicAllocationRule
     {
         return SyndicAllocationRule::from($this->syndicAllocationRule);
+    }
+
+    public function ledgerAccountId(): ?string
+    {
+        return $this->ledgerAccountId;
     }
 }

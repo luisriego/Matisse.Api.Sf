@@ -57,7 +57,7 @@ use Symfony\Component\Serializer\Normalizer\NormalizerInterface;
                         type: 'array',
                         items: new OA\Items(
                             properties: [
-                                new OA\Property(property: 'fitId',                       type: 'string', example: 'FIT-20260310-001'),
+                                new OA\Property(property: 'importLineKey',               type: 'string', example: '20260310001'),
                                 new OA\Property(property: 'bankAccountId',               type: 'string', format: 'uuid'),
                                 new OA\Property(property: 'type',                        type: 'string', enum: ['DEBIT', 'CREDIT']),
                                 new OA\Property(property: 'amountInCents',               type: 'integer', example: 15000),

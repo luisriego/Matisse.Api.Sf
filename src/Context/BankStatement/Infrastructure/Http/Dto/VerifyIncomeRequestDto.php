@@ -12,7 +12,7 @@ final class VerifyIncomeRequestDto implements RequestDto
     public readonly int   $month;
     public readonly int   $year;
 
-    /** @var array<array{fitId: string, amountInCents: int, memo: string}> */
+    /** @var array<array{importLineKey: string, amountInCents: int, memo: string}> */
     public readonly array $creditLines;
 
     public function __construct(Request $request)
@@ -24,7 +24,7 @@ final class VerifyIncomeRequestDto implements RequestDto
 
         $this->creditLines = array_map(
             static fn (array $line) => [
-                'fitId'         => (string) ($line['fitId'] ?? ''),
+                'importLineKey' => (string) ($line['importLineKey'] ?? $line['fitId'] ?? ''),
                 'amountInCents' => (int) ($line['amountInCents'] ?? 0),
                 'memo'          => (string) ($line['memo'] ?? ''),
             ],

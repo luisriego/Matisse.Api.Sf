@@ -49,8 +49,8 @@ final class OfxVerifyIncomePostControllerTest extends ApiTestCase
             'month'       => self::MONTH,
             'year'        => self::YEAR,
             'creditLines' => [
-                ['fitId' => 'FIT-CR-001', 'amountInCents' => 25000, 'memo' => 'BOLETOS RECEBIDOS 04/03S'],
-                ['fitId' => 'FIT-CR-002', 'amountInCents' => 25000, 'memo' => 'BOLETOS RECEBIDOS'],
+                ['importLineKey' => 'FIT-CR-001', 'amountInCents' => 25000, 'memo' => 'BOLETOS RECEBIDOS 04/03S'],
+                ['importLineKey' => 'FIT-CR-002', 'amountInCents' => 25000, 'memo' => 'BOLETOS RECEBIDOS'],
             ],
         ];
 
@@ -86,7 +86,7 @@ final class OfxVerifyIncomePostControllerTest extends ApiTestCase
             'month'       => self::MONTH,
             'year'        => self::YEAR,
             'creditLines' => [
-                ['fitId' => 'FIT-CR-001', 'amountInCents' => 30000, 'memo' => 'BOLETOS RECEBIDOS'],
+                ['importLineKey' => 'FIT-CR-001', 'amountInCents' => 30000, 'memo' => 'BOLETOS RECEBIDOS'],
             ],
         ];
 

@@ -8,7 +8,7 @@ namespace App\Context\BankStatement\Application\Dto;
 final readonly class CreditLineDto
 {
     public function __construct(
-        public readonly string $fitId,
+        public readonly string $importLineKey,
         public readonly int    $amountInCents,
         public readonly string $memo,
     ) {}
