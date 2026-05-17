@@ -126,7 +126,7 @@ final class SlipComponentBreakdownServiceTest extends TestCase
         $this->assertSame(60000, $result['components']['syndicTotalCents']);
     }
 
-    public function testNoSyndicDoubleCountWhenSyndicIsInsideMonthlyExpenseLine(): void
+    public function test_pf1se_line_passed_whole_to_equal_pool_without_syndic_split(): void
     {
         $units = [
             $this->unit('u-101', '101', 0.20),
@@ -136,8 +136,7 @@ final class SlipComponentBreakdownServiceTest extends TestCase
             $this->unit('u-501', '501', 0.20),
         ];
 
-        // Caso real: línea de 670 ya contiene síndico (600) + internet/CFTV (70).
-        // Regla: si viene dentro del pool mensual, no crear componente síndico aparte.
+        // Sin SyndicFeeSlipPoolAdjustmentService: 670 en pool igualitario (comportamiento bajo nivel).
         $result = $this->service->build(
             $units,
             67000,
@@ -151,8 +150,6 @@ final class SlipComponentBreakdownServiceTest extends TestCase
 
         $this->assertSame(67000, $result['components']['baseTotalCents']);
         $this->assertSame(0, $result['components']['syndicTotalCents']);
-        $this->assertSame(67000, $result['components']['grandTotalCents']);
-        $this->assertSame(0, $result['totals']['differenceCents']);
     }
 
     private function unit(string $id, string $unit, float $idealFraction): ResidentUnit

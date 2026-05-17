@@ -23,6 +23,7 @@ readonly class SlipFactory
     public function __construct(
         private MonthlyExpenseAggregatorService $monthlyExpenseAggregator,
         private RecurringExpenseSlipContributionService $recurringExpenseSlipContribution,
+        private SyndicFeeSlipPoolAdjustmentService $syndicFeeSlipPoolAdjustment,
         private SlipComponentBreakdownService $slipComponentBreakdownService,
         private GasExpenseByUnitResolver $gasExpenseByUnitResolver,
         private LoggerInterface $logger,
@@ -57,9 +58,22 @@ readonly class SlipFactory
             $expenseMonth,
         );
 
-        $totalEquallyDividedExpenses = $expenseTotals['equal'] + $recurringPart['equal'];
+        $mergedEqual = $expenseTotals['equal'] + $recurringPart['equal'];
         $totalFractionBasedExpenses = $expenseTotals['fraction'] + $recurringPart['fraction'];
         $individualByUnit = $expenseTotals['individualByUnit'];
+
+        $poolAdjustment = $this->syndicFeeSlipPoolAdjustment->adjust(
+            $expenses,
+            $recurringExpenses,
+            $expenseYear,
+            $expenseMonth,
+            $residentUnits,
+            $mergedEqual,
+            $individualByUnit,
+        );
+        $totalEquallyDividedExpenses = $poolAdjustment['baseEqualPoolCents'];
+        $syndicEqualPool = $poolAdjustment['syndicEqualPoolCents'];
+        $individualByUnit = $poolAdjustment['individualByUnit'];
         $this->logger->info(sprintf(
             'Aggregated totals for %d-%d: Equal: %.2f, Fraction: %.2f, Individual: %.2f, RecurringEqual: %.2f, RecurringFraction: %.2f',
             $expenseYear,
@@ -88,7 +102,7 @@ readonly class SlipFactory
         $breakdown = $this->slipComponentBreakdownService->build(
             $residentUnits,
             $totalEquallyDividedExpenses,
-            0,
+            $syndicEqualPool,
             $totalFractionBasedExpenses,
             $individualByUnit,
             $gasExpensesByUnit,

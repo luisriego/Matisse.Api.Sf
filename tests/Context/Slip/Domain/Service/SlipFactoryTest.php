@@ -12,6 +12,7 @@ use App\Context\Slip\Domain\Service\MonthlyExpenseAggregatorService;
 use App\Context\Slip\Domain\Service\RecurringExpenseSlipContributionService;
 use App\Context\Slip\Domain\Service\SlipComponentBreakdownService;
 use App\Context\Slip\Domain\Service\SlipFactory;
+use App\Context\Slip\Domain\Service\SyndicFeeSlipPoolAdjustmentService;
 use App\Context\Slip\Domain\Slip;
 use DateTimeImmutable;
 use PHPUnit\Framework\MockObject\MockObject; // Asegúrate de que esta línea exista
@@ -42,6 +43,10 @@ class SlipFactoryTest extends TestCase
         $this->factory = new SlipFactory(
             $this->monthlyExpenseAggregatorService,
             new RecurringExpenseSlipContributionService(),
+            new SyndicFeeSlipPoolAdjustmentService(
+                new RecurringExpenseSlipContributionService(),
+                $this->monthlyExpenseAggregatorService,
+            ),
             $this->slipComponentBreakdownService,
             $this->gasExpenseByUnitResolver,
             $this->logger,

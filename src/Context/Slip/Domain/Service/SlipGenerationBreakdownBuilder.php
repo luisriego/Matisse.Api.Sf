@@ -26,6 +26,7 @@ readonly class SlipGenerationBreakdownBuilder
     public function __construct(
         private MonthlyExpenseAggregatorService $monthlyExpenseAggregator,
         private RecurringExpenseSlipContributionService $recurringExpenseSlipContribution,
+        private SyndicFeeSlipPoolAdjustmentService $syndicFeeSlipPoolAdjustment,
         private SlipComponentBreakdownService $slipComponentBreakdownService,
         private GasConsumptionBreakdownResolver $gasConsumptionBreakdownResolver,
         private LoggerInterface $logger,
@@ -61,8 +62,18 @@ readonly class SlipGenerationBreakdownBuilder
         $individualByUnit = $expenseTotals['individualByUnit'];
         $n = count($residentUnits);
 
-        $baseEqualPool = $mergedEqual;
-        $syndicEqualPool = 0;
+        $poolAdjustment = $this->syndicFeeSlipPoolAdjustment->adjust(
+            $expenses,
+            $recurringExpenses,
+            $expenseYear,
+            $expenseMonth,
+            $residentUnits,
+            $mergedEqual,
+            $individualByUnit,
+        );
+        $baseEqualPool = $poolAdjustment['baseEqualPoolCents'];
+        $syndicEqualPool = $poolAdjustment['syndicEqualPoolCents'];
+        $individualByUnit = $poolAdjustment['individualByUnit'];
 
         $previousMonth = (new DateTimeImmutable(sprintf('%d-%d-01', $expenseYear, $expenseMonth)))->modify('-1 month');
         $gasYear = (int) $previousMonth->format('Y');
@@ -110,6 +121,17 @@ readonly class SlipGenerationBreakdownBuilder
         }
 
         $warnings = [];
+        if ($poolAdjustment['pf1seTotalCents'] > 0 && $poolAdjustment['internetShareCents'] > 0 && $poolAdjustment['internetChargedToUnitId'] === null) {
+            $warnings[] = [
+                'code' => 'PF1SE_INTERNET_UNIT_NOT_FOUND',
+                'message' => sprintf(
+                    'Línea PF1SE: %d centavos de internet/CFTV no imputados: unidad %s no encontrada.',
+                    $poolAdjustment['internetShareCents'],
+                    SyndicFeeSlipPoolAdjustmentService::INTERNET_CHARGED_TO_UNIT,
+                ),
+                'internetShareCents' => $poolAdjustment['internetShareCents'],
+            ];
+        }
         if (abs($computed['totals']['differenceCents']) > 1) {
             $warnings[] = [
                 'code' => 'COMPONENT_MISMATCH',
@@ -135,9 +157,10 @@ readonly class SlipGenerationBreakdownBuilder
                 ...$computed['components'],
                 'mergedEqualCents' => $mergedEqual,
                 'baseEqualPoolCents' => $baseEqualPool,
-                // Regla de negocio vigente: no separar síndico como componente adicional;
-                // si existe en gastos del mes, ya está contenido dentro de base/equal.
                 'syndicEqualPoolCents' => $syndicEqualPool,
+                'pf1seTotalCents' => $poolAdjustment['pf1seTotalCents'],
+                'pf1seSyndicShareCents' => $poolAdjustment['syndicShareCents'],
+                'pf1seInternetShareCents' => $poolAdjustment['internetShareCents'],
                 'mergedFractionCents' => $mergedFraction,
             ],
             'classificationSummary' => $this->classificationSummary($expenses),
