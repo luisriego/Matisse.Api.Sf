@@ -64,6 +64,10 @@ use Symfony\Component\HttpFoundation\Response;
                             new OA\Property(property: 'recurringExpenseId', type: 'string',  format: 'uuid', nullable: true),
                             new OA\Property(property: 'residentUnitId',     type: 'string',  format: 'uuid', nullable: true,
                                 description: 'Usually null for bank CREDIT lines.'),
+                            new OA\Property(property: 'isExpectedExpense', type: 'boolean', default: true,
+                                description: 'Expense lines only. When true, also upserts expected expense memory for forecast.'),
+                            new OA\Property(property: 'expectedExpense', type: 'object', nullable: true,
+                                description: 'recurringExpenseId and/or createOrUpdate when isExpectedExpense is true.'),
                         ],
                     ),
                 ),
@@ -78,6 +82,8 @@ use Symfony\Component\HttpFoundation\Response;
             content: new OA\JsonContent(
                 properties: [
                     new OA\Property(property: 'imported',             type: 'integer', example: 10),
+                    new OA\Property(property: 'expectedExpensesLinked', type: 'integer', example: 11),
+                    new OA\Property(property: 'expectedExpensesCreated', type: 'integer', example: 2),
                     new OA\Property(property: 'consolidatedIncomeId', type: 'string', format: 'uuid', nullable: true,
                         description: 'Id of the single consolidated income built from all boleto_settlement lines (if any).'),
                     new OA\Property(property: 'settlementMonth',      type: 'string', nullable: true, example: '2026-03',
@@ -128,6 +134,8 @@ final class OfxConfirmPostController extends AbstractController
                 recurringExpenseId: $line->recurringExpenseId,
                 residentUnitId:     $line->residentUnitId,
                 creditKind:         $line->creditKind,
+                isExpectedExpense:  $line->isExpectedExpense,
+                expectedExpense:    $line->expectedExpense,
             ),
             $request->lines,
         );
@@ -148,7 +156,10 @@ final class OfxConfirmPostController extends AbstractController
         }
 
         return new JsonResponse([
+            'recorded'                         => true,
             'imported'                         => $result->imported,
+            'expectedExpensesLinked'           => $result->expectedExpensesLinked,
+            'expectedExpensesCreated'          => $result->expectedExpensesCreated,
             'consolidatedIncomeId'             => $result->consolidatedIncomeId,
             'settlementMonth'                  => $result->settlementMonth,
             'settlementExpectedSlipTotalCents' => $result->settlementExpectedSlipTotalCents,

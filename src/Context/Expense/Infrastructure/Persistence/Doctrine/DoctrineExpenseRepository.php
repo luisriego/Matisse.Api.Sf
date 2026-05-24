@@ -115,6 +115,26 @@ class DoctrineExpenseRepository extends ServiceEntityRepository implements Expen
             ->getOneOrNullResult();
     }
 
+    public function findLatestDueDateMonthByRecurringExpenseId(string $recurringExpenseId): ?string
+    {
+        $result = $this->createQueryBuilder('e')
+            ->select('e.dueDate')
+            ->join('e.recurringExpense', 're')
+            ->where('re.id = :recurringExpenseId')
+            ->andWhere('e.isActive = true')
+            ->setParameter('recurringExpenseId', $recurringExpenseId)
+            ->orderBy('e.dueDate', 'DESC')
+            ->setMaxResults(1)
+            ->getQuery()
+            ->getOneOrNullResult();
+
+        if ($result === null) {
+            return null;
+        }
+
+        return $result->dueDate()->format('Y-m');
+    }
+
     public function countActiveInDueDateRange(DateRange $dateRange): int
     {
         return (int) $this->getEntityManager()

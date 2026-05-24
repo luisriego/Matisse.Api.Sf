@@ -34,6 +34,8 @@ nelmio_api_doc:
               description: Bank statement OFX ingestion and settlement
             - name: Setup
               description: Initial condominium setup wizard
+            - name: Billing Policy
+              description: Monthly slip billing parameters (extra fee, reserve fund, syndic, gas)
             - name: Ledger
               description: Cross-context ledger movements by month
             - name: Internal

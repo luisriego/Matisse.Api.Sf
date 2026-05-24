@@ -8,6 +8,8 @@ use App\Context\Account\Domain\AccountName;
 use App\Context\Account\Domain\AccountRepository;
 use App\Context\BankStatement\Application\Service\SettlementAccountResolver;
 use App\Context\BankStatement\Application\UseCase\ConfirmBankOfxLines\ConfirmBankOfxLinesCommandHandler;
+use App\Context\Expense\Domain\ExpenseRepository;
+use App\Context\Expense\Domain\RecurringExpenseRepository;
 use App\Context\Income\Domain\IncomeRepository;
 use App\Context\Income\Domain\ValueObject\IncomeTypeName;
 use App\Context\Setup\Application\Service\SetupStatusChecker;
@@ -63,6 +65,112 @@ final class OfxConfirmPostControllerTest extends ApiTestCase
         $this->assertSame(1, $data['imported']);
         $this->assertNull($data['consolidatedIncomeId']);
         $this->assertNull($data['settlementMonth']);
+    }
+
+    public function test_it_creates_expected_expense_memory_when_confirming_debit(): void
+    {
+        $account     = AccountMother::create();
+        $expenseType = ExpenseTypeMother::create();
+        $this->entityManager->persist($account);
+        $this->entityManager->persist($expenseType);
+        $this->entityManager->flush();
+
+        $payload = [
+            'bankAccountId' => self::BANK_ACCOUNT_ID,
+            'lines'         => [
+                [
+                    'importLineKey' => 'FIT-CEMIG-001',
+                    'amountInCents' => 21161,
+                    'postedAt'      => '2022-08-10',
+                    'memo'          => 'CEMIG',
+                    'expenseTypeId' => $expenseType->id(),
+                    'accountId'     => $account->id(),
+                    'dueDate'       => '2022-08-10',
+                    'description'   => 'Cemig agosto',
+                    'isExpectedExpense' => true,
+                    'expectedExpense' => [
+                        'createOrUpdate' => [
+                            'displayName' => 'Cemig',
+                            'frequency' => 'monthly',
+                            'amountKind' => 'variable',
+                            'dueDay' => 10,
+                        ],
+                    ],
+                ],
+            ],
+        ];
+
+        $this->client->request(
+            'POST',
+            '/api/v1/bank/ofx-confirm',
+            [],
+            [],
+            ['CONTENT_TYPE' => 'application/json'],
+            json_encode($payload, JSON_THROW_ON_ERROR),
+        );
+
+        $this->assertResponseStatusCodeSame(Response::HTTP_CREATED);
+
+        $data = json_decode($this->client->getResponse()->getContent(), true);
+        $this->assertTrue($data['recorded']);
+        $this->assertSame(1, $data['imported']);
+        $this->assertSame(1, $data['expectedExpensesLinked']);
+        $this->assertSame(1, $data['expectedExpensesCreated']);
+
+        $recurringRepository = self::getContainer()->get(RecurringExpenseRepository::class);
+        $recurringExpenses = $recurringRepository->findAll();
+        $this->assertCount(1, $recurringExpenses);
+        $this->assertSame('Cemig', $recurringExpenses[0]->description());
+        $this->assertFalse($recurringExpenses[0]->hasPredefinedAmount());
+        $this->assertSame(21161, $recurringExpenses[0]->amount());
+
+        $expenseRepository = self::getContainer()->get(ExpenseRepository::class);
+        $expenses = $expenseRepository->findAll();
+        $this->assertCount(1, $expenses);
+        $this->assertSame($recurringExpenses[0]->id(), $expenses[0]->recurringExpense()?->id());
+    }
+
+    public function test_it_skips_expected_expense_memory_when_flag_is_false(): void
+    {
+        $account     = AccountMother::create();
+        $expenseType = ExpenseTypeMother::create();
+        $this->entityManager->persist($account);
+        $this->entityManager->persist($expenseType);
+        $this->entityManager->flush();
+
+        $payload = [
+            'bankAccountId' => self::BANK_ACCOUNT_ID,
+            'lines'         => [
+                [
+                    'importLineKey' => 'FIT-ONEOFF-001',
+                    'amountInCents' => 5000,
+                    'postedAt'      => '2022-08-10',
+                    'memo'          => 'PINTURA PORTARIA',
+                    'expenseTypeId' => $expenseType->id(),
+                    'accountId'     => $account->id(),
+                    'dueDate'       => '2022-08-10',
+                    'isExpectedExpense' => false,
+                ],
+            ],
+        ];
+
+        $this->client->request(
+            'POST',
+            '/api/v1/bank/ofx-confirm',
+            [],
+            [],
+            ['CONTENT_TYPE' => 'application/json'],
+            json_encode($payload, JSON_THROW_ON_ERROR),
+        );
+
+        $this->assertResponseStatusCodeSame(Response::HTTP_CREATED);
+
+        $data = json_decode($this->client->getResponse()->getContent(), true);
+        $this->assertSame(0, $data['expectedExpensesLinked']);
+        $this->assertSame(0, $data['expectedExpensesCreated']);
+
+        $recurringRepository = self::getContainer()->get(RecurringExpenseRepository::class);
+        $this->assertSame([], $recurringRepository->findAll());
     }
 
     public function test_it_accepts_legacy_json_property_alias_for_import_line_key(): void
@@ -413,6 +521,7 @@ final class OfxConfirmPostControllerTest extends ApiTestCase
                 $resolver,
                 self::getContainer()->get(SetupStatusChecker::class),
                 self::getContainer()->get(AccountRepository::class),
+                self::getContainer()->get(\App\Context\Expense\Application\Service\ExpectedExpenseFromOfxService::class),
                 null,
                 null,
             ),

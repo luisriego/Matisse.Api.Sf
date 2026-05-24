@@ -1,0 +1,21 @@
+services:
+    _defaults:
+        autowire: true
+        autoconfigure: true
+
+    App\Context\BillingPolicy\Infrastructure\Http\Controller\:
+        public: true
+        resource: './Infrastructure/Http/Controller/'
+        tags: ['controller.service_arguments']
+
+    App\Context\BillingPolicy\:
+        resource: './'
+        exclude:
+            - './Infrastructure/Http/Controller/'
+            - './BillingPolicy.yaml'
+
+    App\Context\BillingPolicy\Domain\BillingPolicyMonthSnapshotRepository:
+        alias: App\Context\BillingPolicy\Infrastructure\Persistence\Doctrine\DoctrineBillingPolicyMonthSnapshotRepository
+
+    App\Context\BillingPolicy\Domain\BillingPolicyResolverPort:
+        alias: App\Context\BillingPolicy\Application\Service\BillingPolicyResolverService

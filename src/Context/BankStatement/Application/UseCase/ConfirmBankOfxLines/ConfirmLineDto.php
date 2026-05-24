@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace App\Context\BankStatement\Application\UseCase\ConfirmBankOfxLines;
 
+use App\Context\BankStatement\Application\Dto\ExpectedExpenseSpecDto;
+
 /**
  * Carries the data that the user confirmed for a single bank transaction line.
  *
@@ -35,6 +37,8 @@ final readonly class ConfirmLineDto
         public readonly ?string $recurringExpenseId = null,
         public readonly ?string $residentUnitId     = null,
         public readonly string  $creditKind         = self::CREDIT_KIND_BOLETO_SETTLEMENT,
+        public readonly bool    $isExpectedExpense  = true,
+        public readonly ?ExpectedExpenseSpecDto $expectedExpense = null,
     ) {}
 
     public function isIncome(): bool

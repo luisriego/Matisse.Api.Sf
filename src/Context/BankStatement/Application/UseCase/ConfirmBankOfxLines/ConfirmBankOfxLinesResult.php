@@ -31,5 +31,7 @@ final readonly class ConfirmBankOfxLinesResult
          * @var list<array{component: string, incomeId: string, amountCents: int}>
          */
         public readonly array $settlementSplitIncomeIds = [],
+        public readonly int $expectedExpensesLinked = 0,
+        public readonly int $expectedExpensesCreated = 0,
     ) {}
 }

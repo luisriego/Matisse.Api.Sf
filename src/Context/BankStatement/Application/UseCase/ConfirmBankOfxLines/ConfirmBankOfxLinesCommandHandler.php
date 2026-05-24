@@ -6,9 +6,13 @@ namespace App\Context\BankStatement\Application\UseCase\ConfirmBankOfxLines;
 
 use App\Context\Account\Domain\Account;
 use App\Context\Account\Domain\AccountRepository;
+use App\Context\BankStatement\Application\Dto\ExpectedExpenseCreateOrUpdateDto;
+use App\Context\BankStatement\Application\Dto\ExpectedExpenseSpecDto;
 use App\Context\BankStatement\Application\Service\SettlementAccountResolver;
 use App\Context\BankStatement\Domain\Exception\BoletoSettlementMismatchException;
+use App\Context\Expense\Application\Service\ExpectedExpenseFromOfxService;
 use App\Context\Expense\Application\UseCase\EnterExpense\EnterExpenseCommand;
+use App\Context\Expense\Application\UseCase\EnterExpense\EnterMonthlyRecurringExpenseCommand;
 use App\Context\Expense\Domain\ExpenseRepository;
 use App\Context\Expense\Domain\RecurringExpenseRepository;
 use App\Context\Income\Application\UseCase\EnterIncome\EnterIncomeCommand;
@@ -57,6 +61,7 @@ final class ConfirmBankOfxLinesCommandHandler implements CommandHandler
         private readonly SettlementAccountResolver $settlementAccountResolver,
         private readonly SetupStatusChecker $setupStatusChecker,
         private readonly AccountRepository $accountRepository,
+        private readonly ExpectedExpenseFromOfxService $expectedExpenseFromOfx,
         /**
          * Default income type id used for bank CREDIT lines when the client did not send one.
          * Set via environment variable DEFAULT_BANK_CREDIT_INCOME_TYPE_ID.
@@ -84,6 +89,8 @@ final class ConfirmBankOfxLinesCommandHandler implements CommandHandler
         $settlementExpectedSlipTotalCents   = null;
         $settlementValidatedAgainstSlips    = null;
         $settlementSplitIncomeIds           = [];
+        $expectedExpensesLinked             = 0;
+        $expectedExpensesCreated            = 0;
 
         // Validate settlement FIRST (can throw 422 when slips define a non-zero expected total).
         // Greenfield: expected slip total 0 → accept bank sum as initial consolidated income (no 422).
@@ -103,7 +110,13 @@ final class ConfirmBankOfxLinesCommandHandler implements CommandHandler
         }
 
         foreach ($expenses as $line) {
-            $this->dispatchExpense($line, $command->bankAccountId);
+            $outcome = $this->dispatchExpense($line, $command->bankAccountId);
+            if ($outcome['linked']) {
+                ++$expectedExpensesLinked;
+            }
+            if ($outcome['created']) {
+                ++$expectedExpensesCreated;
+            }
             ++$imported;
         }
 
@@ -119,6 +132,8 @@ final class ConfirmBankOfxLinesCommandHandler implements CommandHandler
             settlementExpectedSlipTotalCents: $settlementExpectedSlipTotalCents,
             settlementValidatedAgainstSlips:   $settlementValidatedAgainstSlips,
             settlementSplitIncomeIds:         $settlementSplitIncomeIds,
+            expectedExpensesLinked:           $expectedExpensesLinked,
+            expectedExpensesCreated:          $expectedExpensesCreated,
         );
     }
 
@@ -126,7 +141,12 @@ final class ConfirmBankOfxLinesCommandHandler implements CommandHandler
     // Expense
     // ---------------------------------------------------------------------
 
-    private function dispatchExpense(ConfirmLineDto $line, string $bankAccountId): void
+    /**
+     * @return array{linked: bool, created: bool}
+     *
+     * @throws DateMalformedStringException
+     */
+    private function dispatchExpense(ConfirmLineDto $line, string $bankAccountId): array
     {
         if ($line->expenseTypeId === null || $line->expenseTypeId === '') {
             throw new InvalidArgumentException(
@@ -138,16 +158,60 @@ final class ConfirmBankOfxLinesCommandHandler implements CommandHandler
 
         $expenseId = Uuid::v4()->toRfc4122();
 
-        $this->commandBus->dispatch(new EnterExpenseCommand(
-            id:             $expenseId,
-            amount:         $line->amountInCents,
-            type:           $line->expenseTypeId,
-            accountId:      $accountId,
-            dueDate:        $line->dueDate,
-            isActive:       true,
-            description:    $line->description ?? $line->memo,
-            residentUnitId: $line->residentUnitId,
+        if (!$line->isExpectedExpense) {
+            $this->commandBus->dispatch(new EnterExpenseCommand(
+                id:             $expenseId,
+                amount:         $line->amountInCents,
+                type:           $line->expenseTypeId,
+                accountId:      $accountId,
+                dueDate:        $line->dueDate,
+                isActive:       true,
+                description:    $line->description ?? $line->memo,
+                residentUnitId: $line->residentUnitId,
+            ));
+
+            return ['linked' => false, 'created' => false];
+        }
+
+        $spec = $line->expectedExpense;
+        if ($spec === null && ($line->recurringExpenseId === null || $line->recurringExpenseId === '')) {
+            $spec = new ExpectedExpenseSpecDto(
+                null,
+                new ExpectedExpenseCreateOrUpdateDto(
+                    displayName: $line->description ?? $line->memo,
+                    frequency: 'monthly',
+                    amountKind: 'variable',
+                    dueDay: (int) (new DateTimeImmutable($line->dueDate))->format('j'),
+                ),
+            );
+        } elseif ($spec === null) {
+            $spec = new ExpectedExpenseSpecDto($line->recurringExpenseId, null);
+        }
+
+        $outcome = $this->expectedExpenseFromOfx->upsertFromOfxLine(
+            isExpectedExpense: true,
+            spec: $spec,
+            legacyRecurringExpenseId: $line->recurringExpenseId,
+            expenseTypeId: $line->expenseTypeId,
+            accountId: $accountId,
+            amountInCents: $line->amountInCents,
+            dueDate: $line->dueDate,
+            memo: $line->memo,
+            description: $line->description,
+        );
+
+        $this->commandBus->dispatch(new EnterMonthlyRecurringExpenseCommand(
+            $expenseId,
+            $outcome['recurringExpenseId'],
+            $accountId,
+            $line->amountInCents,
+            $line->dueDate,
         ));
+
+        return [
+            'linked' => $outcome['linked'],
+            'created' => $outcome['created'],
+        ];
     }
 
     // ---------------------------------------------------------------------

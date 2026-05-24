@@ -1,0 +1,16 @@
+billing_policy_resolve:
+    path: /api/v1/billing-policy/resolve
+    methods: [GET]
+    controller: App\Context\BillingPolicy\Infrastructure\Http\Controller\BillingPolicyResolveGetController
+
+billing_policy_month_put:
+    path: /api/v1/billing-policy/months/{targetMonth}
+    methods: [PUT]
+    controller: App\Context\BillingPolicy\Infrastructure\Http\Controller\BillingPolicyMonthPutController
+    requirements:
+        targetMonth: '\d{4}-\d{2}'
+
+billing_policy_events:
+    path: /api/v1/billing-policy/events
+    methods: [GET]
+    controller: App\Context\BillingPolicy\Infrastructure\Http\Controller\BillingPolicyEventsGetController

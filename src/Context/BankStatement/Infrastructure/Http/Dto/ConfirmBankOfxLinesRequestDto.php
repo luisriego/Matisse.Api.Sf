@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace App\Context\BankStatement\Infrastructure\Http\Dto;
 
+use App\Context\BankStatement\Application\Dto\ExpectedExpenseCreateOrUpdateDto;
+use App\Context\BankStatement\Application\Dto\ExpectedExpenseSpecDto;
 use App\Shared\Infrastructure\RequestDto;
 use Symfony\Component\HttpFoundation\Request;
 
@@ -43,8 +45,36 @@ final class ConfirmBankOfxLinesRequestDto implements RequestDto
                 recurringExpenseId: isset($line['recurringExpenseId']) ? (string) $line['recurringExpenseId'] : null,
                 residentUnitId:     isset($line['residentUnitId'])     ? (string) $line['residentUnitId']     : null,
                 creditKind:         (string) ($line['creditKind'] ?? 'boleto_settlement'),
+                isExpectedExpense:  !isset($line['isExpectedExpense']) || (bool) $line['isExpectedExpense'],
+                expectedExpense:    isset($line['expectedExpense']) && is_array($line['expectedExpense'])
+                    ? self::parseExpectedExpense($line['expectedExpense']) : null,
             ),
             $data['lines'] ?? [],
         );
+    }
+
+    private static function parseExpectedExpense(array $raw): ExpectedExpenseSpecDto
+    {
+        $recurringId = isset($raw['recurringExpenseId']) ? (string) $raw['recurringExpenseId'] : null;
+        if ($recurringId === '') {
+            $recurringId = null;
+        }
+
+        $createOrUpdate = null;
+        if (isset($raw['createOrUpdate']) && is_array($raw['createOrUpdate'])) {
+            $cu = $raw['createOrUpdate'];
+            $months = isset($cu['monthsOfYear']) && is_array($cu['monthsOfYear'])
+                ? array_map('intval', $cu['monthsOfYear']) : null;
+
+            $createOrUpdate = new ExpectedExpenseCreateOrUpdateDto(
+                displayName: (string) ($cu['displayName'] ?? ''),
+                frequency: (string) ($cu['frequency'] ?? 'monthly'),
+                amountKind: (string) ($cu['amountKind'] ?? 'variable'),
+                monthsOfYear: $months,
+                dueDay: isset($cu['dueDay']) ? (int) $cu['dueDay'] : null,
+            );
+        }
+
+        return new ExpectedExpenseSpecDto($recurringId, $createOrUpdate);
     }
 }

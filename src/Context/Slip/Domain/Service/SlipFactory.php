@@ -46,6 +46,7 @@ readonly class SlipFactory
         int $expenseMonth,
         int $extraFeePerUnitCents = 0,
         int $reserveFundPerUnitCents = 0,
+        ?int $syndicShareTotalCents = null,
     ): array {
         if (empty($residentUnits)) {
             return [];
@@ -70,6 +71,7 @@ readonly class SlipFactory
             $residentUnits,
             $mergedEqual,
             $individualByUnit,
+            $syndicShareTotalCents ?? SyndicFeeSlipPoolAdjustmentService::SYNDIC_SHARE_TOTAL_CENTS,
         );
         $totalEquallyDividedExpenses = $poolAdjustment['baseEqualPoolCents'];
         $syndicEqualPool = $poolAdjustment['syndicEqualPoolCents'];

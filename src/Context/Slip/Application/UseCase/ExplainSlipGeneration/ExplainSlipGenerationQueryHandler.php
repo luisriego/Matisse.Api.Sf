@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Context\Slip\Application\UseCase\ExplainSlipGeneration;
 
+use App\Context\BillingPolicy\Domain\BillingPolicyResolverPort;
 use App\Context\Expense\Domain\ExpenseRepository;
 use App\Context\Expense\Domain\RecurringExpenseRepository;
 use App\Context\ResidentUnit\Domain\ResidentUnitRepository;
@@ -19,6 +20,7 @@ final readonly class ExplainSlipGenerationQueryHandler implements QueryHandler
         private RecurringExpenseRepository $recurringExpenseRepository,
         private ResidentUnitRepository $residentUnitRepository,
         private SlipGenerationBreakdownBuilder $slipGenerationBreakdownBuilder,
+        private BillingPolicyResolverPort $billingPolicyResolverService,
     ) {}
 
     /**
@@ -41,14 +43,27 @@ final readonly class ExplainSlipGenerationQueryHandler implements QueryHandler
             ];
         }
 
+        $targetMonth = sprintf('%04d-%02d', $query->year(), $query->month());
+        $policy = $this->billingPolicyResolverService->resolve($targetMonth);
+        $extraFeePerUnitCents = $policy->hasPolicy()
+            ? $policy->extraFeePerUnitCents()
+            : $query->extraFeePerUnitCents();
+        $reserveFundPerUnitCents = $policy->hasPolicy()
+            ? $policy->reserveFundPerUnitCents()
+            : $query->reserveFundPerUnitCents();
+        $syndicShareTotalCents = $policy->hasPolicy() ? $policy->syndicShareTotalCents() : null;
+        $gasPricePerM3Cents = $policy->hasPolicy() ? $policy->gasPricePerM3Cents() : null;
+
         return $this->slipGenerationBreakdownBuilder->build(
             $expenses,
             $recurringExpenses,
             $residentUnits,
             $query->year(),
             $query->month(),
-            $query->extraFeePerUnitCents(),
-            $query->reserveFundPerUnitCents(),
+            $extraFeePerUnitCents,
+            $reserveFundPerUnitCents,
+            $syndicShareTotalCents,
+            $gasPricePerM3Cents,
         );
     }
 }

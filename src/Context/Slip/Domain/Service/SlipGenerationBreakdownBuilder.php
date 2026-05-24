@@ -49,6 +49,8 @@ readonly class SlipGenerationBreakdownBuilder
         int $expenseMonth,
         int $extraFeePerUnitCents = 0,
         int $reserveFundPerUnitCents = 0,
+        ?int $syndicShareTotalCents = null,
+        ?int $gasPricePerM3CentsOverride = null,
     ): array {
         $expenseTotals = $this->monthlyExpenseAggregator->aggregateTotals($expenses);
         $recurringPart = $this->recurringExpenseSlipContribution->contributionForMonth(
@@ -70,6 +72,7 @@ readonly class SlipGenerationBreakdownBuilder
             $residentUnits,
             $mergedEqual,
             $individualByUnit,
+            $syndicShareTotalCents ?? SyndicFeeSlipPoolAdjustmentService::SYNDIC_SHARE_TOTAL_CENTS,
         );
         $baseEqualPool = $poolAdjustment['baseEqualPoolCents'];
         $syndicEqualPool = $poolAdjustment['syndicEqualPoolCents'];
@@ -80,7 +83,12 @@ readonly class SlipGenerationBreakdownBuilder
         $gasMonth = (int) $previousMonth->format('m');
 
         $unitIds = array_map(static fn(ResidentUnit $u) => $u->id(), $residentUnits);
-        $gasBreakdown = $this->gasConsumptionBreakdownResolver->breakdownForMonth($gasYear, $gasMonth, $unitIds);
+        $gasBreakdown = $this->gasConsumptionBreakdownResolver->breakdownForMonth(
+            $gasYear,
+            $gasMonth,
+            $unitIds,
+            $gasPricePerM3CentsOverride,
+        );
         $gasByUnit = $gasBreakdown['byUnit'];
 
         $dueDateContext = (new DateTimeImmutable(sprintf('%d-%d-01', $expenseYear, $expenseMonth)))->modify('+1 month');

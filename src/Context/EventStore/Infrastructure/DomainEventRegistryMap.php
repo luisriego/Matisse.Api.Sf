@@ -15,6 +15,7 @@ use App\Context\Expense\Domain\Event\RecurringExpenseWasCreated;
 use App\Context\Gas\Domain\Event\GasPriceWasDefined;
 use App\Context\Gas\Domain\Event\GasReadingWasRecorded;
 use App\Context\Income\Domain\Event\IncomeWasEntered;
+use App\Context\BillingPolicy\Domain\Event\MonthlyBillingParametersWereRecorded;
 use App\Context\Setup\Domain\Event\OpeningReferenceMonthWasRecorded;
 use App\Context\Setup\Domain\Event\SetupWasCompleted;
 
@@ -36,6 +37,7 @@ final class DomainEventRegistryMap implements DomainEventRegistry
             AccountWasEnabled::eventName()          => AccountWasEnabled::class,
             GasPriceWasDefined::eventName()         => GasPriceWasDefined::class,
             GasReadingWasRecorded::eventName()      => GasReadingWasRecorded::class,
+            MonthlyBillingParametersWereRecorded::eventName() => MonthlyBillingParametersWereRecorded::class,
             OpeningReferenceMonthWasRecorded::eventName() => OpeningReferenceMonthWasRecorded::class,
             SetupWasCompleted::eventName() => SetupWasCompleted::class,
         ];

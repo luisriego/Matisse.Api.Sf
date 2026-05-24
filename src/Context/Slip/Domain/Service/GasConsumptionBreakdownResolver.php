@@ -37,9 +37,13 @@ readonly class GasConsumptionBreakdownResolver
      *     gasTotalCents: int
      * }
      */
-    public function breakdownForMonth(int $year, int $month, array $residentUnitIds): array
-    {
-        $pricePerM3Cents = $this->resolveLatestGasPrice();
+    public function breakdownForMonth(
+        int $year,
+        int $month,
+        array $residentUnitIds,
+        ?int $pricePerM3CentsOverride = null,
+    ): array {
+        $pricePerM3Cents = $pricePerM3CentsOverride ?? $this->resolveLatestGasPrice();
 
         $previousMonth = $month - 1;
         $previousYear = $year;

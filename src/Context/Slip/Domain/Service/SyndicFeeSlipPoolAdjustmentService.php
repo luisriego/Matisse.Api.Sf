@@ -58,6 +58,7 @@ final readonly class SyndicFeeSlipPoolAdjustmentService
         array $residentUnits,
         int $mergedEqualCents,
         array $individualByUnit,
+        int $syndicShareTotalCents = self::SYNDIC_SHARE_TOTAL_CENTS,
     ): array {
         $pf1seTotal = $this->pf1seTotalCentsForMonth(
             $expenses,
@@ -78,7 +79,7 @@ final readonly class SyndicFeeSlipPoolAdjustmentService
             ];
         }
 
-        $syndicShare = min(self::SYNDIC_SHARE_TOTAL_CENTS, $pf1seTotal);
+        $syndicShare = min($syndicShareTotalCents, $pf1seTotal);
         $internetShare = $pf1seTotal - $syndicShare;
         $baseEqual = $mergedEqualCents - $pf1seTotal;
         if ($baseEqual < 0) {

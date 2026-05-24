@@ -26,6 +26,8 @@ interface ExpenseRepository
 
     public function findByRecurringExpenseAndMonthYear(string $recurringExpenseId, int $month, int $year): ?Expense;
 
+    public function findLatestDueDateMonthByRecurringExpenseId(string $recurringExpenseId): ?string;
+
     /** Active expenses whose dueDate falls in the range (inclusive). */
     public function countActiveInDueDateRange(DateRange $dateRange): int;
 

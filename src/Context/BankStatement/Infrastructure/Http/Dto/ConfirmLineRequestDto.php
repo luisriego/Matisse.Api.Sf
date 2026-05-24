@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Context\BankStatement\Infrastructure\Http\Dto;
 
+use App\Context\BankStatement\Application\Dto\ExpectedExpenseSpecDto;
 use App\Context\BankStatement\Application\UseCase\ConfirmBankOfxLines\ConfirmLineDto;
 use OpenApi\Attributes as OA;
 
@@ -40,6 +41,10 @@ use OpenApi\Attributes as OA;
         new OA\Property(property: 'creditKind', type: 'string', enum: ['boleto_settlement', 'other'],
             example: 'boleto_settlement',
             description: 'Only applies to income lines. "boleto_settlement" lines are consolidated into a single monthly income and validated against the previous-month total; "other" lines (bank interest, refunds, etc.) become individual incomes with no validation.'),
+        new OA\Property(property: 'isExpectedExpense', type: 'boolean', default: true,
+            description: 'When true (default), reconciled debit also creates/updates expected expense memory for forecast. Set false for one-off payments.'),
+        new OA\Property(property: 'expectedExpense', type: 'object', nullable: true,
+            description: 'Expected expense spec when isExpectedExpense is true. Omit to auto-create monthly variable from memo.'),
     ],
 )]
 final readonly class ConfirmLineRequestDto
@@ -58,5 +63,7 @@ final readonly class ConfirmLineRequestDto
         public readonly ?string $recurringExpenseId = null,
         public readonly ?string $residentUnitId     = null,
         public readonly string  $creditKind         = ConfirmLineDto::CREDIT_KIND_BOLETO_SETTLEMENT,
+        public readonly bool    $isExpectedExpense  = true,
+        public readonly ?ExpectedExpenseSpecDto $expectedExpense = null,
     ) {}
 }

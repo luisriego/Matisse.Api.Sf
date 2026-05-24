@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace App\Tests\Context\Slip\Application\UseCase;
 
+use App\Context\BillingPolicy\Domain\BillingPolicyResolverPort;
+use App\Context\BillingPolicy\Domain\ResolvedBillingPolicy;
 use App\Context\Expense\Domain\RecurringExpense;
 use App\Context\Expense\Domain\Expense;
 use App\Context\ResidentUnit\Domain\ResidentUnit;
@@ -34,6 +36,7 @@ final class SlipGenerationCommandHandlerTest extends TestCase
     private MockObject|SlipGenerationPolicy $generationPolicy;
     private SlipFactory&MockObject $slipFactory;
     private SlipGenerationParameterSnapshotRepository&MockObject $snapshotRepo;
+    private BillingPolicyResolverPort&MockObject $billingPolicyResolverService;
 
     protected function setUp(): void
     {
@@ -46,6 +49,10 @@ final class SlipGenerationCommandHandlerTest extends TestCase
         $this->generationPolicy = $this->createMock(SlipGenerationPolicy::class);
         $this->slipFactory = $this->createMock(SlipFactory::class);
         $this->snapshotRepo = $this->createMock(SlipGenerationParameterSnapshotRepository::class);
+        $this->billingPolicyResolverService = $this->createMock(BillingPolicyResolverPort::class);
+        $this->billingPolicyResolverService
+            ->method('resolve')
+            ->willReturn(ResolvedBillingPolicy::empty('2099-07'));
 
         $periodClosureRepo = $this->createMock(PeriodClosureRepository::class);
         $periodClosureRepo->method('existsForMonth')->willReturn(false);
@@ -59,6 +66,7 @@ final class SlipGenerationCommandHandlerTest extends TestCase
             $this->slipFactory,
             $this->snapshotRepo,
             new PeriodClosureGuard($periodClosureRepo),
+            $this->billingPolicyResolverService,
         );
     }
 
@@ -117,7 +125,7 @@ final class SlipGenerationCommandHandlerTest extends TestCase
 
         $this->slipFactory->expects($this->once())
             ->method('createFromExpensesAndUnits')
-            ->with($expenses, $recurring, $allUnits, $year, $month, 0, 0)
+            ->with($expenses, $recurring, $allUnits, $year, $month, 0, 0, null)
             ->willReturn($generatedSlips);
 
         // --- Persistence expectations ---

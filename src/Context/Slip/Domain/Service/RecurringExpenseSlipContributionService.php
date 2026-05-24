@@ -67,6 +67,59 @@ readonly class RecurringExpenseSlipContributionService
         ];
     }
 
+    /**
+     * Forecast projection: includes variable recurring expenses (hasPredefinedAmount=false).
+     *
+     * @param array<int, RecurringExpense> $recurringExpenses
+     *
+     * @return array{equal: int, fraction: int}
+     */
+    public function forecastContributionForMonth(array $recurringExpenses, int $year, int $month): array
+    {
+        $equal = 0;
+        $fraction = 0;
+
+        foreach ($recurringExpenses as $recurring) {
+            if (!$recurring instanceof RecurringExpense) {
+                continue;
+            }
+
+            if (!$recurring->isActive()) {
+                continue;
+            }
+
+            if (!$this->appliesToCalendarMonth($recurring, $year, $month)) {
+                continue;
+            }
+
+            $type = $recurring->type();
+            $method = mb_strtoupper((string) $type->distributionMethod());
+            $code = mb_strtoupper((string) $type->code());
+
+            if ($code === self::GAS_EXPENSE_TYPE_CODE || $method === ExpenseType::INDIVIDUAL) {
+                continue;
+            }
+
+            if ($code === self::WATER_EXPENSE_TYPE_CODE) {
+                $method = ExpenseType::FRACTION;
+            } else {
+                $method = ExpenseType::EQUAL;
+            }
+
+            $amount = $recurring->amount();
+            if ($method === ExpenseType::EQUAL) {
+                $equal += $amount;
+            } elseif ($method === ExpenseType::FRACTION) {
+                $fraction += $amount;
+            }
+        }
+
+        return [
+            'equal' => $equal,
+            'fraction' => $fraction,
+        ];
+    }
+
     private function appliesToCalendarMonth(RecurringExpense $recurring, int $year, int $month): bool
     {
         $monthStart = new DateTimeImmutable(sprintf('%04d-%02d-01 00:00:00', $year, $month));

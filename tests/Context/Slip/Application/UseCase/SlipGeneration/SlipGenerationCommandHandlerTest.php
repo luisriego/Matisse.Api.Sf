@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace App\Tests\Context\Slip\Application\UseCase\SlipGeneration;
 
+use App\Context\BillingPolicy\Domain\BillingPolicyResolverPort;
+use App\Context\BillingPolicy\Domain\ResolvedBillingPolicy;
 use App\Context\Slip\Domain\Service\GasExpenseByUnitResolver;
 use App\Context\Expense\Domain\Expense;
 use App\Context\Expense\Domain\ExpenseRepository;
@@ -40,6 +42,7 @@ class SlipGenerationCommandHandlerTest extends TestCase
     private MockObject|LoggerInterface $logger;
     private MockObject|SlipGenerationParameterSnapshotRepository $snapshotRepository;
     private MockObject|PeriodClosureRepository $periodClosureRepository;
+    private MockObject|BillingPolicyResolverPort $billingPolicyResolverService;
 
     private SlipFactory $slipFactory;
     private SlipGenerationCommandHandler $handler;
@@ -62,6 +65,10 @@ class SlipGenerationCommandHandlerTest extends TestCase
         $this->snapshotRepository = $this->createMock(SlipGenerationParameterSnapshotRepository::class);
         $this->periodClosureRepository = $this->createMock(PeriodClosureRepository::class);
         $this->periodClosureRepository->method('existsForMonth')->willReturn(false);
+        $this->billingPolicyResolverService = $this->createMock(BillingPolicyResolverPort::class);
+        $this->billingPolicyResolverService
+            ->method('resolve')
+            ->willReturnCallback(static fn (string $targetMonth) => ResolvedBillingPolicy::empty($targetMonth));
 
         $this->gasExpenseByUnitResolver->method('sumByResidentUnitForCalendarMonth')->willReturn([]);
 
@@ -87,6 +94,7 @@ class SlipGenerationCommandHandlerTest extends TestCase
             $this->slipFactory,
             $this->snapshotRepository,
             new PeriodClosureGuard($this->periodClosureRepository),
+            $this->billingPolicyResolverService,
         );
     }
 

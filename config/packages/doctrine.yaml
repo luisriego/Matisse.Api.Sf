@@ -85,6 +85,13 @@ doctrine:
                 prefix: 'App\Context\BankStatement\Domain'
                 alias: BankStatement
 
+            BillingPolicy:
+                is_bundle: false
+                type: xml
+                dir: '%kernel.project_dir%/src/Context/BillingPolicy/Infrastructure/Persistence/Doctrine'
+                prefix: 'App\Context\BillingPolicy\Domain'
+                alias: BillingPolicy
+
 when@prod:
     doctrine:
         orm:

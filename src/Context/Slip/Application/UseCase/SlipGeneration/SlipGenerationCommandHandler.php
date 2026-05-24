@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Context\Slip\Application\UseCase\SlipGeneration;
 
+use App\Context\BillingPolicy\Domain\BillingPolicyResolverPort;
 use App\Context\Expense\Domain\ExpenseRepository;
 use App\Context\Expense\Domain\RecurringExpenseRepository;
 use App\Context\ResidentUnit\Domain\ResidentUnitRepository;
@@ -32,6 +33,7 @@ class SlipGenerationCommandHandler implements CommandHandler
         private readonly SlipFactory $slipFactory,
         private readonly SlipGenerationParameterSnapshotRepository $slipGenerationParameterSnapshotRepository,
         private readonly PeriodClosureGuard $periodClosureGuard,
+        private readonly BillingPolicyResolverPort $billingPolicyResolverService,
     ) {}
 
     /**
@@ -75,14 +77,27 @@ class SlipGenerationCommandHandler implements CommandHandler
         $residentUnits = $this->residentUnitRepository->findAllActive();
 
         // 6. Use the factory to create the slip aggregates.
+        $targetMonth = sprintf('%04d-%02d', $expenseYear, $expenseMonth);
+        $policy = $this->billingPolicyResolverService->resolve($targetMonth);
+        $extraFeePerUnitCents = $policy->hasPolicy()
+            ? $policy->extraFeePerUnitCents()
+            : $command->extraFeePerUnitCents();
+        $reserveFundPerUnitCents = $policy->hasPolicy()
+            ? $policy->reserveFundPerUnitCents()
+            : $command->reserveFundPerUnitCents();
+        $syndicShareTotalCents = $policy->hasPolicy()
+            ? $policy->syndicShareTotalCents()
+            : null;
+
         $slips = $this->slipFactory->createFromExpensesAndUnits(
             $expenses,
             $recurringExpenses,
             $residentUnits,
             $expenseYear,
             $expenseMonth,
-            $command->extraFeePerUnitCents(),
-            $command->reserveFundPerUnitCents(),
+            $extraFeePerUnitCents,
+            $reserveFundPerUnitCents,
+            $syndicShareTotalCents,
         );
 
         // 7. Persist the new slips.
@@ -93,8 +108,8 @@ class SlipGenerationCommandHandler implements CommandHandler
         $this->slipGenerationParameterSnapshotRepository->upsertForExpenseMonth(
             $expenseYear,
             $expenseMonth,
-            $command->extraFeePerUnitCents(),
-            $command->reserveFundPerUnitCents(),
+            $extraFeePerUnitCents,
+            $reserveFundPerUnitCents,
         );
         $this->slipRepository->flush();
     }

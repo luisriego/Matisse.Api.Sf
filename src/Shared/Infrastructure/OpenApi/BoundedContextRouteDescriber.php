@@ -55,6 +55,7 @@ final class BoundedContextRouteDescriber implements RouteDescriberInterface
             'gas' => 'Gas',
             'bank', 'imports' => 'Bank / OFX',
             'setup' => 'Setup',
+            'billing-policy' => 'Billing Policy',
             'ledger' => 'Ledger',
             'users' => 'Users',
             'login_check' => 'Authentication',
