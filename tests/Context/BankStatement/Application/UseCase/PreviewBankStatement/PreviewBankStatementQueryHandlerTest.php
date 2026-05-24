@@ -4,10 +4,12 @@ declare(strict_types=1);
 
 namespace App\Tests\Context\BankStatement\Application\UseCase\PreviewBankStatement;
 
+use App\Context\BankStatement\Application\Dto\PastAssignmentDto;
 use App\Context\BankStatement\Application\Matcher\EmbeddingCandidateDto;
 use App\Context\BankStatement\Application\Matcher\EmbeddingMatcherInterface;
 use App\Context\BankStatement\Application\Matcher\ExpenseHistoryMatcherInterface;
 use App\Context\BankStatement\Application\Matcher\IncomeCreditHistoryMatcherInterface;
+use App\Context\BankStatement\Application\Service\ExpectedExpensePreviewSuggester;
 use App\Context\BankStatement\Application\UseCase\ConfirmBankOfxLines\ConfirmLineDto;
 use App\Context\BankStatement\Application\UseCase\PreviewBankStatement\PreviewBankStatementQuery;
 use App\Context\BankStatement\Application\UseCase\PreviewBankStatement\PreviewBankStatementQueryHandler;
@@ -15,7 +17,11 @@ use App\Context\BankStatement\Infrastructure\Matcher\CreditMemoClassifier;
 use App\Context\BankStatement\Infrastructure\Ofx\OfxParser;
 use App\Context\Expense\Domain\Expense;
 use App\Context\Expense\Domain\ExpenseRepository;
+use App\Context\Expense\Domain\RecurringExpense;
+use App\Context\Expense\Domain\RecurringExpenseRepository;
+use App\Context\Forecast\Domain\Service\ExpectedExpenseFrequencyInferrer;
 use App\Tests\Context\Expense\Domain\ExpenseMother;
+use App\Tests\Context\Expense\Domain\RecurringExpenseMother;
 use PHPUnit\Framework\TestCase;
 
 final class PreviewBankStatementQueryHandlerTest extends TestCase
@@ -189,22 +195,84 @@ final class PreviewBankStatementQueryHandlerTest extends TestCase
         self::assertSame('needs_review', $expensePreview->status);
     }
 
+    public function test_debit_preview_suggests_expected_expense_from_memo_when_no_recurring(): void
+    {
+        $handler = $this->buildHandler(embeddingCandidates: []);
+
+        $result = $handler(new PreviewBankStatementQuery(self::MINIMAL_OFX));
+
+        $expense = $result->expenses[0];
+        self::assertTrue($expense->suggestedIsExpectedExpense);
+        self::assertNotNull($expense->suggestedExpectedExpense);
+        self::assertNull($expense->suggestedExpectedExpense['recurringExpenseId']);
+        self::assertSame('COPASA', $expense->suggestedExpectedExpense['createOrUpdate']['displayName']);
+        self::assertSame('monthly', $expense->suggestedExpectedExpense['createOrUpdate']['frequency']);
+        self::assertSame('variable', $expense->suggestedExpectedExpense['createOrUpdate']['amountKind']);
+        self::assertSame(5, $expense->suggestedExpectedExpense['createOrUpdate']['dueDay']);
+    }
+
+    public function test_debit_preview_suggests_expected_expense_from_existing_recurring(): void
+    {
+        $recurring = RecurringExpenseMother::create(description: 'Copasa mensual');
+
+        $assignment = new PastAssignmentDto(
+            month: 2,
+            year: 2026,
+            amountInCents: 15000,
+            expenseTypeId: 'type-id',
+            expenseTypeName: 'Água',
+            recurringExpenseId: $recurring->id(),
+            recurringExpenseName: 'Copasa mensual',
+            accountId: 'acc-id',
+            residentUnitId: null,
+            confidence: 0.9,
+        );
+
+        $handler = $this->buildHandler(
+            embeddingCandidates: [],
+            recurringExpense: $recurring,
+            historyAssignments: [$assignment],
+        );
+
+        $result = $handler(new PreviewBankStatementQuery(self::MINIMAL_OFX));
+
+        $expense = $result->expenses[0];
+        self::assertSame($recurring->id(), $expense->suggestedExpectedExpense['recurringExpenseId']);
+        self::assertSame('Copasa mensual', $expense->suggestedExpectedExpense['createOrUpdate']['displayName']);
+    }
+
+    public function test_credit_preview_does_not_suggest_expected_expense(): void
+    {
+        $handler = $this->buildHandler(embeddingCandidates: []);
+
+        $result = $handler(new PreviewBankStatementQuery(self::MINIMAL_OFX));
+
+        $credit = $result->credits[0];
+        self::assertFalse($credit->suggestedIsExpectedExpense);
+        self::assertNull($credit->suggestedExpectedExpense);
+    }
+
     // --- helpers ---
 
     /**
      * @param EmbeddingCandidateDto[] $embeddingCandidates
+     * @param PastAssignmentDto[]     $historyAssignments
      */
-    private function buildHandler(array $embeddingCandidates, ?Expense $embeddingMatchedExpense = null): PreviewBankStatementQueryHandler
-    {
+    private function buildHandler(
+        array $embeddingCandidates,
+        ?Expense $embeddingMatchedExpense = null,
+        ?RecurringExpense $recurringExpense = null,
+        array $historyAssignments = [],
+    ): PreviewBankStatementQueryHandler {
         $parser = new OfxParser();
 
         $historyMatcher = $this->createMock(ExpenseHistoryMatcherInterface::class);
         $historyMatcher->method('match')->willReturn([
-            'assignments' => [],
-            'confidence'  => 0.0,
-            'isNew'       => true,
+            'assignments' => $historyAssignments,
+            'confidence'  => $historyAssignments === [] ? 0.0 : 0.9,
+            'isNew'       => $historyAssignments === [],
         ]);
-        $historyMatcher->method('isHighConfidence')->willReturn(false);
+        $historyMatcher->method('isHighConfidence')->willReturn($historyAssignments !== []);
 
         $embeddingMatcher = $this->createMock(EmbeddingMatcherInterface::class);
         $embeddingMatcher->method('findSimilar')->willReturn($embeddingCandidates);
@@ -225,6 +293,16 @@ final class PreviewBankStatementQueryHandlerTest extends TestCase
             'isNew'       => true,
         ]);
 
+        $recurringRepo = $this->createMock(RecurringExpenseRepository::class);
+        if ($recurringExpense !== null) {
+            $recurringRepo->method('findOneByIdOrFail')->willReturn($recurringExpense);
+        }
+
+        $expectedExpenseSuggester = new ExpectedExpensePreviewSuggester(
+            $recurringRepo,
+            new ExpectedExpenseFrequencyInferrer(),
+        );
+
         return new PreviewBankStatementQueryHandler(
             $parser,
             $historyMatcher,
@@ -232,6 +310,7 @@ final class PreviewBankStatementQueryHandlerTest extends TestCase
             $expenseRepository,
             new CreditMemoClassifier(),
             $incomeCreditMatcher,
+            $expectedExpenseSuggester,
         );
     }
 }

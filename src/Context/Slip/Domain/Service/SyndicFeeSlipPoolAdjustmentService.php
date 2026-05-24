@@ -143,7 +143,10 @@ final readonly class SyndicFeeSlipPoolAdjustmentService
             if (!$recurring->isActive() || !$recurring->hasPredefinedAmount()) {
                 continue;
             }
-            $slice = $this->recurringExpenseSlipContribution->contributionForMonth([$recurring], $year, $month);
+            if ($this->recurringExpenseSlipContribution->isSupersededByReconciledExpense($recurring, $expenses)) {
+                continue;
+            }
+            $slice = $this->recurringExpenseSlipContribution->contributionForMonth([$recurring], $year, $month, $expenses);
             if ($slice['equal'] > 0 || $slice['fraction'] > 0) {
                 $total += $recurring->amount();
             }

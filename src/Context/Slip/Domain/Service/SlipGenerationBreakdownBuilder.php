@@ -57,6 +57,7 @@ readonly class SlipGenerationBreakdownBuilder
             $recurringExpenses,
             $expenseYear,
             $expenseMonth,
+            $expenses,
         );
 
         $mergedEqual = $expenseTotals['equal'] + $recurringPart['equal'];
@@ -173,7 +174,7 @@ readonly class SlipGenerationBreakdownBuilder
             ],
             'classificationSummary' => $this->classificationSummary($expenses),
             'expenseLines' => $this->expenseLines($expenses),
-            'recurringLines' => $this->recurringLines($recurringExpenses, $expenseYear, $expenseMonth),
+            'recurringLines' => $this->recurringLines($recurringExpenses, $expenseYear, $expenseMonth, $expenses),
             'units' => $unitsOut,
             'totals' => $computed['totals'],
             'warnings' => $warnings,
@@ -242,14 +243,15 @@ readonly class SlipGenerationBreakdownBuilder
 
     /**
      * @param array<int, RecurringExpense> $recurringExpenses
+     * @param array<int, Expense>          $expenses
      *
      * @return list<array<string, mixed>>
      */
-    private function recurringLines(array $recurringExpenses, int $year, int $month): array
+    private function recurringLines(array $recurringExpenses, int $year, int $month, array $expenses): array
     {
         $out = [];
         foreach ($recurringExpenses as $re) {
-            $applies = $this->recurringExpenseSlipContribution->contributionForMonth([$re], $year, $month);
+            $applies = $this->recurringExpenseSlipContribution->contributionForMonth([$re], $year, $month, $expenses);
             $type = $re->type();
             $out[] = [
                 'id' => $re->id(),

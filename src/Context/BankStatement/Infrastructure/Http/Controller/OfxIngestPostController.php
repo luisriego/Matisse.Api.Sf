@@ -69,6 +69,9 @@ use Symfony\Component\Serializer\Normalizer\NormalizerInterface;
                                 new OA\Property(property: 'suggestedExpenseTypeId',      type: 'string', format: 'uuid', nullable: true),
                                 new OA\Property(property: 'suggestedExpenseTypeName',    type: 'string', nullable: true),
                                 new OA\Property(property: 'suggestedRecurringExpenseId', type: 'string', format: 'uuid', nullable: true),
+                                new OA\Property(property: 'suggestedIsExpectedExpense', type: 'boolean', default: true,
+                                    description: 'Forward as isExpectedExpense on /bank/ofx-confirm.'),
+                                new OA\Property(property: 'suggestedExpectedExpense', ref: '#/components/schemas/ExpectedExpensePreview', nullable: true),
                                 new OA\Property(property: 'suggestedAccountId',          type: 'string', format: 'uuid', nullable: true),
                                 new OA\Property(property: 'suggestedResidentUnitId',     type: 'string', format: 'uuid', nullable: true),
                                 new OA\Property(

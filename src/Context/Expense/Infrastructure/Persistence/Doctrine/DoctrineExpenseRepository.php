@@ -118,7 +118,6 @@ class DoctrineExpenseRepository extends ServiceEntityRepository implements Expen
     public function findLatestDueDateMonthByRecurringExpenseId(string $recurringExpenseId): ?string
     {
         $result = $this->createQueryBuilder('e')
-            ->select('e.dueDate')
             ->join('e.recurringExpense', 're')
             ->where('re.id = :recurringExpenseId')
             ->andWhere('e.isActive = true')

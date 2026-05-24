@@ -41,6 +41,10 @@ use OpenApi\Attributes as OA;
         new OA\Property(property: 'suggestedExpenseTypeId',    type: 'string',  format: 'uuid', nullable: true),
         new OA\Property(property: 'suggestedExpenseTypeName',  type: 'string',  nullable: true, example: 'Água'),
         new OA\Property(property: 'suggestedRecurringExpenseId', type: 'string', format: 'uuid', nullable: true),
+        new OA\Property(property: 'suggestedIsExpectedExpense', type: 'boolean', default: true,
+            description: 'DEBIT lines only. Default true; forward as isExpectedExpense on confirm.'),
+        new OA\Property(property: 'suggestedExpectedExpense', ref: '#/components/schemas/ExpectedExpensePreview', nullable: true,
+            description: 'DEBIT lines only. Ready to echo in /bank/ofx-confirm expectedExpense.'),
         new OA\Property(property: 'suggestedAccountId',        type: 'string',  format: 'uuid', nullable: true),
         new OA\Property(property: 'suggestedResidentUnitId',   type: 'string',  format: 'uuid', nullable: true),
         new OA\Property(
@@ -92,6 +96,9 @@ final readonly class TransactionPreviewDto
         public readonly ?string $suggestedRecurringExpenseId,
         public readonly ?string $suggestedAccountId,
         public readonly ?string $suggestedResidentUnitId,
+        public readonly bool $suggestedIsExpectedExpense = true,
+        /** @var array{recurringExpenseId: ?string, createOrUpdate: ?array<string, mixed>}|null */
+        public readonly ?array $suggestedExpectedExpense = null,
         /** Semantic embedding candidates sorted by cosine score (empty = service unavailable) */
         public readonly array $embeddingCandidates = [],
         public readonly ?string $suggestedCreditKind = null,
