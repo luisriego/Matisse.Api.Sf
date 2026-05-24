@@ -9,6 +9,7 @@ use App\Context\BankStatement\Application\Dto\TransactionPreviewDto;
 use App\Context\BankStatement\Application\Matcher\EmbeddingMatcherInterface;
 use App\Context\BankStatement\Application\Matcher\ExpenseHistoryMatcherInterface;
 use App\Context\BankStatement\Application\Matcher\IncomeCreditHistoryMatcherInterface;
+use App\Context\BankStatement\Application\Service\ExpectedExpensePreviewSuggester;
 use App\Context\BankStatement\Domain\BankTransaction;
 use App\Context\BankStatement\Infrastructure\Matcher\CreditMemoClassifier;
 use App\Context\BankStatement\Infrastructure\Matcher\MemoFingerprint;
@@ -38,6 +39,7 @@ final readonly class PreviewBankStatementQueryHandler implements QueryHandler
         private ExpenseRepository $expenseRepository,
         private CreditMemoClassifier $creditMemoClassifier,
         private IncomeCreditHistoryMatcherInterface $incomeCreditHistoryMatcher,
+        private ExpectedExpensePreviewSuggester $expectedExpensePreviewSuggester,
     ) {}
 
     /**
@@ -144,6 +146,10 @@ final readonly class PreviewBankStatementQueryHandler implements QueryHandler
         $displayConfidence = max($confidence, $fromEmbedding ? $bestEmbeddingScore : 0.0);
         $displayIsNew      = $isNew && !$fromEmbedding;
 
+        $expectedExpensePreview = $this->expectedExpensePreviewSuggester
+            ->suggestForDebit($suggestedRecurringExpenseId, $transaction->memo, $transaction->postedAt->value())
+            ->toArray();
+
         return new TransactionPreviewDto(
             importLineKey: $transaction->importLineKey,
             bankAccountId: $transaction->bankAccountId,
@@ -160,6 +166,8 @@ final readonly class PreviewBankStatementQueryHandler implements QueryHandler
             suggestedRecurringExpenseId: $suggestedRecurringExpenseId,
             suggestedAccountId: $suggestedAccountId,
             suggestedResidentUnitId: $suggestedResidentUnitId,
+            suggestedIsExpectedExpense: true,
+            suggestedExpectedExpense: $expectedExpensePreview,
             embeddingCandidates: $embeddingCandidates,
         );
     }
@@ -220,6 +228,8 @@ final readonly class PreviewBankStatementQueryHandler implements QueryHandler
             suggestedRecurringExpenseId: null,
             suggestedAccountId: null,
             suggestedResidentUnitId: null,
+            suggestedIsExpectedExpense: false,
+            suggestedExpectedExpense: null,
             embeddingCandidates: [],
             suggestedCreditKind: $suggestedCreditKind,
             creditClassificationSource: $creditClassificationSource,

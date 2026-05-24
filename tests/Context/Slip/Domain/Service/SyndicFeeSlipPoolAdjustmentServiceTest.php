@@ -101,6 +101,29 @@ final class SyndicFeeSlipPoolAdjustmentServiceTest extends TestCase
         $this->assertSame(['u-101' => 1000], $result['individualByUnit']);
     }
 
+    public function test_pf1se_reconciled_expense_supersedes_recurring_template(): void
+    {
+        $units = $this->fiveUnits();
+        $recurring = [$this->pf1seRecurring(67000)];
+        $expense = $this->pf1seExpense(67000);
+
+        $mergedEqual = 67000;
+        $result = $this->adjustment->adjust(
+            [$expense],
+            $recurring,
+            2026,
+            3,
+            $units,
+            $mergedEqual,
+            [],
+        );
+
+        $this->assertSame(0, $result['baseEqualPoolCents']);
+        $this->assertSame(60000, $result['syndicEqualPoolCents']);
+        $this->assertSame(67000, $result['pf1seTotalCents']);
+        $this->assertSame(7000, $result['internetShareCents']);
+    }
+
     /**
      * @return array<int, ResidentUnit>
      */
@@ -129,6 +152,7 @@ final class SyndicFeeSlipPoolAdjustmentServiceTest extends TestCase
     {
         $type = $this->createMock(ExpenseType::class);
         $type->method('code')->willReturn('PF1SE');
+        $type->method('id')->willReturn('type-pf1se');
         $type->method('distributionMethod')->willReturn('EQUAL');
 
         $recurring = $this->createMock(RecurringExpense::class);
@@ -139,7 +163,24 @@ final class SyndicFeeSlipPoolAdjustmentServiceTest extends TestCase
         $recurring->method('startDate')->willReturn(new DateTimeImmutable('2020-01-01'));
         $recurring->method('endDate')->willReturn(null);
         $recurring->method('monthsOfYear')->willReturn(null);
+        $recurring->method('id')->willReturn('recurring-pf1se');
 
         return $recurring;
+    }
+
+    private function pf1seExpense(int $amountCents): Expense
+    {
+        $type = $this->createMock(ExpenseType::class);
+        $type->method('code')->willReturn('PF1SE');
+        $type->method('id')->willReturn('type-pf1se');
+        $type->method('distributionMethod')->willReturn('EQUAL');
+
+        $expense = $this->createMock(Expense::class);
+        $expense->method('type')->willReturn($type);
+        $expense->method('amount')->willReturn($amountCents);
+        $expense->method('isActive')->willReturn(true);
+        $expense->method('recurringExpense')->willReturn(null);
+
+        return $expense;
     }
 }

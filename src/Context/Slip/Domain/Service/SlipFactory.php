@@ -57,6 +57,7 @@ readonly class SlipFactory
             $recurringExpenses,
             $expenseYear,
             $expenseMonth,
+            $expenses,
         );
 
         $mergedEqual = $expenseTotals['equal'] + $recurringPart['equal'];

@@ -4,3 +4,8 @@ forecast_get:
     controller: App\Context\Forecast\Infrastructure\Http\Controller\ForecastGetController
     requirements:
         targetMonth: '\d{4}-\d{2}'
+
+expected_expenses_list:
+    path: /api/v1/expected-expenses
+    methods: [GET]
+    controller: App\Context\Forecast\Infrastructure\Http\Controller\ExpectedExpensesGetController
