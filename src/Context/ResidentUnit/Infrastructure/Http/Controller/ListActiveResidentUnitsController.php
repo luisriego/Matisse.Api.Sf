@@ -7,12 +7,23 @@ namespace App\Context\ResidentUnit\Infrastructure\Http\Controller;
 use App\Context\ResidentUnit\Application\UseCase\ListActive\ListActiveResidentUnitsQuery;
 use App\Context\ResidentUnit\Domain\ResidentUnit;
 use App\Shared\Infrastructure\Symfony\ApiController;
+use OpenApi\Attributes as OA;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Response;
 use Throwable;
 
 use function array_map;
 
+#[OA\Get(
+    path: '/api/v1/resident-unit/actives',
+    summary: 'List active resident units',
+    tags: ['Resident Units'],
+    security: [['bearerAuth' => []]],
+    responses: [
+        new OA\Response(response: 200, description: 'List of active resident units.'),
+        new OA\Response(response: 401, description: 'Unauthorized'),
+    ],
+)]
 final class ListActiveResidentUnitsController extends ApiController
 {
     /**

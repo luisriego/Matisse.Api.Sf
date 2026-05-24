@@ -7,6 +7,7 @@ namespace App\Context\Slip\Application\UseCase\SlipGeneration;
 use App\Context\Expense\Domain\ExpenseRepository;
 use App\Context\Expense\Domain\RecurringExpenseRepository;
 use App\Context\ResidentUnit\Domain\ResidentUnitRepository;
+use App\Context\Slip\Domain\Service\PeriodClosureGuard;
 use App\Context\Slip\Domain\Service\SlipFactory;
 use App\Context\Slip\Domain\Service\SlipGenerationPolicy;
 use App\Context\Slip\Domain\SlipGenerationParameterSnapshotRepository;
@@ -30,6 +31,7 @@ class SlipGenerationCommandHandler implements CommandHandler
         private readonly SlipGenerationPolicy $generationPolicy,
         private readonly SlipFactory $slipFactory,
         private readonly SlipGenerationParameterSnapshotRepository $slipGenerationParameterSnapshotRepository,
+        private readonly PeriodClosureGuard $periodClosureGuard,
     ) {}
 
     /**
@@ -52,6 +54,7 @@ class SlipGenerationCommandHandler implements CommandHandler
             $isForced = true;
         }
 
+        $this->periodClosureGuard->assertNotClosed($expenseYear, $expenseMonth);
         $this->generationPolicy->check($expenseYear, $expenseMonth, $isForced);
 
         // 2. Determine date ranges. The due date is for the month after the expenses.

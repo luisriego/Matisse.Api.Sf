@@ -7,6 +7,7 @@ namespace App\Context\Slip\Infrastructure\Http\Controller;
 use App\Context\Slip\Application\UseCase\PaySlip\PaySlipCommand;
 use App\Context\Slip\Domain\Exception\SlipNotFoundException;
 use App\Shared\Infrastructure\Symfony\ApiController;
+use OpenApi\Attributes as OA;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Messenger\Exception\HandlerFailedException;
@@ -16,6 +17,21 @@ use Throwable;
 use function class_exists;
 use function str_ends_with;
 
+#[OA\Patch(
+    path: '/api/v1/slips/pay/{id}',
+    summary: 'Mark slip as paid',
+    tags: ['Slips'],
+    security: [['bearerAuth' => []]],
+    parameters: [
+        new OA\Parameter(name: 'id', in: 'path', required: true, schema: new OA\Schema(type: 'string', format: 'uuid')),
+    ],
+    responses: [
+        new OA\Response(response: 202, description: 'Payment accepted.'),
+        new OA\Response(response: 404, description: 'Slip not found.'),
+        new OA\Response(response: 409, description: 'Invalid workflow transition.'),
+        new OA\Response(response: 401, description: 'Unauthorized'),
+    ],
+)]
 final class SlipPayPatchController extends ApiController
 {
     public function __invoke(string $id): JsonResponse

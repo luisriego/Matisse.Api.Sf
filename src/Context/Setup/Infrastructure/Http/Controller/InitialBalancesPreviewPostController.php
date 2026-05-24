@@ -7,12 +7,36 @@ namespace App\Context\Setup\Infrastructure\Http\Controller;
 use App\Context\Setup\Application\UseCase\PreviewInitialBalances\PreviewInitialBalancesQuery;
 use App\Shared\Domain\Exception\InvalidDataException;
 use App\Shared\Infrastructure\Symfony\ApiController;
+use OpenApi\Attributes as OA;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 
 use function json_decode;
 
+#[OA\Post(
+    path: '/api/v1/setup/initial-balances/preview',
+    summary: 'Preview initial balances reconciliation',
+    requestBody: new OA\RequestBody(
+        required: true,
+        content: new OA\JsonContent(
+            required: ['cutoffDate', 'confirmedBankBalanceCents', 'balances', 'adjustmentPriority'],
+            properties: [
+                new OA\Property(property: 'cutoffDate', type: 'string', format: 'date'),
+                new OA\Property(property: 'confirmedBankBalanceCents', type: 'integer'),
+                new OA\Property(property: 'balances', type: 'array', items: new OA\Items(type: 'object')),
+                new OA\Property(property: 'adjustmentPriority', type: 'array', items: new OA\Items(type: 'string', format: 'uuid')),
+            ],
+        ),
+    ),
+    tags: ['Setup'],
+    security: [['bearerAuth' => []]],
+    responses: [
+        new OA\Response(response: 200, description: 'Preview result.'),
+        new OA\Response(response: 400, description: 'Validation error.'),
+        new OA\Response(response: 401, description: 'Unauthorized'),
+    ],
+)]
 final class InitialBalancesPreviewPostController extends ApiController
 {
     public function __invoke(Request $request): JsonResponse

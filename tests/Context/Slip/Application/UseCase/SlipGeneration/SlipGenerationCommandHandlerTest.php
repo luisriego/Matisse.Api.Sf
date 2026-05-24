@@ -17,7 +17,10 @@ use App\Context\Slip\Domain\Service\MonthlyExpenseAggregatorService;
 use App\Context\Slip\Domain\Service\RecurringExpenseSlipContributionService;
 use App\Context\Slip\Domain\Service\SlipComponentBreakdownService;
 use App\Context\Slip\Domain\Service\SlipFactory;
+use App\Context\Slip\Domain\PeriodClosureRepository;
+use App\Context\Slip\Domain\Service\PeriodClosureGuard;
 use App\Context\Slip\Domain\Service\SlipGenerationPolicy;
+use App\Context\Slip\Domain\Service\SyndicFeeSlipPoolAdjustmentService;
 use App\Context\Slip\Domain\SlipGenerationParameterSnapshotRepository;
 use App\Context\Slip\Domain\SlipRepository;
 use PHPUnit\Framework\MockObject\MockObject;
@@ -36,6 +39,7 @@ class SlipGenerationCommandHandlerTest extends TestCase
     private MockObject|GasExpenseByUnitResolver $gasExpenseByUnitResolver;
     private MockObject|LoggerInterface $logger;
     private MockObject|SlipGenerationParameterSnapshotRepository $snapshotRepository;
+    private MockObject|PeriodClosureRepository $periodClosureRepository;
 
     private SlipFactory $slipFactory;
     private SlipGenerationCommandHandler $handler;
@@ -56,13 +60,18 @@ class SlipGenerationCommandHandlerTest extends TestCase
         $this->gasExpenseByUnitResolver = $this->createMock(GasExpenseByUnitResolver::class);
         $this->logger = $this->createMock(LoggerInterface::class);
         $this->snapshotRepository = $this->createMock(SlipGenerationParameterSnapshotRepository::class);
+        $this->periodClosureRepository = $this->createMock(PeriodClosureRepository::class);
+        $this->periodClosureRepository->method('existsForMonth')->willReturn(false);
 
         $this->gasExpenseByUnitResolver->method('sumByResidentUnitForCalendarMonth')->willReturn([]);
+
+        $recurringService = new RecurringExpenseSlipContributionService();
 
         // Instancia SlipFactory con los mocks correctos
         $this->slipFactory = new SlipFactory(
             $this->monthlyExpenseAggregatorService,
-            new RecurringExpenseSlipContributionService(),
+            $recurringService,
+            new SyndicFeeSlipPoolAdjustmentService($recurringService, $this->monthlyExpenseAggregatorService),
             $this->slipComponentBreakdownService,
             $this->gasExpenseByUnitResolver,
             $this->logger,
@@ -77,6 +86,7 @@ class SlipGenerationCommandHandlerTest extends TestCase
             $this->generationPolicy,
             $this->slipFactory,
             $this->snapshotRepository,
+            new PeriodClosureGuard($this->periodClosureRepository),
         );
     }
 

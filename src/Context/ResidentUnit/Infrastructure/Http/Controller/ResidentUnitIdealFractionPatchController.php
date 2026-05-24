@@ -9,11 +9,36 @@ use App\Context\ResidentUnit\Infrastructure\Http\Dto\PatchIdealFractionRequestDt
 use App\Shared\Domain\Exception\InvalidArgumentException;
 use App\Shared\Domain\Exception\ResourceNotFoundException;
 use App\Shared\Infrastructure\Symfony\ApiController;
+use OpenApi\Attributes as OA;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Attribute\MapRequestPayload;
 use Throwable;
 
+#[OA\Patch(
+    path: '/api/v1/resident-unit/{id}/ideal-fraction',
+    summary: 'Update resident unit ideal fraction',
+    requestBody: new OA\RequestBody(
+        required: true,
+        content: new OA\JsonContent(
+            required: ['idealFraction'],
+            properties: [
+                new OA\Property(property: 'idealFraction', type: 'number', format: 'float'),
+            ],
+        ),
+    ),
+    tags: ['Resident Units'],
+    security: [['bearerAuth' => []]],
+    parameters: [
+        new OA\Parameter(name: 'id', in: 'path', required: true, schema: new OA\Schema(type: 'string', format: 'uuid')),
+    ],
+    responses: [
+        new OA\Response(response: 200, description: 'Ideal fraction updated.'),
+        new OA\Response(response: 404, description: 'Resident unit not found.'),
+        new OA\Response(response: 409, description: 'Ideal fraction sum exceeds limit.'),
+        new OA\Response(response: 401, description: 'Unauthorized'),
+    ],
+)]
 final class ResidentUnitIdealFractionPatchController extends ApiController
 {
     /**

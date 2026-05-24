@@ -12,6 +12,8 @@ use App\Context\Slip\Application\UseCase\SlipGeneration\SlipGenerationCommand;
 use App\Context\Slip\Application\UseCase\SlipGeneration\SlipGenerationCommandHandler;
 use App\Context\Expense\Domain\RecurringExpenseRepository;
 use App\Context\Expense\Domain\ExpenseRepository;
+use App\Context\Slip\Domain\PeriodClosureRepository;
+use App\Context\Slip\Domain\Service\PeriodClosureGuard;
 use App\Context\Slip\Domain\Service\SlipFactory;
 use App\Context\Slip\Domain\Service\SlipGenerationPolicy;
 use App\Context\Slip\Domain\Slip;
@@ -45,6 +47,9 @@ final class SlipGenerationCommandHandlerTest extends TestCase
         $this->slipFactory = $this->createMock(SlipFactory::class);
         $this->snapshotRepo = $this->createMock(SlipGenerationParameterSnapshotRepository::class);
 
+        $periodClosureRepo = $this->createMock(PeriodClosureRepository::class);
+        $periodClosureRepo->method('existsForMonth')->willReturn(false);
+
         $this->handler = new SlipGenerationCommandHandler(
             $this->slipRepo,
             $this->expenseRepo,
@@ -53,6 +58,7 @@ final class SlipGenerationCommandHandlerTest extends TestCase
             $this->generationPolicy,
             $this->slipFactory,
             $this->snapshotRepo,
+            new PeriodClosureGuard($periodClosureRepo),
         );
     }
 

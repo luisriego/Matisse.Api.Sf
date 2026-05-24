@@ -43,6 +43,11 @@ services:
         exclude:
             - '../src/Shared/Domain/Entity/'
             - '../src/Shared/Infrastructure/Persistence/Entity/'
+            - '../src/Shared/Infrastructure/OpenApi/'
+
+    App\Shared\Infrastructure\OpenApi\BoundedContextRouteDescriber:
+        tags:
+            - { name: nelmio_api_doc.route_describer, priority: -300 }
 
     # Listener to unwrap HandlerFailedException from Messenger component
     App\Shared\Infrastructure\Symfony\UnwrapHandlerFailedExceptionListener:

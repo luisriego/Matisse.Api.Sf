@@ -5,14 +5,24 @@ declare(strict_types=1);
 namespace App\Context\Account\Infrastructure\Http\Controller;
 
 use App\Context\Account\Application\UseCase\FindAllAccounts\FindAllAccountsQuery;
+use OpenApi\Attributes as OA;
 use Symfony\Component\DependencyInjection\Attribute\Autowire;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Messenger\MessageBusInterface;
 use Symfony\Component\Messenger\Stamp\HandledStamp;
-use Symfony\Component\Routing\Attribute\Route;
 use Throwable;
 
+#[OA\Get(
+    path: '/api/v1/accounts',
+    summary: 'List all accounts',
+    tags: ['Accounts'],
+    security: [['bearerAuth' => []]],
+    responses: [
+        new OA\Response(response: 200, description: 'List of accounts.'),
+        new OA\Response(response: 401, description: 'Unauthorized'),
+    ],
+)]
 final readonly class GetAllAccountsController
 {
     public function __construct(
@@ -20,7 +30,6 @@ final readonly class GetAllAccountsController
         private MessageBusInterface $queryBus,
     ) {}
 
-    #[Route('', name: 'get_all_accounts', methods: ['GET'])]
     public function __invoke(): JsonResponse
     {
         try {

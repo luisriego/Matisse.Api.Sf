@@ -8,6 +8,7 @@ use App\Context\Slip\Domain\ValueObject\SlipAmount;
 use App\Context\Slip\Infrastructure\Http\Dto\SlipCheckTotalRequestDto;
 use App\Shared\Application\TextGeneratorInterface;
 use Psr\Log\LoggerInterface;
+use OpenApi\Attributes as OA;
 use RuntimeException;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
@@ -15,6 +16,26 @@ use Symfony\Component\HttpFoundation\Response;
 
 use function number_format;
 
+#[OA\Post(
+    path: '/api/v1/slips/check-total',
+    summary: 'Validate slip total against expected range',
+    requestBody: new OA\RequestBody(
+        required: true,
+        content: new OA\JsonContent(
+            required: ['amount'],
+            properties: [
+                new OA\Property(property: 'amount', type: 'integer', description: 'Slip total in cents'),
+            ],
+        ),
+    ),
+    tags: ['Slips'],
+    security: [['bearerAuth' => []]],
+    responses: [
+        new OA\Response(response: 200, description: 'Total within range or anomaly alert generated.'),
+        new OA\Response(response: 400, description: 'Validation error.'),
+        new OA\Response(response: 401, description: 'Unauthorized'),
+    ],
+)]
 class SlipCheckTotalPostController
 {
     public function __construct(

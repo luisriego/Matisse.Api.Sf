@@ -7,14 +7,35 @@ namespace App\Context\Account\Infrastructure\Http\Controller;
 use App\Context\Account\Application\UseCase\UpdateAccount\UpdateAccountCommand;
 use App\Context\Account\Application\UseCase\UpdateAccount\UpdateAccountCommandHandler;
 use App\Context\Account\Infrastructure\Http\Dto\UpdateAccountRequestDto;
+use OpenApi\Attributes as OA;
 use Symfony\Component\HttpFoundation\Response;
-use Symfony\Component\Routing\Attribute\Route;
 
+#[OA\Patch(
+    path: '/api/v1/accounts/{id}',
+    summary: 'Update account name and description',
+    requestBody: new OA\RequestBody(
+        required: true,
+        content: new OA\JsonContent(
+            properties: [
+                new OA\Property(property: 'name', type: 'string'),
+                new OA\Property(property: 'description', type: 'string'),
+            ],
+        ),
+    ),
+    tags: ['Accounts'],
+    security: [['bearerAuth' => []]],
+    parameters: [
+        new OA\Parameter(name: 'id', in: 'path', required: true, schema: new OA\Schema(type: 'string', format: 'uuid')),
+    ],
+    responses: [
+        new OA\Response(response: 204, description: 'Account updated.'),
+        new OA\Response(response: 401, description: 'Unauthorized'),
+    ],
+)]
 final readonly class AccountUpdaterPatchController
 {
     public function __construct(private UpdateAccountCommandHandler $commandHandler) {}
 
-    #[Route('/update/{id}', name: 'account_edit', methods: ['PATCH'])]
     public function __invoke(string $id, UpdateAccountRequestDto $requestDto): Response
     {
         $command = new UpdateAccountCommand(

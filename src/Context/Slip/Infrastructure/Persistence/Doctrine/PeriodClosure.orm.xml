@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<doctrine-mapping xmlns="http://doctrine-project.org/schemas/orm/doctrine-mapping"
+                  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                  xsi:schemaLocation="http://doctrine-project.org/schemas/orm/doctrine-mapping
+                  https://www.doctrine-project.org/schemas/orm/doctrine-mapping.xsd">
+
+    <entity name="App\Context\Slip\Domain\PeriodClosure"
+            table="period_closure"
+            repository-class="App\Context\Slip\Infrastructure\Persistence\Doctrine\DoctrinePeriodClosureRepository">
+        <id name="id" type="uuid" column="id">
+            <generator strategy="NONE"/>
+        </id>
+        <field name="year" column="year" type="integer"/>
+        <field name="month" column="month" type="integer"/>
+        <field name="closedAt" column="closed_at" type="datetime_immutable"/>
+        <unique-constraints>
+            <unique-constraint columns="year,month" name="UNIQ_PERIOD_CLOSURE_YM"/>
+        </unique-constraints>
+    </entity>
+</doctrine-mapping>

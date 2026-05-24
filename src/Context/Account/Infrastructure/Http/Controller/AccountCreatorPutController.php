@@ -9,7 +9,6 @@ use App\Context\Account\Application\UseCase\CreateAccount\CreateAccountCommandHa
 use App\Context\Account\Infrastructure\Http\Dto\CreateAccountRequestDto;
 use OpenApi\Attributes as OA;
 use Symfony\Component\HttpFoundation\Response;
-use Symfony\Component\Routing\Attribute\Route;
 
 #[OA\Put(
     path: '/api/v1/accounts/create',
@@ -29,6 +28,7 @@ use Symfony\Component\Routing\Attribute\Route;
         ),
     ),
     tags: ['Accounts'],
+    security: [['bearerAuth' => []]],
     responses: [
         new OA\Response(response: 201, description: 'Account created; InitialBalanceSet event recorded.'),
         new OA\Response(response: 400, description: 'Validation error (e.g. missing opening balance fields).'),
@@ -40,7 +40,6 @@ final readonly class AccountCreatorPutController
         private CreateAccountCommandHandler $commandHandler,
     ) {}
 
-    #[Route('/create', name: 'account_create', methods: ['PUT'])]
     public function __invoke(CreateAccountRequestDto $requestDto): Response
     {
         $command = new CreateAccountCommand(

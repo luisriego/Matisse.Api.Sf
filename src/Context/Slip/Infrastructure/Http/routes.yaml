@@ -48,3 +48,15 @@ slip_check_total_post:
     path: /api/v1/slips/check-total
     controller: App\Context\Slip\Infrastructure\Http\Controller\SlipCheckTotalPostController
     methods: ['POST']
+
+slip_import_consolidated:
+    path: /api/v1/slips/import
+    controller: App\Context\Slip\Infrastructure\Http\Controller\ImportConsolidatedSlipsPostController
+    methods: ['POST']
+
+period_close:
+    path: /api/v1/periods/{targetMonth}/close
+    controller: App\Context\Slip\Infrastructure\Http\Controller\ClosePeriodPostController
+    methods: ['POST']
+    requirements:
+        targetMonth: '\d{4}-\d{2}'

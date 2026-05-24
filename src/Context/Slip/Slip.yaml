@@ -24,3 +24,6 @@ services:
 
     App\Context\Slip\Domain\SlipGenerationParameterSnapshotRepository:
         alias: App\Context\Slip\Infrastructure\Persistence\Doctrine\DoctrineSlipGenerationParameterSnapshotRepository
+
+    App\Context\Slip\Domain\PeriodClosureRepository:
+        alias: App\Context\Slip\Infrastructure\Persistence\Doctrine\DoctrinePeriodClosureRepository
