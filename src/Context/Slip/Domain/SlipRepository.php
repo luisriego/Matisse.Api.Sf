@@ -27,4 +27,17 @@ interface SlipRepository
      * @return Slip[]
      */
     public function findManyByIds(array $ids): array;
+
+    /**
+     * Returns all non-cancelled slips whose due date falls within the given month/year.
+     *
+     * @return Slip[]
+     */
+    public function findByMonthYear(int $year, int $month): array;
+
+    /**
+     * Sum of amounts (in cents) for all non-cancelled slips whose dueDate falls in the given year/month.
+     * Used to validate bank CREDIT settlements against the expected total.
+     */
+    public function sumAmountByDueDateMonth(int $year, int $month): int;
 }

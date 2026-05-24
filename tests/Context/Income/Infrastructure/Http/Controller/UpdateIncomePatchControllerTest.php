@@ -7,8 +7,9 @@ namespace App\Tests\Context\Income\Infrastructure\Http\Controller;
 use App\Context\Income\Domain\Income;
 use App\Context\Income\Infrastructure\Http\Controller\UpdateIncomePatchController;
 use App\Shared\Domain\Exception\ResourceNotFoundException;
+use App\Tests\Context\Account\Domain\AccountMother;
 use App\Tests\Context\Income\Domain\IncomeMother;
-use App\Tests\Shared\Domain\UuidMother; // Added this line
+use App\Tests\Shared\Domain\UuidMother;
 use App\Tests\Shared\Infrastructure\PhpUnit\ApiTestCase;
 use DateTime;
 use Doctrine\ORM\Exception\ORMException;
@@ -33,7 +34,9 @@ final class UpdateIncomePatchControllerTest extends ApiTestCase
     public function test_it_should_update_income(): void
     {
         // 1. Create an initial income to be updated
-        $income = IncomeMother::create();
+        $account = AccountMother::create();
+        $income = IncomeMother::create(accountId: $account->id());
+        $this->entityManager->persist($account);
         $this->entityManager->persist($income->residentUnit());
         $this->entityManager->persist($income->incomeType());
         $this->entityManager->persist($income);

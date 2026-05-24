@@ -25,24 +25,33 @@ class MonthlyExpenseAggregatorServiceTest extends TestCase
     public function testAggregateTotalsHappyPath(): void
     {
         // Arrange
-        $typeEqual = $this->createConfiguredMock(ExpenseType::class, ['distributionMethod' => 'EQUAL']);
-        $typeFraction = $this->createConfiguredMock(ExpenseType::class, ['distributionMethod' => 'FRACTION']);
-        $typeIndividual = $this->createConfiguredMock(ExpenseType::class, ['distributionMethod' => 'INDIVIDUAL']);
+        $typeEqual = $this->createConfiguredMock(ExpenseType::class, ['distributionMethod' => 'EQUAL', 'code' => 'OTX1']);
+        $typeFraction = $this->createConfiguredMock(ExpenseType::class, ['distributionMethod' => 'EQUAL', 'code' => 'SP2AG']); // COPASA
+        $typeIndividual = $this->createConfiguredMock(ExpenseType::class, [
+            'distributionMethod' => 'INDIVIDUAL',
+            'code' => 'OTX',
+        ]);
 
         $expenses = [
-            $this->createConfiguredMock(Expense::class, ['amount' => 1000, 'type' => $typeEqual]),
-            $this->createConfiguredMock(Expense::class, ['amount' => 2000, 'type' => $typeFraction]),
-            $this->createConfiguredMock(Expense::class, ['amount' => 3000, 'type' => $typeIndividual]),
-            $this->createConfiguredMock(Expense::class, ['amount' => 1500, 'type' => $typeEqual]), // Another equal expense
+            $this->createConfiguredMock(Expense::class, ['amount' => 1000, 'type' => $typeEqual, 'id' => 'e1']),
+            $this->createConfiguredMock(Expense::class, ['amount' => 2000, 'type' => $typeFraction, 'id' => 'e2']),
+            $this->createConfiguredMock(Expense::class, [
+                'amount' => 3000,
+                'type' => $typeIndividual,
+                'id' => 'e3',
+                'residentUnitId' => 'unit-a',
+            ]),
+            $this->createConfiguredMock(Expense::class, ['amount' => 1500, 'type' => $typeEqual, 'id' => 'e4']), // Another equal expense
         ];
 
         // Act
         $totals = $this->aggregator->aggregateTotals($expenses);
 
         // Assert
-        $this->assertEquals(2500, $totals['equal']);       // 1000 + 1500
+        $this->assertEquals(5500, $totals['equal']);       // 1000 + 3000 + 1500
         $this->assertEquals(2000, $totals['fraction']);    // 2000
-        $this->assertEquals(3000, $totals['individual']);  // 3000
+        $this->assertEquals(0, $totals['individual']);
+        $this->assertEquals([], $totals['individualByUnit']);
         $this->assertEquals(7500, $totals['grandTotal']);  // 1000 + 2000 + 3000 + 1500
     }
 
@@ -58,13 +67,14 @@ class MonthlyExpenseAggregatorServiceTest extends TestCase
         $this->assertEquals(0, $totals['equal']);
         $this->assertEquals(0, $totals['fraction']);
         $this->assertEquals(0, $totals['individual']);
+        $this->assertEquals([], $totals['individualByUnit']);
         $this->assertEquals(0, $totals['grandTotal']);
     }
 
     public function testAggregateTotalsWithOnlyOneType(): void
     {
         // Arrange
-        $typeFraction = $this->createConfiguredMock(ExpenseType::class, ['distributionMethod' => 'FRACTION']);
+        $typeFraction = $this->createConfiguredMock(ExpenseType::class, ['distributionMethod' => 'FRACTION', 'code' => 'SP2AG']);
 
         $expenses = [
             $this->createConfiguredMock(Expense::class, ['amount' => 2000, 'type' => $typeFraction]),
@@ -78,6 +88,7 @@ class MonthlyExpenseAggregatorServiceTest extends TestCase
         $this->assertEquals(0, $totals['equal']);
         $this->assertEquals(4500, $totals['fraction']);
         $this->assertEquals(0, $totals['individual']);
+        $this->assertEquals([], $totals['individualByUnit']);
         $this->assertEquals(4500, $totals['grandTotal']);
     }
 
@@ -102,7 +113,10 @@ class MonthlyExpenseAggregatorServiceTest extends TestCase
     public function testAggregateTotalsWithUnknownDistributionMethodFallsBackToIndividual(): void
     {
         // Arrange
-        $typeUnknown = $this->createConfiguredMock(ExpenseType::class, ['distributionMethod' => 'UNRECOGNIZED']);
+        $typeUnknown = $this->createConfiguredMock(ExpenseType::class, [
+            'distributionMethod' => 'UNRECOGNIZED',
+            'code' => 'OTX9',
+        ]);
         $expenses = [
             $this->createConfiguredMock(Expense::class, ['amount' => 4000, 'type' => $typeUnknown])
         ];
@@ -111,9 +125,34 @@ class MonthlyExpenseAggregatorServiceTest extends TestCase
         $totals = $this->aggregator->aggregateTotals($expenses);
 
         // Assert
+        $this->assertEquals(4000, $totals['equal']);
+        $this->assertEquals(0, $totals['fraction']);
+        $this->assertEquals(0, $totals['individual']);
+        $this->assertEquals([], $totals['individualByUnit']);
+        $this->assertEquals(4000, $totals['grandTotal']);
+    }
+
+    public function testGasExpenseTypeCountsOnlyInGrandTotal(): void
+    {
+        $typeGas = $this->createConfiguredMock(ExpenseType::class, [
+            'distributionMethod' => 'INDIVIDUAL',
+            'code' => 'SP3GA',
+        ]);
+        $expenses = [
+            $this->createConfiguredMock(Expense::class, [
+                'amount' => 999,
+                'type' => $typeGas,
+                'id' => 'gas-1',
+                'residentUnitId' => 'unit-1',
+            ]),
+        ];
+
+        $totals = $this->aggregator->aggregateTotals($expenses);
+
         $this->assertEquals(0, $totals['equal']);
         $this->assertEquals(0, $totals['fraction']);
-        $this->assertEquals(4000, $totals['individual']);
-        $this->assertEquals(4000, $totals['grandTotal']);
+        $this->assertEquals(0, $totals['individual']);
+        $this->assertEquals([], $totals['individualByUnit']);
+        $this->assertEquals(999, $totals['grandTotal']);
     }
 }

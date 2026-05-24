@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace App\Tests\Context\Expense\Domain;
 
 use App\Context\Account\Domain\Account;
-use App\Context\Account\Domain\AccountCode;
 use App\Context\Account\Domain\AccountId;
 use App\Context\Account\Domain\AccountName;
 use App\Context\Expense\Domain\ExpenseType;
@@ -37,7 +36,7 @@ final class ExpenseTypeAccountRelationTest extends TestCase
     public function testExpenseTypeCanBeCreatedWithAccount(): void
     {
         $accountId = new AccountId((string) Uuid::uuid4());
-        $account = Account::create($accountId, new AccountCode('ACC001'), new AccountName('Cuenta Principal'));
+        $account = Account::create($accountId, new AccountName('Cuenta Principal'));
 
         $id = new ExpenseTypeId((string) Uuid::uuid4());
         $code = new ExpenseTypeCode('WATER');
@@ -49,13 +48,13 @@ final class ExpenseTypeAccountRelationTest extends TestCase
 
         $this->assertNotNull($expenseType->account());
         $this->assertEquals($account, $expenseType->account());
-        $this->assertEquals('ACC001', $expenseType->account()->code());
+        $this->assertEquals($accountId->value(), $expenseType->account()->id());
     }
 
     public function testAccountCanHaveMultipleExpenseTypes(): void
     {
         $accountId = new AccountId((string) Uuid::uuid4());
-        $account = Account::create($accountId, new AccountCode('ACC002'), new AccountName('Cuenta Secundaria'));
+        $account = Account::create($accountId, new AccountName('Cuenta Secundaria'));
 
         $type1 = ExpenseType::create(
             new ExpenseTypeId((string) Uuid::uuid4()),
@@ -86,7 +85,7 @@ final class ExpenseTypeAccountRelationTest extends TestCase
     public function testAccountCanRemoveExpenseType(): void
     {
         $accountId = new AccountId((string) Uuid::uuid4());
-        $account = Account::create($accountId, new AccountCode('ACC003'), new AccountName('Cuenta Tercera'));
+        $account = Account::create($accountId, new AccountName('Cuenta Tercera'));
 
         $type = ExpenseType::create(
             new ExpenseTypeId((string) Uuid::uuid4()),

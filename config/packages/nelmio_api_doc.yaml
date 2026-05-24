@@ -1,0 +1,45 @@
+nelmio_api_doc:
+    documentation:
+        info:
+            title: Matisse API
+            description: Smart management system for residential buildings (Expresate)
+            version: 1.0.0
+        components:
+            securitySchemes:
+                bearerAuth:
+                    type: http
+                    scheme: bearer
+                    bearerFormat: JWT
+                    description: JWT token obtained from POST /api/v1/login_check
+        security:
+            - bearerAuth: []
+        tags:
+            - name: Authentication
+              description: Login and token issuance
+            - name: Users
+              description: User registration, profile and password management
+            - name: Accounts
+              description: Condominium bank accounts and balances
+            - name: Expenses
+              description: Expenses, recurring expenses and expense types
+            - name: Incomes
+              description: Incomes and income types
+            - name: Slips
+              description: Monthly slip generation, import, distribution and period closure
+            - name: Resident Units
+              description: Residential units and recipients
+            - name: Gas
+              description: Gas readings, prices and consumption
+            - name: Bank / OFX
+              description: Bank statement OFX ingestion and settlement
+            - name: Setup
+              description: Initial condominium setup wizard
+            - name: Billing Policy
+              description: Monthly slip billing parameters (extra fee, reserve fund, syndic, gas)
+            - name: Ledger
+              description: Cross-context ledger movements by month
+            - name: Internal
+              description: Internal or uncategorized endpoints
+    areas:
+        path_patterns:
+            - ^/api/v1(?!/doc$)

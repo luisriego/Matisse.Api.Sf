@@ -12,7 +12,6 @@ class AccountResponseConverter
     {
         return new AccountResponse(
             $account->id(),
-            $account->code(),
             $account->name(),
             $account->description(),
             $account->isActive(),

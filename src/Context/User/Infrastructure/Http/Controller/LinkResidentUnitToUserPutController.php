@@ -8,8 +8,31 @@ use App\Context\User\Application\UseCase\ResidentUnit\LinkResidentUnitToUserComm
 use App\Context\User\Application\UseCase\ResidentUnit\LinkResidentUnitToUserCommandHandler;
 use App\Context\User\Infrastructure\Http\Dto\LinkResidentUnitToUserRequestDto;
 use InvalidArgumentException;
+use OpenApi\Attributes as OA;
 use Symfony\Component\HttpFoundation\Response;
 
+#[OA\Put(
+    path: '/api/v1/users/{id}/resident-unit',
+    summary: 'Link resident unit to user',
+    requestBody: new OA\RequestBody(
+        required: true,
+        content: new OA\JsonContent(
+            required: ['residentUnitId'],
+            properties: [
+                new OA\Property(property: 'residentUnitId', type: 'string', format: 'uuid'),
+            ],
+        ),
+    ),
+    tags: ['Users'],
+    security: [['bearerAuth' => []]],
+    parameters: [
+        new OA\Parameter(name: 'id', in: 'path', required: true, schema: new OA\Schema(type: 'string', format: 'uuid')),
+    ],
+    responses: [
+        new OA\Response(response: 204, description: 'Resident unit linked.'),
+        new OA\Response(response: 401, description: 'Unauthorized'),
+    ],
+)]
 final readonly class LinkResidentUnitToUserPutController
 {
     public function __construct(private LinkResidentUnitToUserCommandHandler $handler) {}

@@ -6,12 +6,14 @@ namespace App\Context\Slip\Domain;
 
 use App\Context\ResidentUnit\Domain\ResidentUnit;
 use App\Context\Slip\Domain\Event\SlipWasCancelled;
+use App\Context\Slip\Domain\Event\SlipWasImported;
 use App\Context\Slip\Domain\Event\SlipWasMarkedAsOverdue;
 use App\Context\Slip\Domain\Event\SlipWasPaid;
 use App\Context\Slip\Domain\Event\SlipWasSubmitted;
 use App\Context\Slip\Domain\ValueObject\SlipAmount;
 use App\Context\Slip\Domain\ValueObject\SlipDueDate;
 use App\Context\Slip\Domain\ValueObject\SlipId;
+use App\Context\Slip\Domain\ValueObject\SlipOrigin;
 use App\Shared\Domain\AggregateRoot;
 use DateMalformedStringException;
 use DateTimeImmutable;
@@ -26,6 +28,8 @@ class Slip extends AggregateRoot
 
     private SlipStatus $status;
 
+    private SlipOrigin $origin;
+
     private function __construct(
         private readonly string $id,
         private readonly int $amount,
@@ -34,6 +38,7 @@ class Slip extends AggregateRoot
         private readonly ?string $description = null,
     ) {
         $this->status = SlipStatus::PENDING;
+        $this->origin = SlipOrigin::GENERATED;
         $this->createdAt = new DateTimeImmutable();
     }
 
@@ -54,6 +59,38 @@ class Slip extends AggregateRoot
             $dueDate->toDateTimeImmutable(),
             $description,
         );
+    }
+
+    /**
+     * @throws DateMalformedStringException
+     */
+    public static function importForUnit(
+        SlipId $id,
+        SlipAmount $amount,
+        ResidentUnit $residentUnit,
+        SlipDueDate $dueDate,
+        ?string $description = 'Importação histórica',
+    ): self {
+        $slip = new self(
+            $id->value(),
+            $amount->value(),
+            $residentUnit,
+            $dueDate->toDateTimeImmutable(),
+            $description,
+        );
+        $slip->status = SlipStatus::PAID;
+        $slip->origin = SlipOrigin::IMPORTED;
+        $slip->paidAt = $slip->createdAt;
+        $slip->record(
+            new SlipWasImported(
+                $slip->id,
+                $residentUnit->id(),
+                $amount->value(),
+                $dueDate->toDateTimeImmutable()->format(DATE_ATOM),
+            ),
+        );
+
+        return $slip;
     }
 
     public function id(): string
@@ -84,6 +121,11 @@ class Slip extends AggregateRoot
     public function createdAt(): DateTimeImmutable
     {
         return $this->createdAt;
+    }
+
+    public function origin(): SlipOrigin
+    {
+        return $this->origin;
     }
 
     public function residentUnit(): ResidentUnit

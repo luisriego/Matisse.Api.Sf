@@ -7,6 +7,18 @@ slip_get_details:
     path: /api/v1/slips/{id}
     controller: App\Context\Slip\Infrastructure\Http\Controller\GetSlipDetailsController
     methods: ['GET']
+    requirements:
+        id: '[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}'
+
+slip_find_by_month:
+    path: /api/v1/slips/by-month
+    controller: App\Context\Slip\Infrastructure\Http\Controller\FindSlipsByMonthGetController
+    methods: [ 'GET' ]
+
+slip_generation_explain:
+    path: /api/v1/slips/generation/explain
+    controller: App\Context\Slip\Infrastructure\Http\Controller\ExplainSlipGenerationGetController
+    methods: [ 'GET' ]
 
 slip_generation:
     path: /api/v1/slips/generation
@@ -17,6 +29,8 @@ slip_send:
     path: /api/v1/slips/send/{id}
     controller: App\Context\Slip\Infrastructure\Http\Controller\SlipSendPatchController
     methods: ['PATCH']
+    requirements:
+        id: '[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}'
 
 slips_bulk_send:
     path: /api/v1/slips/bulk-send
@@ -27,8 +41,22 @@ slip_pay:
     path: /api/v1/slips/pay/{id}
     controller: App\Context\Slip\Infrastructure\Http\Controller\SlipPayPatchController
     methods: ['PATCH']
+    requirements:
+        id: '[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}'
 
 slip_check_total_post:
     path: /api/v1/slips/check-total
     controller: App\Context\Slip\Infrastructure\Http\Controller\SlipCheckTotalPostController
     methods: ['POST']
+
+slip_import_consolidated:
+    path: /api/v1/slips/import
+    controller: App\Context\Slip\Infrastructure\Http\Controller\ImportConsolidatedSlipsPostController
+    methods: ['POST']
+
+period_close:
+    path: /api/v1/periods/{targetMonth}/close
+    controller: App\Context\Slip\Infrastructure\Http\Controller\ClosePeriodPostController
+    methods: ['POST']
+    requirements:
+        targetMonth: '\d{4}-\d{2}'

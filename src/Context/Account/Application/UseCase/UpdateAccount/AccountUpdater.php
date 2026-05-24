@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace App\Context\Account\Application\UseCase\UpdateAccount;
 
-use App\Context\Account\Domain\AccountCode;
 use App\Context\Account\Domain\AccountDescription;
 use App\Context\Account\Domain\AccountId;
 use App\Context\Account\Domain\AccountName;
@@ -16,13 +15,12 @@ final readonly class AccountUpdater
 
     public function __invoke(
         AccountId $accountId,
-        AccountCode $accountCode,
         AccountName $accountName,
         AccountDescription $accountDescription,
     ): void {
         $account = $this->accountRepository->findOneByIdOrFail($accountId->value());
 
-        $account->updateDetails($accountCode, $accountName, $accountDescription);
+        $account->updateDetails($accountName, $accountDescription);
 
         $this->accountRepository->save($account, true);
     }

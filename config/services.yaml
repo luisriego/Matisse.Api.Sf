@@ -12,6 +12,11 @@ imports:
     - { resource: '../src/Context/EventStore/event.yaml'}
     - { resource: '../src/Context/User/user.yaml' }
     - { resource: '../src/Context/Gas/gas.yaml'}
+    - { resource: '../src/Context/BankStatement/BankStatement.yaml'}
+    - { resource: '../src/Context/Ledger/ledger.yaml'}
+    - { resource: '../src/Context/Setup/setup.yaml'}
+    - { resource: '../src/Context/BillingPolicy/BillingPolicy.yaml'}
+    - { resource: '../src/Context/Forecast/Forecast.yaml'}
 
 services:
     _defaults:
@@ -33,12 +38,18 @@ services:
             - '../src/Context/*/Domain/Entity/'
             - '../src/Context/*/Infrastructure/Persistence/Entity/'
             - '../src/Context/*/Infrastructure/Http/Controller/'
+            - '../src/Context/BankStatement/'
 
     App\Shared\:
         resource: '../src/Shared/'
         exclude:
             - '../src/Shared/Domain/Entity/'
             - '../src/Shared/Infrastructure/Persistence/Entity/'
+            - '../src/Shared/Infrastructure/OpenApi/'
+
+    App\Shared\Infrastructure\OpenApi\BoundedContextRouteDescriber:
+        tags:
+            - { name: nelmio_api_doc.route_describer, priority: -300 }
 
     # Listener to unwrap HandlerFailedException from Messenger component
     App\Shared\Infrastructure\Symfony\UnwrapHandlerFailedExceptionListener:
@@ -109,3 +120,7 @@ services:
         arguments:
             $ollamaHost: '%env(OLLAMA_HOST)%'
             $logger: '@logger'
+
+    App\Shared\Infrastructure\SetupRequiredListener:
+        tags:
+            - { name: kernel.event_listener, event: kernel.request, method: onKernelRequest, priority: 10 }

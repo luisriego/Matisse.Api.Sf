@@ -4,10 +4,18 @@ declare(strict_types=1);
 
 namespace App\Context\User\Infrastructure\Http\Controller;
 
+use OpenApi\Attributes as OA;
 use Symfony\Component\HttpFoundation\JsonResponse;
-use Symfony\Component\Routing\Annotation\Route;
 
-#[Route('/health-check', name: 'user_health_check', methods: ['GET'])]
+#[OA\Get(
+    path: '/api/v1/users/health-check',
+    summary: 'Users context health check',
+    tags: ['Users'],
+    security: [],
+    responses: [
+        new OA\Response(response: 200, description: 'Service is healthy.'),
+    ],
+)]
 final class HealthCheckController
 {
     public function __invoke(): JsonResponse

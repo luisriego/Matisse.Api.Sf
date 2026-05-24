@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace App\Tests\Context\Account\Infrastructure\Http\Controller;
 
 use App\Context\Account\Domain\Account;
-use App\Tests\Context\Account\Domain\AccountCodeMother;
 use App\Tests\Context\Account\Domain\AccountMother;
 use App\Tests\Shared\Infrastructure\PhpUnit\ApiTestCase;
 use Symfony\Component\HttpFoundation\Response;
@@ -26,9 +25,7 @@ final class AccountUpdaterPatchControllerTest extends ApiTestCase
         $this->entityManager->flush();
 
         // 2. Define the update payload
-        $updatedCode = AccountCodeMother::create()->value();
         $payload = [
-            'code' => $updatedCode,
             'name' => 'Updated Account Name',
             'description' => 'Updated account description.',
         ];
@@ -52,7 +49,6 @@ final class AccountUpdaterPatchControllerTest extends ApiTestCase
         $updatedAccount = $this->entityManager->find(Account::class, $account->id());
 
         $this->assertNotNull($updatedAccount);
-        $this->assertEquals($payload['code'], $updatedAccount->code());
         $this->assertEquals($payload['name'], $updatedAccount->name());
         $this->assertEquals($payload['description'], $updatedAccount->description());
     }

@@ -14,13 +14,12 @@ final class AccountTest extends TestCase
     public function test_it_should_create_with_description(): void
     {
         $id = AccountIdMother::create();
-        $code = AccountCodeMother::create();
         $name = AccountNameMother::create();
         // Use MotherCreator to generate a sentence, ensuring it's long enough.
         $descriptionText = MotherCreator::random()->sentence(3);
         $description = new AccountDescription($descriptionText);
 
-        $account = Account::createWithDescription($id, $code, $name, $description);
+        $account = Account::createWithDescription($id, $name, $description);
 
         self::assertEquals($descriptionText, $account->description());
     }
@@ -39,9 +38,8 @@ final class AccountTest extends TestCase
         self::assertNull($account->updatedAt());
 
         $newName = AccountNameMother::create();
-        $newCode = AccountCodeMother::create();
         $newDescription = new AccountDescription(MotherCreator::random()->sentence(3));
-        $account->updateDetails($newCode, $newName, $newDescription);
+        $account->updateDetails($newName, $newDescription);
 
         self::assertNotNull($account->updatedAt());
     }

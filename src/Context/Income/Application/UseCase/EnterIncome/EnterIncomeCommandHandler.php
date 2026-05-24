@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Context\Income\Application\UseCase\EnterIncome;
 
+use App\Context\Account\Domain\AccountRepository;
 use App\Context\Income\Domain\Income;
 use App\Context\Income\Domain\IncomeRepository;
 use App\Context\Income\Domain\IncomeTypeRepository;
@@ -15,6 +16,7 @@ use App\Shared\Application\CommandHandler;
 use App\Shared\Domain\Event\EventBus;
 use DateMalformedStringException;
 use DateTime;
+use DateTimeImmutable;
 
 readonly class EnterIncomeCommandHandler implements CommandHandler
 {
@@ -22,6 +24,7 @@ readonly class EnterIncomeCommandHandler implements CommandHandler
         private IncomeRepository $incomeRepository,
         private IncomeTypeRepository $incomeTypeRepository,
         private ResidentUnitRepository $residentUnitRepository,
+        private AccountRepository $accountRepository,
         private EventBus $bus,
     ) {}
 
@@ -32,13 +35,21 @@ readonly class EnterIncomeCommandHandler implements CommandHandler
     {
         $id = new IncomeId($command->id());
         $amount = new IncomeAmount($command->amount());
-        $residentUnit = $this->residentUnitRepository->findOneByIdOrFail($command->residentUnitId());
+        $residentUnit = $command->residentUnitId() !== null
+            ? $this->residentUnitRepository->findOneByIdOrFail($command->residentUnitId())
+            : null;
         $type = $this->incomeTypeRepository->findOneByIdOrFail($command->type());
-        $accountId = $command->accountId(); // Get accountId from command
-        $dueDate = new IncomeDueDate(new DateTime($command->dueDate()));
+        $this->accountRepository->findOneByIdOrFail($command->accountId());
+        $dueDate = $command->allowPastDueDate()
+            ? IncomeDueDate::fromBankCreditString($command->dueDate())
+            : new IncomeDueDate(new DateTime($command->dueDate()));
         $descriptionValue = $command->description();
 
-        $income = Income::create($id, $amount, $residentUnit, $type, $accountId, $dueDate, $descriptionValue);
+        $income = Income::create($id, $amount, $residentUnit, $type, $command->accountId(), $dueDate, $descriptionValue);
+
+        if ($command->paidAt() !== null) {
+            $income->markAsPaid(new DateTimeImmutable($command->paidAt()));
+        }
 
         $this->incomeRepository->save($income, true);
         // $income->publishDomainEvents($this->bus); // Handled automatically by DomainEventCollectorSubscriber

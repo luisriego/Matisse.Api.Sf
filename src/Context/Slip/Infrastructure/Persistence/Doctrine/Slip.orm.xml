@@ -12,6 +12,7 @@
         <field name="dueDate" column="due_date" type="datetime_immutable" />
         <field name="createdAt" column="created_at" type="datetime_immutable" />
         <field name="paidAt" column="paid_at" type="datetime_immutable" nullable="true" />
+        <field name="origin" column="origin" length="20" enum-type="App\Context\Slip\Domain\ValueObject\SlipOrigin" />
 
         <many-to-one field="residentUnit" target-entity="App\Context\ResidentUnit\Domain\ResidentUnit" inversed-by="slips">
                 <join-column name="resident_unit_id" referenced-column-name="id" nullable="true" />

@@ -9,10 +9,35 @@ use App\Context\User\Application\UseCase\PasswordReset\ResetPasswordCommandHandl
 use App\Context\User\Infrastructure\Http\Dto\ResetPasswordRequestDto;
 use App\Shared\Domain\Exception\InvalidArgumentException;
 use App\Shared\Domain\Exception\ResourceNotFoundException;
+use OpenApi\Attributes as OA;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Response;
 use Throwable;
 
+#[OA\Post(
+    path: '/api/v1/users/{userId}/password-reset/{token}',
+    summary: 'Reset password using email token',
+    requestBody: new OA\RequestBody(
+        required: true,
+        content: new OA\JsonContent(
+            required: ['newPassword'],
+            properties: [
+                new OA\Property(property: 'newPassword', type: 'string', format: 'password'),
+            ],
+        ),
+    ),
+    tags: ['Users'],
+    security: [],
+    parameters: [
+        new OA\Parameter(name: 'userId', in: 'path', required: true, schema: new OA\Schema(type: 'string', format: 'uuid')),
+        new OA\Parameter(name: 'token', in: 'path', required: true, schema: new OA\Schema(type: 'string')),
+    ],
+    responses: [
+        new OA\Response(response: 200, description: 'Password reset successfully.'),
+        new OA\Response(response: 400, description: 'Invalid token or password.'),
+        new OA\Response(response: 404, description: 'User not found.'),
+    ],
+)]
 final readonly class ResetPasswordController
 {
     public function __construct(

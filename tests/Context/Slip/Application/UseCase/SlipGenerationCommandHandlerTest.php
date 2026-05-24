@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace App\Tests\Context\Slip\Application\UseCase;
 
+use App\Context\BillingPolicy\Domain\BillingPolicyResolverPort;
+use App\Context\BillingPolicy\Domain\ResolvedBillingPolicy;
 use App\Context\Expense\Domain\RecurringExpense;
 use App\Context\Expense\Domain\Expense;
 use App\Context\ResidentUnit\Domain\ResidentUnit;
@@ -12,9 +14,12 @@ use App\Context\Slip\Application\UseCase\SlipGeneration\SlipGenerationCommand;
 use App\Context\Slip\Application\UseCase\SlipGeneration\SlipGenerationCommandHandler;
 use App\Context\Expense\Domain\RecurringExpenseRepository;
 use App\Context\Expense\Domain\ExpenseRepository;
+use App\Context\Slip\Domain\PeriodClosureRepository;
+use App\Context\Slip\Domain\Service\PeriodClosureGuard;
 use App\Context\Slip\Domain\Service\SlipFactory;
 use App\Context\Slip\Domain\Service\SlipGenerationPolicy;
 use App\Context\Slip\Domain\Slip;
+use App\Context\Slip\Domain\SlipGenerationParameterSnapshotRepository;
 use App\Context\Slip\Domain\SlipRepository;
 use App\Shared\Domain\ValueObject\DateRange;
 use PHPUnit\Framework\Attributes\Test;
@@ -30,6 +35,8 @@ final class SlipGenerationCommandHandlerTest extends TestCase
     private ResidentUnitRepository&MockObject $residentUnitRepo;
     private MockObject|SlipGenerationPolicy $generationPolicy;
     private SlipFactory&MockObject $slipFactory;
+    private SlipGenerationParameterSnapshotRepository&MockObject $snapshotRepo;
+    private BillingPolicyResolverPort&MockObject $billingPolicyResolverService;
 
     protected function setUp(): void
     {
@@ -41,6 +48,14 @@ final class SlipGenerationCommandHandlerTest extends TestCase
         $this->residentUnitRepo = $this->createMock(ResidentUnitRepository::class);
         $this->generationPolicy = $this->createMock(SlipGenerationPolicy::class);
         $this->slipFactory = $this->createMock(SlipFactory::class);
+        $this->snapshotRepo = $this->createMock(SlipGenerationParameterSnapshotRepository::class);
+        $this->billingPolicyResolverService = $this->createMock(BillingPolicyResolverPort::class);
+        $this->billingPolicyResolverService
+            ->method('resolve')
+            ->willReturn(ResolvedBillingPolicy::empty('2099-07'));
+
+        $periodClosureRepo = $this->createMock(PeriodClosureRepository::class);
+        $periodClosureRepo->method('existsForMonth')->willReturn(false);
 
         $this->handler = new SlipGenerationCommandHandler(
             $this->slipRepo,
@@ -48,7 +63,10 @@ final class SlipGenerationCommandHandlerTest extends TestCase
             $this->recurringRepo,
             $this->residentUnitRepo,
             $this->generationPolicy,
-            $this->slipFactory
+            $this->slipFactory,
+            $this->snapshotRepo,
+            new PeriodClosureGuard($periodClosureRepo),
+            $this->billingPolicyResolverService,
         );
     }
 
@@ -82,8 +100,6 @@ final class SlipGenerationCommandHandlerTest extends TestCase
         $recurringExpense1 = $this->createMock(RecurringExpense::class);
         $recurring = [$recurringExpense1];
 
-        $allExpenses = array_merge($expenses, $recurring);
-
         $this->expenseRepo->expects($this->once())
             ->method('findActiveByDateRange')
             ->with($this->equalTo($expenseRange))
@@ -109,7 +125,7 @@ final class SlipGenerationCommandHandlerTest extends TestCase
 
         $this->slipFactory->expects($this->once())
             ->method('createFromExpensesAndUnits')
-            ->with($allExpenses, $allUnits, $year, $month)
+            ->with($expenses, $recurring, $allUnits, $year, $month, 0, 0, null)
             ->willReturn($generatedSlips);
 
         // --- Persistence expectations ---
@@ -126,6 +142,7 @@ final class SlipGenerationCommandHandlerTest extends TestCase
 
         $this->slipRepo->expects($this->once())->method('flush');
 
+        $this->snapshotRepo->expects($this->once())->method('upsertForExpenseMonth')->with($year, $month, 0, 0);
 
         // Act
         ($this->handler)($command);

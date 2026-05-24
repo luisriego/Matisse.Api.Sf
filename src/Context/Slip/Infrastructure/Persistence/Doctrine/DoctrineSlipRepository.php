@@ -6,6 +6,7 @@ namespace App\Context\Slip\Infrastructure\Persistence\Doctrine;
 
 use App\Context\Slip\Domain\Slip;
 use App\Context\Slip\Domain\SlipRepository;
+use App\Context\Slip\Domain\SlipStatus;
 use App\Context\Slip\Domain\ValueObject\SlipId;
 use App\Shared\Domain\Exception\ResourceNotFoundException;
 use App\Shared\Domain\ValueObject\DateRange;
@@ -92,5 +93,38 @@ class DoctrineSlipRepository extends ServiceEntityRepository implements SlipRepo
             ->setParameter('ids', $ids)
             ->getQuery()
             ->getResult();
+    }
+
+    public function findByMonthYear(int $year, int $month): array
+    {
+        $dateRange = DateRange::fromMonth($year, $month);
+
+        return $this->createQueryBuilder('s')
+            ->where('s.dueDate >= :startDate')
+            ->andWhere('s.dueDate <= :endDate')
+            ->andWhere('s.status != :cancelled')
+            ->setParameter('startDate', $dateRange->startDate())
+            ->setParameter('endDate', $dateRange->endDate())
+            ->setParameter('cancelled', SlipStatus::CANCELLED)
+            ->getQuery()
+            ->getResult();
+    }
+
+    public function sumAmountByDueDateMonth(int $year, int $month): int
+    {
+        $dateRange = DateRange::fromMonth($year, $month);
+
+        $result = $this->createQueryBuilder('s')
+            ->select('COALESCE(SUM(s.amount), 0)')
+            ->where('s.dueDate >= :startDate')
+            ->andWhere('s.dueDate <= :endDate')
+            ->andWhere('s.status != :cancelled')
+            ->setParameter('startDate', $dateRange->startDate())
+            ->setParameter('endDate', $dateRange->endDate())
+            ->setParameter('cancelled', SlipStatus::CANCELLED)
+            ->getQuery()
+            ->getSingleScalarResult();
+
+        return (int) $result;
     }
 }

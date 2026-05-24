@@ -1,0 +1,6 @@
+forecast_get:
+    path: /api/v1/forecast/{targetMonth}
+    methods: [GET]
+    controller: App\Context\Forecast\Infrastructure\Http\Controller\ForecastGetController
+    requirements:
+        targetMonth: '\d{4}-\d{2}'

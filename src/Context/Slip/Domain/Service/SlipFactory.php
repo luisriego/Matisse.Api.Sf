@@ -4,9 +4,8 @@ declare(strict_types=1);
 
 namespace App\Context\Slip\Domain\Service;
 
-use App\Context\EventStore\Domain\StoredEventRepository;
-use App\Context\Expense\Domain\ExpenseType;
-use App\Context\Expense\Domain\ExpenseTypeRepository;
+use App\Context\Expense\Domain\Expense;
+use App\Context\Expense\Domain\RecurringExpense;
 use App\Context\ResidentUnit\Domain\ResidentUnit;
 use App\Context\Slip\Domain\Slip;
 use App\Context\Slip\Domain\ValueObject\SlipAmount;
@@ -17,44 +16,75 @@ use DateMalformedStringException;
 use DateTimeImmutable;
 use Psr\Log\LoggerInterface;
 
-use function count;
 use function sprintf;
 
 readonly class SlipFactory
 {
     public function __construct(
         private MonthlyExpenseAggregatorService $monthlyExpenseAggregator,
-        private SlipAmountCalculatorService $slipAmountCalculator,
-        private StoredEventRepository $storedEventRepository,
+        private RecurringExpenseSlipContributionService $recurringExpenseSlipContribution,
+        private SyndicFeeSlipPoolAdjustmentService $syndicFeeSlipPoolAdjustment,
+        private SlipComponentBreakdownService $slipComponentBreakdownService,
+        private GasExpenseByUnitResolver $gasExpenseByUnitResolver,
         private LoggerInterface $logger,
-        private ExpenseTypeRepository $expenseTypeRepository,
     ) {}
 
     /**
+     * @param array<int, Expense> $expenses
+     * @param array<int, RecurringExpense> $recurringExpenses
      * @param ResidentUnit[] $residentUnits
      *
      * @return Slip[]
      *
      * @throws DateMalformedStringException
      */
-    public function createFromExpensesAndUnits(array $allExpenses, array $residentUnits, int $expenseYear, int $expenseMonth): array
-    {
-        if (empty($residentUnits) || empty($allExpenses)) {
+    public function createFromExpensesAndUnits(
+        array $expenses,
+        array $recurringExpenses,
+        array $residentUnits,
+        int $expenseYear,
+        int $expenseMonth,
+        int $extraFeePerUnitCents = 0,
+        int $reserveFundPerUnitCents = 0,
+        ?int $syndicShareTotalCents = null,
+    ): array {
+        if (empty($residentUnits)) {
             return [];
         }
 
-        $expenseTotals = $this->monthlyExpenseAggregator->aggregateTotals($allExpenses);
-        $totalEquallyDividedExpenses = $expenseTotals['equal'];
-        $totalFractionBasedExpenses = $expenseTotals['fraction'];
-        $numberOfPayingResidents = count($residentUnits);
+        $expenseTotals = $this->monthlyExpenseAggregator->aggregateTotals($expenses);
+        $recurringPart = $this->recurringExpenseSlipContribution->contributionForMonth(
+            $recurringExpenses,
+            $expenseYear,
+            $expenseMonth,
+        );
 
+        $mergedEqual = $expenseTotals['equal'] + $recurringPart['equal'];
+        $totalFractionBasedExpenses = $expenseTotals['fraction'] + $recurringPart['fraction'];
+        $individualByUnit = $expenseTotals['individualByUnit'];
+
+        $poolAdjustment = $this->syndicFeeSlipPoolAdjustment->adjust(
+            $expenses,
+            $recurringExpenses,
+            $expenseYear,
+            $expenseMonth,
+            $residentUnits,
+            $mergedEqual,
+            $individualByUnit,
+            $syndicShareTotalCents ?? SyndicFeeSlipPoolAdjustmentService::SYNDIC_SHARE_TOTAL_CENTS,
+        );
+        $totalEquallyDividedExpenses = $poolAdjustment['baseEqualPoolCents'];
+        $syndicEqualPool = $poolAdjustment['syndicEqualPoolCents'];
+        $individualByUnit = $poolAdjustment['individualByUnit'];
         $this->logger->info(sprintf(
-            'Aggregated totals for %d-%d: Equal: %.2f, Fraction: %.2f, Individual: %.2f',
+            'Aggregated totals for %d-%d: Equal: %.2f, Fraction: %.2f, Individual: %.2f, RecurringEqual: %.2f, RecurringFraction: %.2f',
             $expenseYear,
             $expenseMonth,
             $expenseTotals['equal'] / 100,
             $expenseTotals['fraction'] / 100,
             $expenseTotals['individual'] / 100,
+            $recurringPart['equal'] / 100,
+            $recurringPart['fraction'] / 100,
         ));
 
         $dueDateContext = (new DateTimeImmutable(sprintf('%d-%d-01', $expenseYear, $expenseMonth)))->modify('+1 month');
@@ -66,27 +96,41 @@ readonly class SlipFactory
         $slips = [];
 
         $previousMonth = (new DateTimeImmutable(sprintf('%d-%d-01', $expenseYear, $expenseMonth)))->modify('-1 month');
-        $gasExpensesByUnit = $this->getGasExpensesForMonth($previousMonth->format('Y'), $previousMonth->format('m'));
+        $gasExpensesByUnit = $this->gasExpenseByUnitResolver->sumByResidentUnitForCalendarMonth(
+            (int) $previousMonth->format('Y'),
+            (int) $previousMonth->format('m'),
+        );
 
+        $breakdown = $this->slipComponentBreakdownService->build(
+            $residentUnits,
+            $totalEquallyDividedExpenses,
+            $syndicEqualPool,
+            $totalFractionBasedExpenses,
+            $individualByUnit,
+            $gasExpensesByUnit,
+            $extraFeePerUnitCents,
+            $reserveFundPerUnitCents,
+        );
+        $residentById = [];
         foreach ($residentUnits as $residentUnit) {
-            $amountInCents = $this->slipAmountCalculator->calculate(
-                $residentUnit,
-                $totalEquallyDividedExpenses,
-                $totalFractionBasedExpenses,
-                $numberOfPayingResidents,
-            );
+            $residentById[$residentUnit->id()] = $residentUnit;
+        }
 
-            $residentUnitId = $residentUnit->id();
-            $gasAmount = $gasExpensesByUnit[$residentUnitId] ?? 0;
-
-            $amountInCents += $gasAmount;
+        foreach ($breakdown['units'] as $unit) {
+            $amountInCents = (int) $unit['totalCents'];
 
             if ($amountInCents <= 0) {
                 $this->logger->info(sprintf(
                     'Calculated amount for unit %s is zero or negative. Skipping slip creation.',
-                    $residentUnit->unit(),
+                    (string) $unit['unit'],
                 ));
 
+                continue;
+            }
+
+            $residentUnit = $residentById[$unit['residentUnitId']] ?? null;
+
+            if ($residentUnit === null) {
                 continue;
             }
 
@@ -96,50 +140,5 @@ readonly class SlipFactory
         }
 
         return $slips;
-    }
-
-    /**
-     * @throws DateMalformedStringException
-     */
-    private function getGasExpensesForMonth(string $year, string $month): array
-    {
-        $gasExpenses = [];
-
-        $startDate = new DateTimeImmutable(sprintf('%s-%s-01 00:00:00', $year, $month));
-        $endDate = $startDate->modify('last day of this month 23:59:59');
-
-        $events = $this->storedEventRepository->findByEventTypesAndOccurredBetween(
-            ['expense.entered', 'expense.compensated'],
-            $startDate,
-            $endDate,
-        );
-
-        $gasTypeId = $this->resolveGasExpenseTypeId();
-
-        foreach ($events as $event) {
-            $payload = $event->toPrimitives();
-
-            if (isset($payload['body']['type']) && $payload['body']['type'] === $gasTypeId) {
-                $residentUnitId = $payload['body']['residentUnitId'] ?? null;
-                $amount = $payload['body']['amount'] ?? 0;
-
-                if ($residentUnitId) {
-                    if (!isset($gasExpenses[$residentUnitId])) {
-                        $gasExpenses[$residentUnitId] = 0;
-                    }
-                    $gasExpenses[$residentUnitId] += $amount;
-                }
-            }
-        }
-
-        return $gasExpenses;
-    }
-
-    private function resolveGasExpenseTypeId(): string
-    {
-        /** @var ExpenseType $type */
-        $type = $this->expenseTypeRepository->findOneByCodeOrFail('SP3GA');
-
-        return $type->id();
     }
 }

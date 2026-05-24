@@ -22,7 +22,7 @@ final class IncomeMother
         ?IncomeAmount $amount = null,
         ?ResidentUnit $residentUnit = null,
         ?IncomeType $type = null,
-        ?string $accountId = null, // Added accountId
+        ?string $accountId = null,
         ?IncomeDueDate $dueDate = null,
         ?string $description = null
     ): Income {
@@ -31,7 +31,7 @@ final class IncomeMother
             $amount ?? IncomeAmountMother::create(),
             $residentUnit ?? ResidentUnitMother::create(),
             $type ?? IncomeTypeMother::create(),
-            $accountId ?? UuidMother::create(), // Pass accountId
+            $accountId ?? UuidMother::create(),
             $dueDate ?? new IncomeDueDate(new DateTime('+1 day')),
             $description ?? 'Random income description'
         );

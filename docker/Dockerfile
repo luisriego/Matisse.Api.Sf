@@ -54,7 +54,7 @@ FROM base AS development
 RUN pecl channel-update pecl.php.net \
     && pecl install -f xdebug-3.3.1 \
     && pecl install -f apcu \
-    && docker-php-ext-enable --ini-name 05-opcache.ini opcache xdebug apcu
+    && docker-php-ext-enable xdebug apcu
 
 # Test aliases (only needed in dev)
 RUN echo "alias test='bin/phpunit --colors=always'" >> /home/appuser/.bashrc \
@@ -73,4 +73,4 @@ RUN mv "$PHP_INI_DIR/php.ini-development" "$PHP_INI_DIR/php.ini"
 # ─────────────────────────────────────────────────────────────
 FROM base AS production
 
-RUN docker-php-ext-enable --ini-name 05-opcache.ini opcache
+# OPcache is already enabled by the base image (docker-php-ext-opcache.ini)

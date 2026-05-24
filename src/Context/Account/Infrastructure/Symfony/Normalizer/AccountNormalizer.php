@@ -16,7 +16,6 @@ class AccountNormalizer implements NormalizerInterface
     {
         return [
             'id' => $object->id(),
-            'code' => $object->code(),
             'name' => $object->name(),
             'description' => $object->description(),
             'isActive' => $object->isActive(),

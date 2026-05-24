@@ -22,5 +22,7 @@
         <many-to-one field="incomeType" target-entity="App\Context\Income\Domain\IncomeType" inversed-by="incomes">
                 <join-column name="type_id" referenced-column-name="id" nullable="true" on-delete="RESTRICT" />
         </many-to-one>
+
+        <field name="accountId" column="account_id" type="uuid" nullable="true" />
     </entity>
 </doctrine-mapping>

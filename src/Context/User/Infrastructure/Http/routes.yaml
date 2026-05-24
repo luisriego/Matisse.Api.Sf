@@ -1,3 +1,8 @@
+user_health_check:
+    path: /api/v1/users/health-check
+    controller: App\Context\User\Infrastructure\Http\Controller\HealthCheckController
+    methods: ['GET']
+
 user_register:
     path: /api/v1/users/register
     controller: App\Context\User\Infrastructure\Http\Controller\RegisterController
@@ -22,21 +27,29 @@ user_link_resident_unit_put:
     path: /api/v1/users/{id}/resident-unit
     controller: App\Context\User\Infrastructure\Http\Controller\LinkResidentUnitToUserPutController
     methods: ['PUT']
+    requirements:
+        id: '[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}'
 
 user_unlink_resident_unit_delete:
     path: /api/v1/users/{id}/resident-unit
     controller: App\Context\User\Infrastructure\Http\Controller\UnlinkResidentUnitFromUserDeleteController
     methods: ['DELETE']
+    requirements:
+        id: '[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}'
 
 user_update:
     path: /api/v1/users/{id}
     controller: App\Context\User\Infrastructure\Http\Controller\UpdateUserController
     methods: ['PUT']
+    requirements:
+        id: '[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}'
 
 user_find:
     path: /api/v1/users/{id}
     controller: App\Context\User\Infrastructure\Http\Controller\FindUserController
     methods: ['GET']
+    requirements:
+        id: '[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}'
 
 user_find_all:
     path: /api/v1/users
@@ -47,6 +60,8 @@ user_upload_avatar:
     path: /api/v1/users/{id}/avatar
     controller: App\Context\User\Infrastructure\Http\Controller\UploadAvatarController
     methods: ['POST']
+    requirements:
+        id: '[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}'
 
 user_password_reset_request:
     path: /api/v1/users/password-reset-request

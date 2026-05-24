@@ -94,6 +94,7 @@ class DoctrineStoreEventRepository extends ServiceEntityRepository implements St
             $event->aggregateId(),
             $event::eventName(),
             $event->toPrimitives(),
+            $event->occurredOn(),
         );
 
         // Llamar al método save para asegurar la persistencia y el flush

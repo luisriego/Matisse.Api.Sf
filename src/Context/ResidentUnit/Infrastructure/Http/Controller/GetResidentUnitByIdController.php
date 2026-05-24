@@ -7,10 +7,25 @@ namespace App\Context\ResidentUnit\Infrastructure\Http\Controller;
 use App\Context\ResidentUnit\Application\UseCase\FindResidentUnitById\FindResidentUnitByIdQuery;
 use App\Shared\Domain\Exception\ResourceNotFoundException;
 use App\Shared\Infrastructure\Symfony\ApiController;
+use OpenApi\Attributes as OA;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Response;
 use Throwable;
 
+#[OA\Get(
+    path: '/api/v1/resident-unit/{id}',
+    summary: 'Get resident unit by ID',
+    tags: ['Resident Units'],
+    security: [['bearerAuth' => []]],
+    parameters: [
+        new OA\Parameter(name: 'id', in: 'path', required: true, schema: new OA\Schema(type: 'string', format: 'uuid')),
+    ],
+    responses: [
+        new OA\Response(response: 200, description: 'Resident unit details.'),
+        new OA\Response(response: 404, description: 'Resident unit not found.'),
+        new OA\Response(response: 401, description: 'Unauthorized'),
+    ],
+)]
 final class GetResidentUnitByIdController extends ApiController
 {
     /**

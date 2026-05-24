@@ -27,10 +27,11 @@ class Income extends AggregateRoot
     public function __construct(
         private readonly string $id,
         private int $amount,
-        private ResidentUnit $residentUnit,
+        private ?ResidentUnit $residentUnit,
         private ?IncomeType $incomeType,
         private DateTime $dueDate,
         private ?string $description = null,
+        private ?string $accountId = null,
     ) {
         $this->createdAt = new DateTimeImmutable();
         $this->isActive = true;
@@ -39,27 +40,28 @@ class Income extends AggregateRoot
     public static function create(
         IncomeId $id,
         IncomeAmount $amount,
-        ResidentUnit $residentUnit,
+        ?ResidentUnit $residentUnit,
         IncomeType $type,
-        string $accountId, // Added accountId
+        string $accountId,
         IncomeDueDate $dueDate,
         ?string $description = null,
     ): self {
-        $income =  new self(
+        $income = new self(
             $id->value(),
             $amount->value(),
             $residentUnit,
             $type,
             $dueDate->toDateTime(),
             $description,
+            $accountId,
         );
 
         $income->record(new IncomeWasEntered(
             aggregateId: $id->value(),
             amount: $amount->value(),
-            residentUnitId: $residentUnit->id(),
+            residentUnitId: $residentUnit?->id(),
             type: $type->id(),
-            accountId: $accountId, // Pass accountId to the event
+            accountId: $accountId,
             dueDate: $dueDate->toDateTime()->format('Y-m-d'),
             description: $description,
         ));
@@ -82,6 +84,11 @@ class Income extends AggregateRoot
         return $this->incomeType;
     }
 
+    public function accountId(): ?string
+    {
+        return $this->accountId;
+    }
+
     public function dueDate(): DateTime
     {
         return $this->dueDate;
@@ -95,15 +102,15 @@ class Income extends AggregateRoot
     /**
      * @throws DateMalformedStringException
      */
-    public function markAsPaid(): void
+    public function markAsPaid(?DateTimeImmutable $paidAt = null): void
     {
         if (null === $this->paidAt) {
-            $this->paidAt = new DateTimeImmutable();
+            $this->paidAt = $paidAt ?? new DateTimeImmutable();
             $this->record(new IncomeWasPaid($this->id()));
         }
     }
 
-    public function residentUnit(): ResidentUnit
+    public function residentUnit(): ?ResidentUnit
     {
         return $this->residentUnit;
     }
@@ -169,6 +176,7 @@ class Income extends AggregateRoot
             'paidAt' => $this->paidAt?->format('Y-m-d'),
             'residentUnitId' => $this->residentUnit?->id(),
             'description' => $this->description,
+            'account' => $this->accountId !== null ? ['id' => $this->accountId] : null,
         ];
     }
 }

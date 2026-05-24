@@ -53,6 +53,11 @@ class DoctrineExpenseRepository extends ServiceEntityRepository implements Expen
         return $expense;
     }
 
+    public function findOneById(string $id): ?Expense
+    {
+        return $this->findOneBy(['id' => $id]);
+    }
+
     public function findAll(): array
     {
         return $this->getEntityManager()
@@ -108,5 +113,59 @@ class DoctrineExpenseRepository extends ServiceEntityRepository implements Expen
             ->setParameter('endDate', $endDate)
             ->getQuery()
             ->getOneOrNullResult();
+    }
+
+    public function findLatestDueDateMonthByRecurringExpenseId(string $recurringExpenseId): ?string
+    {
+        $result = $this->createQueryBuilder('e')
+            ->select('e.dueDate')
+            ->join('e.recurringExpense', 're')
+            ->where('re.id = :recurringExpenseId')
+            ->andWhere('e.isActive = true')
+            ->setParameter('recurringExpenseId', $recurringExpenseId)
+            ->orderBy('e.dueDate', 'DESC')
+            ->setMaxResults(1)
+            ->getQuery()
+            ->getOneOrNullResult();
+
+        if ($result === null) {
+            return null;
+        }
+
+        return $result->dueDate()->format('Y-m');
+    }
+
+    public function countActiveInDueDateRange(DateRange $dateRange): int
+    {
+        return (int) $this->getEntityManager()
+            ->createQuery(
+                <<<'DQL'
+                SELECT COUNT(e.id) FROM App\Context\Expense\Domain\Expense e
+                WHERE e.isActive = true
+                AND e.dueDate >= :startDate
+                AND e.dueDate <= :endDate
+                DQL,
+            )
+            ->setParameter('startDate', $dateRange->startDate())
+            ->setParameter('endDate', $dateRange->endDate())
+            ->getSingleScalarResult();
+    }
+
+    public function countActiveWithNonEmptyDescriptionInDueDateRange(DateRange $dateRange): int
+    {
+        return (int) $this->getEntityManager()
+            ->createQuery(
+                <<<'DQL'
+                SELECT COUNT(e.id) FROM App\Context\Expense\Domain\Expense e
+                WHERE e.isActive = true
+                AND e.dueDate >= :startDate
+                AND e.dueDate <= :endDate
+                AND e.description IS NOT NULL
+                AND TRIM(e.description) <> ''
+                DQL,
+            )
+            ->setParameter('startDate', $dateRange->startDate())
+            ->setParameter('endDate', $dateRange->endDate())
+            ->getSingleScalarResult();
     }
 }

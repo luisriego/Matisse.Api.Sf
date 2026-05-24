@@ -9,9 +9,43 @@ use App\Context\ResidentUnit\Domain\Exception\ResidentUnitAlreadyExistsException
 use App\Context\ResidentUnit\Infrastructure\Http\Dto\CreateResidentUnitRequestDto;
 use App\Shared\Domain\Exception\InvalidArgumentException;
 use App\Shared\Infrastructure\Symfony\ApiController;
+use OpenApi\Attributes as OA;
 use Symfony\Component\HttpFoundation\Response;
 use Throwable;
 
+#[OA\Put(
+    path: '/api/v1/resident-unit/create',
+    summary: 'Create resident unit',
+    requestBody: new OA\RequestBody(
+        required: true,
+        content: new OA\JsonContent(
+            required: ['id', 'unit', 'idealFraction'],
+            properties: [
+                new OA\Property(property: 'id', type: 'string', format: 'uuid'),
+                new OA\Property(property: 'unit', type: 'string', example: '101'),
+                new OA\Property(property: 'idealFraction', type: 'number', format: 'float'),
+                new OA\Property(
+                    property: 'notificationRecipients',
+                    type: 'array',
+                    items: new OA\Items(
+                        properties: [
+                            new OA\Property(property: 'name', type: 'string'),
+                            new OA\Property(property: 'email', type: 'string', format: 'email'),
+                        ],
+                    ),
+                ),
+            ],
+        ),
+    ),
+    tags: ['Resident Units'],
+    security: [['bearerAuth' => []]],
+    responses: [
+        new OA\Response(response: 201, description: 'Resident unit created.'),
+        new OA\Response(response: 400, description: 'Validation error.'),
+        new OA\Response(response: 409, description: 'Unit already exists.'),
+        new OA\Response(response: 401, description: 'Unauthorized'),
+    ],
+)]
 final class ResidentUnitCreateController extends ApiController
 {
     /**

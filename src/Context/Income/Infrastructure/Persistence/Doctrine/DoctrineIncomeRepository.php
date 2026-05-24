@@ -71,4 +71,43 @@ class DoctrineIncomeRepository extends ServiceEntityRepository implements Income
 
         return $qb->getQuery()->getResult();
     }
+
+    public function findByDueDateInRange(DateRange $dateRange): array
+    {
+        return $this->createQueryBuilder('i')
+            ->where('i.dueDate >= :startDate')
+            ->andWhere('i.dueDate <= :endDate')
+            ->orderBy('i.dueDate', 'DESC')
+            ->setParameter('startDate', $dateRange->startDate())
+            ->setParameter('endDate', $dateRange->endDate())
+            ->getQuery()
+            ->getResult();
+    }
+
+    public function countInDueDateRange(DateRange $dateRange): int
+    {
+        return (int) $this->createQueryBuilder('i')
+            ->select('COUNT(i.id)')
+            ->where('i.dueDate >= :startDate')
+            ->andWhere('i.dueDate <= :endDate')
+            ->setParameter('startDate', $dateRange->startDate())
+            ->setParameter('endDate', $dateRange->endDate())
+            ->getQuery()
+            ->getSingleScalarResult();
+    }
+
+    public function countWithNonEmptyDescriptionInDueDateRange(DateRange $dateRange): int
+    {
+        return (int) $this->createQueryBuilder('i')
+            ->select('COUNT(i.id)')
+            ->where('i.dueDate >= :startDate')
+            ->andWhere('i.dueDate <= :endDate')
+            ->andWhere('i.description IS NOT NULL')
+            ->andWhere('TRIM(i.description) <> :emptyDescription')
+            ->setParameter('startDate', $dateRange->startDate())
+            ->setParameter('endDate', $dateRange->endDate())
+            ->setParameter('emptyDescription', '')
+            ->getQuery()
+            ->getSingleScalarResult();
+    }
 }

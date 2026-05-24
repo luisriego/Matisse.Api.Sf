@@ -7,9 +7,24 @@ namespace App\Context\Gas\Infrastructure\Http\Controller;
 use App\Context\Gas\Application\UseCase\GetAverageGasConsumption\GetAverageGasConsumptionQuery;
 use App\Context\Gas\Domain\Exception\NotEnoughReadingsException;
 use App\Shared\Infrastructure\Symfony\ApiController;
+use OpenApi\Attributes as OA;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Response;
 
+#[OA\Get(
+    path: '/api/v1/gas/resident-units/{id}/average-consumption',
+    summary: 'Get average monthly gas consumption for resident unit',
+    tags: ['Gas'],
+    security: [['bearerAuth' => []]],
+    parameters: [
+        new OA\Parameter(name: 'id', in: 'path', required: true, schema: new OA\Schema(type: 'string', format: 'uuid')),
+    ],
+    responses: [
+        new OA\Response(response: 200, description: 'Average monthly consumption.'),
+        new OA\Response(response: 404, description: 'Not enough readings.'),
+        new OA\Response(response: 401, description: 'Unauthorized'),
+    ],
+)]
 final class GetAverageGasConsumptionController extends ApiController
 {
     public function __invoke(string $id): JsonResponse

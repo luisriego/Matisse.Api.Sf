@@ -42,6 +42,20 @@ composer-install: ## Installs composer dependencies
 ssh: ## bash into the be container
 	U_ID=${UID} docker exec -it --user ${UID} ${DOCKER_BE} bash
 
+.PHONY: db-sync
+db-sync: ## Sync dev database schema with Doctrine entities (run after entity mapping changes)
+	U_ID=${UID} docker exec --user ${UID} ${DOCKER_BE} php bin/console doctrine:schema:update --force
+
+# Sincroniza app_test con el mapping Doctrine antes de PHPUnit (misma fuente de verdad que CI con schema:create).
 .PHONY: tests
 tests:
+	U_ID=${UID} docker exec --user ${UID} ${DOCKER_BE} php bin/console doctrine:schema:update --force --env=test
 	U_ID=${UID} docker exec --user ${UID} ${DOCKER_BE} vendor/bin/phpunit -c phpunit.xml.dist
+
+.PHONY: dev-reset-all
+dev-reset-all: ## DEV ONLY: wipe all DB data (keeps migrations table)
+	U_ID=${UID} docker exec --user ${UID} ${DOCKER_BE} php bin/console app:dev:reset-data --scope=all --force
+
+.PHONY: dev-reset-movements
+dev-reset-movements: ## DEV ONLY: keep users/accounts/types, wipe expenses/incomes/slips/imports
+	U_ID=${UID} docker exec --user ${UID} ${DOCKER_BE} php bin/console app:dev:reset-data --scope=movements --force

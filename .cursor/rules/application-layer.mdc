@@ -25,7 +25,7 @@ alwaysApply: false
 
 ```php
 // Typical flow
-$account = Account::create($id, $code, $name);
+$account = Account::create($id, $name);
 $this->accountRepository->save($account, true);
 $this->bus->publish(...$account->pullDomainEvents());
 ```

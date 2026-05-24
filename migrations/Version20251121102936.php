@@ -20,7 +20,7 @@ final class Version20251121102936 extends AbstractMigration
     public function up(Schema $schema): void
     {
         // this up() migration is auto-generated, please modify it to your needs
-        $this->addSql('DROP TABLE condominium_configuration');
+        $this->addSql('DROP TABLE IF EXISTS condominium_configuration');
         $this->addSql('ALTER TABLE expense ADD attachment TEXT DEFAULT NULL');
         $this->addSql('ALTER TABLE recurring_expense ADD account_id UUID DEFAULT NULL');
         $this->addSql('ALTER TABLE recurring_expense ADD has_predefined_amount BOOLEAN DEFAULT NULL');

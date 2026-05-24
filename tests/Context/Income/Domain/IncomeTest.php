@@ -107,6 +107,7 @@ class IncomeTest extends TestCase
         $this->assertArrayHasKey('paidAt', $incomeArray);
         $this->assertArrayHasKey('residentUnitId', $incomeArray);
         $this->assertArrayHasKey('description', $incomeArray);
+        $this->assertArrayHasKey('account', $incomeArray);
 
         $this->assertSame($income->id(), $incomeArray['id']);
         $this->assertSame($income->amount(), $incomeArray['amount']);
@@ -115,5 +116,6 @@ class IncomeTest extends TestCase
         $this->assertSame($income->paidAt(), $incomeArray['paidAt']);
         $this->assertSame($income->residentUnit()->id(), $incomeArray['residentUnitId']);
         $this->assertSame($income->description(), $incomeArray['description']);
+        $this->assertSame($income->accountId(), $incomeArray['account']['id'] ?? null);
     }
 }

@@ -1,0 +1,4 @@
+ledger_movements:
+    path: /api/v1/ledger/movements/{year}/{month}
+    controller: App\Context\Ledger\Infrastructure\Http\Controller\LedgerMovementsGetController
+    methods: ['GET']

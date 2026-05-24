@@ -18,3 +18,12 @@ services:
 
     App\Context\Slip\Application\UseCase\GetSlipDetails\GetSlipDetailsQueryHandler:
         tags: ['messenger.message_handler']
+
+    App\Context\Slip\Domain\SlipRepository:
+        alias: App\Context\Slip\Infrastructure\Persistence\Doctrine\DoctrineSlipRepository
+
+    App\Context\Slip\Domain\SlipGenerationParameterSnapshotRepository:
+        alias: App\Context\Slip\Infrastructure\Persistence\Doctrine\DoctrineSlipGenerationParameterSnapshotRepository
+
+    App\Context\Slip\Domain\PeriodClosureRepository:
+        alias: App\Context\Slip\Infrastructure\Persistence\Doctrine\DoctrinePeriodClosureRepository

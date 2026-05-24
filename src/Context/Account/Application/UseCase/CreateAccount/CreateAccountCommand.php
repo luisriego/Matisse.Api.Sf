@@ -10,8 +10,11 @@ final readonly class CreateAccountCommand implements Command
 {
     public function __construct(
         private string $id,
-        private string $code,
         private string $name,
+        /** Balance in cents (same unit as SetInitialBalance). */
+        private int $initialBalanceAmount,
+        /** ISO date Y-m-d (posting date of the opening balance). */
+        private string $initialBalanceDate,
     ) {}
 
     public function id(): string
@@ -19,13 +22,18 @@ final readonly class CreateAccountCommand implements Command
         return $this->id;
     }
 
-    public function code(): string
-    {
-        return $this->code;
-    }
-
     public function name(): string
     {
         return $this->name;
+    }
+
+    public function initialBalanceAmount(): int
+    {
+        return $this->initialBalanceAmount;
+    }
+
+    public function initialBalanceDate(): string
+    {
+        return $this->initialBalanceDate;
     }
 }

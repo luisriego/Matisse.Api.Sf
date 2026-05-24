@@ -53,16 +53,18 @@ Creates a new account.
 ```json
 {
   "id": "a7b7b3f0-6b7a-4f2a-8b8b-3b3b3b3b3b3b",
-  "code": "1.01.01",
-  "name": "Cash"
+  "name": "Cash",
+  "initialBalanceAmount": 0,
+  "initialBalanceDate": "2026-01-01"
 }
 ```
 
 **Parameters:**
 
 -   `id` (string, required): The unique identifier for the account (UUID format).
--   `code` (string, required): The account code.
 -   `name` (string, required): The name of the account.
+-   `initialBalanceAmount` (integer, required): Opening balance in cents.
+-   `initialBalanceDate` (string, required): Effective date of the opening balance (`Y-m-d`).
 
 **Responses:**
 
@@ -83,7 +85,6 @@ Retrieves a list of all accounts.
 [
   {
     "id": "a7b7b3f0-6b7a-4f2a-8b8b-3b3b3b3b3b3b",
-    "code": "1.01.01",
     "name": "Cash",
     "balance": 1500.75,
     "isActive": true,
@@ -92,7 +93,6 @@ Retrieves a list of all accounts.
   },
   {
     "id": "c3e8b3f0-6b7a-4f2a-8b8b-3b3b3b3b3b3c",
-    "code": "1.01.02",
     "name": "Savings",
     "balance": 5000.00,
     "isActive": true,

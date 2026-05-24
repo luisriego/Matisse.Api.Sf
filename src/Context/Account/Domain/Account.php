@@ -19,7 +19,6 @@ use Doctrine\Common\Collections\Collection;
 class Account extends AggregateRoot
 {
     private string $id;
-    private string $code;
     private ?string $name = null;
     private ?string $description = null;
     private ?bool $isActive = false;
@@ -28,10 +27,9 @@ class Account extends AggregateRoot
     private Collection $expenses;
     private Collection $expenseTypes;
 
-    public function __construct(string $id, string $code, string $name)
+    public function __construct(string $id, string $name)
     {
         $this->id = $id;
-        $this->code = $code;
         $this->name = $name;
         $this->isActive = false;
         $this->createdAt = new DateTimeImmutable();
@@ -39,18 +37,17 @@ class Account extends AggregateRoot
         $this->expenseTypes = new ArrayCollection();
     }
 
-    public static function create(AccountId $id, AccountCode $code, AccountName $name): self
+    public static function create(AccountId $id, AccountName $name): self
     {
-        return new self($id->value(), $code->value(), $name->value());
+        return new self($id->value(), $name->value());
     }
 
     public static function createWithDescription(
         AccountId $id,
-        AccountCode $code,
         AccountName $name,
         AccountDescription $description,
     ): self {
-        $account = new self($id->value(), $code->value(), $name->value());
+        $account = new self($id->value(), $name->value());
         $account->description = $description->value();
 
         return $account;
@@ -59,11 +56,6 @@ class Account extends AggregateRoot
     public function id(): string
     {
         return $this->id;
-    }
-
-    public function code(): string
-    {
-        return $this->code;
     }
 
     public function name(): ?string
@@ -117,18 +109,15 @@ class Account extends AggregateRoot
      * @throws DateMalformedStringException
      */
     public function updateDetails(
-        AccountCode $code,
         AccountName $name,
         AccountDescription $description,
     ): void {
-        $this->code = $code->value();
         $this->name = $name->value();
         $this->description = $description->value();
         $this->markAsUpdated();
 
         $this->record(new AccountDetailsWereUpdated(
             $this->id(),
-            $this->code,
             $this->name,
             $this->description,
         ));

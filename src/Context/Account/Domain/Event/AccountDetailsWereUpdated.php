@@ -16,7 +16,6 @@ final readonly class AccountDetailsWereUpdated extends DomainEvent
      */
     public function __construct(
         string $id,
-        public string $code,
         public string $name,
         public ?string $description,
         ?string $eventId = null,
@@ -42,7 +41,6 @@ final readonly class AccountDetailsWereUpdated extends DomainEvent
     ): self {
         return new self(
             $aggregateId,
-            $body['code'],
             $body['name'],
             $body['description'] ?? null,
             $eventId,
@@ -53,7 +51,6 @@ final readonly class AccountDetailsWereUpdated extends DomainEvent
     public function toPrimitives(): array
     {
         return [
-            'code' => $this->code,
             'name' => $this->name,
             'description' => $this->description,
         ];

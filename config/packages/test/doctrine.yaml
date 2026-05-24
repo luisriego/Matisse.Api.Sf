@@ -1,0 +1,5 @@
+# Test env: do NOT append _test to the database name from DATABASE_URL.
+# The Flex recipe default (dbname_suffix: '_test') would turn .../app_test into app_test_test.
+doctrine:
+    dbal:
+        dbname_suffix: ''

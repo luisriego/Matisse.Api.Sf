@@ -6,10 +6,7 @@ namespace App\Tests\Context\Expense\Application\UseCase\CompensateExpense;
 
 use App\Context\Expense\Application\UseCase\CompensateExpense\CompensateExpenseCommand;
 use App\Context\Expense\Application\UseCase\CompensateExpense\CompensateExpenseCommandHandler;
-use App\Context\Expense\Domain\Event\ExpenseWasCompensated;
-use App\Context\Expense\Domain\Event\ExpenseWasEntered;
 use App\Context\Expense\Domain\ExpenseRepository;
-use App\Shared\Domain\Event\EventBus;
 use App\Tests\Context\Expense\Domain\ExpenseMother;
 use PHPUnit\Framework\TestCase;
 use Exception;
@@ -19,19 +16,16 @@ class CompensateExpenseTest extends TestCase
 {
     private CompensateExpenseCommandHandler $handler;
     private ExpenseRepository $expenseRepository;
-    private EventBus $eventBus;
 
     protected function setUp(): void
     {
         $this->expenseRepository = $this->createMock(ExpenseRepository::class);
-        $this->eventBus = $this->createMock(EventBus::class);
         $this->handler = new CompensateExpenseCommandHandler(
             $this->expenseRepository,
-            $this->eventBus
         );
     }
 
-    public function test_it_should_compensate_an_expense_and_create_a_new_one(): void
+    public function test_it_should_compensate_an_expense_without_creating_duplicate(): void
     {
         $originalExpense = ExpenseMother::create();
         $compensatedAmount = 5000; // Example compensated amount
@@ -43,33 +37,16 @@ class CompensateExpenseTest extends TestCase
             ->with($originalExpense->id())
             ->willReturn($originalExpense);
 
-        // Expect save to be called twice, and verify arguments for each call
-        $this->expenseRepository->expects($this->exactly(2))
-            ->method('save')
-            ->willReturnCallback(function ($expense, $flush) use ($originalExpense, $compensatedAmount) {
-                // First call: original expense, amount 0, flush false
-                if ($expense->id() === $originalExpense->id() && $expense->amount() === 0 && $flush === false) {
-                    return; 
-                }
-                // Second call: new expense, amount compensatedAmount, flush true
-                if ($expense->amount() === $compensatedAmount && $flush === true) {
-                    return; 
-                }
-                $this->fail('Unexpected call to save() with arguments: ' . print_r([$expense->toArray(), $flush], true));
-            });
-
-        // Expect remove to be called once
+        // Single save on the same aggregate (no recreate/remove)
         $this->expenseRepository->expects($this->once())
-            ->method('remove')
-            ->with($originalExpense, false);
+            ->method('save')
+            ->with($originalExpense, true);
 
-        // Expect publish is NO LONGER called by CommandHandler directly
-        $this->eventBus->expects($this->never())->method('publish');
+        $this->expenseRepository->expects($this->never())->method('remove');
 
         ($this->handler)($command);
 
-        // Assertions for the state of the original expense (after handler execution)
-        $this->assertSame(0, $originalExpense->amount());
+        $this->assertSame($compensatedAmount, $originalExpense->amount());
     }
 
     public function test_it_should_throw_exception_if_expense_not_found(): void
@@ -87,10 +64,9 @@ class CompensateExpenseTest extends TestCase
 
         ($this->handler)($command);
 
-        // Ensure no other methods are called on the repository or event bus
+        // Ensure no other methods are called on the repository
         $this->expenseRepository->expects($this->never())->method('save');
         $this->expenseRepository->expects($this->never())->method('remove');
-        $this->eventBus->expects($this->never())->method('publish');
     }
 
     public function test_it_should_not_compensate_if_expense_has_no_account(): void
@@ -108,10 +84,9 @@ class CompensateExpenseTest extends TestCase
             ->with($expenseWithoutAccount->id())
             ->willReturn($expenseWithoutAccount);
 
-        // Ensure no other methods are called on the repository or event bus
+        // Ensure no other methods are called on the repository
         $this->expenseRepository->expects($this->never())->method('save');
         $this->expenseRepository->expects($this->never())->method('remove');
-        $this->eventBus->expects($this->never())->method('publish');
 
         ($this->handler)($command);
 

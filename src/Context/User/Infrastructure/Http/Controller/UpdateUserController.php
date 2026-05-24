@@ -7,9 +7,36 @@ namespace App\Context\User\Infrastructure\Http\Controller;
 use App\Context\User\Application\UseCase\Update\UpdateUserCommand;
 use App\Shared\Domain\Exception\ResourceNotFoundException;
 use App\Shared\Infrastructure\Symfony\ApiController;
+use OpenApi\Attributes as OA;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 
+#[OA\Put(
+    path: '/api/v1/users/{id}',
+    summary: 'Update user profile',
+    requestBody: new OA\RequestBody(
+        required: true,
+        content: new OA\JsonContent(
+            required: ['name', 'lastName', 'gender', 'phoneNumber'],
+            properties: [
+                new OA\Property(property: 'name', type: 'string'),
+                new OA\Property(property: 'lastName', type: 'string'),
+                new OA\Property(property: 'gender', type: 'string'),
+                new OA\Property(property: 'phoneNumber', type: 'string'),
+            ],
+        ),
+    ),
+    tags: ['Users'],
+    security: [['bearerAuth' => []]],
+    parameters: [
+        new OA\Parameter(name: 'id', in: 'path', required: true, schema: new OA\Schema(type: 'string', format: 'uuid')),
+    ],
+    responses: [
+        new OA\Response(response: 204, description: 'User updated.'),
+        new OA\Response(response: 404, description: 'User not found.'),
+        new OA\Response(response: 401, description: 'Unauthorized'),
+    ],
+)]
 final class UpdateUserController extends ApiController
 {
     public function __invoke(Request $request, string $id): Response
