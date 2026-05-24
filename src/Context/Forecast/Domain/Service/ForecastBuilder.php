@@ -83,6 +83,7 @@ final readonly class ForecastBuilder
             [],
             $policy->syndicShareTotalCents(),
         );
+        $poolAdjustment = $this->ensureSyndicShareInForecast($poolAdjustment, $policy->syndicShareTotalCents());
 
         $previousMonth = (new DateTimeImmutable(sprintf('%04d-%02d-01', $targetYear, $targetMonthNum)))->modify('-1 month');
         $gasYear = (int) $previousMonth->format('Y');
@@ -280,5 +281,41 @@ final readonly class ForecastBuilder
         }
 
         return sprintf('%04d-%02d', $year, $month - 1);
+    }
+
+    /**
+     * PREVISÃO always charges next-month syndic share from billing policy, even when PF1SE
+     * was not yet stored as RecurringExpense (e.g. legacy reconciliations).
+     *
+     * @param array{
+     *     baseEqualPoolCents: int,
+     *     syndicEqualPoolCents: int,
+     *     individualByUnit: array<string, int>,
+     *     pf1seTotalCents: int,
+     *     syndicShareCents: int,
+     *     internetShareCents: int,
+     *     internetChargedToUnitId: ?string,
+     * } $poolAdjustment
+     *
+     * @return array{
+     *     baseEqualPoolCents: int,
+     *     syndicEqualPoolCents: int,
+     *     individualByUnit: array<string, int>,
+     *     pf1seTotalCents: int,
+     *     syndicShareCents: int,
+     *     internetShareCents: int,
+     *     internetChargedToUnitId: ?string,
+     * }
+     */
+    private function ensureSyndicShareInForecast(array $poolAdjustment, int $syndicShareTotalCents): array
+    {
+        if ($poolAdjustment['syndicEqualPoolCents'] > 0 || $syndicShareTotalCents <= 0) {
+            return $poolAdjustment;
+        }
+
+        $poolAdjustment['syndicEqualPoolCents'] = $syndicShareTotalCents;
+        $poolAdjustment['syndicShareCents'] = $syndicShareTotalCents;
+
+        return $poolAdjustment;
     }
 }
