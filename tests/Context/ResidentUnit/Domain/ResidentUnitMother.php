@@ -15,12 +15,12 @@ final class ResidentUnitMother
     public static function create(
         ?ResidentUnitId $id = null,
         ?ResidentUnitVO $unit = null,
-        ?ResidentUnitIdealFraction $idealFraction = null
+        ?ResidentUnitIdealFraction $idealFraction = null,
     ): ResidentUnit {
         return ResidentUnit::create(
             $id ?? new ResidentUnitId(Uuid::random()->value()),
             $unit ?? new ResidentUnitVO('101'),
-            $idealFraction ?? new ResidentUnitIdealFraction(0.01)
+            $idealFraction ?? new ResidentUnitIdealFraction(0.01),
         );
     }
 
@@ -28,13 +28,13 @@ final class ResidentUnitMother
         ?ResidentUnitId $id = null,
         ?ResidentUnitVO $unit = null,
         ?ResidentUnitIdealFraction $idealFraction = null,
-        ?array $recipients = null
+        ?array $recipients = null,
     ): ResidentUnit {
         return ResidentUnit::createWithRecipients(
             $id ?? new ResidentUnitId(Uuid::random()->value()),
             $unit ?? new ResidentUnitVO('101'),
             $idealFraction ?? new ResidentUnitIdealFraction(0.01),
-            $recipients ?? [['name' => 'Test Recipient', 'email' => 'recipient@example.com']]
+            $recipients ?? [['name' => 'Test Recipient', 'email' => 'recipient@example.com']],
         );
     }
 }

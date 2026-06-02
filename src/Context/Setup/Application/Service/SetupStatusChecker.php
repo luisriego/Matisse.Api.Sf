@@ -17,6 +17,12 @@ use App\Context\Setup\Domain\Event\SetupWasCompleted;
 use App\Context\Setup\Domain\OpeningSetupAggregateId;
 use DateTimeImmutable;
 
+use function array_key_last;
+use function array_merge;
+use function usort;
+
+use const DATE_ATOM;
+
 final class SetupStatusChecker
 {
     /**
@@ -112,6 +118,7 @@ final class SetupStatusChecker
         );
 
         $accountIdsWithBalance = [];
+
         foreach ($events as $event) {
             $accountIdsWithBalance[$event->aggregateId()] = true;
         }
@@ -143,8 +150,10 @@ final class SetupStatusChecker
         $events = $this->eventRepository->findByEventType(GasReadingWasRecorded::eventName());
 
         $unitIdsWithReading = [];
+
         foreach ($events as $event) {
             $payload = $event->payload();
+
             if (isset($payload['residentUnitId'])) {
                 $unitIdsWithReading[$payload['residentUnitId']] = true;
             }
@@ -192,6 +201,7 @@ final class SetupStatusChecker
             $events,
             static function (StoredEvent $a, StoredEvent $b): int {
                 $byTime = $a->occurredAt() <=> $b->occurredAt();
+
                 if (0 !== $byTime) {
                     return $byTime;
                 }
@@ -201,7 +211,7 @@ final class SetupStatusChecker
         );
 
         /** @var StoredEvent $last */
-        $last = $events[\array_key_last($events)];
+        $last = $events[array_key_last($events)];
 
         return array_merge(
             $last->payload(),
@@ -219,6 +229,7 @@ final class SetupStatusChecker
     private function resolveCurrentStep(array $steps): int
     {
         $order = [...self::CORE_STEP_KEYS, 'openingReferenceMonth'];
+
         foreach ($order as $index => $key) {
             if ($steps[$key] === 'pending') {
                 return $index + 1;
@@ -252,12 +263,15 @@ final class SetupStatusChecker
         if ($steps['initialBalances'] === 'pending') {
             return 'Faltan los saldos iniciales de las cuentas. El total debe coincidir con el saldo bancario.';
         }
+
         if ($steps['gasPrice'] === 'pending') {
             return 'Falta configurar el precio del gas.';
         }
+
         if ($steps['gasReadings'] === 'pending') {
             return 'Faltan las lecturas iniciales del contador de gas de cada unidad.';
         }
+
         if ($steps['initialExpenses'] === 'pending') {
             return 'Falta registrar al menos un gasto del mes de corte para poder generar slips.';
         }

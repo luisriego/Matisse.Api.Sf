@@ -9,6 +9,11 @@ use App\Tests\Shared\Domain\UuidMother;
 use App\Tests\Shared\Infrastructure\PhpUnit\ApiTestCase;
 use Symfony\Component\HttpFoundation\Response;
 
+use function json_decode;
+use function json_encode;
+
+use const JSON_THROW_ON_ERROR;
+
 final class AccountCreatorPutControllerTest extends ApiTestCase
 {
     protected function setUp(): void
@@ -17,7 +22,7 @@ final class AccountCreatorPutControllerTest extends ApiTestCase
         $this->createAuthenticatedClient();
     }
 
-    public function test_it_should_create_account(): void
+    public function testItShouldCreateAccount(): void
     {
         $accountId = UuidMother::create();
 
@@ -53,7 +58,7 @@ final class AccountCreatorPutControllerTest extends ApiTestCase
         $this->assertSame(250_000, $balancePayload['balance']);
     }
 
-    public function test_it_returns_400_when_initial_balance_is_missing(): void
+    public function testItReturns400WhenInitialBalanceIsMissing(): void
     {
         $payload = [
             'id'   => UuidMother::create(),

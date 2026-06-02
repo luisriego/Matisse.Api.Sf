@@ -10,6 +10,9 @@ use DateTimeImmutable;
 use RuntimeException;
 use Symfony\Component\Uid\Uuid;
 
+use function is_numeric;
+use function round;
+
 final readonly class GasPriceWasDefined extends DomainEvent
 {
     /**

@@ -24,7 +24,7 @@ final class PatchIdealFractionCommandHandlerTest extends TestCase
         $this->handler = new PatchIdealFractionCommandHandler($this->repository);
     }
 
-    public function test_it_throws_exception_if_resident_unit_not_found(): void
+    public function testItThrowsExceptionIfResidentUnitNotFound(): void
     {
         $this->expectException(ResourceNotFoundException::class);
 
@@ -34,7 +34,7 @@ final class PatchIdealFractionCommandHandlerTest extends TestCase
         ($this->handler)($command);
     }
 
-    public function test_it_throws_exception_if_ideal_fraction_sum_exceeds_limit(): void
+    public function testItThrowsExceptionIfIdealFractionSumExceedsLimit(): void
     {
         $this->expectException(IdealFractionSumExceedsLimitException::class);
 
@@ -46,21 +46,21 @@ final class PatchIdealFractionCommandHandlerTest extends TestCase
         ($this->handler)($command);
     }
 
-    public function test_it_throws_exception_for_negative_ideal_fraction(): void
+    public function testItThrowsExceptionForNegativeIdealFraction(): void
     {
         $this->expectException(InvalidArgumentException::class);
         $command = new PatchIdealFractionCommand('some-id', -0.1);
         ($this->handler)($command);
     }
 
-    public function test_it_throws_exception_for_ideal_fraction_greater_than_one(): void
+    public function testItThrowsExceptionForIdealFractionGreaterThanOne(): void
     {
         $this->expectException(InvalidArgumentException::class);
         $command = new PatchIdealFractionCommand('some-id', 1.1);
         ($this->handler)($command);
     }
 
-    public function test_it_updates_ideal_fraction_successfully(): void
+    public function testItUpdatesIdealFractionSuccessfully(): void
     {
         $residentUnit = $this->createMock(ResidentUnit::class);
         $this->repository->method('findOneByIdOrFail')->willReturn($residentUnit);
@@ -73,7 +73,7 @@ final class PatchIdealFractionCommandHandlerTest extends TestCase
         ($this->handler)($command);
     }
 
-    public function test_it_updates_when_ideal_fraction_sum_is_exactly_one(): void
+    public function testItUpdatesWhenIdealFractionSumIsExactlyOne(): void
     {
         $residentUnit = $this->createMock(ResidentUnit::class);
         $this->repository->method('findOneByIdOrFail')->willReturn($residentUnit);

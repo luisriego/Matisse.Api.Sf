@@ -1,23 +1,26 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Tests\Context\Slip\Domain;
 
+use App\Context\Expense\Domain\ExpenseType;
 use App\Context\Expense\Domain\RecurringExpense;
 use App\Context\Expense\Domain\ValueObject\ExpenseAmount;
+use App\Context\Expense\Domain\ValueObject\ExpenseDueDay;
 use App\Context\Expense\Domain\ValueObject\ExpenseEndDate;
 use App\Context\Expense\Domain\ValueObject\ExpenseId;
-use App\Context\Expense\Domain\ExpenseType;
-use App\Context\Expense\Domain\ValueObject\ExpenseDueDay;
 use App\Context\Expense\Domain\ValueObject\ExpenseStartDate;
 use App\Tests\Context\Expense\Domain\ExpenseAmountMother;
 use App\Tests\Context\Expense\Domain\ExpenseIdMother;
 use App\Tests\Context\Expense\Domain\ExpenseTypeMother;
+use DateMalformedStringException;
 use DateTimeInterface;
 
 final class RecurringExpenseMother
 {
     /**
-     * @throws \DateMalformedStringException
+     * @throws DateMalformedStringException
      */
     public static function create(
         ?ExpenseId $id = null,
@@ -27,7 +30,7 @@ final class RecurringExpenseMother
         ?array $monthsOfYear = null,
         ?DateTimeInterface $startDate = null,
         ?DateTimeInterface $endDate = null,
-        ?string $description = null
+        ?string $description = null,
     ): RecurringExpense {
         $idVal          = $id ?? ExpenseIdMother::create();
         $amountVal      = $amount ?? ExpenseAmountMother::create();
@@ -36,6 +39,7 @@ final class RecurringExpenseMother
         $monthsOfYearV  = $monthsOfYear ?? [1, 4, 7, 10];
 
         $startVO = null;
+
         if ($startDate !== null) {
             $startVO = $startDate instanceof ExpenseStartDate
                 ? $startDate
@@ -43,6 +47,7 @@ final class RecurringExpenseMother
         }
 
         $endVO = null;
+
         if ($endDate !== null) {
             $endVO = $endDate instanceof ExpenseEndDate
                 ? $endDate
@@ -57,7 +62,7 @@ final class RecurringExpenseMother
             $monthsOfYearV,
             $startVO,
             $endVO,
-            $description
+            $description,
         );
     }
 }

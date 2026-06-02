@@ -8,6 +8,8 @@ use App\Context\EventStore\Domain\StoredEventRepository;
 use App\Tests\Shared\Infrastructure\PhpUnit\ApiTestCase;
 use Symfony\Component\HttpFoundation\Response;
 
+use function json_encode;
+
 final class RecordGasReadingPutControllerTest extends ApiTestCase
 {
     protected function setUp(): void
@@ -16,7 +18,7 @@ final class RecordGasReadingPutControllerTest extends ApiTestCase
         $this->createAuthenticatedClient();
     }
 
-    public function test_it_should_record_gas_reading(): void
+    public function testItShouldRecordGasReading(): void
     {
         $container = self::getContainer();
 
@@ -34,7 +36,7 @@ final class RecordGasReadingPutControllerTest extends ApiTestCase
             [],
             [],
             ['CONTENT_TYPE' => 'application/json'],
-            json_encode($requestBody)
+            json_encode($requestBody),
         );
 
         $this->assertResponseStatusCodeSame(Response::HTTP_CREATED);

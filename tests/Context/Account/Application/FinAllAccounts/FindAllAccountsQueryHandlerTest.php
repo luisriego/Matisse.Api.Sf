@@ -1,10 +1,11 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Tests\Context\Account\Application\UseCase\FindAllAccounts;
 
 use App\Context\Account\Application\UseCase\FindAllAccounts\FindAllAccountsQuery;
 use App\Context\Account\Application\UseCase\FindAllAccounts\FindAllAccountsQueryHandler;
-use App\Context\Account\Domain\Account;
 use App\Context\Account\Domain\AccountRepository;
 use App\Tests\Context\Account\Domain\AccountMother;
 use Mockery;
@@ -15,7 +16,7 @@ use Symfony\Component\Serializer\SerializerInterface;
 class FindAllAccountsQueryHandlerTest extends TestCase
 {
     private AccountRepository|MockInterface $repository;
-    private SerializerInterface|MockInterface $serializer;
+    private MockInterface|SerializerInterface $serializer;
     private FindAllAccountsQueryHandler $handler;
 
     protected function setUp(): void
@@ -61,7 +62,7 @@ class FindAllAccountsQueryHandlerTest extends TestCase
             ->with(
                 Mockery::on(function (array $data) use ($accounts) {
                     return $data === $accounts;
-                })
+                }),
             )
             ->once()
             ->andReturn([$account1Data, $account2Data]);

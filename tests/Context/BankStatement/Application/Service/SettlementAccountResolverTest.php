@@ -14,7 +14,7 @@ use PHPUnit\Framework\TestCase;
 
 final class SettlementAccountResolverTest extends TestCase
 {
-    public function test_should_split_returns_false_when_disabled(): void
+    public function testShouldSplitReturnsFalseWhenDisabled(): void
     {
         $resolver = new SettlementAccountResolver(
             $this->emptyAccountRepo(),
@@ -25,7 +25,7 @@ final class SettlementAccountResolverTest extends TestCase
         $this->assertFalse($resolver->shouldSplit());
     }
 
-    public function test_should_split_returns_false_when_no_accounts_match(): void
+    public function testShouldSplitReturnsFalseWhenNoAccountsMatch(): void
     {
         $resolver = new SettlementAccountResolver(
             $this->emptyAccountRepo(),
@@ -36,14 +36,14 @@ final class SettlementAccountResolverTest extends TestCase
         $this->assertFalse($resolver->shouldSplit());
     }
 
-    public function test_should_split_returns_true_when_all_components_resolve(): void
+    public function testShouldSplitReturnsTrueWhenAllComponentsResolve(): void
     {
         $resolver = $this->buildFullResolver();
 
         $this->assertTrue($resolver->shouldSplit());
     }
 
-    public function test_base_resolves_to_conta_principal_and_taxa_condominial(): void
+    public function testBaseResolvesToContaPrincipalAndTaxaCondominial(): void
     {
         $resolver = $this->buildFullResolver();
 
@@ -52,7 +52,7 @@ final class SettlementAccountResolverTest extends TestCase
         $this->assertSame('it-condominial', $result['incomeTypeId']);
     }
 
-    public function test_syndic_resolves_to_conta_principal_and_taxa_condominial(): void
+    public function testSyndicResolvesToContaPrincipalAndTaxaCondominial(): void
     {
         $resolver = $this->buildFullResolver();
 
@@ -61,7 +61,7 @@ final class SettlementAccountResolverTest extends TestCase
         $this->assertSame('it-condominial', $result['incomeTypeId']);
     }
 
-    public function test_extra_resolves_to_fundo_de_obra_and_cota_extra(): void
+    public function testExtraResolvesToFundoDeObraAndCotaExtra(): void
     {
         $resolver = $this->buildFullResolver();
 
@@ -70,7 +70,7 @@ final class SettlementAccountResolverTest extends TestCase
         $this->assertSame('it-extra', $result['incomeTypeId']);
     }
 
-    public function test_reserve_resolves_to_fundo_de_reserva_and_taxa_condominial(): void
+    public function testReserveResolvesToFundoDeReservaAndTaxaCondominial(): void
     {
         $resolver = $this->buildFullResolver();
 
@@ -79,7 +79,7 @@ final class SettlementAccountResolverTest extends TestCase
         $this->assertSame('it-condominial', $result['incomeTypeId']);
     }
 
-    public function test_gas_resolves_to_conta_gas_and_taxa_condominial(): void
+    public function testGasResolvesToContaGasAndTaxaCondominial(): void
     {
         $resolver = $this->buildFullResolver();
 
@@ -88,7 +88,7 @@ final class SettlementAccountResolverTest extends TestCase
         $this->assertSame('it-condominial', $result['incomeTypeId']);
     }
 
-    public function test_account_and_type_for_throws_on_unknown_component(): void
+    public function testAccountAndTypeForThrowsOnUnknownComponent(): void
     {
         $resolver = $this->buildFullResolver();
 
@@ -96,7 +96,7 @@ final class SettlementAccountResolverTest extends TestCase
         $resolver->accountAndTypeFor('unknown');
     }
 
-    public function test_should_split_returns_false_when_gas_account_missing(): void
+    public function testShouldSplitReturnsFalseWhenGasAccountMissing(): void
     {
         $accounts = [
             $this->stubAccount('acc-principal', 'Conta Principal'),
@@ -118,7 +118,7 @@ final class SettlementAccountResolverTest extends TestCase
         $this->assertFalse($resolver->shouldSplit());
     }
 
-    public function test_resolution_is_cached_across_calls(): void
+    public function testResolutionIsCachedAcrossCalls(): void
     {
         $accountRepo = $this->createMock(AccountRepository::class);
         $accountRepo->expects($this->once())->method('findAllActive')->willReturn([
@@ -192,7 +192,9 @@ final class SettlementAccountResolverTest extends TestCase
         return $this->incomeTypeRepoReturning([]);
     }
 
-    /** @param Account[] $accounts */
+    /**
+     * @param Account[] $accounts
+     */
     private function accountRepoReturning(array $accounts): AccountRepository
     {
         $repo = $this->createMock(AccountRepository::class);
@@ -201,7 +203,9 @@ final class SettlementAccountResolverTest extends TestCase
         return $repo;
     }
 
-    /** @param IncomeType[] $types */
+    /**
+     * @param IncomeType[] $types
+     */
     private function incomeTypeRepoReturning(array $types): IncomeTypeRepository
     {
         $repo = $this->createMock(IncomeTypeRepository::class);

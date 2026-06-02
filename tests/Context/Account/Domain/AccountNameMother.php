@@ -1,10 +1,15 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Tests\Context\Account\Domain;
 
 use App\Context\Account\Domain\AccountName;
 use App\Tests\Shared\Domain\MotherCreator;
 use App\Tests\Shared\Domain\WordMother;
+
+use function mb_strlen;
+use function mb_substr;
 
 class AccountNameMother
 {
@@ -16,13 +21,14 @@ class AccountNameMother
 
         // Ensure the name is at least 4 characters long
         $name = WordMother::create();
-        while (strlen($name) < 4) {
+
+        while (mb_strlen($name) < 4) {
             $name = WordMother::create();
         }
 
         // Ensure it doesn't exceed 100 characters
-        if (strlen($name) > 100) {
-            $name = substr($name, 0, 100);
+        if (mb_strlen($name) > 100) {
+            $name = mb_substr($name, 0, 100);
         }
 
         return new AccountName($name);
@@ -36,6 +42,7 @@ class AccountNameMother
     public static function createWithMaxLength(): AccountName
     {
         $faker = MotherCreator::random();
+
         return new AccountName($faker->regexify('[A-Za-z0-9]{100}'));
     }
 }

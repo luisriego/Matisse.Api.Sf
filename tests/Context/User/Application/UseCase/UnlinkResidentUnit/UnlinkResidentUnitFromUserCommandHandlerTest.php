@@ -24,7 +24,7 @@ final class UnlinkResidentUnitFromUserCommandHandlerTest extends TestCase
         $this->handler = new UnlinkResidentUnitFromUserCommandHandler($this->userRepository);
     }
 
-    public function test_it_should_unlink_resident_unit_from_user_successfully(): void
+    public function testItShouldUnlinkResidentUnitFromUserSuccessfully(): void
     {
         $residentUnit = ResidentUnitMother::create();
         $user = UserMother::createRandom();
@@ -46,7 +46,7 @@ final class UnlinkResidentUnitFromUserCommandHandlerTest extends TestCase
         ($this->handler)($command);
     }
 
-    public function test_it_should_throw_when_user_not_found(): void
+    public function testItShouldThrowWhenUserNotFound(): void
     {
         $this->expectException(RuntimeException::class);
         $this->expectExceptionMessage('User not found');
@@ -63,7 +63,7 @@ final class UnlinkResidentUnitFromUserCommandHandlerTest extends TestCase
         ($this->handler)($command);
     }
 
-    public function test_it_should_not_save_when_user_has_no_resident_unit(): void
+    public function testItShouldNotSaveWhenUserHasNoResidentUnit(): void
     {
         $user = UserMother::createRandom();
 

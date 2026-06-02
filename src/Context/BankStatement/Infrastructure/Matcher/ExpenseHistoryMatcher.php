@@ -11,10 +11,12 @@ use App\Context\Expense\Domain\Expense;
 use App\Context\Expense\Domain\ExpenseRepository;
 use App\Shared\Domain\ValueObject\DateRange;
 use App\Shared\Domain\ValueObject\DateTimeValueObject;
-use DateTime;
 
 use function abs;
+use function min;
+use function round;
 use function similar_text;
+use function sprintf;
 use function usort;
 
 /**
@@ -65,6 +67,7 @@ final readonly class ExpenseHistoryMatcher implements ExpenseHistoryMatcherInter
         usort($matched, static fn (array $a, array $b) => $b['score'] <=> $a['score']);
 
         $assignments = [];
+
         foreach ($matched as $item) {
             $assignments[] = $this->toDto($item['expense'], (float) $item['score']);
         }
@@ -84,7 +87,9 @@ final readonly class ExpenseHistoryMatcher implements ExpenseHistoryMatcherInter
         return $confidence >= self::HIGH_CONFIDENCE_THRESHOLD;
     }
 
-    /** @return Expense[] */
+    /**
+     * @return Expense[]
+     */
     private function fetchExpensesInWindow(DateTimeValueObject $referenceDate): array
     {
         $endDate   = clone $referenceDate->toDateTime();

@@ -6,6 +6,8 @@ namespace App\Context\BillingPolicy\Domain;
 
 use DateTimeImmutable;
 
+use const DATE_ATOM;
+
 final readonly class ResolvedBillingPolicy
 {
     public const SYNDIC_ALLOCATION_RULE = 'equal_parts';

@@ -8,7 +8,7 @@ use App\Shared\Application\Command;
 
 /**
  * @param array<array{accountId: string, amountCents: int}> $balances
- * @param list<string>                                       $adjustmentPriority Account IDs in absorption order
+ * @param list<string>                                      $adjustmentPriority Account IDs in absorption order
  */
 final readonly class ConfirmInitialBalancesCommand implements Command
 {

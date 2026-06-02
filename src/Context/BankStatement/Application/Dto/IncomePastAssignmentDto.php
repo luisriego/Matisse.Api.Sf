@@ -12,14 +12,18 @@ use OpenApi\Attributes as OA;
 #[OA\Schema(
     schema: 'IncomePastAssignment',
     properties: [
-        new OA\Property(property: 'month',              type: 'integer', example: 3),
-        new OA\Property(property: 'year',               type: 'integer', example: 2026),
-        new OA\Property(property: 'amountInCents',      type: 'integer', example: 49),
-        new OA\Property(property: 'incomeTypeId',       type: 'string', format: 'uuid', nullable: true),
-        new OA\Property(property: 'incomeTypeName',     type: 'string', nullable: true),
-        new OA\Property(property: 'inferredCreditKind', type: 'string', enum: ['boleto_settlement', 'other'],
-            description: 'Derived from the stored income description (e.g. consolidated boleto title).'),
-        new OA\Property(property: 'confidence',         type: 'number', format: 'float', example: 0.72),
+        new OA\Property(property: 'month', type: 'integer', example: 3),
+        new OA\Property(property: 'year', type: 'integer', example: 2026),
+        new OA\Property(property: 'amountInCents', type: 'integer', example: 49),
+        new OA\Property(property: 'incomeTypeId', type: 'string', format: 'uuid', nullable: true),
+        new OA\Property(property: 'incomeTypeName', type: 'string', nullable: true),
+        new OA\Property(
+            property: 'inferredCreditKind',
+            type: 'string',
+            enum: ['boleto_settlement', 'other'],
+            description: 'Derived from the stored income description (e.g. consolidated boleto title).',
+        ),
+        new OA\Property(property: 'confidence', type: 'number', format: 'float', example: 0.72),
     ],
 )]
 final readonly class IncomePastAssignmentDto

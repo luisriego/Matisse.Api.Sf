@@ -4,6 +4,9 @@ declare(strict_types=1);
 
 namespace App\Context\Forecast\Domain\Service;
 
+use function array_map;
+use function array_unique;
+use function array_values;
 use function count;
 use function range;
 use function sort;

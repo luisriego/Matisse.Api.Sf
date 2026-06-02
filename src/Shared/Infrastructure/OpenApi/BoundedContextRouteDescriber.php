@@ -8,7 +8,14 @@ use Nelmio\ApiDocBundle\RouteDescriber\RouteDescriberInterface;
 use Nelmio\ApiDocBundle\RouteDescriber\RouteDescriberTrait;
 use OpenApi\Annotations as OA;
 use OpenApi\Generator;
+use ReflectionMethod;
 use Symfony\Component\Routing\Route;
+
+use function preg_match;
+use function preg_replace;
+use function str_contains;
+use function str_starts_with;
+use function trim;
 
 /**
  * Assigns OpenAPI tags, summaries and default responses from the route path and name
@@ -18,7 +25,7 @@ final class BoundedContextRouteDescriber implements RouteDescriberInterface
 {
     use RouteDescriberTrait;
 
-    public function describe(OA\OpenApi $api, Route $route, \ReflectionMethod $reflectionMethod): void
+    public function describe(OA\OpenApi $api, Route $route, ReflectionMethod $reflectionMethod): void
     {
         $path = $this->normalizePath($route->getPath());
         $tag = $this->resolveTag($path);
@@ -63,7 +70,7 @@ final class BoundedContextRouteDescriber implements RouteDescriberInterface
         };
     }
 
-    private function summaryFromController(\ReflectionMethod $reflectionMethod): string
+    private function summaryFromController(ReflectionMethod $reflectionMethod): string
     {
         $className = $reflectionMethod->getDeclaringClass()->getShortName();
         $withoutSuffix = preg_replace('/Controller$/', '', $className) ?? $className;
@@ -82,9 +89,6 @@ final class BoundedContextRouteDescriber implements RouteDescriberInterface
             || preg_match('#^/api/v1/users/[^/]+/password-reset/[^/]+$#', $path) === 1;
     }
 
-    /**
-     * @param mixed $value
-     */
     private function isUndefinedOrEmpty(mixed $value): bool
     {
         return Generator::UNDEFINED === $value || [] === $value;

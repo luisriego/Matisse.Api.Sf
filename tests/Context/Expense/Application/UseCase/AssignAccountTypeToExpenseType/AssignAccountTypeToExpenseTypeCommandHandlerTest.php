@@ -30,15 +30,15 @@ final class AssignAccountTypeToExpenseTypeCommandHandlerTest extends TestCase
 
         $this->handler = new AssignAccountTypeToExpenseTypeCommandHandler(
             $this->expenseTypeRepository,
-            $this->accountRepository
+            $this->accountRepository,
         );
     }
 
-    public function test_it_should_assign_account_to_expense_type(): void
+    public function testItShouldAssignAccountToExpenseType(): void
     {
         $command = new AssignAccountTypeToExpenseTypeCommand(
             Uuid::random()->value(),
-            Uuid::random()->value()
+            Uuid::random()->value(),
         );
 
         $expenseType = ExpenseTypeMother::create(id: $command->getExpenseTypeId());
@@ -66,11 +66,11 @@ final class AssignAccountTypeToExpenseTypeCommandHandlerTest extends TestCase
         ($this->handler)($command);
     }
 
-    public function test_it_should_throw_exception_when_expense_type_not_found(): void
+    public function testItShouldThrowExceptionWhenExpenseTypeNotFound(): void
     {
         $command = new AssignAccountTypeToExpenseTypeCommand(
             Uuid::random()->value(),
-            Uuid::random()->value()
+            Uuid::random()->value(),
         );
 
         $this->expenseTypeRepository
@@ -84,11 +84,11 @@ final class AssignAccountTypeToExpenseTypeCommandHandlerTest extends TestCase
         ($this->handler)($command);
     }
 
-    public function test_it_should_throw_exception_when_account_not_found(): void
+    public function testItShouldThrowExceptionWhenAccountNotFound(): void
     {
         $command = new AssignAccountTypeToExpenseTypeCommand(
             Uuid::random()->value(),
-            Uuid::random()->value()
+            Uuid::random()->value(),
         );
 
         $expenseType = ExpenseTypeMother::create(id: $command->getExpenseTypeId());

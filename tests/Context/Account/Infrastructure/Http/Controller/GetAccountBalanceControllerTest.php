@@ -11,10 +11,12 @@ use App\Tests\Context\Account\Domain\AccountMother;
 use App\Tests\Context\Expense\Domain\ExpenseTypeMother;
 use App\Tests\Shared\Domain\UuidMother;
 use App\Tests\Shared\Infrastructure\PhpUnit\ApiTestCase;
-use DateTimeImmutable;
+use DateMalformedStringException;
 use Doctrine\ORM\Exception\ORMException;
 use Doctrine\ORM\OptimisticLockException;
 use Symfony\Component\HttpFoundation\Response;
+
+use function json_decode;
 
 final class GetAccountBalanceControllerTest extends ApiTestCase
 {
@@ -27,12 +29,18 @@ final class GetAccountBalanceControllerTest extends ApiTestCase
         $this->storedEventRepository = $this->getContainer()->get(StoredEventRepository::class);
     }
 
+    protected function tearDown(): void
+    {
+        $this->storedEventRepository = null;
+        parent::tearDown();
+    }
+
     /**
      * @throws OptimisticLockException
-     * @throws \DateMalformedStringException
+     * @throws DateMalformedStringException
      * @throws ORMException
      */
-    public function test_it_should_return_correct_account_balance(): void
+    public function testItShouldReturnCorrectAccountBalance(): void
     {
         // 1. Create necessary entities
         $account = AccountMother::create();
@@ -50,7 +58,7 @@ final class GetAccountBalanceControllerTest extends ApiTestCase
         $initialBalanceEvent = new InitialBalanceSet(
             $account->id(),
             $initialBalance,
-            '2025-01-01'
+            '2025-01-01',
         );
         $this->storedEventRepository->append($initialBalanceEvent);
 
@@ -61,7 +69,7 @@ final class GetAccountBalanceControllerTest extends ApiTestCase
             $expenseType->id(),
             $account->id(), // The account we are testing
             '2025-01-15',
-            'Test Expense'
+            'Test Expense',
         );
         $this->storedEventRepository->append($expenseEvent);
 
@@ -76,11 +84,5 @@ final class GetAccountBalanceControllerTest extends ApiTestCase
         $this->assertIsArray($data);
         $this->assertArrayHasKey('balance', $data);
         $this->assertEquals($expectedBalance, $data['balance']);
-    }
-
-    protected function tearDown(): void
-    {
-        $this->storedEventRepository = null;
-        parent::tearDown();
     }
 }

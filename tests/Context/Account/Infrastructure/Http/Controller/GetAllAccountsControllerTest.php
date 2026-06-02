@@ -8,6 +8,9 @@ use App\Tests\Context\Account\Domain\AccountMother;
 use App\Tests\Shared\Infrastructure\PhpUnit\ApiTestCase;
 use Symfony\Component\HttpFoundation\Response;
 
+use function array_column;
+use function json_decode;
+
 final class GetAllAccountsControllerTest extends ApiTestCase
 {
     protected function setUp(): void
@@ -16,7 +19,7 @@ final class GetAllAccountsControllerTest extends ApiTestCase
         $this->createAuthenticatedClient();
     }
 
-    public function test_it_should_return_all_accounts(): void
+    public function testItShouldReturnAllAccounts(): void
     {
         // 1. Create a couple of accounts to ensure the list is not empty
         $account1 = AccountMother::create();

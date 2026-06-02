@@ -70,6 +70,7 @@ readonly class MonthlyExpenseAggregatorService
             $amount = $expense->amount();
             $totals['grandTotal'] += $amount;
             $classification = $this->classifyForSlip($expense);
+
             if (!$classification['included']) {
                 continue;
             }
@@ -86,6 +87,7 @@ readonly class MonthlyExpenseAggregatorService
                 case 'INDIVIDUAL':
                     $totals['individual'] += $amount;
                     $unitId = $expense->residentUnitId();
+
                     if ($unitId !== null) {
                         $totals['individualByUnit'][$unitId] = ($totals['individualByUnit'][$unitId] ?? 0) + $amount;
                     } else {
@@ -115,6 +117,7 @@ readonly class MonthlyExpenseAggregatorService
     public function classifyForSlip(Expense $expense): array
     {
         $expenseType = $expense->type();
+
         if ($expenseType === null) {
             return [
                 'included' => false,
@@ -124,6 +127,7 @@ readonly class MonthlyExpenseAggregatorService
         }
 
         $code = mb_strtoupper((string) $expenseType->code());
+
         if ($code === self::GAS_EXPENSE_TYPE_CODE) {
             return [
                 'included' => false,

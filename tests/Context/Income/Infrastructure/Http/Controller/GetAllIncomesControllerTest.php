@@ -10,6 +10,9 @@ use App\Tests\Context\Income\Domain\IncomeMother;
 use App\Tests\Shared\Infrastructure\PhpUnit\ApiTestCase;
 use Symfony\Component\HttpFoundation\Response;
 
+use function array_column;
+use function json_decode;
+
 /**
  * @covers \App\Context\Income\Infrastructure\Http\Controller\GetAllIncomesController
  */
@@ -21,7 +24,7 @@ final class GetAllIncomesControllerTest extends ApiTestCase
         $this->createAuthenticatedClient();
     }
 
-    public function test_it_should_return_all_incomes(): void
+    public function testItShouldReturnAllIncomes(): void
     {
         // 1. Create a couple of incomes
         $account1 = AccountMother::create();
@@ -59,7 +62,7 @@ final class GetAllIncomesControllerTest extends ApiTestCase
         $this->assertContains($income2->id(), $responseIds);
     }
 
-    public function test_it_maps_exceptions_correctly(): void
+    public function testItMapsExceptionsCorrectly(): void
     {
         $controller = $this->getContainer()->get(GetAllIncomesController::class);
         $exceptions = $controller->exceptions();

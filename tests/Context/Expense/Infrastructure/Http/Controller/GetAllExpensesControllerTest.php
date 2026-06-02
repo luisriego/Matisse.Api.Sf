@@ -12,6 +12,9 @@ use App\Tests\Shared\Domain\UuidMother;
 use App\Tests\Shared\Infrastructure\PhpUnit\ApiTestCase;
 use Symfony\Component\HttpFoundation\Response;
 
+use function array_column;
+use function json_decode;
+
 /**
  * @covers \App\Context\Expense\Infrastructure\Http\Controller\GetAllExpensesController
  */
@@ -23,7 +26,7 @@ final class GetAllExpensesControllerTest extends ApiTestCase
         $this->createAuthenticatedClient();
     }
 
-    public function test_it_should_return_all_expenses(): void
+    public function testItShouldReturnAllExpenses(): void
     {
         // 1. Create unique dependencies for each expense, ensuring unique IDs
         $account1 = AccountMother::create();
@@ -38,7 +41,7 @@ final class GetAllExpensesControllerTest extends ApiTestCase
         $this->entityManager->persist($account1);
         $this->entityManager->persist($type1);
         $this->entityManager->persist($expense1);
-        
+
         $this->entityManager->persist($account2);
         $this->entityManager->persist($type2);
         $this->entityManager->persist($expense2);
@@ -68,7 +71,7 @@ final class GetAllExpensesControllerTest extends ApiTestCase
         $this->assertContains($expense2->id(), $responseIds);
     }
 
-    public function test_it_maps_exceptions_correctly(): void
+    public function testItMapsExceptionsCorrectly(): void
     {
         $controller = $this->getContainer()->get(GetAllExpensesController::class);
         $exceptions = $controller->exceptions();

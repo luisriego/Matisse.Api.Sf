@@ -19,8 +19,13 @@ use Symfony\Component\HttpFoundation\Response;
     tags: ['Slips'],
     security: [['bearerAuth' => []]],
     parameters: [
-        new OA\Parameter(name: 'targetMonth', in: 'path', required: true, schema: new OA\Schema(type: 'string', pattern: '^\d{4}-\d{2}$'),
-            description: 'Month to close in YYYY-MM format'),
+        new OA\Parameter(
+            name: 'targetMonth',
+            in: 'path',
+            required: true,
+            schema: new OA\Schema(type: 'string', pattern: '^\d{4}-\d{2}$'),
+            description: 'Month to close in YYYY-MM format',
+        ),
     ],
     responses: [
         new OA\Response(response: 200, description: 'Period closed successfully.'),

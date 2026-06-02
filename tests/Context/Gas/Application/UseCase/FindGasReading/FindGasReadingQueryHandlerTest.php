@@ -18,7 +18,7 @@ use PHPUnit\Framework\TestCase;
 
 final class FindGasReadingQueryHandlerTest extends TestCase
 {
-    public function test_it_should_throw_exception_when_no_reading_is_found(): void
+    public function testItShouldThrowExceptionWhenNoReadingIsFound(): void
     {
         $this->expectException(GasReadingNotFoundException::class);
 
@@ -29,31 +29,31 @@ final class FindGasReadingQueryHandlerTest extends TestCase
         $handler(new FindGasReadingQuery(new ResidentUnitId(Uuid::random()->value()), new Year(2025), new Month(10))); // Usar VOs
     }
 
-    public function test_it_should_return_the_last_reading_for_the_correct_period(): void
+    public function testItShouldReturnTheLastReadingForTheCorrectPeriod(): void
     {
         $targetUnitId = new ResidentUnitId(Uuid::random()->value()); // Usar VO
         $targetYear = new Year(2025); // Usar VO
         $targetMonth = new Month(10); // Usar VO
-        
+
         $correctReading = 155.5;
-        
+
         $allEvents = [
             StoredEvent::create(
                 Uuid::random()->value(),
                 'gas.reading.was.recorded',
                 ['residentUnitId' => $targetUnitId->value(), 'year' => $targetYear->value(), 'month' => $targetMonth->value(), 'reading' => 150.0],
-                new DateTimeImmutable('-2 days')
+                new DateTimeImmutable('-2 days'),
             ),
             StoredEvent::create(
                 Uuid::random()->value(),
                 'gas.reading.was.recorded',
-                ['residentUnitId' => $targetUnitId->value(), 'year' => $targetYear->value(), 'month' => 9, 'reading' => 140.0]
+                ['residentUnitId' => $targetUnitId->value(), 'year' => $targetYear->value(), 'month' => 9, 'reading' => 140.0],
             ),
             StoredEvent::create(
                 Uuid::random()->value(),
                 'gas.reading.was.recorded',
                 ['residentUnitId' => $targetUnitId->value(), 'year' => $targetYear->value(), 'month' => $targetMonth->value(), 'reading' => $correctReading],
-                new DateTimeImmutable('-1 day')
+                new DateTimeImmutable('-1 day'),
             ),
         ];
 

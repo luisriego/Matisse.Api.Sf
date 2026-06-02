@@ -7,7 +7,7 @@ namespace App\Context\BankStatement\Application\Dto;
 final readonly class ExpectedExpenseCreateOrUpdateDto
 {
     /**
-     * @param list<int>|null $monthsOfYear Required when frequency is custom; optional override otherwise.
+     * @param list<int>|null $monthsOfYear required when frequency is custom; optional override otherwise
      */
     public function __construct(
         public string $displayName,

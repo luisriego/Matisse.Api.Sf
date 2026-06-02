@@ -11,6 +11,8 @@ namespace App\Context\BankStatement\Application\Matcher;
  */
 interface EmbeddingVectorClientInterface
 {
-    /** @return list<float>|null */
+    /**
+     * @return list<float>|null
+     */
     public function embed(string $text): ?array;
 }

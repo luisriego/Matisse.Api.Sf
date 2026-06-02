@@ -9,7 +9,7 @@ final readonly class CreditLineDto
 {
     public function __construct(
         public readonly string $importLineKey,
-        public readonly int    $amountInCents,
+        public readonly int $amountInCents,
         public readonly string $memo,
     ) {}
 }

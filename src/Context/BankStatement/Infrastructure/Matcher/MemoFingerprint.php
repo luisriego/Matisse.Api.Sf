@@ -4,8 +4,13 @@ declare(strict_types=1);
 
 namespace App\Context\BankStatement\Infrastructure\Matcher;
 
+use function array_filter;
+use function array_slice;
+use function array_values;
+use function explode;
+use function implode;
+use function mb_strlen;
 use function mb_strtolower;
-use function mb_substr;
 use function preg_replace;
 use function trim;
 
@@ -38,7 +43,7 @@ final class MemoFingerprint
         $normalized = trim($normalized);
 
         // Take first MAX_WORDS meaningful words
-        $words = array_filter(explode(' ', $normalized), static fn (string $w) => strlen($w) >= 2);
+        $words = array_filter(explode(' ', $normalized), static fn (string $w) => mb_strlen($w) >= 2);
         $words = array_values($words);
 
         return implode(' ', array_slice($words, 0, self::MAX_WORDS));

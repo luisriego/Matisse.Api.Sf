@@ -6,7 +6,6 @@ namespace App\Tests\Context\User\Application\UseCase\PasswordReset;
 
 use App\Context\User\Application\UseCase\PasswordReset\ResetPasswordCommand;
 use App\Context\User\Application\UseCase\PasswordReset\ResetPasswordCommandHandler;
-use App\Context\User\Domain\User;
 use App\Context\User\Domain\UserRepository;
 use App\Shared\Domain\Clock;
 use App\Shared\Domain\Exception\InvalidArgumentException;
@@ -37,7 +36,7 @@ final class ResetPasswordCommandHandlerTest extends TestCase
         );
     }
 
-    public function test_it_should_reset_password_successfully(): void
+    public function testItShouldResetPasswordSuccessfully(): void
     {
         $user = UserMother::createRandom();
         $user->requestPasswordReset();
@@ -66,7 +65,7 @@ final class ResetPasswordCommandHandlerTest extends TestCase
         ($this->handler)($command);
     }
 
-    public function test_it_should_throw_when_token_is_null(): void
+    public function testItShouldThrowWhenTokenIsNull(): void
     {
         $user = UserMother::createRandom();
         // No llamar requestPasswordReset() - token y requestedAt serán null
@@ -83,7 +82,7 @@ final class ResetPasswordCommandHandlerTest extends TestCase
         ($this->handler)($command);
     }
 
-    public function test_it_should_throw_when_token_does_not_match(): void
+    public function testItShouldThrowWhenTokenDoesNotMatch(): void
     {
         $user = UserMother::createRandom();
         $user->requestPasswordReset();
@@ -102,7 +101,7 @@ final class ResetPasswordCommandHandlerTest extends TestCase
         ($this->handler)($command);
     }
 
-    public function test_it_should_throw_when_token_is_expired(): void
+    public function testItShouldThrowWhenTokenIsExpired(): void
     {
         $user = UserMother::createRandom();
         $user->requestPasswordReset();
@@ -119,7 +118,7 @@ final class ResetPasswordCommandHandlerTest extends TestCase
         $command = new ResetPasswordCommand(
             $user->getId(),
             $user->getPasswordResetToken(),
-            'new-password'
+            'new-password',
         );
 
         $this->userRepository
@@ -134,7 +133,7 @@ final class ResetPasswordCommandHandlerTest extends TestCase
         ($this->handler)($command);
     }
 
-    public function test_it_should_propagate_when_user_not_found(): void
+    public function testItShouldPropagateWhenUserNotFound(): void
     {
         $this->userRepository
             ->method('findOneByIdOrFail')

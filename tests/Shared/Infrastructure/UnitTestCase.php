@@ -24,6 +24,7 @@ abstract class UnitTestCase extends MockeryTestCase
                 ->shouldReceive('publish')
                 ->withNoArgs()
                 ->zeroOrMoreTimes();
+
             return;
         }
 

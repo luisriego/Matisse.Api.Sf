@@ -50,6 +50,7 @@ final class ForecastGetController extends ApiController
         }
 
         $reconciliationMonth = $request->query->get('reconciliationMonth');
+
         if ($reconciliationMonth !== null && (!is_string($reconciliationMonth) || 1 !== preg_match('/^\d{4}-\d{2}$/', $reconciliationMonth))) {
             throw new InvalidArgumentException('Invalid reconciliationMonth. Expected YYYY-MM.');
         }

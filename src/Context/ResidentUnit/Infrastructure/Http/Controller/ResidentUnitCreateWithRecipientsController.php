@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Context\ResidentUnit\Infrastructure\Http\Controller;
 
 use App\Context\ResidentUnit\Application\UseCase\CreateUnitWithRecipients\CreateResidentUnitWithRecipientsCommand;
+use App\Context\ResidentUnit\Domain\Exception\IdealFractionSumExceedsLimitException;
 use App\Context\ResidentUnit\Domain\Exception\ResidentUnitAlreadyExistsException;
 use App\Context\ResidentUnit\Infrastructure\Http\Dto\CreateResidentUnitWithRecipientsRequestDto;
 use App\Shared\Domain\Exception\InvalidArgumentException;
@@ -26,13 +27,7 @@ use Symfony\Component\HttpFoundation\Response;
                 new OA\Property(
                     property: 'notificationRecipients',
                     type: 'array',
-                    items: new OA\Items(
-                        required: ['name', 'email'],
-                        properties: [
-                            new OA\Property(property: 'name', type: 'string'),
-                            new OA\Property(property: 'email', type: 'string', format: 'email'),
-                        ],
-                    ),
+                    items: new OA\Items(ref: '#/components/schemas/ResidentUnitNotificationRecipient'),
                 ),
             ],
         ),
@@ -40,9 +35,9 @@ use Symfony\Component\HttpFoundation\Response;
     tags: ['Resident Units'],
     security: [['bearerAuth' => []]],
     responses: [
-        new OA\Response(response: 201, description: 'Resident unit created.'),
+        new OA\Response(response: 201, description: 'Resident unit created. Empty response body.'),
         new OA\Response(response: 400, description: 'Validation error.'),
-        new OA\Response(response: 409, description: 'Unit already exists.'),
+        new OA\Response(response: 409, description: 'Unit already exists or ideal fraction sum exceeds limit.'),
         new OA\Response(response: 401, description: 'Unauthorized'),
     ],
 )]
@@ -67,6 +62,7 @@ final class ResidentUnitCreateWithRecipientsController extends ApiController
         return [
             InvalidArgumentException::class => Response::HTTP_BAD_REQUEST,
             ResidentUnitAlreadyExistsException::class => Response::HTTP_CONFLICT,
+            IdealFractionSumExceedsLimitException::class => Response::HTTP_CONFLICT,
         ];
     }
 }

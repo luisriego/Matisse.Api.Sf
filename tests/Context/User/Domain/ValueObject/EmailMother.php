@@ -12,6 +12,7 @@ final class EmailMother
     public static function create(?string $value = null): Email
     {
         $faker = Factory::create();
+
         return Email::fromString($value ?? $faker->safeEmail());
     }
 }

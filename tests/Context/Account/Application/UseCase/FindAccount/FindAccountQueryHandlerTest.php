@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Tests\Context\Account\Application\UseCase\FindAccount;
 
 use App\Context\Account\Application\UseCase\FindAccount\FindAccountQuery;
@@ -17,7 +19,7 @@ use Symfony\Component\Serializer\SerializerInterface;
 class FindAccountQueryHandlerTest extends TestCase
 {
     private AccountRepository|MockInterface $repository;
-    private SerializerInterface|MockInterface $serializer;
+    private MockInterface|SerializerInterface $serializer;
     private FindAccountQueryHandler $handler;
 
     protected function setUp(): void
@@ -55,7 +57,7 @@ class FindAccountQueryHandlerTest extends TestCase
             ->with(
                 Mockery::on(function (Account $object) use ($account) {
                     return $object->id() === $account->id();
-                })
+                }),
             )
             ->once()
             ->andReturn($accountData);

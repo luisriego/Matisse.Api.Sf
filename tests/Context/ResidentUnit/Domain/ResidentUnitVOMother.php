@@ -15,6 +15,6 @@ final class ResidentUnitVOMother
 
     private static function random(): string
     {
-        return 'Unit-' . rand(100, 999);
+        return 'Unit-' . mt_rand(100, 999);
     }
 }

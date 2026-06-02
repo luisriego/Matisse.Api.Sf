@@ -37,7 +37,7 @@ class SlipAmountCalculatorServiceTest extends TestCase
             $resident,
             $totalEquallyDividedExpenses,
             $totalFractionBasedExpenses,
-            $numberOfPayingResidents
+            $numberOfPayingResidents,
         );
 
         // Assert

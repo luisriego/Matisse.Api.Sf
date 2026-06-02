@@ -13,9 +13,10 @@ use DateMalformedStringException;
 use DateTimeImmutable;
 use Psr\Log\LoggerInterface;
 
-use function array_map;
 use function abs;
+use function array_map;
 use function count;
+use function mb_strtoupper;
 use function sprintf;
 
 /**
@@ -33,8 +34,8 @@ readonly class SlipGenerationBreakdownBuilder
     ) {}
 
     /**
-     * @param array<int, Expense>           $expenses
-     * @param array<int, RecurringExpense>  $recurringExpenses
+     * @param array<int, Expense>          $expenses
+     * @param array<int, RecurringExpense> $recurringExpenses
      * @param array<int, ResidentUnit>     $residentUnits
      *
      * @return array<string, mixed>
@@ -83,7 +84,7 @@ readonly class SlipGenerationBreakdownBuilder
         $gasYear = (int) $previousMonth->format('Y');
         $gasMonth = (int) $previousMonth->format('m');
 
-        $unitIds = array_map(static fn(ResidentUnit $u) => $u->id(), $residentUnits);
+        $unitIds = array_map(static fn (ResidentUnit $u) => $u->id(), $residentUnits);
         $gasBreakdown = $this->gasConsumptionBreakdownResolver->breakdownForMonth(
             $gasYear,
             $gasMonth,
@@ -98,6 +99,7 @@ readonly class SlipGenerationBreakdownBuilder
         $dueDateTime = SlipDueDate::selectDueDate($dueYear, $dueMonth);
 
         $gasByUnitCents = [];
+
         foreach ($gasByUnit as $unitId => $gasDetail) {
             $gasByUnitCents[$unitId] = (int) ($gasDetail['gasCents'] ?? 0);
         }
@@ -114,6 +116,7 @@ readonly class SlipGenerationBreakdownBuilder
         );
 
         $unitsOut = [];
+
         foreach ($computed['units'] as $unit) {
             $uid = $unit['residentUnitId'];
             $gasDetail = $gasByUnit[$uid] ?? null;
@@ -130,6 +133,7 @@ readonly class SlipGenerationBreakdownBuilder
         }
 
         $warnings = [];
+
         if ($poolAdjustment['pf1seTotalCents'] > 0 && $poolAdjustment['internetShareCents'] > 0 && $poolAdjustment['internetChargedToUnitId'] === null) {
             $warnings[] = [
                 'code' => 'PF1SE_INTERNET_UNIT_NOT_FOUND',
@@ -141,6 +145,7 @@ readonly class SlipGenerationBreakdownBuilder
                 'internetShareCents' => $poolAdjustment['internetShareCents'],
             ];
         }
+
         if (abs($computed['totals']['differenceCents']) > 1) {
             $warnings[] = [
                 'code' => 'COMPONENT_MISMATCH',
@@ -189,6 +194,7 @@ readonly class SlipGenerationBreakdownBuilder
     private function expenseLines(array $expenses): array
     {
         $out = [];
+
         foreach ($expenses as $expense) {
             $type = $expense->type();
             $classification = $this->monthlyExpenseAggregator->classifyForSlip($expense);
@@ -222,12 +228,16 @@ readonly class SlipGenerationBreakdownBuilder
 
         foreach ($expenses as $expense) {
             $classification = $this->monthlyExpenseAggregator->classifyForSlip($expense);
+
             if (!$classification['included']) {
                 $excluded += $expense->amount();
+
                 continue;
             }
+
             if ($classification['bucket'] === 'FRACTION') {
                 $fractionIncluded += $expense->amount();
+
                 continue;
             }
             $equalIncluded += $expense->amount();
@@ -250,6 +260,7 @@ readonly class SlipGenerationBreakdownBuilder
     private function recurringLines(array $recurringExpenses, int $year, int $month, array $expenses): array
     {
         $out = [];
+
         foreach ($recurringExpenses as $re) {
             $applies = $this->recurringExpenseSlipContribution->contributionForMonth([$re], $year, $month, $expenses);
             $type = $re->type();
@@ -262,7 +273,7 @@ readonly class SlipGenerationBreakdownBuilder
                 'isActive' => $re->isActive(),
                 'countsTowardSlipEqualCents' => $applies['equal'],
                 'countsTowardSlipFractionCents' => $applies['fraction'],
-                'skippedAsIndividualInSlips' => strtoupper((string) $type->distributionMethod()) === ExpenseType::INDIVIDUAL,
+                'skippedAsIndividualInSlips' => mb_strtoupper((string) $type->distributionMethod()) === ExpenseType::INDIVIDUAL,
             ];
         }
 

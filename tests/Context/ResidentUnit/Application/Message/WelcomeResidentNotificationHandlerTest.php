@@ -11,6 +11,10 @@ use Symfony\Component\Mailer\Exception\TransportExceptionInterface;
 use Symfony\Component\Mailer\MailerInterface;
 use Symfony\Component\Mime\Email;
 
+use function ob_get_clean;
+use function ob_start;
+use function sprintf;
+
 class WelcomeResidentNotificationHandlerTest extends TestCase
 {
     private MailerInterface $mailer;
@@ -22,7 +26,7 @@ class WelcomeResidentNotificationHandlerTest extends TestCase
         $this->handler = new WelcomeResidentNotificationHandler($this->mailer);
     }
 
-    public function test_it_should_send_welcome_email(): void
+    public function testItShouldSendWelcomeEmail(): void
     {
         $name = 'John Doe';
         $email = 'john.doe@example.com';
@@ -32,7 +36,7 @@ class WelcomeResidentNotificationHandlerTest extends TestCase
 
         $this->mailer->expects($this->once())
             ->method('send')
-            ->with(self::callback(function (Email $sentEmail) use ($name, $email, $unitName) {
+            ->with(self::callback(function (Email $sentEmail) use ($name, $email) {
                 $this->assertSame('no-reply@expresate.com', $sentEmail->getFrom()[0]->getAddress());
                 $this->assertSame($email, $sentEmail->getTo()[0]->getAddress());
                 $this->assertSame(sprintf('Boas-vindas ao seu novo lar, %s!', $name), $sentEmail->getSubject());
@@ -44,6 +48,7 @@ class WelcomeResidentNotificationHandlerTest extends TestCase
 
         // Capture output to avoid it polluting test results
         ob_start();
+
         try {
             ($this->handler)($message);
         } finally {
@@ -53,7 +58,7 @@ class WelcomeResidentNotificationHandlerTest extends TestCase
         $this->assertStringContainsString(sprintf("[OK] E-mail de boas-vindas para %s (%s) enviado para %s.\n", $name, $unitName, $email), $output);
     }
 
-    public function test_it_should_propagate_transport_exception(): void
+    public function testItShouldPropagateTransportException(): void
     {
         $name = 'John Doe';
         $email = 'john.doe@example.com';
@@ -69,6 +74,7 @@ class WelcomeResidentNotificationHandlerTest extends TestCase
 
         // Capture output to ensure nothing is printed before the exception
         ob_start();
+
         try {
             ($this->handler)($message);
         } finally {

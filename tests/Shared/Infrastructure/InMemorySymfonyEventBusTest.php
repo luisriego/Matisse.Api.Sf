@@ -13,7 +13,7 @@ use PHPUnit\Framework\TestCase;
 
 final class InMemorySymfonyEventBusTest extends TestCase
 {
-    public function test_subscriber_is_invoked_when_event_matches(): void
+    public function testSubscriberIsInvokedWhenEventMatches(): void
     {
         $subscriber = new RecordingUserWasRegisteredSubscriber();
         $bus = new InMemorySymfonyEventBus([$subscriber]);
@@ -26,7 +26,7 @@ final class InMemorySymfonyEventBusTest extends TestCase
         self::assertSame($event, $subscriber->lastEvent);
     }
 
-    public function test_subscriber_is_not_invoked_for_different_event_type(): void
+    public function testSubscriberIsNotInvokedForDifferentEventType(): void
     {
         $subscriber = new RecordingUserWasRegisteredSubscriber();
         $bus = new InMemorySymfonyEventBus([$subscriber]);
@@ -39,7 +39,7 @@ final class InMemorySymfonyEventBusTest extends TestCase
         self::assertNull($subscriber->lastEvent);
     }
 
-    public function test_multiple_subscribers_both_receive_matching_event(): void
+    public function testMultipleSubscribersBothReceiveMatchingEvent(): void
     {
         $subscriberA = new RecordingUserWasRegisteredSubscriber();
         $subscriberB = new RecordingUserWasRegisteredSubscriber();
@@ -55,7 +55,7 @@ final class InMemorySymfonyEventBusTest extends TestCase
         self::assertSame($event, $subscriberB->lastEvent);
     }
 
-    public function test_publishing_multiple_events_invokes_subscriber_per_event(): void
+    public function testPublishingMultipleEventsInvokesSubscriberPerEvent(): void
     {
         $subscriber = new RecordingUserWasRegisteredSubscriber();
         $bus = new InMemorySymfonyEventBus([$subscriber]);
@@ -82,7 +82,9 @@ final class RecordingUserWasRegisteredSubscriber implements EventSubscriber
 
     public ?DomainEvent $lastEvent = null;
 
-    /** @param UserWasRegistered $event */
+    /**
+     * @param UserWasRegistered $event
+     */
     public function __invoke(DomainEvent $event): void
     {
         $this->callCount++;

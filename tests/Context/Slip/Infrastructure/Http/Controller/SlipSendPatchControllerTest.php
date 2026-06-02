@@ -7,10 +7,10 @@ namespace App\Tests\Context\Slip\Infrastructure\Http\Controller;
 use App\Context\Slip\Domain\Slip;
 use App\Tests\Context\Slip\Domain\SlipMother;
 use App\Tests\Shared\Infrastructure\PhpUnit\ApiTestCase;
-use Doctrine\ORM\EntityManagerInterface;
-use Doctrine\ORM\Tools\SchemaTool;
+use DateMalformedStringException;
 use Symfony\Component\HttpFoundation\Response;
-use Symfony\Component\Workflow\WorkflowInterface;
+
+use function sprintf;
 
 final class SlipSendPatchControllerTest extends ApiTestCase
 {
@@ -21,9 +21,9 @@ final class SlipSendPatchControllerTest extends ApiTestCase
     }
 
     /** @test
-     * @throws \DateMalformedStringException
+     * @throws DateMalformedStringException
      */
-    public function test_it_should_send_a_pending_slip_and_return_accepted(): void
+    public function testItShouldSendAPendingSlipAndReturnAccepted(): void
     {
         // Arrange: Create a slip with the initial 'pending' status
         $slip = SlipMother::create();
@@ -34,7 +34,7 @@ final class SlipSendPatchControllerTest extends ApiTestCase
         // Act: Call the send endpoint
         $this->client->request(
             'PATCH',
-            sprintf('/api/v1/slips/send/%s', $slip->id())
+            sprintf('/api/v1/slips/send/%s', $slip->id()),
         );
 
         // Assert

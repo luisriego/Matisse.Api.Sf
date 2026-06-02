@@ -13,6 +13,9 @@ use Doctrine\ORM\Exception\ORMException;
 use Doctrine\ORM\OptimisticLockException;
 use Symfony\Component\HttpFoundation\Response;
 
+use function array_column;
+use function json_decode;
+
 /**
  * @covers \App\Context\Income\Infrastructure\Http\Controller\GetIncomeTypesController
  */
@@ -28,7 +31,7 @@ final class GetIncomeTypesControllerTest extends ApiTestCase
      * @throws OptimisticLockException
      * @throws ORMException
      */
-    public function test_it_should_return_all_income_types(): void
+    public function testItShouldReturnAllIncomeTypes(): void
     {
         // 1. Create a couple of income types to ensure the list is not empty
         $type1 = IncomeTypeMother::create(id: new IncomeId(UuidMother::create()));
@@ -56,7 +59,7 @@ final class GetIncomeTypesControllerTest extends ApiTestCase
         $this->assertContains($type2->id(), $responseIds);
     }
 
-    public function test_it_maps_exceptions_correctly(): void
+    public function testItMapsExceptionsCorrectly(): void
     {
         $controller = $this->getContainer()->get(GetIncomeTypesController::class);
         $exceptions = $controller->exceptions();

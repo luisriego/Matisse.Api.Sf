@@ -37,6 +37,7 @@ final readonly class ExpectedExpenseListMapper
         ];
 
         $lastReconciledMonth = $this->expenseRepository->findLatestDueDateMonthByRecurringExpenseId($recurring->id());
+
         if ($lastReconciledMonth !== null) {
             $row['lastReconciledMonth'] = $lastReconciledMonth;
         }

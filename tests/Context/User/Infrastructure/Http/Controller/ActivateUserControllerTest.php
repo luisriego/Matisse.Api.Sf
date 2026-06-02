@@ -6,11 +6,12 @@ namespace App\Tests\Context\User\Infrastructure\Http\Controller;
 
 use App\Context\User\Domain\User;
 use App\Shared\Domain\ValueObject\Uuid;
-use App\Tests\Shared\Infrastructure\PhpUnit\ApiTestCase;
 use App\Tests\Context\User\Domain\UserMother;
+use App\Tests\Shared\Infrastructure\PhpUnit\ApiTestCase;
 use Doctrine\ORM\EntityManagerInterface;
-use Doctrine\ORM\Tools\SchemaTool;
 use Symfony\Component\HttpFoundation\Response;
+
+use function sprintf;
 
 final class ActivateUserControllerTest extends ApiTestCase
 {
@@ -22,7 +23,7 @@ final class ActivateUserControllerTest extends ApiTestCase
         $this->entityManager = $this->client->getContainer()->get('doctrine.orm.entity_manager');
     }
 
-    public function test_it_should_activate_a_user_with_a_valid_token(): void
+    public function testItShouldActivateAUserWithAValidToken(): void
     {
         $user = UserMother::createRandom();
         $this->entityManager->persist($user);
@@ -30,7 +31,7 @@ final class ActivateUserControllerTest extends ApiTestCase
 
         $this->client->request(
             'GET',
-            sprintf('/api/v1/users/activate/%s/%s', $user->getId(), $user->getConfirmationToken())
+            sprintf('/api/v1/users/activate/%s/%s', $user->getId(), $user->getConfirmationToken()),
         );
 
         $this->assertResponseIsSuccessful();
@@ -38,17 +39,17 @@ final class ActivateUserControllerTest extends ApiTestCase
         $this->assertTrue($activatedUser->isActive());
     }
 
-    public function test_it_should_return_not_found_for_a_non_existent_user(): void
+    public function testItShouldReturnNotFoundForANonExistentUser(): void
     {
         $this->client->request(
             'GET',
-            sprintf('/api/v1/users/activate/%s/some-token', Uuid::random()->value())
+            sprintf('/api/v1/users/activate/%s/some-token', Uuid::random()->value()),
         );
 
         $this->assertResponseStatusCodeSame(Response::HTTP_NOT_FOUND);
     }
 
-    public function test_it_should_return_bad_request_for_an_invalid_token(): void
+    public function testItShouldReturnBadRequestForAnInvalidToken(): void
     {
         $user = UserMother::createRandom();
         $this->entityManager->persist($user);
@@ -56,7 +57,7 @@ final class ActivateUserControllerTest extends ApiTestCase
 
         $this->client->request(
             'GET',
-            sprintf('/api/v1/users/activate/%s/this-is-a-wrong-token', $user->getId())
+            sprintf('/api/v1/users/activate/%s/this-is-a-wrong-token', $user->getId()),
         );
 
         $this->assertResponseStatusCodeSame(Response::HTTP_BAD_REQUEST);

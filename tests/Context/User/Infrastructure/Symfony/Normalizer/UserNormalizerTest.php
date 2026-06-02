@@ -7,11 +7,15 @@ namespace App\Tests\Context\User\Infrastructure\Symfony\Normalizer;
 use App\Context\ResidentUnit\Domain\ResidentUnit;
 use App\Context\User\Domain\User;
 use App\Context\User\Infrastructure\Symfony\Normalizer\UserNormalizer;
+use DateTime;
 use DateTimeImmutable;
 use PHPUnit\Framework\MockObject\Exception;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
-use Symfony\Component\Serializer\Serializer; // Import the concrete Serializer class
+use stdClass;
+use Symfony\Component\Serializer\Serializer;
+
+ // Import the concrete Serializer class
 
 final class UserNormalizerTest extends TestCase
 {
@@ -32,7 +36,7 @@ final class UserNormalizerTest extends TestCase
     {
         $user = $this->createMock(User::class);
         $this->assertTrue($this->normalizer->supportsNormalization($user));
-        $this->assertFalse($this->normalizer->supportsNormalization(new \stdClass()));
+        $this->assertFalse($this->normalizer->supportsNormalization(new stdClass()));
     }
 
     public function testNormalizeUserWithResidentUnitAndAllData(): void
@@ -46,16 +50,15 @@ final class UserNormalizerTest extends TestCase
         $userRoles = ['ROLE_USER', 'ROLE_ADMIN'];
         $userIsActive = true;
         $userCreatedAt = new DateTimeImmutable('2023-01-01 10:00:00');
-        $userUpdatedAt = new \DateTime('2023-01-02 11:00:00');
+        $userUpdatedAt = new DateTime('2023-01-02 11:00:00');
 
         $residentUnitId = 'a1b2c3d4-e5f6-7a8b-9c0d-1e2f3a4b5c6d';
         $residentUnitUnit = 'AP-101';
         $residentUnitIdealFraction = 0.15;
         $residentUnitIsActive = true;
         $residentUnitCreatedAt = new DateTimeImmutable('2023-01-01 09:00:00');
-        $residentUnitUpdatedAt = new \DateTime('2023-01-02 10:00:00');
+        $residentUnitUpdatedAt = new DateTime('2023-01-02 10:00:00');
         $residentUnitRecipients = [['name' => 'Recipient 1', 'email' => 'rec1@example.com']];
-
 
         // Mock User entity
         $user = $this->createMock(User::class);

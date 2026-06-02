@@ -22,6 +22,7 @@ class DoctrineBillingPolicyMonthSnapshotRepository extends ServiceEntityReposito
         /** @var list<BillingPolicyMonthSnapshot> $rows */
         $rows = $this->findAll();
         $indexed = [];
+
         foreach ($rows as $row) {
             $indexed[$row->targetMonth()] = $row;
         }

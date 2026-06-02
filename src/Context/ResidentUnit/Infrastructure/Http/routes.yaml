@@ -28,6 +28,11 @@ list_active_resident_units:
     controller: App\Context\ResidentUnit\Infrastructure\Http\Controller\ListActiveResidentUnitsController
     methods: ['GET']
 
+list_all_resident_units:
+    path: /api/v1/resident-unit/all
+    controller: App\Context\ResidentUnit\Infrastructure\Http\Controller\ListAllResidentUnitsController
+    methods: ['GET']
+
 resident_unit_get_by_id:
     path: /api/v1/resident-unit/{id}
     controller: App\Context\ResidentUnit\Infrastructure\Http\Controller\GetResidentUnitByIdController

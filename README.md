@@ -4,32 +4,57 @@
 ![PostgreSQL](https://img.shields.io/badge/Database-PostgreSQL-green.svg)
 ![PHP](https://img.shields.io/badge/PHP-8.3-blue.svg)
 
-This repository contains a Symfony 6.4 API configured with Vertical Slice Architecture and Hexagonal Architecture patterns, using SQLite as database.
+This repository contains a Symfony 6.4 API configured with Vertical Slice Architecture and Hexagonal Architecture patterns, using **PostgreSQL 16** with **pgvector** for development and production.
 
 ## Architecture
 - **Vertical Slice Architecture**: Each business context is isolated
 - **Hexagonal Architecture**: Clean separation between Domain, Application, and Infrastructure
-- **PostgreSQL Database**: Robust, reliable relational database for development and production
+- **PostgreSQL + pgvector**: Relational database with semantic search for bank statement matching
 
 ## Test Data Creation
 - **Object Mother Pattern**:
     - Create test data factories for domain objects
-    - Place in `tests/ObjectMother/{Context}` directory
-    - Use for consistent test data across unit and functional tests
+    - Place in `tests/Context/{Context}/Domain/` (e.g. `UserMother.php`)
+    - Use for consistent test data across unit and integration tests
     - Example: `UserMother::random()`, `UserMother::withEmail()`
 
 ## Development Setup
 
 ### Quick Start
 ```bash
-# Build and start containers
-make build && make start
+# Build, start containers, pull pgvector DB, install Composer deps
+make build
+
+# Sync dev schema after entity changes
+make db-sync
+
+# Run tests (prepares app_test + PHPUnit)
+make tests
+
+# Optional: Ollama for BankStatement embeddings
+make start-ai
 
 # SSH into container
 make ssh
+```
 
-# Install dependencies
-make prepare
+### Quality targets (host or via container)
+```bash
+make analyze    # PHP-CS-Fixer dry-run
+make fix        # PHP-CS-Fixer apply
+make phpstan    # Static analysis
+make tests      # PHPUnit (471+ tests)
+```
+
+### Composer scripts (inside container)
+```bash
+composer analyze:standards
+composer fix:standards
+composer analyze:phpstan
+composer test
+composer test:unit
+composer test:integration
+composer test:mutation
 ```
 
 ### Useful Aliases (available inside container)

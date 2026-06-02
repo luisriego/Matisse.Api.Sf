@@ -7,6 +7,11 @@ namespace App\Tests\Context\Setup\Infrastructure\Http\Controller;
 use App\Tests\Shared\Infrastructure\PhpUnit\ApiTestCase;
 use Symfony\Component\HttpFoundation\Response;
 
+use function json_decode;
+use function json_encode;
+
+use const JSON_THROW_ON_ERROR;
+
 final class OpeningReferenceMonthPostControllerTest extends ApiTestCase
 {
     protected function setUp(): void
@@ -15,7 +20,7 @@ final class OpeningReferenceMonthPostControllerTest extends ApiTestCase
         $this->createAuthenticatedClient();
     }
 
-    public function test_it_records_opening_reference_month_and_exposes_it_in_setup_status(): void
+    public function testItRecordsOpeningReferenceMonthAndExposesItInSetupStatus(): void
     {
         $body = [
             'referenceMonth' => '2026-01',
@@ -47,7 +52,7 @@ final class OpeningReferenceMonthPostControllerTest extends ApiTestCase
         $this->assertSame(25000, $data['openingReference']['extraFeePerUnitCents']);
     }
 
-    public function test_it_records_optional_ledger_account_id(): void
+    public function testItRecordsOptionalLedgerAccountId(): void
     {
         $ledgerId = 'a1000001-0000-4000-8000-000000000001';
         $body = [
@@ -74,7 +79,7 @@ final class OpeningReferenceMonthPostControllerTest extends ApiTestCase
         $this->assertSame($ledgerId, $data['openingReference']['ledgerAccountId']);
     }
 
-    public function test_it_rejects_invalid_ledger_account_id(): void
+    public function testItRejectsInvalidLedgerAccountId(): void
     {
         $body = [
             'referenceMonth' => '2026-01',
@@ -96,7 +101,7 @@ final class OpeningReferenceMonthPostControllerTest extends ApiTestCase
         $this->assertResponseStatusCodeSame(Response::HTTP_BAD_REQUEST);
     }
 
-    public function test_it_rejects_invalid_allocation_rule(): void
+    public function testItRejectsInvalidAllocationRule(): void
     {
         $body = [
             'referenceMonth' => '2026-01',
@@ -117,7 +122,7 @@ final class OpeningReferenceMonthPostControllerTest extends ApiTestCase
         $this->assertResponseStatusCodeSame(Response::HTTP_BAD_REQUEST);
     }
 
-    public function test_second_post_appends_and_status_shows_latest_payload(): void
+    public function testSecondPostAppendsAndStatusShowsLatestPayload(): void
     {
         $this->client->request(
             'POST',

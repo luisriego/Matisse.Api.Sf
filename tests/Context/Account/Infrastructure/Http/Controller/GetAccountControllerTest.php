@@ -13,6 +13,8 @@ use Doctrine\ORM\Exception\ORMException;
 use Doctrine\ORM\OptimisticLockException;
 use Symfony\Component\HttpFoundation\Response;
 
+use function json_decode;
+
 /**
  * @covers \App\Context\Account\Infrastructure\Http\Controller\GetAccountController
  */
@@ -28,7 +30,7 @@ final class GetAccountControllerTest extends ApiTestCase
      * @throws OptimisticLockException
      * @throws ORMException
      */
-    public function test_it_should_return_account_when_found(): void
+    public function testItShouldReturnAccountWhenFound(): void
     {
         // 1. Create an account to be found
         $account = AccountMother::create();
@@ -48,7 +50,7 @@ final class GetAccountControllerTest extends ApiTestCase
         $this->assertEquals($account->name(), $data['name']);
     }
 
-    public function test_it_should_return_not_found_when_account_does_not_exist(): void
+    public function testItShouldReturnNotFoundWhenAccountDoesNotExist(): void
     {
         // 1. Generate a random non-existent ID
         $nonExistentId = UuidMother::create();
@@ -60,7 +62,7 @@ final class GetAccountControllerTest extends ApiTestCase
         $this->assertResponseStatusCodeSame(Response::HTTP_NOT_FOUND);
     }
 
-    public function test_it_maps_exceptions_correctly(): void
+    public function testItMapsExceptionsCorrectly(): void
     {
         $controller = $this->getContainer()->get(GetAccountController::class);
         $exceptions = $controller->exceptions();

@@ -20,7 +20,7 @@ class ExpenseEmbedding
         private readonly string $id,
         private readonly string $expenseId,
         /** @var float[] */
-        private readonly array  $vector,
+        private readonly array $vector,
         private readonly string $description,
         private readonly string $embeddingModel,
     ) {
@@ -37,7 +37,9 @@ class ExpenseEmbedding
         return $this->expenseId;
     }
 
-    /** @return float[] */
+    /**
+     * @return float[]
+     */
     public function vector(): array
     {
         return $this->vector;

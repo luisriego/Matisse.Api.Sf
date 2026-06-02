@@ -10,6 +10,8 @@ use App\Tests\Shared\Domain\UuidMother;
 use App\Tests\Shared\Infrastructure\PhpUnit\ApiTestCase;
 use Symfony\Component\HttpFoundation\Response;
 
+use function json_decode;
+
 final class GetAverageGasConsumptionControllerTest extends ApiTestCase
 {
     private ?StoredEventRepository $storedEventRepository;
@@ -21,17 +23,17 @@ final class GetAverageGasConsumptionControllerTest extends ApiTestCase
         $this->storedEventRepository = self::getContainer()->get(StoredEventRepository::class);
     }
 
-    public function test_it_should_return_the_average_gas_consumption(): void
+    public function testItShouldReturnTheAverageGasConsumption(): void
     {
         // 1. Arrange: Create a series of gas reading events for a specific resident unit
         $residentUnitId = UuidMother::create();
-        
+
         // Reading 1 (Month 1): 100
         $this->createAndPersistGasReadingEvent($residentUnitId, 2023, 1, 100.0);
-        
+
         // Reading 2 (Month 2): 120 -> Consumption: 20
         $this->createAndPersistGasReadingEvent($residentUnitId, 2023, 2, 120.0);
-        
+
         // Reading 3 (Month 3): 150 -> Consumption: 30
         $this->createAndPersistGasReadingEvent($residentUnitId, 2023, 3, 150.0);
 
@@ -54,7 +56,7 @@ final class GetAverageGasConsumptionControllerTest extends ApiTestCase
         $this->assertEquals($expectedAverage, $data['averageMonthlyConsumption']);
     }
 
-    public function test_it_should_return_404_when_not_enough_readings(): void
+    public function testItShouldReturn404WhenNotEnoughReadings(): void
     {
         // 1. Arrange: Create only one reading
         $residentUnitId = UuidMother::create();
@@ -79,7 +81,7 @@ final class GetAverageGasConsumptionControllerTest extends ApiTestCase
         $storedEvent = StoredEvent::create(
             UuidMother::create(),
             'gas.reading.was.recorded',
-            $payload // Pass the array directly
+            $payload, // Pass the array directly
         );
 
         $this->storedEventRepository->save($storedEvent);

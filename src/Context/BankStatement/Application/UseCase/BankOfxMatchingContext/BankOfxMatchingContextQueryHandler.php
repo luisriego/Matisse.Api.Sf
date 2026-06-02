@@ -13,6 +13,8 @@ use App\Shared\Domain\ValueObject\DateRange;
 use DateTime;
 use Symfony\Component\Messenger\Attribute\AsMessageHandler;
 
+use function sprintf;
+
 /**
  * Window length matches expense/income SQL history matchers (12 months);
  * reference date is "today" (server) because no statement posting date exists yet.

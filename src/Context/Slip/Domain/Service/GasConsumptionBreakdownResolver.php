@@ -6,11 +6,13 @@ namespace App\Context\Slip\Domain\Service;
 
 use App\Context\EventStore\Domain\StoredEvent;
 use App\Context\EventStore\Domain\StoredEventRepository;
+use DateTimeImmutable;
 
 use function array_key_exists;
 use function end;
 use function is_numeric;
 use function round;
+use function sprintf;
 use function usort;
 
 /**
@@ -47,6 +49,7 @@ readonly class GasConsumptionBreakdownResolver
 
         $previousMonth = $month - 1;
         $previousYear = $year;
+
         if ($previousMonth < 1) {
             $previousMonth = 12;
             $previousYear--;
@@ -62,6 +65,7 @@ readonly class GasConsumptionBreakdownResolver
             $previousReading = $this->findReading($readingsByUnit, $unitId, $previousYear, $previousMonth);
 
             $consumptionM3 = 0.0;
+
             if ($currentReading !== null && $previousReading !== null && $currentReading >= $previousReading) {
                 $consumptionM3 = round($currentReading - $previousReading, 3);
             }
@@ -88,7 +92,7 @@ readonly class GasConsumptionBreakdownResolver
     }
 
     /**
-     * @return array<string, list<array{year: int, month: int, reading: float, occurredAt: \DateTimeImmutable}>>
+     * @return array<string, list<array{year: int, month: int, reading: float, occurredAt: DateTimeImmutable}>>
      */
     private function fetchReadingsGroupedByUnit(): array
     {
@@ -98,6 +102,7 @@ readonly class GasConsumptionBreakdownResolver
         foreach ($events as $event) {
             $payload = $event->payload();
             $unitId = $payload['residentUnitId'] ?? null;
+
             if ($unitId === null) {
                 continue;
             }
@@ -132,7 +137,7 @@ readonly class GasConsumptionBreakdownResolver
             return null;
         }
 
-        usort($candidates, static fn($a, $b) => $b['occurredAt'] <=> $a['occurredAt']);
+        usort($candidates, static fn ($a, $b) => $b['occurredAt'] <=> $a['occurredAt']);
 
         return $candidates[0]['reading'];
     }

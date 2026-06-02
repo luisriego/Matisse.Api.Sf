@@ -6,6 +6,7 @@ namespace App\Context\ResidentUnit\Application\UseCase\CreateUnitWithRecipients;
 
 use App\Context\ResidentUnit\Application\Message\WelcomeResidentNotification;
 use App\Context\ResidentUnit\Domain\Exception\IdealFractionSumExceedsLimitException; // Added this import
+use App\Context\ResidentUnit\Domain\IdealFractionSumPolicy;
 use App\Context\ResidentUnit\Domain\Exception\ResidentUnitAlreadyExistsException;
 use App\Context\ResidentUnit\Domain\ResidentUnit;
 use App\Context\ResidentUnit\Domain\ResidentUnitId;
@@ -36,10 +37,11 @@ final readonly class CreateResidentUnitWithRecipientsCommandHandler implements C
         }
 
         $idealFraction = new ResidentUnitIdealFraction($command->idealFraction());
-        $idealFractionTotal = $this->repository->calculateTotalIdealFraction() + $idealFraction->value();
+        $currentActiveTotal = $this->repository->calculateTotalIdealFraction();
+        $idealFractionTotal = $currentActiveTotal + $idealFraction->value();
 
-        if ($idealFractionTotal > 1.0) {
-            throw new IdealFractionSumExceedsLimitException(); // Changed to throw the specific exception
+        if (IdealFractionSumPolicy::exceedsMaximum($idealFractionTotal)) {
+            throw IdealFractionSumExceedsLimitException::fromTotals($currentActiveTotal, $idealFraction->value());
         }
 
         $id = new ResidentUnitId($command->id());

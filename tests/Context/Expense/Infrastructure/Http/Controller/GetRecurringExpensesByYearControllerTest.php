@@ -14,6 +14,8 @@ use App\Tests\Shared\Infrastructure\PhpUnit\ApiTestCase;
 use DateTime;
 use Symfony\Component\HttpFoundation\Response;
 
+use function json_decode;
+
 final class GetRecurringExpensesByYearControllerTest extends ApiTestCase
 {
     protected function setUp(): void
@@ -22,7 +24,7 @@ final class GetRecurringExpensesByYearControllerTest extends ApiTestCase
         $this->createAuthenticatedClient();
     }
 
-    public function test_it_should_return_recurring_expenses_for_a_given_year(): void
+    public function testItShouldReturnRecurringExpensesForAGivenYear(): void
     {
         // 1. Create recurring expenses for the test scenario
         $year = 2025;
@@ -30,25 +32,25 @@ final class GetRecurringExpensesByYearControllerTest extends ApiTestCase
         // Expense that should be found
         $account1 = AccountMother::create();
         $type1 = ExpenseTypeMother::create(id: UuidMother::create());
-        $startDate2025 = new ExpenseStartDate(new DateTime("$year-01-01"));
-        $endDate2025 = new ExpenseEndDate(new DateTime("$year-12-31"));
+        $startDate2025 = new ExpenseStartDate(new DateTime("{$year}-01-01"));
+        $endDate2025 = new ExpenseEndDate(new DateTime("{$year}-12-31"));
         $expenseIn2025 = RecurringExpenseMother::create(
             accountId: $account1->id(),
             expenseType: $type1,
             startDate: $startDate2025,
-            endDate: $endDate2025
+            endDate: $endDate2025,
         );
 
         // Expense that should NOT be found
         $account2 = AccountMother::create();
         $type2 = ExpenseTypeMother::create(id: UuidMother::create());
-        $startDate2026 = new ExpenseStartDate(new DateTime("2026-01-01"));
-        $endDate2026 = new ExpenseEndDate(new DateTime("2026-12-31"));
+        $startDate2026 = new ExpenseStartDate(new DateTime('2026-01-01'));
+        $endDate2026 = new ExpenseEndDate(new DateTime('2026-12-31'));
         $expenseIn2026 = RecurringExpenseMother::create(
             accountId: $account2->id(),
             expenseType: $type2,
             startDate: $startDate2026,
-            endDate: $endDate2026
+            endDate: $endDate2026,
         );
 
         // 2. Persist all entities
@@ -63,7 +65,7 @@ final class GetRecurringExpensesByYearControllerTest extends ApiTestCase
         $this->entityManager->flush();
 
         // 3. Send the GET request
-        $this->client->request('GET', "/api/v1/recurring-expenses/year/$year");
+        $this->client->request('GET', "/api/v1/recurring-expenses/year/{$year}");
 
         // 4. Assert the response
         $this->assertResponseStatusCodeSame(Response::HTTP_OK);

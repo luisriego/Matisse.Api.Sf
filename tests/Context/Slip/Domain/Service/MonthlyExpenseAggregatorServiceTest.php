@@ -96,7 +96,7 @@ class MonthlyExpenseAggregatorServiceTest extends TestCase
     {
         // Arrange
         $expenses = [
-            $this->createConfiguredMock(Expense::class, ['amount' => 5000, 'type' => null, 'description' => 'Faulty Expense'])
+            $this->createConfiguredMock(Expense::class, ['amount' => 5000, 'type' => null, 'description' => 'Faulty Expense']),
         ];
 
         // Expect logger to be called
@@ -118,7 +118,7 @@ class MonthlyExpenseAggregatorServiceTest extends TestCase
             'code' => 'OTX9',
         ]);
         $expenses = [
-            $this->createConfiguredMock(Expense::class, ['amount' => 4000, 'type' => $typeUnknown])
+            $this->createConfiguredMock(Expense::class, ['amount' => 4000, 'type' => $typeUnknown]),
         ];
 
         // Act
@@ -135,7 +135,7 @@ class MonthlyExpenseAggregatorServiceTest extends TestCase
     public function testGasExpenseTypeCountsOnlyInGrandTotal(): void
     {
         $typeGas = $this->createConfiguredMock(ExpenseType::class, [
-            'distributionMethod' => 'INDIVIDUAL',
+            'distributionMethod' => 'EQUAL',
             'code' => 'SP3GA',
         ]);
         $expenses = [

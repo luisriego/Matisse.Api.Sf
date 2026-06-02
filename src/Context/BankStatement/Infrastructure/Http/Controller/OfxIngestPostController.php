@@ -15,6 +15,8 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Messenger\MessageBusInterface;
 use Symfony\Component\Serializer\Normalizer\NormalizerInterface;
 
+use function file_get_contents;
+
 /**
  * First step of OFX ingestion: parse file, match history, return lines for review (no persistence).
  */
@@ -29,8 +31,12 @@ use Symfony\Component\Serializer\Normalizer\NormalizerInterface;
             schema: new OA\Schema(
                 required: ['file'],
                 properties: [
-                    new OA\Property(property: 'file', type: 'string', format: 'binary',
-                        description: 'OFX bank statement file (.ofx)'),
+                    new OA\Property(
+                        property: 'file',
+                        type: 'string',
+                        format: 'binary',
+                        description: 'OFX bank statement file (.ofx)',
+                    ),
                 ],
             ),
         ),
@@ -42,53 +48,57 @@ use Symfony\Component\Serializer\Normalizer\NormalizerInterface;
             description: 'Preview generated. No data has been persisted.',
             content: new OA\JsonContent(
                 properties: [
-                    new OA\Property(property: 'bankId',               type: 'string', example: '0260'),
-                    new OA\Property(property: 'accountId',            type: 'string', example: '12345-6'),
-                    new OA\Property(property: 'currency',             type: 'string', example: 'BRL'),
-                    new OA\Property(property: 'periodStart',          type: 'string', format: 'date', example: '2026-03-01'),
-                    new OA\Property(property: 'periodEnd',            type: 'string', format: 'date', example: '2026-03-31'),
+                    new OA\Property(property: 'bankId', type: 'string', example: '0260'),
+                    new OA\Property(property: 'accountId', type: 'string', example: '12345-6'),
+                    new OA\Property(property: 'currency', type: 'string', example: 'BRL'),
+                    new OA\Property(property: 'periodStart', type: 'string', format: 'date', example: '2026-03-01'),
+                    new OA\Property(property: 'periodEnd', type: 'string', format: 'date', example: '2026-03-31'),
                     new OA\Property(property: 'ledgerBalanceInCents', type: 'integer', nullable: true, example: 250000),
-                    new OA\Property(property: 'ledgerBalanceDate',    type: 'string',  format: 'date', nullable: true),
-                    new OA\Property(property: 'totalNeedsReview',     type: 'integer', example: 5),
-                    new OA\Property(property: 'totalPreFilled',       type: 'integer', example: 12),
+                    new OA\Property(property: 'ledgerBalanceDate', type: 'string', format: 'date', nullable: true),
+                    new OA\Property(property: 'totalNeedsReview', type: 'integer', example: 5),
+                    new OA\Property(property: 'totalPreFilled', type: 'integer', example: 12),
                     new OA\Property(
                         property: 'expenses',
                         description: 'DEBIT lines to classify as condominium expenses.',
                         type: 'array',
                         items: new OA\Items(
                             properties: [
-                                new OA\Property(property: 'importLineKey',               type: 'string', example: '20260310001'),
-                                new OA\Property(property: 'bankAccountId',               type: 'string', format: 'uuid'),
-                                new OA\Property(property: 'type',                        type: 'string', enum: ['DEBIT', 'CREDIT']),
-                                new OA\Property(property: 'amountInCents',               type: 'integer', example: 15000),
-                                new OA\Property(property: 'postedAt',                    type: 'string', format: 'date'),
-                                new OA\Property(property: 'memo',                        type: 'string', example: 'COPASA AGUA'),
-                                new OA\Property(property: 'status',                      type: 'string', enum: ['needs_review', 'pre_filled']),
-                                new OA\Property(property: 'isNew',                       type: 'boolean'),
-                                new OA\Property(property: 'confidence',                  type: 'number', format: 'float', example: 0.9),
-                                new OA\Property(property: 'suggestedExpenseTypeId',      type: 'string', format: 'uuid', nullable: true),
-                                new OA\Property(property: 'suggestedExpenseTypeName',    type: 'string', nullable: true),
+                                new OA\Property(property: 'importLineKey', type: 'string', example: '20260310001'),
+                                new OA\Property(property: 'bankAccountId', type: 'string', format: 'uuid'),
+                                new OA\Property(property: 'type', type: 'string', enum: ['DEBIT', 'CREDIT']),
+                                new OA\Property(property: 'amountInCents', type: 'integer', example: 15000),
+                                new OA\Property(property: 'postedAt', type: 'string', format: 'date'),
+                                new OA\Property(property: 'memo', type: 'string', example: 'COPASA AGUA'),
+                                new OA\Property(property: 'status', type: 'string', enum: ['needs_review', 'pre_filled']),
+                                new OA\Property(property: 'isNew', type: 'boolean'),
+                                new OA\Property(property: 'confidence', type: 'number', format: 'float', example: 0.9),
+                                new OA\Property(property: 'suggestedExpenseTypeId', type: 'string', format: 'uuid', nullable: true),
+                                new OA\Property(property: 'suggestedExpenseTypeName', type: 'string', nullable: true),
                                 new OA\Property(property: 'suggestedRecurringExpenseId', type: 'string', format: 'uuid', nullable: true),
-                                new OA\Property(property: 'suggestedIsExpectedExpense', type: 'boolean', default: true,
-                                    description: 'Forward as isExpectedExpense on /bank/ofx-confirm.'),
+                                new OA\Property(
+                                    property: 'suggestedIsExpectedExpense',
+                                    type: 'boolean',
+                                    default: true,
+                                    description: 'Forward as isExpectedExpense on /bank/ofx-confirm.',
+                                ),
                                 new OA\Property(property: 'suggestedExpectedExpense', ref: '#/components/schemas/ExpectedExpensePreview', nullable: true),
-                                new OA\Property(property: 'suggestedAccountId',          type: 'string', format: 'uuid', nullable: true),
-                                new OA\Property(property: 'suggestedResidentUnitId',     type: 'string', format: 'uuid', nullable: true),
+                                new OA\Property(property: 'suggestedAccountId', type: 'string', format: 'uuid', nullable: true),
+                                new OA\Property(property: 'suggestedResidentUnitId', type: 'string', format: 'uuid', nullable: true),
                                 new OA\Property(
                                     property: 'pastAssignments',
                                     type: 'array',
                                     items: new OA\Items(
                                         properties: [
-                                            new OA\Property(property: 'month',                type: 'integer', example: 3),
-                                            new OA\Property(property: 'year',                 type: 'integer', example: 2026),
-                                            new OA\Property(property: 'amountInCents',        type: 'integer', example: 15000),
-                                            new OA\Property(property: 'expenseTypeId',        type: 'string', format: 'uuid', nullable: true),
-                                            new OA\Property(property: 'expenseTypeName',      type: 'string', nullable: true),
-                                            new OA\Property(property: 'recurringExpenseId',   type: 'string', format: 'uuid', nullable: true),
+                                            new OA\Property(property: 'month', type: 'integer', example: 3),
+                                            new OA\Property(property: 'year', type: 'integer', example: 2026),
+                                            new OA\Property(property: 'amountInCents', type: 'integer', example: 15000),
+                                            new OA\Property(property: 'expenseTypeId', type: 'string', format: 'uuid', nullable: true),
+                                            new OA\Property(property: 'expenseTypeName', type: 'string', nullable: true),
+                                            new OA\Property(property: 'recurringExpenseId', type: 'string', format: 'uuid', nullable: true),
                                             new OA\Property(property: 'recurringExpenseName', type: 'string', nullable: true),
-                                            new OA\Property(property: 'accountId',            type: 'string', format: 'uuid', nullable: true),
-                                            new OA\Property(property: 'residentUnitId',       type: 'string', format: 'uuid', nullable: true),
-                                            new OA\Property(property: 'confidence',           type: 'number', format: 'float', example: 0.9),
+                                            new OA\Property(property: 'accountId', type: 'string', format: 'uuid', nullable: true),
+                                            new OA\Property(property: 'residentUnitId', type: 'string', format: 'uuid', nullable: true),
+                                            new OA\Property(property: 'confidence', type: 'number', format: 'float', example: 0.9),
                                         ],
                                     ),
                                 ),
@@ -98,9 +108,9 @@ use Symfony\Component\Serializer\Normalizer\NormalizerInterface;
                                     type: 'array',
                                     items: new OA\Items(
                                         properties: [
-                                            new OA\Property(property: 'candidateId',    type: 'string', format: 'uuid'),
-                                            new OA\Property(property: 'label',          type: 'string', example: 'COPASA água fatura'),
-                                            new OA\Property(property: 'score',          type: 'number', format: 'float', example: 0.9842),
+                                            new OA\Property(property: 'candidateId', type: 'string', format: 'uuid'),
+                                            new OA\Property(property: 'label', type: 'string', example: 'COPASA água fatura'),
+                                            new OA\Property(property: 'score', type: 'number', format: 'float', example: 0.9842),
                                             new OA\Property(property: 'embeddingModel', type: 'string', example: 'nomic-embed-text'),
                                         ],
                                     ),

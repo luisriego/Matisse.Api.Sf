@@ -8,6 +8,11 @@ use App\Shared\Application\QueryHandler;
 use App\Shared\Domain\Exception\InvalidDataException;
 use Symfony\Component\Messenger\Attribute\AsMessageHandler;
 
+use function array_column;
+use function array_sum;
+use function array_values;
+use function sprintf;
+
 #[AsMessageHandler(bus: 'query.bus')]
 final class PreviewInitialBalancesQueryHandler implements QueryHandler
 {
@@ -31,10 +36,13 @@ final class PreviewInitialBalancesQueryHandler implements QueryHandler
         ];
     }
 
-    /** @param array<array{accountId: string, amountCents: int}> $balances */
+    /**
+     * @param array<array{accountId: string, amountCents: int}> $balances
+     */
     private function indexByAccountId(array $balances): array
     {
         $indexed = [];
+
         foreach ($balances as $entry) {
             $indexed[$entry['accountId']] = $entry;
         }

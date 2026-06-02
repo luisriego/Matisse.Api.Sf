@@ -7,10 +7,9 @@ namespace App\Tests\Context\User\Application\UseCase\LinkResidentUnit;
 use App\Context\ResidentUnit\Domain\ResidentUnitRepository;
 use App\Context\User\Application\UseCase\ResidentUnit\LinkResidentUnitToUserCommand;
 use App\Context\User\Application\UseCase\ResidentUnit\LinkResidentUnitToUserCommandHandler;
-use App\Context\User\Domain\User;
 use App\Context\User\Domain\UserRepository;
-use App\Tests\Context\User\Domain\UserMother;
 use App\Tests\Context\ResidentUnit\Domain\ResidentUnitMother;
+use App\Tests\Context\User\Domain\UserMother;
 use InvalidArgumentException;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
@@ -32,7 +31,7 @@ final class LinkResidentUnitToUserCommandHandlerTest extends TestCase
         );
     }
 
-    public function test_it_should_link_resident_unit_to_user_successfully(): void
+    public function testItShouldLinkResidentUnitToUserSuccessfully(): void
     {
         $user = UserMother::createRandom();
         $residentUnit = ResidentUnitMother::create();
@@ -58,7 +57,7 @@ final class LinkResidentUnitToUserCommandHandlerTest extends TestCase
         ($this->handler)($command);
     }
 
-    public function test_it_should_throw_when_user_not_found(): void
+    public function testItShouldThrowWhenUserNotFound(): void
     {
         $this->expectException(RuntimeException::class);
         $this->expectExceptionMessage('User not found');
@@ -75,7 +74,7 @@ final class LinkResidentUnitToUserCommandHandlerTest extends TestCase
         ($this->handler)($command);
     }
 
-    public function test_it_should_throw_when_resident_unit_not_found(): void
+    public function testItShouldThrowWhenResidentUnitNotFound(): void
     {
         $this->expectException(InvalidArgumentException::class);
         $this->expectExceptionMessage('Resident unit not found');
@@ -98,7 +97,7 @@ final class LinkResidentUnitToUserCommandHandlerTest extends TestCase
         ($this->handler)($command);
     }
 
-    public function test_it_should_not_save_when_user_already_has_same_resident_unit(): void
+    public function testItShouldNotSaveWhenUserAlreadyHasSameResidentUnit(): void
     {
         $residentUnit = ResidentUnitMother::create();
         $user = UserMother::createRandom();

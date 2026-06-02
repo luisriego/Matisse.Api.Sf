@@ -7,6 +7,8 @@ namespace App\Tests\Context\Slip\Infrastructure\Http\Controller;
 use App\Tests\Shared\Infrastructure\PhpUnit\ApiTestCase;
 use Symfony\Component\HttpFoundation\Response;
 
+use function json_decode;
+
 final class ExplainSlipGenerationGetControllerTest extends ApiTestCase
 {
     protected function setUp(): void
@@ -15,7 +17,7 @@ final class ExplainSlipGenerationGetControllerTest extends ApiTestCase
         $this->client = $this->createAuthenticatedClient();
     }
 
-    public function test_it_returns_explain_payload_for_valid_target_month(): void
+    public function testItReturnsExplainPayloadForValidTargetMonth(): void
     {
         $this->client->request(
             'GET',
@@ -29,7 +31,7 @@ final class ExplainSlipGenerationGetControllerTest extends ApiTestCase
         $this->assertSame('2024-08', $data['targetMonth']);
     }
 
-    public function test_it_returns_bad_request_on_invalid_target_month(): void
+    public function testItReturnsBadRequestOnInvalidTargetMonth(): void
     {
         $this->client->request(
             'GET',

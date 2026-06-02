@@ -7,6 +7,10 @@ namespace App\Tests\Shared\Infrastructure;
 use Mockery;
 use Mockery\Adapter\Phpunit\MockeryTestCase as BaseMockeryTestCase;
 use Mockery\MockInterface;
+use ReflectionClass;
+
+use function is_object;
+use function method_exists;
 
 abstract class MockeryTestCase extends BaseMockeryTestCase
 {
@@ -19,26 +23,8 @@ abstract class MockeryTestCase extends BaseMockeryTestCase
     {
         // Create instance for final class mocking
         $instance = new $className(...$this->resolveConstructorDependencies($className));
+
         return Mockery::mock($instance);
-    }
-
-    private function resolveConstructorDependencies(string $className): array
-    {
-        $reflectionClass = new \ReflectionClass($className);
-        $constructor = $reflectionClass->getConstructor();
-
-        if (!$constructor) {
-            return [];
-        }
-
-        $dependencies = [];
-        foreach ($constructor->getParameters() as $parameter) {
-            $dependencies[] = $parameter->isDefaultValueAvailable()
-                ? $parameter->getDefaultValue()
-                : $this->mock($parameter->getType()->getName());
-        }
-
-        return $dependencies;
     }
 
     protected function similarTo($value)
@@ -52,8 +38,8 @@ abstract class MockeryTestCase extends BaseMockeryTestCase
                     $valId = $value->id();
 
                     // If id() returns an object with value() method
-                    if (is_object($argId) && is_object($valId) &&
-                        method_exists($argId, 'value') && method_exists($valId, 'value')) {
+                    if (is_object($argId) && is_object($valId)
+                        && method_exists($argId, 'value') && method_exists($valId, 'value')) {
                         return $argId->value() === $valId->value();
                     }
 
@@ -62,11 +48,31 @@ abstract class MockeryTestCase extends BaseMockeryTestCase
                 }
 
                 // Try string representation comparison
-                return (string)$argument === (string)$value;
+                return (string) $argument === (string) $value;
             }
 
             // For non-objects, compare as strings
-            return (string)$argument === (string)$value;
+            return (string) $argument === (string) $value;
         });
+    }
+
+    private function resolveConstructorDependencies(string $className): array
+    {
+        $reflectionClass = new ReflectionClass($className);
+        $constructor = $reflectionClass->getConstructor();
+
+        if (!$constructor) {
+            return [];
+        }
+
+        $dependencies = [];
+
+        foreach ($constructor->getParameters() as $parameter) {
+            $dependencies[] = $parameter->isDefaultValueAvailable()
+                ? $parameter->getDefaultValue()
+                : $this->mock($parameter->getType()->getName());
+        }
+
+        return $dependencies;
     }
 }

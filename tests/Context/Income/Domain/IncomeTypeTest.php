@@ -9,7 +9,7 @@ use PHPUnit\Framework\TestCase;
 
 class IncomeTypeTest extends TestCase
 {
-    public function test_it_should_create_an_income_type(): void
+    public function testItShouldCreateAnIncomeType(): void
     {
         $incomeType = IncomeTypeMother::create();
 
@@ -21,7 +21,7 @@ class IncomeTypeTest extends TestCase
         $this->assertEmpty($incomeType->incomes());
     }
 
-    public function test_it_should_add_an_income(): void
+    public function testItShouldAddAnIncome(): void
     {
         $incomeType = IncomeTypeMother::create();
         $income = IncomeMother::create();
@@ -32,7 +32,7 @@ class IncomeTypeTest extends TestCase
         $this->assertTrue($incomeType->incomes()->contains($income));
     }
 
-    public function test_it_should_not_add_duplicate_income(): void
+    public function testItShouldNotAddDuplicateIncome(): void
     {
         $incomeType = IncomeTypeMother::create();
         $income = IncomeMother::create();
@@ -43,7 +43,7 @@ class IncomeTypeTest extends TestCase
         $this->assertCount(1, $incomeType->incomes());
     }
 
-    public function test_it_should_remove_an_income(): void
+    public function testItShouldRemoveAnIncome(): void
     {
         $incomeType = IncomeTypeMother::create();
         $income = IncomeMother::create();

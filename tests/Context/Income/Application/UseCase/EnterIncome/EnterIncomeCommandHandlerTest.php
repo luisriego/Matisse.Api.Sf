@@ -26,11 +26,13 @@ use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 use RuntimeException;
 
+use function count;
+
 class EnterIncomeCommandHandlerTest extends TestCase
 {
     private IncomeRepository&MockObject $incomeRepository;
     private IncomeTypeRepository&MockObject $incomeTypeRepository;
-    private ResidentUnitRepository&MockObject $residentUnitRepository;
+    private MockObject&ResidentUnitRepository $residentUnitRepository;
     private AccountRepository&MockObject $accountRepository;
     private EventBus&MockObject $eventBus;
     private EnterIncomeCommandHandler $handler;
@@ -52,7 +54,7 @@ class EnterIncomeCommandHandlerTest extends TestCase
             $this->incomeTypeRepository,
             $this->residentUnitRepository,
             $this->accountRepository,
-            $this->eventBus
+            $this->eventBus,
         );
     }
 
@@ -60,7 +62,7 @@ class EnterIncomeCommandHandlerTest extends TestCase
      * @throws DateMalformedStringException
      * @throws Exception
      */
-    public function test_it_enters_income_with_all_fields(): void
+    public function testItEntersIncomeWithAllFields(): void
     {
         $incomeId = IncomeIdMother::create();
         $amount = 1500;
@@ -77,7 +79,7 @@ class EnterIncomeCommandHandlerTest extends TestCase
             $typeId,
             $accountId,
             $dueDate,
-            $description
+            $description,
         );
 
         $residentUnitMock = $this->createMock(ResidentUnit::class);
@@ -107,6 +109,7 @@ class EnterIncomeCommandHandlerTest extends TestCase
             ->method('save')
             ->with($this->callback(function (Income $income) {
                 $events = $income->pullDomainEvents();
+
                 return count($events) === 1; // It has IncomeWasEntered
             }), true);
 
@@ -119,7 +122,7 @@ class EnterIncomeCommandHandlerTest extends TestCase
      * @throws DateMalformedStringException
      * @throws Exception
      */
-    public function test_it_enters_income_without_description(): void
+    public function testItEntersIncomeWithoutDescription(): void
     {
         $incomeId = IncomeIdMother::create();
         $amount = 1000;
@@ -135,7 +138,7 @@ class EnterIncomeCommandHandlerTest extends TestCase
             $typeId,
             $accountId,
             $dueDate,
-            null
+            null,
         );
 
         $residentUnitMock = $this->createMock(ResidentUnit::class);
@@ -165,6 +168,7 @@ class EnterIncomeCommandHandlerTest extends TestCase
             ->method('save')
             ->with($this->callback(function (Income $income) {
                 $events = $income->pullDomainEvents();
+
                 return count($events) === 1;
             }), true);
 
@@ -173,8 +177,10 @@ class EnterIncomeCommandHandlerTest extends TestCase
         ($this->handler)($command);
     }
 
-    /** @test */
-    public function test_it_propagates_exception_when_resident_unit_not_found(): void
+    /**
+     * @test
+     */
+    public function testItPropagatesExceptionWhenResidentUnitNotFound(): void
     {
         $incomeId = IncomeIdMother::create();
         $command = new EnterIncomeCommand(
@@ -184,7 +190,7 @@ class EnterIncomeCommandHandlerTest extends TestCase
             'type-id',
             UuidMother::create(),
             (new DateTime('+30 days'))->format('Y-m-d'),
-            'description'
+            'description',
         );
 
         $this->residentUnitRepository
@@ -202,7 +208,7 @@ class EnterIncomeCommandHandlerTest extends TestCase
     /** @test
      * @throws Exception
      */
-    public function test_it_propagates_exception_when_income_type_not_found(): void
+    public function testItPropagatesExceptionWhenIncomeTypeNotFound(): void
     {
         $incomeId = IncomeIdMother::create();
         $residentUnitId = 'resident-unit-id';
@@ -214,7 +220,7 @@ class EnterIncomeCommandHandlerTest extends TestCase
             'non-existent-type',
             UuidMother::create(),
             (new DateTime('+30 days'))->format('Y-m-d'),
-            'description'
+            'description',
         );
 
         $residentUnitMock = $this->createMock(ResidentUnit::class);
@@ -240,7 +246,7 @@ class EnterIncomeCommandHandlerTest extends TestCase
     /** @test
      * @throws Exception
      */
-    public function test_it_propagates_date_malformed_exception(): void
+    public function testItPropagatesDateMalformedException(): void
     {
         $incomeId   = IncomeIdMother::create();
         $accountId  = UuidMother::create();
@@ -252,7 +258,7 @@ class EnterIncomeCommandHandlerTest extends TestCase
             'type-id',
             $accountId,
             'invalid-date',
-            'description'
+            'description',
         );
 
         $residentUnitMock = $this->createMock(ResidentUnit::class);
@@ -282,7 +288,7 @@ class EnterIncomeCommandHandlerTest extends TestCase
     /** @test
      * @throws Exception
      */
-    public function test_it_propagates_due_date_must_be_in_future_exception(): void
+    public function testItPropagatesDueDateMustBeInFutureException(): void
     {
         $incomeId   = IncomeIdMother::create();
         $accountId  = UuidMother::create();
@@ -295,7 +301,7 @@ class EnterIncomeCommandHandlerTest extends TestCase
             'type-id',
             $accountId,
             $pastDate,
-            'description'
+            'description',
         );
 
         $residentUnitMock = $this->createMock(ResidentUnit::class);
@@ -325,7 +331,7 @@ class EnterIncomeCommandHandlerTest extends TestCase
     /** @test
      * @throws Exception
      */
-    public function test_it_handles_repository_save_failure(): void
+    public function testItHandlesRepositorySaveFailure(): void
     {
         $incomeId = IncomeIdMother::create();
         $amount = 1500;
@@ -341,7 +347,7 @@ class EnterIncomeCommandHandlerTest extends TestCase
             $typeId,
             $accountId,
             $dueDate,
-            null
+            null,
         );
 
         $residentUnitMock = $this->createMock(ResidentUnit::class);

@@ -4,9 +4,11 @@ declare(strict_types=1);
 
 namespace App\Tests\Context\Gas\Infrastructure\Http\Controller;
 
+use App\Context\EventStore\Domain\StoredEventRepository;
 use App\Tests\Shared\Infrastructure\PhpUnit\ApiTestCase;
 use Symfony\Component\HttpFoundation\Response;
-use App\Context\EventStore\Domain\StoredEventRepository;
+
+use function json_encode;
 
 final class CalculateGasPricePutControllerTest extends ApiTestCase
 {
@@ -16,11 +18,9 @@ final class CalculateGasPricePutControllerTest extends ApiTestCase
         $this->createAuthenticatedClient();
     }
 
-    public function test_it_should_fail_without_the_correct_attribute(): void
+    public function testItShouldFailWithoutTheCorrectAttribute(): void
     {
         $container = self::getContainer();
-
-
 
         // Define the JSON body for the request
         $requestBody = [
@@ -34,7 +34,7 @@ final class CalculateGasPricePutControllerTest extends ApiTestCase
             [],
             [],
             ['CONTENT_TYPE' => 'application/json'],
-            json_encode($requestBody)
+            json_encode($requestBody),
         );
 
         $this->assertResponseStatusCodeSame(Response::HTTP_CREATED);

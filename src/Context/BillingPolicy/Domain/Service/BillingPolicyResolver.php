@@ -6,9 +6,11 @@ namespace App\Context\BillingPolicy\Domain\Service;
 
 use App\Context\BillingPolicy\Domain\ResolvedBillingPolicy;
 use App\Context\BillingPolicy\Domain\ValueObject\BillingPolicySnapshot;
-use DateTimeImmutable;
 
+use function array_key_last;
+use function array_keys;
 use function preg_match;
+use function sort;
 
 /**
  * Pure resolver: explicit snapshot for target month or inherit from the latest prior month.
@@ -31,6 +33,7 @@ final class BillingPolicyResolver
         }
 
         $priorMonth = $this->latestPriorMonth(array_keys($snapshots), $targetMonth);
+
         if ($priorMonth === null) {
             return ResolvedBillingPolicy::empty($targetMonth);
         }
@@ -44,10 +47,12 @@ final class BillingPolicyResolver
     private function latestPriorMonth(array $months, string $targetMonth): ?string
     {
         $candidates = [];
+
         foreach ($months as $month) {
             if (1 !== preg_match(self::TARGET_MONTH_PATTERN, $month)) {
                 continue;
             }
+
             if ($month < $targetMonth) {
                 $candidates[] = $month;
             }
@@ -59,7 +64,7 @@ final class BillingPolicyResolver
 
         sort($candidates);
 
-        return $candidates[\array_key_last($candidates)];
+        return $candidates[array_key_last($candidates)];
     }
 
     private function fromSnapshot(

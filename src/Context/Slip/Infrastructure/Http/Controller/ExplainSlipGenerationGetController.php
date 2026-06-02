@@ -20,10 +20,20 @@ use Throwable;
     security: [['bearerAuth' => []]],
     parameters: [
         new OA\Parameter(name: 'targetMonth', in: 'query', required: true, schema: new OA\Schema(type: 'string', pattern: '^\d{4}-\d{2}$')),
-        new OA\Parameter(name: 'extraFee', in: 'query', required: false, schema: new OA\Schema(type: 'integer', default: 0),
-            description: 'Extra fee per unit in cents'),
-        new OA\Parameter(name: 'reserveFund', in: 'query', required: false, schema: new OA\Schema(type: 'integer', default: 0),
-            description: 'Reserve fund per unit in cents'),
+        new OA\Parameter(
+            name: 'extraFee',
+            in: 'query',
+            required: false,
+            schema: new OA\Schema(type: 'integer', default: 0),
+            description: 'Extra fee per unit in cents',
+        ),
+        new OA\Parameter(
+            name: 'reserveFund',
+            in: 'query',
+            required: false,
+            schema: new OA\Schema(type: 'integer', default: 0),
+            description: 'Reserve fund per unit in cents',
+        ),
     ],
     responses: [
         new OA\Response(response: 200, description: 'Generation explanation.'),

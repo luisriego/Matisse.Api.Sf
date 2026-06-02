@@ -7,10 +7,12 @@ namespace App\Context\BankStatement\Infrastructure\Http\Dto;
 use App\Shared\Infrastructure\RequestDto;
 use Symfony\Component\HttpFoundation\Request;
 
+use function array_map;
+
 final class VerifyIncomeRequestDto implements RequestDto
 {
-    public readonly int   $month;
-    public readonly int   $year;
+    public readonly int $month;
+    public readonly int $year;
 
     /** @var array<array{importLineKey: string, amountInCents: int, memo: string}> */
     public readonly array $creditLines;

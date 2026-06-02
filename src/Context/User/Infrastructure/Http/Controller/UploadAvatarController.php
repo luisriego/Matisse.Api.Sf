@@ -26,8 +26,12 @@ use function in_array;
             schema: new OA\Schema(
                 required: ['avatar'],
                 properties: [
-                    new OA\Property(property: 'avatar', type: 'string', format: 'binary',
-                        description: 'Avatar image (JPEG, PNG or GIF)'),
+                    new OA\Property(
+                        property: 'avatar',
+                        type: 'string',
+                        format: 'binary',
+                        description: 'Avatar image (JPEG, PNG or GIF)',
+                    ),
                 ],
             ),
         ),

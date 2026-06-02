@@ -20,6 +20,9 @@ use DateTime;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Messenger\MessageBusInterface;
 
+use function json_decode;
+use function range;
+
 final class ExpectedExpensesGetControllerTest extends ApiTestCase
 {
     protected function setUp(): void
@@ -28,7 +31,7 @@ final class ExpectedExpensesGetControllerTest extends ApiTestCase
         $this->createAuthenticatedClient();
     }
 
-    public function test_it_returns_empty_list_when_no_expected_expenses_exist(): void
+    public function testItReturnsEmptyListWhenNoExpectedExpensesExist(): void
     {
         $this->client->request('GET', '/api/v1/expected-expenses');
         $this->assertResponseStatusCodeSame(Response::HTTP_OK);
@@ -37,7 +40,7 @@ final class ExpectedExpensesGetControllerTest extends ApiTestCase
         $this->assertSame([], $data['data']);
     }
 
-    public function test_it_returns_expected_expense_catalog_after_ofx_option_b(): void
+    public function testItReturnsExpectedExpenseCatalogAfterOfxOptionB(): void
     {
         $commandBus = self::getContainer()->get(MessageBusInterface::class);
         $scenario = CondominiumJan2026Scenario::seed($this->entityManager, $commandBus);
@@ -79,7 +82,7 @@ final class ExpectedExpensesGetControllerTest extends ApiTestCase
         $this->assertTrue($data['data'][0]['isActive']);
     }
 
-    public function test_it_filters_by_year(): void
+    public function testItFiltersByYear(): void
     {
         $account = AccountMother::create();
         $type = ExpenseTypeMother::create();
@@ -120,7 +123,7 @@ final class ExpectedExpensesGetControllerTest extends ApiTestCase
         $this->assertSame('Cemig 2026', $data['data'][0]['displayName']);
     }
 
-    public function test_it_returns_bad_request_for_invalid_year(): void
+    public function testItReturnsBadRequestForInvalidYear(): void
     {
         $this->client->request('GET', '/api/v1/expected-expenses?year=abc');
         $this->assertResponseStatusCodeSame(Response::HTTP_BAD_REQUEST);

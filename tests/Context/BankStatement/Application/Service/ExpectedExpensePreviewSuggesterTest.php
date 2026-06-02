@@ -13,6 +13,8 @@ use App\Tests\Context\Expense\Domain\ExpenseIdMother;
 use App\Tests\Context\Expense\Domain\RecurringExpenseMother;
 use PHPUnit\Framework\TestCase;
 
+use function range;
+
 final class ExpectedExpensePreviewSuggesterTest extends TestCase
 {
     private ExpectedExpensePreviewSuggester $suggester;
@@ -26,7 +28,7 @@ final class ExpectedExpensePreviewSuggesterTest extends TestCase
         );
     }
 
-    public function test_it_suggests_create_or_update_from_memo_when_no_recurring(): void
+    public function testItSuggestsCreateOrUpdateFromMemoWhenNoRecurring(): void
     {
         $preview = $this->suggester->suggestForDebit(null, 'DA COPASA 000123', '2026-03-05');
 
@@ -38,7 +40,7 @@ final class ExpectedExpensePreviewSuggesterTest extends TestCase
         self::assertSame(5, $preview->createOrUpdate->dueDay);
     }
 
-    public function test_it_strips_boleto_pago_prefix_from_memo(): void
+    public function testItStripsBoletoPagoPrefixFromMemo(): void
     {
         $preview = $this->suggester->suggestForDebit(null, 'BOLETO PAGO CEMIG 123456', '2026-01-15');
 
@@ -46,7 +48,7 @@ final class ExpectedExpensePreviewSuggesterTest extends TestCase
         self::assertSame(15, $preview->createOrUpdate?->dueDay);
     }
 
-    public function test_it_builds_preview_from_existing_recurring(): void
+    public function testItBuildsPreviewFromExistingRecurring(): void
     {
         $recurringId = ExpenseIdMother::create()->value();
         $recurring = RecurringExpenseMother::create(
@@ -74,7 +76,7 @@ final class ExpectedExpensePreviewSuggesterTest extends TestCase
         self::assertSame(10, $preview->createOrUpdate->dueDay);
     }
 
-    public function test_it_includes_custom_months_when_recurring_is_not_monthly(): void
+    public function testItIncludesCustomMonthsWhenRecurringIsNotMonthly(): void
     {
         $recurringId = ExpenseIdMother::create()->value();
         $recurring = RecurringExpenseMother::create(
@@ -97,7 +99,7 @@ final class ExpectedExpensePreviewSuggesterTest extends TestCase
         self::assertSame([1, 4, 7, 10], $preview->createOrUpdate?->monthsOfYear);
     }
 
-    public function test_it_returns_recurring_id_only_when_recurring_not_found(): void
+    public function testItReturnsRecurringIdOnlyWhenRecurringNotFound(): void
     {
         $recurringId = ExpenseIdMother::create()->value();
 

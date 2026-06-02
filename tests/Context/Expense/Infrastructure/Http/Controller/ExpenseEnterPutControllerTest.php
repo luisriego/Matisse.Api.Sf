@@ -13,6 +13,9 @@ use Doctrine\ORM\Exception\ORMException;
 use Doctrine\ORM\OptimisticLockException;
 use Symfony\Component\HttpFoundation\Response;
 
+use function json_decode;
+use function json_encode;
+
 final class ExpenseEnterPutControllerTest extends ApiTestCase
 {
     protected function setUp(): void
@@ -25,7 +28,7 @@ final class ExpenseEnterPutControllerTest extends ApiTestCase
      * @throws OptimisticLockException
      * @throws ORMException
      */
-    public function test_it_should_enter_expense_and_store_event(): void
+    public function testItShouldEnterExpenseAndStoreEvent(): void
     {
         $expenseId = UuidMother::create();
         $account = AccountMother::create();
@@ -50,7 +53,7 @@ final class ExpenseEnterPutControllerTest extends ApiTestCase
             [],
             [],
             ['CONTENT_TYPE' => 'application/json'],
-            json_encode($payload)
+            json_encode($payload),
         );
 
         $this->assertResponseStatusCodeSame(Response::HTTP_CREATED);

@@ -11,6 +11,8 @@ use App\Shared\Domain\ValueObject\Uuid;
 use DateMalformedStringException;
 use DateTimeImmutable;
 
+use function array_key_exists;
+
 /**
  * Opening operational baseline: reference expense month and demonstrative / slip parameters.
  * Append-only; latest event is the current baseline for clients and analysis.

@@ -8,8 +8,8 @@ use App\Context\Expense\Application\UseCase\CompensateExpense\CompensateExpenseC
 use App\Context\Expense\Application\UseCase\CompensateExpense\CompensateExpenseCommandHandler;
 use App\Context\Expense\Domain\ExpenseRepository;
 use App\Tests\Context\Expense\Domain\ExpenseMother;
-use PHPUnit\Framework\TestCase;
 use Exception;
+use PHPUnit\Framework\TestCase;
 use Symfony\Component\Uid\Uuid;
 
 class CompensateExpenseTest extends TestCase
@@ -25,7 +25,7 @@ class CompensateExpenseTest extends TestCase
         );
     }
 
-    public function test_it_should_compensate_an_expense_without_creating_duplicate(): void
+    public function testItShouldCompensateAnExpenseWithoutCreatingDuplicate(): void
     {
         $originalExpense = ExpenseMother::create();
         $compensatedAmount = 5000; // Example compensated amount
@@ -49,7 +49,7 @@ class CompensateExpenseTest extends TestCase
         $this->assertSame($compensatedAmount, $originalExpense->amount());
     }
 
-    public function test_it_should_throw_exception_if_expense_not_found(): void
+    public function testItShouldThrowExceptionIfExpenseNotFound(): void
     {
         $nonExistentId = Uuid::v4()->toRfc4122(); // Use a valid UUID format
         $command = new CompensateExpenseCommand($nonExistentId, 1000);
@@ -69,7 +69,7 @@ class CompensateExpenseTest extends TestCase
         $this->expenseRepository->expects($this->never())->method('remove');
     }
 
-    public function test_it_should_not_compensate_if_expense_has_no_account(): void
+    public function testItShouldNotCompensateIfExpenseHasNoAccount(): void
     {
         $expenseWithoutAccount = ExpenseMother::createWithNoAccount();
         $this->assertNull($expenseWithoutAccount->account()); // Re-added assertion

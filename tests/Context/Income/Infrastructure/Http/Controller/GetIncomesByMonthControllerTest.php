@@ -12,6 +12,8 @@ use App\Tests\Shared\Infrastructure\PhpUnit\ApiTestCase;
 use DateTime;
 use Symfony\Component\HttpFoundation\Response;
 
+use function json_decode;
+
 /**
  * @covers \App\Context\Income\Infrastructure\Http\Controller\GetIncomesByMonthController
  */
@@ -23,30 +25,30 @@ final class GetIncomesByMonthControllerTest extends ApiTestCase
         $this->createAuthenticatedClient();
     }
 
-    public function test_it_should_return_incomes_for_a_given_month(): void
+    public function testItShouldReturnIncomesForAGivenMonth(): void
     {
         // 1. Create incomes for the test scenario, using future dates to avoid past date errors
         $currentDate = new DateTime('+5 days');
-        $year = (int)$currentDate->format('Y');
-        $testMonth = (int)$currentDate->format('m');
-        $day = (int)$currentDate->format('d');
-        
+        $year = (int) $currentDate->format('Y');
+        $testMonth = (int) $currentDate->format('m');
+        $day = (int) $currentDate->format('d');
+
         $nextMonthDate = (clone $currentDate)->modify('+1 month');
-        $nextMonthYear = (int)$nextMonthDate->format('Y');
-        $nextMonth = (int)$nextMonthDate->format('m');
+        $nextMonthYear = (int) $nextMonthDate->format('Y');
+        $nextMonth = (int) $nextMonthDate->format('m');
         $accountInTestMonth = AccountMother::create();
         $accountInNextMonth = AccountMother::create();
 
         // Income that should be found
         $incomeInTestMonth = IncomeMother::create(
             accountId: $accountInTestMonth->id(),
-            dueDate: new IncomeDueDate(new DateTime("$year-$testMonth-$day"))
+            dueDate: new IncomeDueDate(new DateTime("{$year}-{$testMonth}-{$day}")),
         );
 
         // Income that should NOT be found
         $incomeInNextMonth = IncomeMother::create(
             accountId: $accountInNextMonth->id(),
-            dueDate: new IncomeDueDate(new DateTime("$nextMonthYear-$nextMonth-15"))
+            dueDate: new IncomeDueDate(new DateTime("{$nextMonthYear}-{$nextMonth}-15")),
         );
 
         // 2. Persist all entities
@@ -63,7 +65,7 @@ final class GetIncomesByMonthControllerTest extends ApiTestCase
         $this->entityManager->flush();
 
         // 3. Send the GET request
-        $this->client->request('GET', "/api/v1/incomes/date-range/$year/$testMonth");
+        $this->client->request('GET', "/api/v1/incomes/date-range/{$year}/{$testMonth}");
 
         // 4. Assert the response
         $this->assertResponseStatusCodeSame(Response::HTTP_OK);
@@ -76,7 +78,7 @@ final class GetIncomesByMonthControllerTest extends ApiTestCase
         $this->assertEquals($incomeInTestMonth->id(), $data[0]['id']);
     }
 
-    public function test_it_maps_exceptions_correctly(): void
+    public function testItMapsExceptionsCorrectly(): void
     {
         $controller = $this->getContainer()->get(GetIncomesByMonthController::class);
         $exceptions = $controller->exceptions();

@@ -9,7 +9,12 @@ use App\Tests\Context\ResidentUnit\Domain\ResidentUnitMother;
 use App\Tests\Shared\Infrastructure\PhpUnit\ApiTestCase;
 use Doctrine\ORM\Exception\ORMException;
 use Doctrine\ORM\OptimisticLockException;
+use ReflectionException;
+use ReflectionProperty;
 use Symfony\Component\HttpFoundation\Response;
+
+use function array_column;
+use function json_decode;
 
 /**
  * @covers \App\Context\ResidentUnit\Infrastructure\Http\Controller\ListActiveResidentUnitsController
@@ -25,18 +30,18 @@ final class ListActiveResidentUnitsControllerTest extends ApiTestCase
     /**
      * @throws OptimisticLockException
      * @throws ORMException
-     * @throws \ReflectionException
+     * @throws ReflectionException
      */
-    public function test_it_should_return_only_active_resident_units(): void
+    public function testItShouldReturnOnlyActiveResidentUnits(): void
     {
         // 1. Create resident units for the test scenario
         $activeUnit1 = ResidentUnitMother::create();
         $activeUnit2 = ResidentUnitMother::create();
-        
+
         // Create an inactive unit by creating it active and then setting isActive to false
         $inactiveUnit = ResidentUnitMother::create();
         // Access the property directly as there's no public setter for isActive
-        $reflection = new \ReflectionProperty($inactiveUnit, 'isActive');
+        $reflection = new ReflectionProperty($inactiveUnit, 'isActive');
         $reflection->setValue($inactiveUnit, false);
 
         // 2. Persist all entities
@@ -63,7 +68,7 @@ final class ListActiveResidentUnitsControllerTest extends ApiTestCase
         $this->assertNotContains($inactiveUnit->id(), $responseIds);
     }
 
-    public function test_it_maps_exceptions_correctly(): void
+    public function testItMapsExceptionsCorrectly(): void
     {
         $controller = $this->getContainer()->get(ListActiveResidentUnitsController::class);
         $exceptions = $controller->exceptions();

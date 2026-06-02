@@ -12,6 +12,8 @@ use App\Shared\Application\EventStore;
 use App\Shared\Domain\Exception\InvalidDataException;
 use Symfony\Component\Messenger\Attribute\AsMessageHandler;
 
+use function array_map;
+use function explode;
 use function preg_match;
 
 #[AsMessageHandler]
@@ -29,9 +31,11 @@ final readonly class RecordOpeningReferenceMonthCommandHandler implements Comman
         }
 
         [$y, $m] = array_map('intval', explode('-', $command->referenceMonth(), 2));
+
         if ($m < 1 || $m > 12) {
             throw new InvalidDataException('referenceMonth month must be 01-12.');
         }
+
         if ($y < 2000 || $y > 2100) {
             throw new InvalidDataException('referenceMonth year must be plausible.');
         }

@@ -10,9 +10,9 @@ use App\Context\Income\Domain\IncomeType;
 use App\Context\Income\Domain\IncomeTypeRepository;
 use InvalidArgumentException;
 
+use function mb_strtolower;
 use function preg_match;
 use function sprintf;
-use function strtolower;
 use function trim;
 
 /**
@@ -124,12 +124,14 @@ final class SettlementAccountResolver
     private function matchAccount(array $accounts, string $component): ?Account
     {
         $pattern = self::ACCOUNT_PATTERNS[$component] ?? null;
+
         if ($pattern === null) {
             return null;
         }
 
         foreach ($accounts as $account) {
-            $name = strtolower(trim((string) $account->name()));
+            $name = mb_strtolower(trim((string) $account->name()));
+
             if (preg_match($pattern, $name) === 1) {
                 return $account;
             }
@@ -144,12 +146,14 @@ final class SettlementAccountResolver
     private function matchIncomeType(array $incomeTypes, string $component): ?IncomeType
     {
         $pattern = self::INCOME_TYPE_PATTERNS[$component] ?? null;
+
         if ($pattern === null) {
             return null;
         }
 
         foreach ($incomeTypes as $type) {
-            $name = strtolower(trim((string) $type->name()));
+            $name = mb_strtolower(trim((string) $type->name()));
+
             if (preg_match($pattern, $name) === 1) {
                 return $type;
             }

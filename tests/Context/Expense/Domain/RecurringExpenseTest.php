@@ -7,8 +7,8 @@ namespace App\Tests\Context\Expense\Domain;
 use App\Context\Expense\Domain\RecurringExpense;
 use App\Context\Expense\Domain\ValueObject\ExpenseDueDay;
 use App\Context\Expense\Domain\ValueObject\ExpenseEndDate;
-use App\Context\Expense\Domain\ValueObject\ExpenseId;
 use App\Context\Expense\Domain\ValueObject\ExpenseStartDate;
+use DateMalformedStringException;
 use DateTime;
 use DateTimeImmutable;
 use DateTimeInterface;
@@ -17,9 +17,9 @@ use PHPUnit\Framework\TestCase;
 class RecurringExpenseTest extends TestCase
 {
     /** @test
-     * @throws \DateMalformedStringException
+     * @throws DateMalformedStringException
      */
-    public function test_it_creates_recurring_expense_with_correct_properties(): void
+    public function testItCreatesRecurringExpenseWithCorrectProperties(): void
     {
         // Arrange
         $id          = ExpenseIdMother::create();
@@ -28,8 +28,8 @@ class RecurringExpenseTest extends TestCase
         $type        = ExpenseTypeMother::create();
         $dueDay      = new ExpenseDueDay(15);
         $months      = [1, 6, 12];
-        $startDate   = new ExpenseStartDate((new \DateTime())->modify('+1 day'));
-        $endDate     = new ExpenseEndDate((new \DateTime())->modify('+1 year'));
+        $startDate   = new ExpenseStartDate((new DateTime())->modify('+1 day'));
+        $endDate     = new ExpenseEndDate((new DateTime())->modify('+1 year'));
         $description = 'Pago recurrente';
         $notes       = 'Sin comentarios';
 
@@ -44,7 +44,7 @@ class RecurringExpenseTest extends TestCase
             $startDate,
             $endDate,
             $description,
-            $notes
+            $notes,
         );
 
         // Assert
@@ -77,9 +77,9 @@ class RecurringExpenseTest extends TestCase
     }
 
     /** @test
-     * @throws \DateMalformedStringException
+     * @throws DateMalformedStringException
      */
-    public function test_it_adds_and_removes_child_expenses(): void
+    public function testItAddsAndRemovesChildExpenses(): void
     {
         // Arrange
         $recurring = RecurringExpenseMother::create();

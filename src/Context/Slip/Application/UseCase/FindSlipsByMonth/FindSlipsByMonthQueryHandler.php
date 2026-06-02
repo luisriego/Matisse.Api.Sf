@@ -19,6 +19,7 @@ final readonly class FindSlipsByMonthQueryHandler implements QueryHandler
         $slips = $this->repository->findByMonthYear($query->year(), $query->month());
 
         $out = [];
+
         foreach ($slips as $slip) {
             $ru = $slip->residentUnit();
             $out[] = [

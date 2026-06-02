@@ -11,7 +11,7 @@ use PHPUnit\Framework\TestCase;
 
 final class AccountTest extends TestCase
 {
-    public function test_it_should_create_with_description(): void
+    public function testItShouldCreateWithDescription(): void
     {
         $id = AccountIdMother::create();
         $name = AccountNameMother::create();
@@ -24,14 +24,14 @@ final class AccountTest extends TestCase
         self::assertEquals($descriptionText, $account->description());
     }
 
-    public function test_it_sets_created_at_on_creation(): void
+    public function testItSetsCreatedAtOnCreation(): void
     {
         $account = AccountMother::create();
 
         self::assertNotNull($account->createdAt());
     }
 
-    public function test_it_sets_updated_at_on_update(): void
+    public function testItSetsUpdatedAtOnUpdate(): void
     {
         $account = AccountMother::create();
 

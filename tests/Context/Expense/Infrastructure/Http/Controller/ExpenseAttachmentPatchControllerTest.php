@@ -16,6 +16,14 @@ use Doctrine\ORM\OptimisticLockException;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
 use Symfony\Component\HttpFoundation\Response;
 
+use function file_put_contents;
+use function glob;
+use function is_dir;
+use function is_file;
+use function mkdir;
+use function sys_get_temp_dir;
+use function unlink;
+
 /**
  * @covers \App\Context\Expense\Infrastructure\Http\Controller\ExpenseAttachmentPatchController
  */
@@ -30,13 +38,14 @@ class ExpenseAttachmentPatchControllerTest extends ApiTestCase
         $this->uploadsPath = self::getContainer()->getParameter('expense_uploads_path');
 
         if (!is_dir($this->uploadsPath)) {
-            mkdir($this->uploadsPath, 0777, true);
+            mkdir($this->uploadsPath, 0o777, true);
         }
     }
 
     protected function tearDown(): void
     {
         $files = glob($this->uploadsPath . '/*');
+
         foreach ($files as $file) {
             if (is_file($file)) {
                 unlink($file);
@@ -49,7 +58,7 @@ class ExpenseAttachmentPatchControllerTest extends ApiTestCase
      * @throws OptimisticLockException
      * @throws ORMException
      */
-    public function test_it_should_upload_an_attachment_for_an_expense(): void
+    public function testItShouldUploadAnAttachmentForAnExpense(): void
     {
         $expense = ExpenseMother::create(description: 'Groceries for the month');
         $this->entityManager->persist($expense->account());
@@ -67,7 +76,7 @@ class ExpenseAttachmentPatchControllerTest extends ApiTestCase
             'POST',
             '/api/v1/expenses/attachment/' . $expense->id(),
             [],
-            ['attachment' => $uploadedFile]
+            ['attachment' => $uploadedFile],
         );
 
         $this->assertResponseStatusCodeSame(Response::HTTP_OK);
@@ -84,7 +93,7 @@ class ExpenseAttachmentPatchControllerTest extends ApiTestCase
      * @throws OptimisticLockException
      * @throws ORMException
      */
-    public function test_it_should_save_with_correct_extension_when_mimetype_mismatches(): void
+    public function testItShouldSaveWithCorrectExtensionWhenMimetypeMismatches(): void
     {
         $expense = ExpenseMother::create(description: 'Security test');
         $this->entityManager->persist($expense->account());
@@ -102,7 +111,7 @@ class ExpenseAttachmentPatchControllerTest extends ApiTestCase
             'POST',
             '/api/v1/expenses/attachment/' . $expense->id(),
             [],
-            ['attachment' => $uploadedFile]
+            ['attachment' => $uploadedFile],
         );
 
         $this->assertResponseStatusCodeSame(Response::HTTP_OK);
@@ -110,11 +119,11 @@ class ExpenseAttachmentPatchControllerTest extends ApiTestCase
         $this->entityManager->clear();
         $updatedExpense = $this->entityManager->find(Expense::class, $expense->id());
         $this->assertNotNull($updatedExpense->attachment());
-        $this->assertStringEndsWith('.txt', $updatedExpense->attachment(), "Failed to prove security: File was saved with .pdf extension despite being a text file.");
+        $this->assertStringEndsWith('.txt', $updatedExpense->attachment(), 'Failed to prove security: File was saved with .pdf extension despite being a text file.');
         $this->assertFileExists($this->uploadsPath . '/' . $updatedExpense->attachment());
     }
 
-    public function test_it_should_return_404_if_expense_not_found(): void
+    public function testItShouldReturn404IfExpenseNotFound(): void
     {
         $nonExistentId = UuidMother::create();
         $filePath = sys_get_temp_dir() . '/test.txt';
@@ -125,7 +134,7 @@ class ExpenseAttachmentPatchControllerTest extends ApiTestCase
             'POST',
             '/api/v1/expenses/attachment/' . $nonExistentId,
             [],
-            ['attachment' => $uploadedFile]
+            ['attachment' => $uploadedFile],
         );
 
         $this->assertResponseStatusCodeSame(Response::HTTP_NOT_FOUND);
@@ -135,7 +144,7 @@ class ExpenseAttachmentPatchControllerTest extends ApiTestCase
      * @throws OptimisticLockException
      * @throws ORMException
      */
-    public function test_it_should_return_400_if_no_file_is_uploaded(): void
+    public function testItShouldReturn400IfNoFileIsUploaded(): void
     {
         $expense = ExpenseMother::create();
         $this->entityManager->persist($expense->account());
@@ -145,13 +154,13 @@ class ExpenseAttachmentPatchControllerTest extends ApiTestCase
 
         $this->client->request(
             'POST',
-            '/api/v1/expenses/attachment/' . $expense->id()
+            '/api/v1/expenses/attachment/' . $expense->id(),
         );
 
         $this->assertResponseStatusCodeSame(Response::HTTP_BAD_REQUEST);
     }
 
-    public function test_it_maps_exceptions_correctly(): void
+    public function testItMapsExceptionsCorrectly(): void
     {
         $controller = $this->getContainer()->get(ExpenseAttachmentPatchController::class);
         $exceptions = $controller->exceptions();

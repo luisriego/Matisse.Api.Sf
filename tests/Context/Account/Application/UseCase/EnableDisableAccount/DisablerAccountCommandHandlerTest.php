@@ -1,11 +1,12 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Tests\Context\Account\Application\UseCase\EnableDisableAccount;
 
 use App\Context\Account\Application\UseCase\DisableAccount\DisableAccountCommand;
 use App\Context\Account\Application\UseCase\DisableAccount\DisableAccountCommandHandler;
 use App\Context\Account\Domain\AccountRepository;
-use App\Shared\Application\EventBus;
 use App\Tests\Context\Account\Domain\AccountMother;
 use PHPUnit\Framework\MockObject\Exception;
 use PHPUnit\Framework\MockObject\MockObject;

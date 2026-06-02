@@ -13,6 +13,7 @@ use App\Shared\Domain\Event\DomainEvent;
 use App\Shared\Domain\Event\EventSubscriber;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\Uid\Uuid;
+use Throwable;
 
 /**
  * Generates and stores an embedding for every new expense that has a description.
@@ -21,13 +22,15 @@ use Symfony\Component\Uid\Uuid;
 final class IndexExpenseEmbeddingOnEntered implements EventSubscriber
 {
     public function __construct(
-        private readonly ExpenseEmbeddingRepository     $embeddingRepository,
-        private readonly EmbeddingVectorClientInterface  $vectorClient,
-        private readonly string                          $embeddingModel,
-        private readonly LoggerInterface                 $logger,
+        private readonly ExpenseEmbeddingRepository $embeddingRepository,
+        private readonly EmbeddingVectorClientInterface $vectorClient,
+        private readonly string $embeddingModel,
+        private readonly LoggerInterface $logger,
     ) {}
 
-    /** @param ExpenseWasEntered $event */
+    /**
+     * @param ExpenseWasEntered $event
+     */
     public function __invoke(DomainEvent $event): void
     {
         $primitives  = $event->toPrimitives();
@@ -50,13 +53,13 @@ final class IndexExpenseEmbeddingOnEntered implements EventSubscriber
             }
 
             $this->embeddingRepository->upsert(new ExpenseEmbedding(
-                id:             Uuid::v4()->toRfc4122(),
-                expenseId:      $event->aggregateId(),
-                vector:         $vector,
-                description:    $description,
+                id: Uuid::v4()->toRfc4122(),
+                expenseId: $event->aggregateId(),
+                vector: $vector,
+                description: $description,
                 embeddingModel: $this->embeddingModel,
             ));
-        } catch (\Throwable $e) {
+        } catch (Throwable $e) {
             $this->logger->error('IndexExpenseEmbeddingOnEntered: failed to index embedding', [
                 'expenseId' => $event->aggregateId(),
                 'error'     => $e->getMessage(),

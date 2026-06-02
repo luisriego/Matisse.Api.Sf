@@ -9,23 +9,24 @@ use App\Context\Account\Domain\AccountRepository;
 use App\Context\Expense\Application\UseCase\EnterExpense\CreateRecurringExpenseCommand;
 use App\Context\Expense\Application\UseCase\EnterExpense\CreateRecurringExpenseCommandHandler;
 use App\Context\Expense\Domain\ExpenseRepository;
+use App\Context\Expense\Domain\ExpenseTypeRepository;
 use App\Context\Expense\Domain\RecurringExpense;
 use App\Context\Expense\Domain\RecurringExpenseRepository;
-use App\Context\Expense\Domain\ExpenseTypeRepository;
 use App\Shared\Domain\Event\EventBus;
 use App\Shared\Domain\Exception\ResourceNotFoundException;
 use App\Tests\Context\Expense\Domain\ExpenseAmountMother;
 use App\Tests\Context\Expense\Domain\ExpenseIdMother;
 use App\Tests\Context\Expense\Domain\ExpenseTypeMother;
-use DateMalformedStringException;
 use DateTime;
 use Exception;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 
+use function count;
+
 class CreateRecurringExpenseCommandHandlerTest extends TestCase
 {
-    private RecurringExpenseRepository&MockObject $recurringExpenseRepo;
+    private MockObject&RecurringExpenseRepository $recurringExpenseRepo;
     private ExpenseTypeRepository&MockObject $typeRepo;
     private AccountRepository&MockObject $accountRepo;
     private ExpenseRepository&MockObject $expenseRepo;
@@ -50,12 +51,14 @@ class CreateRecurringExpenseCommandHandlerTest extends TestCase
             $this->typeRepo,
             $this->accountRepo,
             $this->expenseRepo,
-            $this->eventBus
+            $this->eventBus,
         );
     }
 
-    /** @test */
-    public function test_it_should_create_and_save_recurring_expense_with_predefined_amount(): void
+    /**
+     * @test
+     */
+    public function testItShouldCreateAndSaveRecurringExpenseWithPredefinedAmount(): void
     {
         // Arrange
         $idMother = ExpenseIdMother::create();
@@ -82,7 +85,7 @@ class CreateRecurringExpenseCommandHandlerTest extends TestCase
             $endDateString,
             $description,
             $notes,
-            true // hasPredefinedAmount
+            true, // hasPredefinedAmount
         );
 
         $expectedCount = $this->getExpectedExpenseCount($monthsOfYear, $startDateString);
@@ -109,9 +112,10 @@ class CreateRecurringExpenseCommandHandlerTest extends TestCase
                     self::assertEquals($amountMother->value(), $re->amount());
                     self::assertEquals($description, $re->description());
                     self::assertTrue($re->hasPredefinedAmount());
+
                     return true;
                 }),
-                false
+                false,
             );
 
         $this->expenseRepo
@@ -130,8 +134,10 @@ class CreateRecurringExpenseCommandHandlerTest extends TestCase
         $this->handler->__invoke($command);
     }
 
-    /** @test */
-    public function test_it_should_create_recurring_expense_without_predefined_amount(): void
+    /**
+     * @test
+     */
+    public function testItShouldCreateRecurringExpenseWithoutPredefinedAmount(): void
     {
         // Arrange
         $idMother = ExpenseIdMother::create();
@@ -149,7 +155,7 @@ class CreateRecurringExpenseCommandHandlerTest extends TestCase
             (new DateTime())->modify('+1 year')->format('Y-m-d'),
             'Service without predefined amount',
             'Notes here',
-            false // hasPredefinedAmount
+            false, // hasPredefinedAmount
         );
 
         // Mock expectations
@@ -171,9 +177,10 @@ class CreateRecurringExpenseCommandHandlerTest extends TestCase
                 self::callback(function (RecurringExpense $re) use ($idMother) {
                     self::assertEquals($idMother->value(), $re->id());
                     self::assertFalse($re->hasPredefinedAmount());
+
                     return true;
                 }),
-                false
+                false,
             );
 
         // We should NOT create individual expenses
@@ -193,8 +200,10 @@ class CreateRecurringExpenseCommandHandlerTest extends TestCase
         $this->handler->__invoke($command);
     }
 
-    /** @test */
-    public function test_it_should_throw_exception_when_expense_type_not_found(): void
+    /**
+     * @test
+     */
+    public function testItShouldThrowExceptionWhenExpenseTypeNotFound(): void
     {
         // Arrange
         $command = new CreateRecurringExpenseCommand(
@@ -208,7 +217,7 @@ class CreateRecurringExpenseCommandHandlerTest extends TestCase
             (new DateTime())->modify('+1 year')->format('Y-m-d'),
             'description',
             'notes',
-            true
+            true,
         );
 
         $this->typeRepo
@@ -225,8 +234,10 @@ class CreateRecurringExpenseCommandHandlerTest extends TestCase
         $this->handler->__invoke($command);
     }
 
-    /** @test */
-    public function test_it_should_throw_exception_when_account_not_found(): void
+    /**
+     * @test
+     */
+    public function testItShouldThrowExceptionWhenAccountNotFound(): void
     {
         // Arrange
         $typeMother = ExpenseTypeMother::create();
@@ -241,7 +252,7 @@ class CreateRecurringExpenseCommandHandlerTest extends TestCase
             (new DateTime())->modify('+1 year')->format('Y-m-d'),
             'description',
             'notes',
-            true
+            true,
         );
 
         $this->typeRepo
@@ -272,8 +283,8 @@ class CreateRecurringExpenseCommandHandlerTest extends TestCase
     private function getExpectedExpenseCount(array $monthsOfYear, string $startDateString): int
     {
         $startDate = new DateTime($startDateString);
-        $startYear = (int)$startDate->format('Y');
-        $currentYear = (int)(new DateTime())->format('Y');
+        $startYear = (int) $startDate->format('Y');
+        $currentYear = (int) (new DateTime())->format('Y');
 
         // If start year is not the current year, the filter in the handler doesn't apply.
         if ($startYear !== $currentYear) {
@@ -281,8 +292,9 @@ class CreateRecurringExpenseCommandHandlerTest extends TestCase
         }
 
         // If start year is the current year, count only current and future months.
-        $currentMonth = (int)(new DateTime())->format('n');
+        $currentMonth = (int) (new DateTime())->format('n');
         $expectedExpenseCount = 0;
+
         foreach ($monthsOfYear as $month) {
             if ($month >= $currentMonth) {
                 $expectedExpenseCount++;

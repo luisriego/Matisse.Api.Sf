@@ -16,10 +16,18 @@ use Symfony\Component\HttpFoundation\File\UploadedFile;
 use Symfony\Component\String\Slugger\SluggerInterface;
 use Symfony\Component\String\UnicodeString;
 
+use function file_put_contents;
+use function glob;
+use function is_dir;
+use function mkdir;
+use function rmdir;
+use function sys_get_temp_dir;
+use function unlink;
+
 class AddExpenseAttachmentCommandHandlerTest extends TestCase
 {
     private ExpenseRepository|MockObject $expenseRepository;
-    private SluggerInterface|MockObject $slugger;
+    private MockObject|SluggerInterface $slugger;
     private string $uploadsPath;
     private AddExpenseAttachmentCommandHandler $handler;
 
@@ -32,34 +40,26 @@ class AddExpenseAttachmentCommandHandlerTest extends TestCase
         $this->uploadsPath = sys_get_temp_dir() . '/uploads_test';
 
         if (!is_dir($this->uploadsPath)) {
-            mkdir($this->uploadsPath, 0777, true);
+            mkdir($this->uploadsPath, 0o777, true);
         }
 
         $this->handler = new AddExpenseAttachmentCommandHandler(
             $this->expenseRepository,
             $this->slugger,
-            $this->uploadsPath
+            $this->uploadsPath,
         );
     }
 
     protected function tearDown(): void
     {
         parent::tearDown();
+
         if (is_dir($this->uploadsPath)) {
             $this->removeDirectory($this->uploadsPath);
         }
     }
 
-    private function removeDirectory(string $path): void
-    {
-        $files = glob($path . '/*');
-        foreach ($files as $file) {
-            is_dir($file) ? $this->removeDirectory($file) : unlink($file);
-        }
-        rmdir($path);
-    }
-
-    public function test_it_should_add_an_attachment_to_an_expense(): void
+    public function testItShouldAddAnAttachmentToAnExpense(): void
     {
         $expenseId = 'f47ac10b-58cc-4372-a567-0e02b2c3d479';
         $expenseDescription = 'Test Expense Description';
@@ -74,6 +74,7 @@ class AddExpenseAttachmentCommandHandlerTest extends TestCase
         $uploadedFile->method('move')->willReturnCallback(function ($directory, $filename) {
             $path = $directory . '/' . $filename;
             file_put_contents($path, 'dummy content');
+
             return new File($path); // Return a File object
         });
 
@@ -90,7 +91,7 @@ class AddExpenseAttachmentCommandHandlerTest extends TestCase
         $this->assertFileExists($this->uploadsPath . '/' . $expense->attachment());
     }
 
-    public function test_it_should_throw_an_exception_if_expense_not_found(): void
+    public function testItShouldThrowAnExceptionIfExpenseNotFound(): void
     {
         $this->expectException(ResourceNotFoundException::class);
         $expenseId = 'non-existent-id';
@@ -100,7 +101,7 @@ class AddExpenseAttachmentCommandHandlerTest extends TestCase
         ($this->handler)($command);
     }
 
-    public function test_it_should_use_original_filename_if_expense_description_is_null(): void
+    public function testItShouldUseOriginalFilenameIfExpenseDescriptionIsNull(): void
     {
         $expenseId = 'f47ac10b-58cc-4372-a567-0e02b2c3d479';
         $originalFilenameWithExt = 'another_document.png';
@@ -115,6 +116,7 @@ class AddExpenseAttachmentCommandHandlerTest extends TestCase
         $uploadedFile->method('move')->willReturnCallback(function ($directory, $filename) {
             $path = $directory . '/' . $filename;
             file_put_contents($path, 'dummy content');
+
             return new File($path); // Return a File object
         });
 
@@ -131,7 +133,7 @@ class AddExpenseAttachmentCommandHandlerTest extends TestCase
         $this->assertFileExists($this->uploadsPath . '/' . $expense->attachment());
     }
 
-    public function test_it_should_handle_special_characters_in_description(): void
+    public function testItShouldHandleSpecialCharactersInDescription(): void
     {
         $expenseId = 'f47ac10b-58cc-4372-a567-0e02b2c3d479';
         $expenseDescription = 'Descripción con acentos y espacios';
@@ -146,6 +148,7 @@ class AddExpenseAttachmentCommandHandlerTest extends TestCase
         $uploadedFile->method('move')->willReturnCallback(function ($directory, $filename) {
             $path = $directory . '/' . $filename;
             file_put_contents($path, 'dummy content');
+
             return new File($path); // Return a File object
         });
 
@@ -160,5 +163,15 @@ class AddExpenseAttachmentCommandHandlerTest extends TestCase
         $this->assertStringContainsString($safeFilename, $expense->attachment());
         $this->assertStringEndsWith('.' . $extension, $expense->attachment());
         $this->assertFileExists($this->uploadsPath . '/' . $expense->attachment());
+    }
+
+    private function removeDirectory(string $path): void
+    {
+        $files = glob($path . '/*');
+
+        foreach ($files as $file) {
+            is_dir($file) ? $this->removeDirectory($file) : unlink($file);
+        }
+        rmdir($path);
     }
 }

@@ -9,6 +9,8 @@ use App\Tests\Context\Account\Domain\AccountMother;
 use App\Tests\Shared\Infrastructure\PhpUnit\ApiTestCase;
 use Symfony\Component\HttpFoundation\Response;
 
+use function json_encode;
+
 final class AccountUpdaterPatchControllerTest extends ApiTestCase
 {
     protected function setUp(): void
@@ -17,7 +19,7 @@ final class AccountUpdaterPatchControllerTest extends ApiTestCase
         $this->createAuthenticatedClient();
     }
 
-    public function test_it_should_update_account(): void
+    public function testItShouldUpdateAccount(): void
     {
         // 1. Create an initial account to be updated
         $account = AccountMother::create();
@@ -37,7 +39,7 @@ final class AccountUpdaterPatchControllerTest extends ApiTestCase
             [],
             [],
             ['CONTENT_TYPE' => 'application/json'],
-            json_encode($payload)
+            json_encode($payload),
         );
 
         // 4. Assert the response

@@ -6,6 +6,11 @@ namespace App\Context\BankStatement\Infrastructure\Matcher;
 
 use App\Context\BankStatement\Application\UseCase\ConfirmBankOfxLines\ConfirmLineDto;
 
+use function mb_strtoupper;
+use function str_contains;
+use function str_replace;
+use function trim;
+
 /**
  * Rule-based classification of Brazilian bank CREDIT memos into {@see ConfirmLineDto} creditKind values.
  *
@@ -52,6 +57,7 @@ final readonly class CreditMemoClassifier
     private function normalize(string $memo): string
     {
         $u = mb_strtoupper(trim($memo), 'UTF-8');
+
         // Fold common accents for matching (BRL bank strings vary)
         return str_replace(
             ['Á', 'À', 'Ã', 'Â', 'É', 'Ê', 'Í', 'Ó', 'Ô', 'Õ', 'Ú', 'Ü', 'Ç'],

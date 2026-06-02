@@ -4,19 +4,15 @@ declare(strict_types=1);
 
 namespace App\Tests\Context\Expense\Application\UseCase\EnterExpense;
 
-use App\Context\Account\Domain\AccountRepository;
 use App\Context\Expense\Application\UseCase\EnterExpense\EnterExpenseCommand;
 use App\Context\Expense\Application\UseCase\EnterExpense\EnterExpenseCommandHandler;
-use App\Context\Expense\Domain\Event\ExpenseWasEntered;
-use App\Context\Expense\Domain\ExpenseRepository;
-use App\Context\Expense\Domain\ValueObject\ExpenseTypeRepository;
-use App\Shared\Domain\Event\EventBus;
 use App\Tests\Context\Account\Domain\AccountMother;
 use App\Tests\Context\Expense\Domain\ExpenseAmountMother;
 use App\Tests\Context\Expense\Domain\ExpenseDueDateMother;
 use App\Tests\Context\Expense\Domain\ExpenseIdMother;
 use App\Tests\Context\Expense\Domain\ExpenseMother;
 use App\Tests\Context\Expense\Domain\ExpenseTypeMother;
+use DateMalformedStringException;
 use PHPUnit\Framework\MockObject\Exception;
 use PHPUnit\Framework\TestCase;
 
@@ -35,9 +31,9 @@ class EnterExpenseCommandHandlerTest extends TestCase
     }
 
     /** @test
-     * @throws \DateMalformedStringException
+     * @throws DateMalformedStringException
      */
-    public function test_it_should_enter_an_expense(): void
+    public function testItShouldEnterAnExpense(): void
     {
         $id = ExpenseIdMother::create();
         $amount = ExpenseAmountMother::create();

@@ -6,15 +6,17 @@ namespace App\Shared\Command;
 
 use Doctrine\DBAL\ArrayParameterType;
 use Doctrine\DBAL\Connection;
-use Symfony\Component\DependencyInjection\Attribute\Autowire;
 use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Style\SymfonyStyle;
+use Symfony\Component\DependencyInjection\Attribute\Autowire;
 
+use function array_diff;
 use function array_map;
+use function array_values;
 use function count;
 use function implode;
 use function sprintf;
@@ -219,4 +221,3 @@ final class ResetDevDataCommand extends Command
         return $result === true || $result === 't' || $result === '1' || $result === 1;
     }
 }
-

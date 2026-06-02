@@ -12,6 +12,8 @@ interface BankTransactionImportRepository
 
     public function existsByImportLineKey(string $importLineKey, string $bankAccountId): bool;
 
-    /** @return string[] import line keys already persisted for the given bank account */
+    /**
+     * @return string[] import line keys already persisted for the given bank account
+     */
     public function findImportedLineKeys(string $bankAccountId, array $importLineKeys): array;
 }

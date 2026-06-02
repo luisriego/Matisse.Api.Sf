@@ -16,6 +16,8 @@ use Doctrine\ORM\Exception\ORMException;
 use Doctrine\ORM\OptimisticLockException;
 use Symfony\Component\HttpFoundation\Response;
 
+use function json_encode;
+
 /**
  * @covers \App\Context\Income\Infrastructure\Http\Controller\UpdateIncomePatchController
  */
@@ -31,7 +33,7 @@ final class UpdateIncomePatchControllerTest extends ApiTestCase
      * @throws OptimisticLockException
      * @throws ORMException
      */
-    public function test_it_should_update_income(): void
+    public function testItShouldUpdateIncome(): void
     {
         // 1. Create an initial income to be updated
         $account = AccountMother::create();
@@ -57,7 +59,7 @@ final class UpdateIncomePatchControllerTest extends ApiTestCase
             [],
             [],
             ['CONTENT_TYPE' => 'application/json'],
-            json_encode($payload)
+            json_encode($payload),
         );
 
         // 4. Assert the response
@@ -73,7 +75,7 @@ final class UpdateIncomePatchControllerTest extends ApiTestCase
         $this->assertEquals($updatedDueDate, $updatedIncome->dueDate()->format('Y-m-d'));
     }
 
-    public function test_it_should_return_not_found_if_income_does_not_exist(): void
+    public function testItShouldReturnNotFoundIfIncomeDoesNotExist(): void
     {
         $nonExistentId = UuidMother::create();
         $updatedDescription = 'Non-existent income update.';
@@ -89,13 +91,13 @@ final class UpdateIncomePatchControllerTest extends ApiTestCase
             [],
             [],
             ['CONTENT_TYPE' => 'application/json'],
-            json_encode($payload)
+            json_encode($payload),
         );
 
         $this->assertResponseStatusCodeSame(Response::HTTP_NOT_FOUND);
     }
 
-    public function test_it_maps_exceptions_correctly(): void
+    public function testItMapsExceptionsCorrectly(): void
     {
         $controller = $this->getContainer()->get(UpdateIncomePatchController::class);
         $exceptions = $controller->exceptions();

@@ -13,6 +13,7 @@ use Symfony\Component\Messenger\Attribute\AsMessageHandler;
 use Symfony\Component\Serializer\SerializerInterface;
 
 use function sprintf;
+use function strcmp;
 use function usort;
 
 #[AsMessageHandler(bus: 'query.bus')]
@@ -69,6 +70,7 @@ final readonly class FindLedgerMovementsQueryHandler implements QueryHandler
             $movements,
             static function (array $a, array $b): int {
                 $byDate = strcmp((string) $a['occurredOn'], (string) $b['occurredOn']);
+
                 if ($byDate !== 0) {
                     return $byDate;
                 }

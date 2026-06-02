@@ -49,14 +49,26 @@ class DoctrineResidentUnitRepository extends ServiceEntityRepository implements 
     public function calculateTotalIdealFraction(?string $excludeId = null): float
     {
         $queryBuilder = $this->createQueryBuilder('ru')
-            ->select('SUM(ru.idealFraction) as totalFraction');
+            ->select('COALESCE(SUM(ru.idealFraction), 0) as totalFraction')
+            ->where('ru.isActive = :isActive')
+            ->andWhere('ru.idealFraction > :minFraction')
+            ->setParameter('isActive', true)
+            ->setParameter('minFraction', 0);
 
         if (null !== $excludeId) {
-            $queryBuilder->where('ru.id != :excludeId')
+            $queryBuilder->andWhere('ru.id != :excludeId')
                 ->setParameter('excludeId', $excludeId);
         }
 
         return (float) $queryBuilder->getQuery()->getSingleScalarResult();
+    }
+
+    public function findAll(): array
+    {
+        return $this->createQueryBuilder('u')
+            ->orderBy('u.unit', 'ASC')
+            ->getQuery()
+            ->getResult();
     }
 
     public function findAllActive(): array

@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Context\ResidentUnit\Application\UseCase\PatchIdealFraction;
 
 use App\Context\ResidentUnit\Domain\Exception\IdealFractionSumExceedsLimitException;
+use App\Context\ResidentUnit\Domain\IdealFractionSumPolicy;
 use App\Context\ResidentUnit\Domain\ResidentUnitIdealFraction;
 use App\Context\ResidentUnit\Domain\ResidentUnitRepository;
 use App\Shared\Application\CommandHandler;
@@ -20,9 +21,10 @@ final readonly class PatchIdealFractionCommandHandler implements CommandHandler
         $idealFraction = new ResidentUnitIdealFraction($command->idealFraction);
 
         $totalIdealFraction = $this->repository->calculateTotalIdealFraction($command->id);
+        $projectedTotal = $totalIdealFraction + $idealFraction->value();
 
-        if (($totalIdealFraction + $idealFraction->value()) > 1) {
-            throw new IdealFractionSumExceedsLimitException();
+        if (IdealFractionSumPolicy::exceedsMaximum($projectedTotal)) {
+            throw IdealFractionSumExceedsLimitException::fromTotals($totalIdealFraction, $idealFraction->value());
         }
 
         $residentUnit->changeIdealFraction($idealFraction);

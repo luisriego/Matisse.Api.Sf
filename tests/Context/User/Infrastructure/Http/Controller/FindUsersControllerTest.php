@@ -14,6 +14,8 @@ use App\Tests\Shared\Infrastructure\PhpUnit\ApiTestCase;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 
+use function json_decode;
+
 final class FindUsersControllerTest extends ApiTestCase
 {
     protected function setUp(): void
@@ -22,7 +24,7 @@ final class FindUsersControllerTest extends ApiTestCase
         $this->createAuthenticatedClient(); // This creates a default authenticated user
     }
 
-    public function test_it_should_return_all_users_with_resident_unit_data(): void
+    public function testItShouldReturnAllUsersWithResidentUnitData(): void
     {
         // 1. Create and persist a ResidentUnit
         $residentUnit = ResidentUnitMother::create();
@@ -38,7 +40,7 @@ final class FindUsersControllerTest extends ApiTestCase
             null, // Let mother handle name
             null, // Let mother handle email
             null, // Let mother handle password
-            $passwordHasher
+            $passwordHasher,
         );
         $user->setResidentUnit($residentUnit); // Manually associate ResidentUnit
         $user->activate(); // Ensure the user is active to be returned by default queries
@@ -60,6 +62,7 @@ final class FindUsersControllerTest extends ApiTestCase
 
         // Find the created user in the response (there might be other users from createAuthenticatedClient)
         $foundUser = null;
+
         foreach ($data as $item) {
             if ($item['id'] === $user->id()) {
                 $foundUser = $item;
@@ -77,10 +80,10 @@ final class FindUsersControllerTest extends ApiTestCase
         $this->assertArrayHasKey('createdAt', $foundUser);
         $this->assertArrayHasKey('updatedAt', $foundUser);
         $this->assertMatchesRegularExpression('/^\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}$/', $foundUser['createdAt'], 'User createdAt format is incorrect.');
+
         if ($foundUser['updatedAt'] !== null) {
             $this->assertMatchesRegularExpression('/^\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}$/', $foundUser['updatedAt'], 'User updatedAt format is incorrect.');
         }
-
 
         // Assert residentUnit properties
         $this->assertArrayHasKey('residentUnit', $foundUser);
@@ -95,6 +98,7 @@ final class FindUsersControllerTest extends ApiTestCase
         $this->assertSame($residentUnit->unit(), $foundUser['residentUnit']['unit']);
         $this->assertSame($residentUnit->idealFraction(), $foundUser['residentUnit']['idealFraction']);
         $this->assertMatchesRegularExpression('/^\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}$/', $foundUser['residentUnit']['createdAt'], 'ResidentUnit createdAt format is incorrect.');
+
         if ($foundUser['residentUnit']['updatedAt'] !== null) {
             $this->assertMatchesRegularExpression('/^\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}$/', $foundUser['residentUnit']['updatedAt'], 'ResidentUnit updatedAt format is incorrect.');
         }

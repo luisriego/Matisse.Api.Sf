@@ -9,6 +9,12 @@ use App\Tests\Shared\Infrastructure\PhpUnit\ApiTestCase;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Messenger\MessageBusInterface;
 
+use function json_decode;
+use function json_encode;
+use function sprintf;
+
+use const JSON_THROW_ON_ERROR;
+
 /**
  * Deep integration: reproducible Dec/2025 + Jan/2026 condominium scenario (dev-like data).
  */
@@ -25,7 +31,7 @@ final class ForecastJan2026DeepIntegrationTest extends ApiTestCase
         $this->scenario = CondominiumJan2026Scenario::seed($this->entityManager, $commandBus);
     }
 
-    public function test_billing_policy_resolve_for_january_and_february(): void
+    public function testBillingPolicyResolveForJanuaryAndFebruary(): void
     {
         $this->client->request('GET', '/api/v1/billing-policy/resolve?targetMonth=2026-01');
         $this->assertResponseStatusCodeSame(Response::HTTP_OK);
@@ -42,7 +48,7 @@ final class ForecastJan2026DeepIntegrationTest extends ApiTestCase
         $this->assertSame(CondominiumJan2026Scenario::BILLING_EXTRA_FEE_PER_UNIT_CENTS, $feb['extraFeePerUnitCents']);
     }
 
-    public function test_explain_january_2026_reflects_reconciled_expenses(): void
+    public function testExplainJanuary2026ReflectsReconciledExpenses(): void
     {
         $this->client->request('GET', '/api/v1/slips/generation/explain?targetMonth=2026-01');
         $this->assertResponseStatusCodeSame(Response::HTTP_OK);
@@ -52,6 +58,7 @@ final class ForecastJan2026DeepIntegrationTest extends ApiTestCase
         $this->assertCount(CondominiumJan2026Scenario::JAN_EXPENSE_COUNT, $payload['expenseLines']);
 
         $expenseSum = 0;
+
         foreach ($payload['expenseLines'] as $line) {
             $expenseSum += (int) $line['amountCents'];
         }
@@ -59,7 +66,7 @@ final class ForecastJan2026DeepIntegrationTest extends ApiTestCase
         $this->assertSame(5, $payload['payingResidentsCount']);
     }
 
-    public function test_forecast_february_2026_uses_january_gas_and_billing_policy(): void
+    public function testForecastFebruary2026UsesJanuaryGasAndBillingPolicy(): void
     {
         $this->client->request(
             'GET',
@@ -87,6 +94,7 @@ final class ForecastJan2026DeepIntegrationTest extends ApiTestCase
         );
 
         $this->assertCount($this->scenario->unitCount(), $data['units']);
+
         foreach ($data['units'] as $unitRow) {
             $label = $unitRow['unit'];
             $this->assertArrayHasKey($label, $expectedGasByUnit);
@@ -115,7 +123,7 @@ final class ForecastJan2026DeepIntegrationTest extends ApiTestCase
         );
     }
 
-    public function test_forecast_february_matches_previsao_excel_golden_per_unit_totals(): void
+    public function testForecastFebruaryMatchesPrevisaoExcelGoldenPerUnitTotals(): void
     {
         $this->client->request(
             'GET',
@@ -135,7 +143,7 @@ final class ForecastJan2026DeepIntegrationTest extends ApiTestCase
         }
     }
 
-    public function test_forecast_january_2026_has_zero_gas_without_november_readings(): void
+    public function testForecastJanuary2026HasZeroGasWithoutNovemberReadings(): void
     {
         $this->client->request(
             'GET',
@@ -150,7 +158,7 @@ final class ForecastJan2026DeepIntegrationTest extends ApiTestCase
         $this->assertSame([], $data['expectedExpenseLines']);
     }
 
-    public function test_ofx_option_b_then_forecast_includes_expected_expense_line(): void
+    public function testOfxOptionBThenForecastIncludesExpectedExpenseLine(): void
     {
         $payload = [
             'bankAccountId' => '3033132774',

@@ -12,7 +12,7 @@ use Mockery\MockInterface;
 
 abstract class AccountModuleUnitTestCase extends UnitTestCase
 {
-    private AccountRepository | MockInterface | null $repository = null;
+    private null|AccountRepository|MockInterface $repository = null;
 
     protected function shouldSave(Account $account): void
     {
@@ -32,7 +32,7 @@ abstract class AccountModuleUnitTestCase extends UnitTestCase
             ->andReturn($account);
     }
 
-    protected function repository(): AccountRepository | MockInterface
+    protected function repository(): AccountRepository|MockInterface
     {
         return $this->repository ??= $this->mock(AccountRepository::class);
     }

@@ -29,7 +29,7 @@ final class SyndicFeeSlipPoolAdjustmentServiceTest extends TestCase
         );
     }
 
-    public function test_splits_pf1se_670_into_600_syndic_equal_and_70_on_unit_401(): void
+    public function testSplitsPf1se670Into600SyndicEqualAnd70OnUnit401(): void
     {
         $units = $this->fiveUnits();
         $recurring = [$this->pf1seRecurring(67000)];
@@ -53,7 +53,7 @@ final class SyndicFeeSlipPoolAdjustmentServiceTest extends TestCase
         $this->assertSame(7000, $result['individualByUnit']['u-401']);
     }
 
-    public function test_breakdown_shows_syndic_600_and_internet_on_401_for_five_units(): void
+    public function testBreakdownShowsSyndic600AndInternetOn401ForFiveUnits(): void
     {
         $units = $this->fiveUnits();
         $recurring = [$this->pf1seRecurring(67000)];
@@ -76,6 +76,7 @@ final class SyndicFeeSlipPoolAdjustmentServiceTest extends TestCase
         $this->assertSame(7000, $result['components']['grandTotalCents'] - 60000);
 
         $byUnit = [];
+
         foreach ($result['units'] as $row) {
             $byUnit[$row['unit']] = $row;
         }
@@ -90,7 +91,7 @@ final class SyndicFeeSlipPoolAdjustmentServiceTest extends TestCase
         $this->assertSame(12000, $byUnit['101']['totalCents']);
     }
 
-    public function test_no_adjustment_when_pf1se_absent(): void
+    public function testNoAdjustmentWhenPf1seAbsent(): void
     {
         $units = $this->fiveUnits();
 
@@ -101,7 +102,7 @@ final class SyndicFeeSlipPoolAdjustmentServiceTest extends TestCase
         $this->assertSame(['u-101' => 1000], $result['individualByUnit']);
     }
 
-    public function test_pf1se_reconciled_expense_supersedes_recurring_template(): void
+    public function testPf1seReconciledExpenseSupersedesRecurringTemplate(): void
     {
         $units = $this->fiveUnits();
         $recurring = [$this->pf1seRecurring(67000)];

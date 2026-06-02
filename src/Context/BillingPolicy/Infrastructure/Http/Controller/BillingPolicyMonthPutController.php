@@ -13,9 +13,11 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 
 use function array_key_exists;
+use function is_array;
 use function is_int;
 use function json_decode;
 use function preg_match;
+use function sprintf;
 
 #[OA\Put(
     path: '/api/v1/billing-policy/months/{targetMonth}',
@@ -62,6 +64,7 @@ final class BillingPolicyMonthPutController extends ApiController
 
         /** @var array<string, mixed>|null $data */
         $data = json_decode($request->getContent(), true);
+
         if (!is_array($data)) {
             throw new InvalidDataException('JSON body required.');
         }
@@ -82,12 +85,20 @@ final class BillingPolicyMonthPutController extends ApiController
         return new JsonResponse(['recorded' => true], Response::HTTP_CREATED);
     }
 
+    public function exceptions(): array
+    {
+        return [
+            InvalidDataException::class => Response::HTTP_BAD_REQUEST,
+        ];
+    }
+
     /**
      * @param array<string, mixed> $data
      */
     private function readRequiredInt(array $data, string $camel, string $snake): int
     {
         $value = $this->readInt($data, $camel, $snake);
+
         if ($value === null) {
             throw new InvalidDataException(sprintf('Missing field "%s".', $camel));
         }
@@ -104,6 +115,7 @@ final class BillingPolicyMonthPutController extends ApiController
             if (!array_key_exists($key, $data)) {
                 continue;
             }
+
             if (!is_int($data[$key])) {
                 throw new InvalidDataException(sprintf('Field "%s" must be an integer.', $key));
             }
@@ -123,9 +135,11 @@ final class BillingPolicyMonthPutController extends ApiController
             if (!array_key_exists($key, $data)) {
                 continue;
             }
+
             if ($data[$key] === null) {
                 return null;
             }
+
             if (!is_int($data[$key])) {
                 throw new InvalidDataException(sprintf('Field "%s" must be an integer or null.', $key));
             }
@@ -134,12 +148,5 @@ final class BillingPolicyMonthPutController extends ApiController
         }
 
         return null;
-    }
-
-    public function exceptions(): array
-    {
-        return [
-            InvalidDataException::class => Response::HTTP_BAD_REQUEST,
-        ];
     }
 }

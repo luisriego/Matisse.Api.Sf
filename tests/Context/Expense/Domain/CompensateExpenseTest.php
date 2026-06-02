@@ -9,7 +9,7 @@ use PHPUnit\Framework\TestCase;
 
 class CompensateExpenseTest extends TestCase
 {
-    public function test_it_should_compensate_an_expense_and_set_amount_to_zero(): void
+    public function testItShouldCompensateAnExpenseAndSetAmountToZero(): void
     {
         $expense = ExpenseMother::create();
         $initialAmount = $expense->amount();
@@ -25,7 +25,7 @@ class CompensateExpenseTest extends TestCase
         $this->assertSame(-$initialAmount, $events[0]->toPrimitives()['amount']);
     }
 
-    public function test_it_should_not_compensate_if_no_account_is_associated(): void
+    public function testItShouldNotCompensateIfNoAccountIsAssociated(): void
     {
         $expense = ExpenseMother::createWithNoAccount();
         $initialAmount = $expense->amount();

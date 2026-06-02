@@ -34,8 +34,10 @@ final class CreateAccountCommandHandlerTest extends AccountModuleUnitTestCase
         $this->handler    = new CreateAccountCommandHandler($this->creator, $this->eventStore);
     }
 
-    /** @test  */
-    public function test_it_should_create_an_account_and_record_initial_balance(): void
+    /**
+     * @test
+     */
+    public function testItShouldCreateAnAccountAndRecordInitialBalance(): void
     {
         $id   = AccountIdMother::create();
         $name = AccountNameMother::create();

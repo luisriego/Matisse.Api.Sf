@@ -38,11 +38,11 @@ abstract class ResidentUnitTestCase extends MockeryTestCase
         $this->repository
             ->shouldReceive('save')
             ->once()
-            ->with(\Mockery::on(function(ResidentUnit $actual) use ($residentUnit) {
-                return $actual->id() === $residentUnit->id() &&
-                    $actual->getUnit() === $residentUnit->getUnit() &&
-                    $actual->idealFraction() === $residentUnit->idealFraction() &&
-                    $actual->isActive() === $residentUnit->isActive();
+            ->with(Mockery::on(function (ResidentUnit $actual) use ($residentUnit) {
+                return $actual->id() === $residentUnit->id()
+                    && $actual->getUnit() === $residentUnit->getUnit()
+                    && $actual->idealFraction() === $residentUnit->idealFraction()
+                    && $actual->isActive() === $residentUnit->isActive();
             }), true);
     }
 

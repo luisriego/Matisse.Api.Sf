@@ -19,7 +19,7 @@ final class OllamaEmbeddingsMatcherTest extends TestCase
 {
     private const string MODEL = 'nomic-embed-text';
 
-    public function test_it_returns_empty_array_when_ollama_returns_null(): void
+    public function testItReturnsEmptyArrayWhenOllamaReturnsNull(): void
     {
         $embeddingRepo = $this->createMock(ExpenseEmbeddingRepository::class);
         $embeddingRepo->expects(self::never())->method('findSimilar');
@@ -32,13 +32,13 @@ final class OllamaEmbeddingsMatcherTest extends TestCase
         self::assertSame([], $matcher->findSimilar('copasa agua factura'));
     }
 
-    public function test_it_returns_candidates_from_db_sorted_by_score(): void
+    public function testItReturnsCandidatesFromDbSortedByScore(): void
     {
         $queryVector = [1.0, 0.0, 0.0];
 
         $dbRows = [
             ['expenseId' => 'uuid-aaa', 'description' => 'COPASA água fatura mensal', 'score' => 0.9921],
-            ['expenseId' => 'uuid-bbb', 'description' => 'CEMIG energia eletrica',     'score' => 0.6543],
+            ['expenseId' => 'uuid-bbb', 'description' => 'CEMIG energia eletrica', 'score' => 0.6543],
         ];
 
         $embeddingRepo = $this->createMock(ExpenseEmbeddingRepository::class);
@@ -62,7 +62,7 @@ final class OllamaEmbeddingsMatcherTest extends TestCase
         self::assertSame(0.6543, $results[1]->score);
     }
 
-    public function test_it_passes_topK_to_repository(): void
+    public function testItPassesTopKToRepository(): void
     {
         $queryVector = [0.5, 0.5, 0.0];
 
@@ -82,7 +82,7 @@ final class OllamaEmbeddingsMatcherTest extends TestCase
         self::assertSame([], $results);
     }
 
-    public function test_it_returns_empty_array_when_db_has_no_results(): void
+    public function testItReturnsEmptyArrayWhenDbHasNoResults(): void
     {
         $queryVector = [0.1, 0.2, 0.7];
 

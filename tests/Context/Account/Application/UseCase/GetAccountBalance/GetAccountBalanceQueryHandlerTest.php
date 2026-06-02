@@ -21,7 +21,7 @@ use PHPUnit\Framework\TestCase;
 class GetAccountBalanceQueryHandlerTest extends TestCase
 {
     private MockObject|StoredEventRepository $storedEventRepository;
-    private MockObject|DomainEventRegistry $domainEventRegistry;
+    private DomainEventRegistry|MockObject $domainEventRegistry;
     private GetAccountBalanceQueryHandler $handler;
 
     protected function setUp(): void
@@ -33,8 +33,10 @@ class GetAccountBalanceQueryHandlerTest extends TestCase
         $this->handler = new GetAccountBalanceQueryHandler($this->storedEventRepository, $this->domainEventRegistry);
     }
 
-    /** @test */
-    public function test_it_should_return_zero_if_no_events(): void
+    /**
+     * @test
+     */
+    public function testItShouldReturnZeroIfNoEvents(): void
     {
         $accountId = AccountIdMother::create()->value();
         $query = new GetAccountBalanceQuery($accountId, new DateTimeImmutable());
@@ -54,8 +56,10 @@ class GetAccountBalanceQueryHandlerTest extends TestCase
         $this->assertEquals(0, $result);
     }
 
-    /** @test */
-    public function test_it_should_calculate_balance_with_only_transactions(): void
+    /**
+     * @test
+     */
+    public function testItShouldCalculateBalanceWithOnlyTransactions(): void
     {
         $accountId = AccountIdMother::create()->value();
         $otherAccountId = AccountIdMother::create()->value();
@@ -83,8 +87,10 @@ class GetAccountBalanceQueryHandlerTest extends TestCase
         $this->assertEquals(700, $result);
     }
 
-    /** @test */
-    public function test_it_should_calculate_balance_with_initial_balance_and_transactions(): void
+    /**
+     * @test
+     */
+    public function testItShouldCalculateBalanceWithInitialBalanceAndTransactions(): void
     {
         $accountId = AccountIdMother::create()->value();
         $query = new GetAccountBalanceQuery($accountId, new DateTimeImmutable('2025-12-31'));
@@ -111,8 +117,10 @@ class GetAccountBalanceQueryHandlerTest extends TestCase
         $this->assertEquals(5500, $result);
     }
 
-    /** @test */
-    public function test_it_should_ignore_transactions_after_up_to_date(): void
+    /**
+     * @test
+     */
+    public function testItShouldIgnoreTransactionsAfterUpToDate(): void
     {
         $accountId = AccountIdMother::create()->value();
         $upToDate = new DateTimeImmutable('2025-01-31');
@@ -152,7 +160,7 @@ class GetAccountBalanceQueryHandlerTest extends TestCase
         }
 
         if ($domainEvent === null) {
-            $this->fail("Unsupported event class in test helper: $eventClass");
+            $this->fail("Unsupported event class in test helper: {$eventClass}");
         }
 
         $storedEvent = $this->createMock(StoredEvent::class);

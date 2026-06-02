@@ -14,6 +14,7 @@ services:
             - './Domain/Entity/'
             - './Infrastructure/Persistence/Entity/'
             - './Infrastructure/Http/Controller/'
+            - './Infrastructure/Http/OpenApi/'
             - './resident_unit.yaml'
 
     # Explicitly alias the ResidentUnitRepository interface to its Doctrine implementation

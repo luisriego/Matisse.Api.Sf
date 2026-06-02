@@ -14,6 +14,8 @@ use Doctrine\ORM\Exception\ORMException;
 use Doctrine\ORM\OptimisticLockException;
 use Symfony\Component\HttpFoundation\Response;
 
+use function sprintf;
+
 /**
  * @covers \App\Context\Expense\Infrastructure\Http\Controller\AssignAccountToExpenseTypeController
  */
@@ -29,7 +31,7 @@ final class AssignAccountToExpenseTypeControllerTest extends ApiTestCase
      * @throws ORMException
      * @throws OptimisticLockException
      */
-    public function test_it_should_assign_account_to_expense_type(): void
+    public function testItShouldAssignAccountToExpenseType(): void
     {
         $expenseType = ExpenseTypeMother::create();
         $this->entityManager->persist($expenseType);
@@ -41,7 +43,7 @@ final class AssignAccountToExpenseTypeControllerTest extends ApiTestCase
 
         $this->client->request(
             'PATCH',
-            sprintf('/api/v1/expense-types/%s/assign-account/%s', $expenseType->id(), $account->id())
+            sprintf('/api/v1/expense-types/%s/assign-account/%s', $expenseType->id(), $account->id()),
         );
 
         $this->assertResponseStatusCodeSame(Response::HTTP_OK);
@@ -54,7 +56,7 @@ final class AssignAccountToExpenseTypeControllerTest extends ApiTestCase
         $this->assertEquals($account->id(), $updatedExpenseType->account()->id());
     }
 
-    public function test_it_maps_exceptions_correctly(): void
+    public function testItMapsExceptionsCorrectly(): void
     {
         $controller = $this->getContainer()->get(AssignAccountToExpenseTypeController::class);
         $exceptions = $controller->exceptions();

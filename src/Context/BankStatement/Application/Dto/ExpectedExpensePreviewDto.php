@@ -38,6 +38,7 @@ final readonly class ExpectedExpensePreviewDto
     public function toArray(): array
     {
         $createOrUpdate = null;
+
         if ($this->createOrUpdate !== null) {
             $createOrUpdate = [
                 'displayName' => $this->createOrUpdate->displayName,

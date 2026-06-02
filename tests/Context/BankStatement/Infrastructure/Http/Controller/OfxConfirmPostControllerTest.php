@@ -7,15 +7,25 @@ namespace App\Tests\Context\BankStatement\Infrastructure\Http\Controller;
 use App\Context\Account\Domain\AccountName;
 use App\Context\Account\Domain\AccountRepository;
 use App\Context\BankStatement\Application\Service\SettlementAccountResolver;
+use App\Context\BankStatement\Application\UseCase\ConfirmBankOfxLines\ConfirmBankOfxLinesCommand;
 use App\Context\BankStatement\Application\UseCase\ConfirmBankOfxLines\ConfirmBankOfxLinesCommandHandler;
+use App\Context\BankStatement\Application\UseCase\ConfirmBankOfxLines\ConfirmLineDto;
+use App\Context\Expense\Application\Service\ExpectedExpenseFromOfxService;
 use App\Context\Expense\Domain\ExpenseRepository;
 use App\Context\Expense\Domain\RecurringExpenseRepository;
+use App\Context\Gas\Application\UseCase\RecordGasReading\RecordGasReadingCommand;
+use App\Context\Gas\Application\UseCase\SetGasPrice\SetGasPriceCommand;
 use App\Context\Income\Domain\IncomeRepository;
+use App\Context\Income\Domain\IncomeTypeRepository;
 use App\Context\Income\Domain\ValueObject\IncomeTypeName;
-use App\Context\Setup\Application\Service\SetupStatusChecker;
 use App\Context\ResidentUnit\Domain\ResidentUnitIdealFraction;
+use App\Context\ResidentUnit\Domain\ResidentUnitRepository;
 use App\Context\ResidentUnit\Domain\ResidentUnitVO;
+use App\Context\Setup\Application\Service\SetupStatusChecker;
+use App\Context\Slip\Domain\Service\SlipGenerationBreakdownBuilder;
 use App\Context\Slip\Domain\Slip;
+use App\Context\Slip\Domain\SlipGenerationParameterSnapshotRepository;
+use App\Context\Slip\Domain\SlipRepository;
 use App\Context\Slip\Domain\ValueObject\SlipAmount;
 use App\Context\Slip\Domain\ValueObject\SlipDueDate;
 use App\Tests\Context\Account\Domain\AccountMother;
@@ -27,6 +37,13 @@ use App\Tests\Shared\Domain\UuidMother;
 use App\Tests\Shared\Infrastructure\PhpUnit\ApiTestCase;
 use DateTime;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\Messenger\MessageBusInterface;
+
+use function array_map;
+use function json_decode;
+use function json_encode;
+
+use const JSON_THROW_ON_ERROR;
 
 final class OfxConfirmPostControllerTest extends ApiTestCase
 {
@@ -40,7 +57,12 @@ final class OfxConfirmPostControllerTest extends ApiTestCase
         $this->createAuthenticatedClient();
     }
 
-    public function test_it_imports_confirmed_lines_and_returns_created(): void
+    protected function tearDown(): void
+    {
+        parent::tearDown();
+    }
+
+    public function testItImportsConfirmedLinesAndReturnsCreated(): void
     {
         $account     = AccountMother::create();
         $expenseType = ExpenseTypeMother::create();
@@ -67,7 +89,7 @@ final class OfxConfirmPostControllerTest extends ApiTestCase
         $this->assertNull($data['settlementMonth']);
     }
 
-    public function test_it_creates_expected_expense_memory_when_confirming_debit(): void
+    public function testItCreatesExpectedExpenseMemoryWhenConfirmingDebit(): void
     {
         $account     = AccountMother::create();
         $expenseType = ExpenseTypeMother::create();
@@ -130,7 +152,7 @@ final class OfxConfirmPostControllerTest extends ApiTestCase
         $this->assertSame($recurringExpenses[0]->id(), $expenses[0]->recurringExpense()?->id());
     }
 
-    public function test_it_skips_expected_expense_memory_when_flag_is_false(): void
+    public function testItSkipsExpectedExpenseMemoryWhenFlagIsFalse(): void
     {
         $account     = AccountMother::create();
         $expenseType = ExpenseTypeMother::create();
@@ -173,7 +195,7 @@ final class OfxConfirmPostControllerTest extends ApiTestCase
         $this->assertSame([], $recurringRepository->findAll());
     }
 
-    public function test_it_accepts_legacy_json_property_alias_for_import_line_key(): void
+    public function testItAcceptsLegacyJsonPropertyAliasForImportLineKey(): void
     {
         $account     = AccountMother::create();
         $expenseType = ExpenseTypeMother::create();
@@ -210,7 +232,7 @@ final class OfxConfirmPostControllerTest extends ApiTestCase
         $this->assertSame(1, $data['imported']);
     }
 
-    public function test_it_consolidates_settlement_credits_and_marks_paid_on_latest_posted_date(): void
+    public function testItConsolidatesSettlementCreditsAndMarksPaidOnLatestPostedDate(): void
     {
         $account    = AccountMother::create();
         $incomeType = IncomeTypeMother::create();
@@ -283,7 +305,7 @@ final class OfxConfirmPostControllerTest extends ApiTestCase
         $this->assertTrue($data['settlementValidatedAgainstSlips']);
     }
 
-    public function test_it_accepts_settlement_when_slip_total_is_zero_greenfield(): void
+    public function testItAcceptsSettlementWhenSlipTotalIsZeroGreenfield(): void
     {
         $account    = AccountMother::create();
         $incomeType = IncomeTypeMother::create();
@@ -332,7 +354,7 @@ final class OfxConfirmPostControllerTest extends ApiTestCase
         $this->assertSame(636116, $incomes[0]->amount());
     }
 
-    public function test_it_returns_422_when_settlement_does_not_match_expected_total(): void
+    public function testItReturns422WhenSettlementDoesNotMatchExpectedTotal(): void
     {
         $account    = AccountMother::create();
         $incomeType = IncomeTypeMother::create();
@@ -373,14 +395,14 @@ final class OfxConfirmPostControllerTest extends ApiTestCase
         $this->assertSame('boleto_settlement_mismatch', $data['error']);
         $this->assertSame('2026-02', $data['settlementMonth']);
         $this->assertSame(100000, $data['expectedCents']);
-        $this->assertSame(70000,  $data['receivedCents']);
+        $this->assertSame(70000, $data['receivedCents']);
         $this->assertSame(-30000, $data['diffCents']);
 
         $incomeRepository = self::getContainer()->get(IncomeRepository::class);
         $this->assertCount(0, $incomeRepository->findAll(), 'Mismatch must not persist any income.');
     }
 
-    public function test_it_validates_and_consolidates_real_april_2026_statement_example(): void
+    public function testItValidatesAndConsolidatesRealApril2026StatementExample(): void
     {
         $account    = AccountMother::create();
         $incomeType = IncomeTypeMother::create();
@@ -464,7 +486,7 @@ final class OfxConfirmPostControllerTest extends ApiTestCase
         $this->assertSame('Compensação de boletos — 03/2026', $income->description());
     }
 
-    public function test_it_splits_real_april_2026_settlement_into_target_accounts(): void
+    public function testItSplitsRealApril2026SettlementIntoTargetAccounts(): void
     {
         // Accounts with names matching SettlementAccountResolver patterns.
         $accountPrincipal = AccountMother::create(name: new AccountName('Conta Principal'));
@@ -494,6 +516,7 @@ final class OfxConfirmPostControllerTest extends ApiTestCase
             ResidentUnitMother::create(unit: new ResidentUnitVO('401'), idealFraction: new ResidentUnitIdealFraction(0.19816931)),
             ResidentUnitMother::create(unit: new ResidentUnitVO('501'), idealFraction: new ResidentUnitIdealFraction(0.25787791)),
         ];
+
         foreach ($residentUnits as $unit) {
             $this->entityManager->persist($unit);
         }
@@ -503,7 +526,7 @@ final class OfxConfirmPostControllerTest extends ApiTestCase
         // Wire SettlementAccountResolver with enabled=true resolving from DB by name.
         $resolver = new SettlementAccountResolver(
             self::getContainer()->get(AccountRepository::class),
-            self::getContainer()->get(\App\Context\Income\Domain\IncomeTypeRepository::class),
+            self::getContainer()->get(IncomeTypeRepository::class),
             true,
         );
         $this->assertTrue($resolver->shouldSplit());
@@ -511,31 +534,32 @@ final class OfxConfirmPostControllerTest extends ApiTestCase
         self::getContainer()->set(
             ConfirmBankOfxLinesCommandHandler::class,
             new ConfirmBankOfxLinesCommandHandler(
-                self::getContainer()->get(\App\Context\Slip\Domain\SlipRepository::class),
-                self::getContainer()->get(\Symfony\Component\Messenger\MessageBusInterface::class),
-                self::getContainer()->get(\App\Context\Slip\Domain\SlipGenerationParameterSnapshotRepository::class),
-                self::getContainer()->get(\App\Context\Slip\Domain\Service\SlipGenerationBreakdownBuilder::class),
-                self::getContainer()->get(\App\Context\Expense\Domain\ExpenseRepository::class),
-                self::getContainer()->get(\App\Context\Expense\Domain\RecurringExpenseRepository::class),
-                self::getContainer()->get(\App\Context\ResidentUnit\Domain\ResidentUnitRepository::class),
+                self::getContainer()->get(SlipRepository::class),
+                self::getContainer()->get(MessageBusInterface::class),
+                self::getContainer()->get(SlipGenerationParameterSnapshotRepository::class),
+                self::getContainer()->get(SlipGenerationBreakdownBuilder::class),
+                self::getContainer()->get(ExpenseRepository::class),
+                self::getContainer()->get(RecurringExpenseRepository::class),
+                self::getContainer()->get(ResidentUnitRepository::class),
                 $resolver,
                 self::getContainer()->get(SetupStatusChecker::class),
                 self::getContainer()->get(AccountRepository::class),
-                self::getContainer()->get(\App\Context\Expense\Application\Service\ExpectedExpenseFromOfxService::class),
+                self::getContainer()->get(ExpectedExpenseFromOfxService::class),
                 null,
                 null,
             ),
         );
         // Gas configuration so gas component equals 258,15 BRL for expenseMonth=2026-03
         // (resolver uses month 2026-02 and previous 2026-01).
-        self::getContainer()->get(\Symfony\Component\Messenger\MessageBusInterface::class)
-            ->dispatch(new \App\Context\Gas\Application\UseCase\SetGasPrice\SetGasPriceCommand(2600));
+        self::getContainer()->get(MessageBusInterface::class)
+            ->dispatch(new SetGasPriceCommand(2600));
 
         $janReadings = [100.000, 200.000, 300.000, 400.000, 500.000];
         $febReadings = [101.091, 203.125, 300.441, 402.405, 502.867];
+
         foreach ($residentUnits as $idx => $unit) {
-            self::getContainer()->get(\Symfony\Component\Messenger\MessageBusInterface::class)
-                ->dispatch(new \App\Context\Gas\Application\UseCase\RecordGasReading\RecordGasReadingCommand(
+            self::getContainer()->get(MessageBusInterface::class)
+                ->dispatch(new RecordGasReadingCommand(
                     UuidMother::create(),
                     $unit->id(),
                     2026,
@@ -543,8 +567,8 @@ final class OfxConfirmPostControllerTest extends ApiTestCase
                     $janReadings[$idx],
                 ));
 
-            self::getContainer()->get(\Symfony\Component\Messenger\MessageBusInterface::class)
-                ->dispatch(new \App\Context\Gas\Application\UseCase\RecordGasReading\RecordGasReadingCommand(
+            self::getContainer()->get(MessageBusInterface::class)
+                ->dispatch(new RecordGasReadingCommand(
                     UuidMother::create(),
                     $unit->id(),
                     2026,
@@ -560,10 +584,10 @@ final class OfxConfirmPostControllerTest extends ApiTestCase
         $this->entityManager->flush();
 
         $handler = self::getContainer()->get(ConfirmBankOfxLinesCommandHandler::class);
-        $result = $handler(new \App\Context\BankStatement\Application\UseCase\ConfirmBankOfxLines\ConfirmBankOfxLinesCommand(
+        $result = $handler(new ConfirmBankOfxLinesCommand(
             bankAccountId: self::BANK_ACCOUNT_ID,
             lines: [
-                new \App\Context\BankStatement\Application\UseCase\ConfirmBankOfxLines\ConfirmLineDto(
+                new ConfirmLineDto(
                     importLineKey: 'FIT-APR-SPLIT-001',
                     amountInCents: 162758,
                     postedAt: '2026-04-06',
@@ -574,7 +598,7 @@ final class OfxConfirmPostControllerTest extends ApiTestCase
                     incomeTypeId: $incomeTypeCondominial->id(),
                     creditKind: 'boleto_settlement',
                 ),
-                new \App\Context\BankStatement\Application\UseCase\ConfirmBankOfxLines\ConfirmLineDto(
+                new ConfirmLineDto(
                     importLineKey: 'FIT-APR-SPLIT-002',
                     amountInCents: 168046,
                     postedAt: '2026-04-08',
@@ -585,7 +609,7 @@ final class OfxConfirmPostControllerTest extends ApiTestCase
                     incomeTypeId: $incomeTypeCondominial->id(),
                     creditKind: 'boleto_settlement',
                 ),
-                new \App\Context\BankStatement\Application\UseCase\ConfirmBankOfxLines\ConfirmLineDto(
+                new ConfirmLineDto(
                     importLineKey: 'FIT-APR-SPLIT-003',
                     amountInCents: 501624,
                     postedAt: '2026-04-09',
@@ -610,6 +634,7 @@ final class OfxConfirmPostControllerTest extends ApiTestCase
         $this->assertNotEmpty($splitRows);
 
         $rowsByComponent = [];
+
         foreach ($splitRows as $row) {
             $rowsByComponent[$row['component']] = $row;
         }
@@ -623,12 +648,14 @@ final class OfxConfirmPostControllerTest extends ApiTestCase
         $this->assertGreaterThan(0, $rowsByComponent['reserve']['amountCents']);
 
         $sumSplit = 0;
+
         foreach ($splitRows as $row) {
             $sumSplit += $row['amountCents'];
         }
         $this->assertSame(832428, $sumSplit);
 
         $incomeRepository = self::getContainer()->get(IncomeRepository::class);
+
         foreach ($splitRows as $row) {
             $income = $incomeRepository->findOneByIdOrFail($row['incomeId']);
             $this->assertSame($row['amountCents'], $income->amount());
@@ -651,7 +678,7 @@ final class OfxConfirmPostControllerTest extends ApiTestCase
         }
     }
 
-    public function test_other_credits_do_not_trigger_settlement_validation_and_produce_individual_incomes(): void
+    public function testOtherCreditsDoNotTriggerSettlementValidationAndProduceIndividualIncomes(): void
     {
         $account    = AccountMother::create();
         $incomeType = IncomeTypeMother::create();
@@ -701,7 +728,7 @@ final class OfxConfirmPostControllerTest extends ApiTestCase
         $this->assertSame('2026-03-31', $incomes[0]->paidAt()?->format('Y-m-d'));
     }
 
-    public function test_repeated_settlement_confirm_creates_another_consolidated_income(): void
+    public function testRepeatedSettlementConfirmCreatesAnotherConsolidatedIncome(): void
     {
         $account    = AccountMother::create();
         $incomeType = IncomeTypeMother::create();
@@ -741,12 +768,9 @@ final class OfxConfirmPostControllerTest extends ApiTestCase
         $this->assertCount(2, $incomeRepository->findAll());
     }
 
-    protected function tearDown(): void
-    {
-        parent::tearDown();
-    }
-
-    /** @param string[] $lineKeys */
+    /**
+     * @param string[] $lineKeys
+     */
     private function buildPayload(string $expenseTypeId, string $accountId, array $lineKeys): array
     {
         return [
@@ -773,9 +797,9 @@ final class OfxConfirmPostControllerTest extends ApiTestCase
         $this->entityManager->persist($residentUnit);
 
         $slip = SlipMother::create(
-            amount:       new SlipAmount($amountCents),
+            amount: new SlipAmount($amountCents),
             residentUnit: $residentUnit,
-            dueDate:      new SlipDueDate(new DateTime($dueDate)),
+            dueDate: new SlipDueDate(new DateTime($dueDate)),
         );
         $this->entityManager->persist($slip);
 

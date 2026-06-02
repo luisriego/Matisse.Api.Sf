@@ -9,7 +9,7 @@ use PHPUnit\Framework\TestCase;
 
 class AccountExpenseTest extends TestCase
 {
-    public function test_it_should_add_an_expense_to_the_account(): void
+    public function testItShouldAddAnExpenseToTheAccount(): void
     {
         $account = AccountMother::create();
         $expense = ExpenseMother::create(account: $account);
@@ -21,7 +21,7 @@ class AccountExpenseTest extends TestCase
         $this->assertSame($account, $expense->account());
     }
 
-    public function test_it_should_not_add_an_expense_if_it_already_exists(): void
+    public function testItShouldNotAddAnExpenseIfItAlreadyExists(): void
     {
         $account = AccountMother::create();
         $expense = ExpenseMother::create(account: $account);
@@ -32,7 +32,7 @@ class AccountExpenseTest extends TestCase
         $this->assertCount(1, $account->expenses());
     }
 
-    public function test_it_should_remove_an_expense_from_the_account(): void
+    public function testItShouldRemoveAnExpenseFromTheAccount(): void
     {
         $account = AccountMother::create();
         $expense = ExpenseMother::create(account: $account);

@@ -16,10 +16,18 @@ use Symfony\Component\HttpFoundation\File\UploadedFile;
 use Symfony\Component\String\Slugger\SluggerInterface;
 use Symfony\Component\String\UnicodeString;
 
+use function base64_decode;
+use function file_exists;
+use function file_put_contents;
+use function mkdir;
+use function sys_get_temp_dir;
+use function tempnam;
+use function unlink;
+
 final class AddAvatarCommandHandlerTest extends TestCase
 {
-    private UserRepository|MockObject $userRepository;
-    private SluggerInterface|MockObject $slugger;
+    private MockObject|UserRepository $userRepository;
+    private MockObject|SluggerInterface $slugger;
     private AddAvatarCommandHandler $handler;
     private string $uploadsPath = '/tmp/avatars';
 
@@ -34,22 +42,22 @@ final class AddAvatarCommandHandlerTest extends TestCase
         $this->handler = new AddAvatarCommandHandler(
             $this->userRepository,
             $this->slugger,
-            $this->uploadsPath
+            $this->uploadsPath,
         );
 
         if (!file_exists($this->uploadsPath)) {
-            mkdir($this->uploadsPath, 0777, true);
+            mkdir($this->uploadsPath, 0o777, true);
         }
     }
 
-    public function test_it_should_add_avatar_to_user(): void
+    public function testItShouldAddAvatarToUser(): void
     {
         // 1. Create a User
         $user = UserMother::createRandom();
 
         // 2. Create a dummy file for upload
         $avatarPath = tempnam(sys_get_temp_dir(), 'avatar');
-        $gifContent = base64_decode('R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7');
+        $gifContent = base64_decode('R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7', true);
         file_put_contents($avatarPath, $gifContent);
 
         $uploadedFile = new UploadedFile(
@@ -57,7 +65,7 @@ final class AddAvatarCommandHandlerTest extends TestCase
             'avatar.gif',
             'image/gif',
             null,
-            true
+            true,
         );
 
         // 3. Expect repository and slugger calls
@@ -86,7 +94,7 @@ final class AddAvatarCommandHandlerTest extends TestCase
         @unlink($this->uploadsPath . '/' . $user->avatar());
     }
 
-    public function test_it_should_delete_old_avatar_when_adding_new_one(): void
+    public function testItShouldDeleteOldAvatarWhenAddingNewOne(): void
     {
         // 1. Create a User with an existing avatar
         $user = UserMother::createRandom();
@@ -100,7 +108,7 @@ final class AddAvatarCommandHandlerTest extends TestCase
 
         // 2. Create a new dummy file for upload
         $newAvatarPath = tempnam(sys_get_temp_dir(), 'avatar');
-        $gifContent = base64_decode('R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7');
+        $gifContent = base64_decode('R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7', true);
         file_put_contents($newAvatarPath, $gifContent);
         $uploadedFile = new UploadedFile($newAvatarPath, 'new_avatar.gif', 'image/gif', null, true);
 
@@ -129,21 +137,21 @@ final class AddAvatarCommandHandlerTest extends TestCase
         @unlink($this->uploadsPath . '/' . $user->avatar());
     }
 
-    public function test_it_should_slugify_filenames_with_special_characters(): void
+    public function testItShouldSlugifyFilenamesWithSpecialCharacters(): void
     {
         // 1. Create a User
         $user = UserMother::createRandom();
 
         // 2. Create a dummy file with a weird name
         $avatarPath = tempnam(sys_get_temp_dir(), 'avatar');
-        $gifContent = base64_decode('R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7');
+        $gifContent = base64_decode('R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7', true);
         file_put_contents($avatarPath, $gifContent);
         $uploadedFile = new UploadedFile(
             $avatarPath,
             'a-weird file name with spaces & chars!.gif', // <-- Weird name
             'image/gif',
             null,
-            true
+            true,
         );
 
         // 3. Expect repository and slugger calls
@@ -174,7 +182,7 @@ final class AddAvatarCommandHandlerTest extends TestCase
         @unlink($this->uploadsPath . '/' . $user->avatar());
     }
 
-    public function test_it_should_not_update_user_if_file_move_fails(): void
+    public function testItShouldNotUpdateUserIfFileMoveFails(): void
     {
         // 1. Create a User
         $user = UserMother::createRandom();

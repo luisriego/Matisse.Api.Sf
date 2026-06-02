@@ -16,7 +16,7 @@ use RuntimeException;
 
 final class FindGasPriceQueryHandlerTest extends TestCase
 {
-    public function test_it_should_throw_exception_when_no_price_is_defined(): void
+    public function testItShouldThrowExceptionWhenNoPriceIsDefined(): void
     {
         $this->expectException(GasPriceNotFoundException::class);
 
@@ -27,7 +27,7 @@ final class FindGasPriceQueryHandlerTest extends TestCase
         $handler(new FindGasPriceQuery());
     }
 
-    public function test_it_should_throw_exception_if_payload_is_malformed(): void
+    public function testItShouldThrowExceptionIfPayloadIsMalformed(): void
     {
         $this->expectException(RuntimeException::class);
         $this->expectExceptionMessage('GasPriceWasDefined payload must contain pricePerM3InCents or legacy pricePerM3.');
@@ -45,7 +45,7 @@ final class FindGasPriceQueryHandlerTest extends TestCase
         $handler(new FindGasPriceQuery());
     }
 
-    public function test_it_should_return_price_when_payload_uses_cents_key(): void
+    public function testItShouldReturnPriceWhenPayloadUsesCentsKey(): void
     {
         $event = StoredEvent::create(
             Uuid::random()->value(),
@@ -72,7 +72,7 @@ final class FindGasPriceQueryHandlerTest extends TestCase
     }
 
     #[DataProvider('legacyPricePerM3RealsProvider')]
-    public function test_it_should_convert_legacy_price_per_m3_reals_to_cents(mixed $pricePerM3Reals, int $expectedCents): void
+    public function testItShouldConvertLegacyPricePerM3RealsToCents(mixed $pricePerM3Reals, int $expectedCents): void
     {
         $event = StoredEvent::create(
             Uuid::random()->value(),
@@ -87,7 +87,7 @@ final class FindGasPriceQueryHandlerTest extends TestCase
         $this->assertSame($expectedCents, $handler(new FindGasPriceQuery()));
     }
 
-    public function test_cents_key_takes_precedence_over_legacy_key(): void
+    public function testCentsKeyTakesPrecedenceOverLegacyKey(): void
     {
         $event = StoredEvent::create(
             Uuid::random()->value(),

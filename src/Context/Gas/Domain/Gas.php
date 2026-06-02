@@ -90,6 +90,7 @@ final class Gas extends AggregateRoot
             $month->value(),
             $reading->value(),
         ));
+
         return $gas;
     }
 

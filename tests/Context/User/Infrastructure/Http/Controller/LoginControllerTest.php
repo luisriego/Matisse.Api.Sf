@@ -5,13 +5,16 @@ declare(strict_types=1);
 namespace App\Tests\Context\User\Infrastructure\Http\Controller;
 
 use App\Context\User\Domain\User;
-use App\Tests\Shared\Infrastructure\PhpUnit\ApiTestCase;
 use App\Tests\Context\User\Domain\ValueObject\EmailMother;
 use App\Tests\Context\User\Domain\ValueObject\PasswordMother;
 use App\Tests\Context\User\Domain\ValueObject\UserIdMother;
 use App\Tests\Context\User\Domain\ValueObject\UserNameMother;
+use App\Tests\Shared\Infrastructure\PhpUnit\ApiTestCase;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
+
+use function json_decode;
+use function json_encode;
 
 final class LoginControllerTest extends ApiTestCase
 {
@@ -23,7 +26,7 @@ final class LoginControllerTest extends ApiTestCase
         $this->passwordHasher = self::getContainer()->get(UserPasswordHasherInterface::class);
     }
 
-    public function test_it_should_return_a_jwt_token_for_valid_credentials(): void
+    public function testItShouldReturnAJwtTokenForValidCredentials(): void
     {
         $plainPassword = 'my-strong-password-123';
         $userEmail = 'test@example.com';
@@ -33,7 +36,7 @@ final class LoginControllerTest extends ApiTestCase
             UserNameMother::create(),
             EmailMother::create($userEmail),
             PasswordMother::create($plainPassword),
-            $this->passwordHasher
+            $this->passwordHasher,
         );
         $user->activate();
 
@@ -49,7 +52,7 @@ final class LoginControllerTest extends ApiTestCase
             json_encode([
                 'email' => $userEmail,
                 'password' => $plainPassword,
-            ])
+            ]),
         );
 
         $response = $this->client->getResponse();
@@ -57,11 +60,11 @@ final class LoginControllerTest extends ApiTestCase
         $responseData = json_decode($response->getContent(), true);
 
         $this->assertArrayHasKey('token', $responseData);
-//        $this->assertArrayHasKey('user', $responseData);
-//        $this->assertSame($userEmail, $responseData['user']);
+        //        $this->assertArrayHasKey('user', $responseData);
+        //        $this->assertSame($userEmail, $responseData['user']);
     }
 
-    public function test_it_should_deny_login_for_inactive_user(): void
+    public function testItShouldDenyLoginForInactiveUser(): void
     {
         $plainPassword = 'my-strong-password-123';
         $userEmail = 'inactive@example.com';
@@ -71,7 +74,7 @@ final class LoginControllerTest extends ApiTestCase
             UserNameMother::create(),
             EmailMother::create($userEmail),
             PasswordMother::create($plainPassword),
-            $this->passwordHasher
+            $this->passwordHasher,
         );
 
         $this->entityManager->persist($user);
@@ -86,7 +89,7 @@ final class LoginControllerTest extends ApiTestCase
             json_encode([
                 'email' => $userEmail,
                 'password' => $plainPassword,
-            ])
+            ]),
         );
 
         $this->assertResponseStatusCodeSame(Response::HTTP_UNAUTHORIZED);

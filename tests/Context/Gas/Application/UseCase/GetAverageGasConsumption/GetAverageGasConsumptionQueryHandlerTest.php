@@ -15,6 +15,9 @@ use PHPUnit\Framework\MockObject\Exception;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 
+use function json_decode;
+use function json_encode;
+
 final class GetAverageGasConsumptionQueryHandlerTest extends TestCase
 {
     private GetAverageGasConsumptionQueryHandler $handler;
@@ -228,10 +231,10 @@ final class GetAverageGasConsumptionQueryHandlerTest extends TestCase
             'month' => $month,
             'reading' => $reading,
         ]);
-        
+
         $event = $this->createMock(StoredEvent::class);
         $event->method('payload')->willReturn(json_decode($payload, true));
-        
+
         return $event;
     }
 }

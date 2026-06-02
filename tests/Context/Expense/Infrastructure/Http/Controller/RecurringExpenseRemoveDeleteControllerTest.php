@@ -17,7 +17,7 @@ final class RecurringExpenseRemoveDeleteControllerTest extends ApiTestCase
         $this->createAuthenticatedClient();
     }
 
-    public function test_it_should_remove_recurring_expense(): void
+    public function testItShouldRemoveRecurringExpense(): void
     {
         // 1. Create an initial recurring expense to be removed
         $recurringExpense = RecurringExpenseMother::create();
@@ -30,7 +30,7 @@ final class RecurringExpenseRemoveDeleteControllerTest extends ApiTestCase
         // 2. Send the DELETE request
         $this->client->request(
             'DELETE',
-            '/api/v1/recurring-expenses/' . $recurringExpenseId
+            '/api/v1/recurring-expenses/' . $recurringExpenseId,
         );
 
         // 3. Assert the response

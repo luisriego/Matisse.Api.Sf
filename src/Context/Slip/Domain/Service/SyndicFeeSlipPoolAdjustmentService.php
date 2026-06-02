@@ -9,7 +9,7 @@ use App\Context\Expense\Domain\RecurringExpense;
 use App\Context\ResidentUnit\Domain\ResidentUnit;
 
 use function mb_strtoupper;
-use function sprintf;
+use function min;
 use function trim;
 
 /**
@@ -82,14 +82,17 @@ final readonly class SyndicFeeSlipPoolAdjustmentService
         $syndicShare = min($syndicShareTotalCents, $pf1seTotal);
         $internetShare = $pf1seTotal - $syndicShare;
         $baseEqual = $mergedEqualCents - $pf1seTotal;
+
         if ($baseEqual < 0) {
             $baseEqual = 0;
         }
 
         $individual = $individualByUnit;
         $internetUnitId = null;
+
         if ($internetShare > 0) {
             $internetUnitId = $this->resolveUnitIdByNumber($residentUnits, self::INTERNET_CHARGED_TO_UNIT);
+
             if ($internetUnitId !== null) {
                 $individual[$internetUnitId] = ($individual[$internetUnitId] ?? 0) + $internetShare;
             }
@@ -122,10 +125,12 @@ final readonly class SyndicFeeSlipPoolAdjustmentService
             if (!$expense instanceof Expense) {
                 continue;
             }
+
             if (!$this->isPf1seExpense($expense)) {
                 continue;
             }
             $classification = $this->monthlyExpenseAggregator->classifyForSlip($expense);
+
             if (!$classification['included']) {
                 continue;
             }
@@ -137,16 +142,20 @@ final readonly class SyndicFeeSlipPoolAdjustmentService
                 continue;
             }
             $type = $recurring->type();
+
             if (mb_strtoupper((string) $type->code()) !== self::SYNDIC_EXPENSE_TYPE_CODE) {
                 continue;
             }
+
             if (!$recurring->isActive() || !$recurring->hasPredefinedAmount()) {
                 continue;
             }
+
             if ($this->recurringExpenseSlipContribution->isSupersededByReconciledExpense($recurring, $expenses)) {
                 continue;
             }
             $slice = $this->recurringExpenseSlipContribution->contributionForMonth([$recurring], $year, $month, $expenses);
+
             if ($slice['equal'] > 0 || $slice['fraction'] > 0) {
                 $total += $recurring->amount();
             }
@@ -158,6 +167,7 @@ final readonly class SyndicFeeSlipPoolAdjustmentService
     private function isPf1seExpense(Expense $expense): bool
     {
         $type = $expense->type();
+
         if ($type === null) {
             return false;
         }
@@ -171,6 +181,7 @@ final readonly class SyndicFeeSlipPoolAdjustmentService
     private function resolveUnitIdByNumber(array $residentUnits, string $unitNumber): ?string
     {
         $needle = trim($unitNumber);
+
         foreach ($residentUnits as $unit) {
             if (trim((string) $unit->unit()) === $needle) {
                 return $unit->id();

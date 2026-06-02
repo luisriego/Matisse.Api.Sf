@@ -12,7 +12,7 @@ jobs:
 
         services:
             postgres:
-                image: postgres:15-alpine
+                image: pgvector/pgvector:pg16
                 env:
                     POSTGRES_DB: test_db
                     POSTGRES_USER: test_user
@@ -47,25 +47,30 @@ jobs:
             - name: Install dependencies
               run: composer install --prefer-dist --no-progress --no-suggest --dev
 
+            - name: Warm Symfony cache for PHPStan
+              run: php bin/console cache:warmup --env=dev
+
             - name: Check Coding Standards (PHP-CS-Fixer)
               run: composer analyze:standards
 
+            - name: Static analysis (PHPStan)
+              run: composer analyze:phpstan
+
             - name: Create database schema
               env:
-                  # Esta URL debe coincidir con los datos del servicio 'postgres'
-                  DATABASE_URL: "postgresql://test_user:test_password@127.0.0.1:5432/test_db?serverVersion=15&charset=utf8"
+                  DATABASE_URL: "postgresql://test_user:test_password@127.0.0.1:5432/test_db?serverVersion=16&charset=utf8"
               run: |
                   php bin/console doctrine:database:create --if-not-exists --env=test
-                  php bin/console doctrine:schema:create --env=test
+                  php bin/console dbal:run-sql "CREATE EXTENSION IF NOT EXISTS vector" --env=test
+                  php bin/console doctrine:schema:update --force --env=test
 
             - name: Generate JWT keys for test environment
               env:
-                # Usamos una passphrase simple para el entorno de test
                 JWT_PASSPHRASE: test
               run: php bin/console lexik:jwt:generate-keypair --skip-if-exists --env=test
 
             - name: Run tests
               env:
-                  DATABASE_URL: "postgresql://test_user:test_password@127.0.0.1:5432/test_db?serverVersion=15&charset=utf8"
+                  DATABASE_URL: "postgresql://test_user:test_password@127.0.0.1:5432/test_db?serverVersion=16&charset=utf8"
                   JWT_PASSPHRASE: test
-              run: php bin/phpunit
+              run: composer test

@@ -12,6 +12,7 @@ use DateTimeInterface;
 
 use function in_array;
 use function mb_strtoupper;
+use function sprintf;
 
 /**
  * Suma montos de plantillas recurrentes aplicables al mes de liquidación.
@@ -27,7 +28,7 @@ readonly class RecurringExpenseSlipContributionService
 
     /**
      * @param array<int, RecurringExpense> $recurringExpenses
-     * @param array<int, Expense>          $reconciledExpenses Gastos reales del mes (conciliación OFX / enter).
+     * @param array<int, Expense>          $reconciledExpenses gastos reales del mes (conciliación OFX / enter)
      *
      * @return array{equal: int, fraction: int}
      */
@@ -72,6 +73,7 @@ readonly class RecurringExpenseSlipContributionService
             }
 
             $amount = $recurring->amount();
+
             if ($method === ExpenseType::EQUAL) {
                 $equal += $amount;
             } elseif ($method === ExpenseType::FRACTION) {
@@ -103,11 +105,13 @@ readonly class RecurringExpenseSlipContributionService
             }
 
             $expenseType = $expense->type();
+
             if ($expenseType === null) {
                 continue;
             }
 
             $linked = $expense->recurringExpense();
+
             if ($linked !== null && $linked->id() === $recurringId) {
                 return true;
             }
@@ -160,6 +164,7 @@ readonly class RecurringExpenseSlipContributionService
             }
 
             $amount = $recurring->amount();
+
             if ($method === ExpenseType::EQUAL) {
                 $equal += $amount;
             } elseif ($method === ExpenseType::FRACTION) {
@@ -179,18 +184,22 @@ readonly class RecurringExpenseSlipContributionService
         $monthEnd = $monthStart->modify('last day of this month')->setTime(23, 59, 59);
 
         $start = $this->toImmutableStartOfDay($recurring->startDate());
+
         if ($start > $monthEnd) {
             return false;
         }
 
         $end = $recurring->endDate();
+
         if ($end !== null && $this->toImmutableStartOfDay($end) < $monthStart) {
             return false;
         }
 
         $monthsOfYear = $recurring->monthsOfYear();
+
         if ($monthsOfYear !== null && $monthsOfYear !== []) {
             $normalized = [];
+
             foreach ($monthsOfYear as $m) {
                 $normalized[] = (int) $m;
             }

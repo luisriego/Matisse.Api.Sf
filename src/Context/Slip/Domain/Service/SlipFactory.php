@@ -30,9 +30,9 @@ readonly class SlipFactory
     ) {}
 
     /**
-     * @param array<int, Expense> $expenses
+     * @param array<int, Expense>          $expenses
      * @param array<int, RecurringExpense> $recurringExpenses
-     * @param ResidentUnit[] $residentUnits
+     * @param ResidentUnit[]               $residentUnits
      *
      * @return Slip[]
      *
@@ -113,6 +113,7 @@ readonly class SlipFactory
             $reserveFundPerUnitCents,
         );
         $residentById = [];
+
         foreach ($residentUnits as $residentUnit) {
             $residentById[$residentUnit->id()] = $residentUnit;
         }

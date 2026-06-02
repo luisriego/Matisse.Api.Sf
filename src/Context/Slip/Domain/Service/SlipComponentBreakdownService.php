@@ -6,10 +6,10 @@ namespace App\Context\Slip\Domain\Service;
 
 use App\Context\ResidentUnit\Domain\ResidentUnit;
 
-use function array_map;
 use function array_fill;
-use function floor;
+use function array_map;
 use function count;
+use function floor;
 use function usort;
 
 readonly class SlipComponentBreakdownService
@@ -138,6 +138,7 @@ readonly class SlipComponentBreakdownService
     private function allocateEqualPool(array $residentUnits, int $poolCents): array
     {
         $count = count($residentUnits);
+
         if ($count === 0) {
             return [];
         }
@@ -155,6 +156,7 @@ readonly class SlipComponentBreakdownService
         }
 
         $out = [];
+
         foreach ($residentUnits as $idx => $unit) {
             $out[$unit->id()] = $allocated[$idx];
         }
@@ -170,6 +172,7 @@ readonly class SlipComponentBreakdownService
     private function allocateFractionPool(array $residentUnits, int $poolCents): array
     {
         $count = count($residentUnits);
+
         if ($count === 0) {
             return [];
         }
@@ -195,10 +198,12 @@ readonly class SlipComponentBreakdownService
         }
 
         $remainder = $poolCents - $allocatedTotal;
+
         if ($remainder > 0) {
             $sortedIndexes = $this->sortedIndexesForRemainder($residentUnits, $rawShares);
             $bucketCount = count($sortedIndexes);
             $cursor = 0;
+
             while ($remainder > 0 && $bucketCount > 0) {
                 $idx = $sortedIndexes[$cursor % $bucketCount];
                 $allocated[$idx]++;
@@ -208,6 +213,7 @@ readonly class SlipComponentBreakdownService
         }
 
         $out = [];
+
         foreach ($residentUnits as $idx => $unit) {
             $out[$unit->id()] = $allocated[$idx];
         }
@@ -229,8 +235,10 @@ readonly class SlipComponentBreakdownService
     private function sortedIndexesForRemainder(array $residentUnits, ?array $rawShares = null): array
     {
         $indexes = [];
+
         foreach ($residentUnits as $idx => $unit) {
             $fractionalPart = 0.0;
+
             if ($rawShares !== null) {
                 $fractionalPart = $rawShares[$idx] - floor($rawShares[$idx]);
             }
@@ -247,6 +255,7 @@ readonly class SlipComponentBreakdownService
             if ($a['idealFraction'] !== $b['idealFraction']) {
                 return $a['idealFraction'] < $b['idealFraction'] ? 1 : -1;
             }
+
             if ($a['fractionalPart'] !== $b['fractionalPart']) {
                 return $a['fractionalPart'] < $b['fractionalPart'] ? 1 : -1;
             }
@@ -254,6 +263,6 @@ readonly class SlipComponentBreakdownService
             return $a['unitId'] <=> $b['unitId'];
         });
 
-        return array_map(static fn(array $x): int => $x['idx'], $indexes);
+        return array_map(static fn (array $x): int => $x['idx'], $indexes);
     }
 }

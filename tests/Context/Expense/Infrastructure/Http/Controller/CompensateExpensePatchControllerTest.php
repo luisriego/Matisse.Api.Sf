@@ -11,6 +11,8 @@ use Doctrine\ORM\Exception\ORMException;
 use Doctrine\ORM\OptimisticLockException;
 use Symfony\Component\HttpFoundation\Response;
 
+use function json_encode;
+
 final class CompensateExpensePatchControllerTest extends ApiTestCase
 {
     protected function setUp(): void
@@ -23,7 +25,7 @@ final class CompensateExpensePatchControllerTest extends ApiTestCase
      * @throws OptimisticLockException
      * @throws ORMException
      */
-    public function test_it_should_compensate_expense(): void
+    public function testItShouldCompensateExpense(): void
     {
         // 1. Create an initial expense to be compensated
         $originalExpense = ExpenseMother::create();
@@ -45,7 +47,7 @@ final class CompensateExpensePatchControllerTest extends ApiTestCase
             [],
             [],
             ['CONTENT_TYPE' => 'application/json'],
-            json_encode($payload)
+            json_encode($payload),
         );
 
         // 4. Assert the response

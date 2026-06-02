@@ -30,7 +30,7 @@ final class ChangePasswordCommandHandlerTest extends TestCase
         );
     }
 
-    public function test_it_should_change_password_successfully(): void
+    public function testItShouldChangePasswordSuccessfully(): void
     {
         $user    = UserMother::createRandom();
         $command = new ChangePasswordCommand($user->getEmail(), 'old_pass', 'new_pass');
@@ -60,7 +60,7 @@ final class ChangePasswordCommandHandlerTest extends TestCase
         ($this->handler)($command);
     }
 
-    public function test_it_should_throw_if_user_not_found(): void
+    public function testItShouldThrowIfUserNotFound(): void
     {
         $this->expectException(ResourceNotFoundException::class);
 
@@ -73,7 +73,7 @@ final class ChangePasswordCommandHandlerTest extends TestCase
         ($this->handler)($command);
     }
 
-    public function test_it_should_throw_if_old_password_is_invalid(): void
+    public function testItShouldThrowIfOldPasswordIsInvalid(): void
     {
         $this->expectException(InvalidArgumentException::class);
         $this->expectExceptionMessage('Invalid old password.');

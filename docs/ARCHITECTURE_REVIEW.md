@@ -51,13 +51,7 @@ Selective and pragmatic Event Sourcing: GetAccountBalanceQueryHandler reconstruc
 
 Issues to Resolve
 High Priority
-EventStore duality (potential bug):
-Two subscribers coexist and write to the same event_store table using different columns:
-
-DomainEventStoreSubscriber → uses ORM, writes event_type / payload
-
-EventStoreSubscriber → uses direct DBAL, writes event_name / body / content_hash
-One must be chosen, and the other removed. The md5 hash in the second one suggests there were duplicate entries, a clear sign that both systems are running without coordination.
+~~EventStore duality (potential bug):~~ **RESOLVED** — consolidated on `DomainEventCollectorSubscriber` (outbox via ORM) and `DoctrineStoreEventRepository` implementing `App\Shared\Application\EventStore`. Legacy `DoctrineEventStore` removed.
 
 ApiTestCase drops and recreates the schema on every test:
 
@@ -113,7 +107,7 @@ Docker without multi-stage build: Xdebug is present in the production image. A m
 
 Inconsistent event namespace: Most are in Domain/Bus/, but some are in Domain/Event/. This should be unified (preferably to Domain/Event/).
 
-Infection configured but missing script: infection/infection is in require-dev, but there is no composer test:mutation command available to run it.
+Infection configured but missing script: ~~infection/infection is in require-dev, but there is no composer test:mutation command available to run it.~~ **RESOLVED** — `composer test:mutation` available; run via `make` target or inside container.
 
 Summary
 The code features a mature and well-thought-out architecture. The separation of concerns is clear, the domain is clean, and the patterns are properly applied. The most urgent issues are the EventStore duality (which might be silently causing incorrect data) and the ApiTestCase setup (which unnecessarily slows down the test suite). The rest are ongoing refactoring inconsistencies, which is completely normal in a living, evolving project.

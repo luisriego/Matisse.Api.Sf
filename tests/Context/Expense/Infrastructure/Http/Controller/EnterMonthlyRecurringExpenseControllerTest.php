@@ -15,6 +15,8 @@ use App\Tests\Shared\Domain\UuidMother;
 use App\Tests\Shared\Infrastructure\PhpUnit\ApiTestCase;
 use Symfony\Component\HttpFoundation\Response;
 
+use function json_encode;
+
 /**
  * @covers \App\Context\Expense\Infrastructure\Http\Controller\EnterMonthlyRecurringExpenseController
  */
@@ -26,14 +28,14 @@ final class EnterMonthlyRecurringExpenseControllerTest extends ApiTestCase
         $this->createAuthenticatedClient();
     }
 
-    public function test_it_should_enter_monthly_recurring_expense(): void
+    public function testItShouldEnterMonthlyRecurringExpense(): void
     {
         // 1. Create a recurring expense to be used as a template
         $account = AccountMother::create();
         $type = ExpenseTypeMother::create(id: UuidMother::create());
         $recurringExpense = RecurringExpenseMother::create(
             accountId: $account->id(),
-            expenseType: $type
+            expenseType: $type,
         );
 
         $this->entityManager->persist($account);
@@ -58,7 +60,7 @@ final class EnterMonthlyRecurringExpenseControllerTest extends ApiTestCase
             [],
             [],
             ['CONTENT_TYPE' => 'application/json'],
-            json_encode($payload)
+            json_encode($payload),
         );
 
         // 4. Assert the response
@@ -74,7 +76,7 @@ final class EnterMonthlyRecurringExpenseControllerTest extends ApiTestCase
         $this->assertEquals($recurringExpense->id(), $createdExpense->recurringExpense()->id());
     }
 
-    public function test_it_maps_exceptions_correctly(): void
+    public function testItMapsExceptionsCorrectly(): void
     {
         $controller = $this->getContainer()->get(EnterMonthlyRecurringExpenseController::class);
         $exceptions = $controller->exceptions();

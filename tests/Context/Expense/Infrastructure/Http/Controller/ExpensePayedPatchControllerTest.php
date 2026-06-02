@@ -17,7 +17,7 @@ final class ExpensePayedPatchControllerTest extends ApiTestCase
         $this->createAuthenticatedClient();
     }
 
-    public function test_it_should_mark_expense_as_paid(): void
+    public function testItShouldMarkExpenseAsPaid(): void
     {
         // 1. Create an initial expense that is not paid
         $expense = ExpenseMother::create();
@@ -31,7 +31,7 @@ final class ExpensePayedPatchControllerTest extends ApiTestCase
         // 2. Send the PATCH request
         $this->client->request(
             'PATCH',
-            '/api/v1/expenses/payed/' . $expense->id()
+            '/api/v1/expenses/payed/' . $expense->id(),
         );
 
         // 3. Assert the response

@@ -14,6 +14,8 @@ use App\Tests\Shared\Infrastructure\PhpUnit\ApiTestCase;
 use DateTime;
 use Symfony\Component\HttpFoundation\Response;
 
+use function json_decode;
+
 final class GetPendingMonthlyRecurringExpensesControllerTest extends ApiTestCase
 {
     protected function setUp(): void
@@ -22,7 +24,7 @@ final class GetPendingMonthlyRecurringExpensesControllerTest extends ApiTestCase
         $this->createAuthenticatedClient();
     }
 
-    public function test_it_should_return_pending_monthly_recurring_expenses(): void
+    public function testItShouldReturnPendingMonthlyRecurringExpenses(): void
     {
         // 1. Create a scenario
         $year = 2025;
@@ -35,7 +37,7 @@ final class GetPendingMonthlyRecurringExpensesControllerTest extends ApiTestCase
             accountId: $account->id(),
             expenseType: $type,
             monthsOfYear: [$month],
-            startDate: new ExpenseStartDate(new DateTime("$year-01-01"))
+            startDate: new ExpenseStartDate(new DateTime("{$year}-01-01")),
         );
 
         // This one should NOT be found because an individual expense for October already exists
@@ -43,12 +45,12 @@ final class GetPendingMonthlyRecurringExpensesControllerTest extends ApiTestCase
             accountId: $account->id(),
             expenseType: $type,
             monthsOfYear: [$month],
-            startDate: new ExpenseStartDate(new DateTime("$year-01-01"))
+            startDate: new ExpenseStartDate(new DateTime("{$year}-01-01")),
         );
         $existingExpense = ExpenseMother::create(
             account: $account,
             type: $type,
-            dueDate: new DateTime("$year-$month-15")
+            dueDate: new DateTime("{$year}-{$month}-15"),
         );
         $existingExpense->setRecurringExpense($existingRecurring);
 
@@ -57,7 +59,7 @@ final class GetPendingMonthlyRecurringExpensesControllerTest extends ApiTestCase
             accountId: $account->id(),
             expenseType: $type,
             monthsOfYear: [11],
-            startDate: new ExpenseStartDate(new DateTime("$year-01-01"))
+            startDate: new ExpenseStartDate(new DateTime("{$year}-01-01")),
         );
 
         // 2. Persist all entities
@@ -70,7 +72,7 @@ final class GetPendingMonthlyRecurringExpensesControllerTest extends ApiTestCase
         $this->entityManager->flush();
 
         // 3. Send the GET request
-        $this->client->request('GET', "/api/v1/recurring-expenses/pending-monthly/$month/$year");
+        $this->client->request('GET', "/api/v1/recurring-expenses/pending-monthly/{$month}/{$year}");
 
         // 4. Assert the response
         $this->assertResponseStatusCodeSame(Response::HTTP_OK);

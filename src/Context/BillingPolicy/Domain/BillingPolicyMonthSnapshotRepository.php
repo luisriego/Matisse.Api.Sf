@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace App\Context\BillingPolicy\Domain;
 
+use DateTimeImmutable;
+
 interface BillingPolicyMonthSnapshotRepository
 {
     /**
@@ -17,7 +19,7 @@ interface BillingPolicyMonthSnapshotRepository
         int $reserveFundPerUnitCents,
         int $syndicShareTotalCents,
         ?int $gasPricePerM3Cents,
-        \DateTimeImmutable $recordedAt,
+        DateTimeImmutable $recordedAt,
     ): void;
 
     public function flush(): void;

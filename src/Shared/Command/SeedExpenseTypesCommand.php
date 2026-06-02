@@ -44,11 +44,12 @@ final class SeedExpenseTypesCommand extends Command
         // Serviços Públicos / Contas de Consumo (SP)
         'SP1EL' => ['name' => 'CEMIG', 'description' => 'Conta de luz de corredores, elevador(es), bombas, portões, iluminação externa.', 'distributionMethod' => 'EQUAL', 'isRecurring' => true],
         'SP2AG' => ['name' => 'COPASA', 'description' => 'Conta de água/esgoto para limpeza, jardinagem (se não individualizada), consumo da portaria.', 'distributionMethod' => 'FRACTION', 'isRecurring' => true],
-        'SP3GA' => ['name' => 'Gás (Compensação Total)', 'description' => 'Total a compensar pelas unidades consumidoras', 'distributionMethod' => 'INDIVIDUAL', 'isRecurring' => true],
+        'SP3GA' => ['name' => 'Compra de Gás (Cilindro)', 'description' => 'Aquisição de gás em cilindro para áreas comuns ou uso condominial.', 'distributionMethod' => 'EQUAL', 'isRecurring' => true],
         'SP4TC' => ['name' => 'Internet (CFTV)', 'description' => 'Linha telefônica/internet', 'distributionMethod' => 'EQUAL', 'isRecurring' => true],
 
         // Pessoal / Folha de Pagamento (PF)
         'PF1SE' => ['name' => 'Salários e Encargos', 'description' => 'Taxa mensal do síndico', 'distributionMethod' => 'EQUAL', 'isRecurring' => true],
+        'PF2SE' => ['name' => 'Rateio do Síndico', 'description' => 'Rateio mensal da taxa do síndico entre as unidades.', 'distributionMethod' => 'EQUAL', 'isRecurring' => true],
 
         // Serviços Terceirizados (ST)
         'ST1LT' => ['name' => 'Limpeza Terceirizada', 'description' => 'Contrato com empresa de limpeza.', 'distributionMethod' => 'EQUAL', 'isRecurring' => true],

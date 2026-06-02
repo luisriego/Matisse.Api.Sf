@@ -13,6 +13,8 @@ use App\Shared\Application\QueryHandler;
 use App\Shared\Domain\ValueObject\DateRange;
 use DateMalformedStringException;
 
+use function sprintf;
+
 final readonly class ExplainSlipGenerationQueryHandler implements QueryHandler
 {
     public function __construct(

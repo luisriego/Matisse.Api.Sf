@@ -8,8 +8,10 @@ use App\Context\Expense\Domain\ValueObject\ExpenseDueDay;
 use App\Context\Expense\Domain\ValueObject\ExpenseStartDate;
 use App\Context\Expense\Infrastructure\Persistence\Doctrine\DoctrineRecurringExpenseRepository;
 use App\Shared\Domain\ValueObject\DateRange;
+use DateMalformedStringException;
 use DateTime;
 use Doctrine\ORM\Query;
+use Doctrine\ORM\Query\Expr;
 use Doctrine\ORM\QueryBuilder;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
@@ -17,7 +19,7 @@ use PHPUnit\Framework\TestCase;
 final class RecurringExpenseRepositoryTest extends TestCase
 {
     private DoctrineRecurringExpenseRepository&MockObject $repository;
-    private QueryBuilder&MockObject $queryBuilder;
+    private MockObject&QueryBuilder $queryBuilder;
 
     protected function setUp(): void
     {
@@ -29,8 +31,7 @@ final class RecurringExpenseRepositoryTest extends TestCase
         $this->queryBuilder->method('andWhere')->willReturnSelf();
         $this->queryBuilder->method('setParameter')->willReturnSelf();
         $this->queryBuilder->method('orderBy')->willReturnSelf();
-        $this->queryBuilder->method('expr')->willReturn(new \Doctrine\ORM\Query\Expr());
-
+        $this->queryBuilder->method('expr')->willReturn(new Expr());
 
         // Create a partial mock of the repository. We want to test its PHP logic,
         // but we need to control the part that talks to the database (createQueryBuilder).
@@ -44,9 +45,10 @@ final class RecurringExpenseRepositoryTest extends TestCase
 
     /**
      * @test
-     * @throws \DateMalformedStringException
+     *
+     * @throws DateMalformedStringException
      */
-    public function test_it_filters_active_for_date_range_correctly(): void
+    public function testItFiltersActiveForDateRangeCorrectly(): void
     {
         // Arrange
         $currentYear = (int) (new DateTime())->format('Y');
@@ -57,13 +59,13 @@ final class RecurringExpenseRepositoryTest extends TestCase
         $expenseInJuly = RecurringExpenseMother::create(
             dueDay: new ExpenseDueDay(15),
             monthsOfYear: [7],
-            startDate: new ExpenseStartDate((new DateTime())->modify('+1 day'))
+            startDate: new ExpenseStartDate((new DateTime())->modify('+1 day')),
         );
 
         $expenseEveryMonth = RecurringExpenseMother::create(
             dueDay: new ExpenseDueDay(20),
             monthsOfYear: null,
-            startDate: new ExpenseStartDate((new DateTime())->modify('+1 day'))
+            startDate: new ExpenseStartDate((new DateTime())->modify('+1 day')),
         );
 
         // Mock the query to return the expected filtered data

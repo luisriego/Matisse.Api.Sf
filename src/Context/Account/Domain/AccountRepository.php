@@ -10,9 +10,13 @@ interface AccountRepository
 
     public function findOneByIdOrFail(string $id): Account;
 
-    /** @return Account[] */
+    /**
+     * @return Account[]
+     */
     public function findAll(): array;
 
-    /** @return Account[] */
+    /**
+     * @return Account[]
+     */
     public function findAllActive(): array;
 }

@@ -24,9 +24,11 @@ use App\Tests\Context\Expense\Domain\ExpenseMother;
 use App\Tests\Context\Expense\Domain\RecurringExpenseMother;
 use PHPUnit\Framework\TestCase;
 
+use function str_replace;
+
 final class PreviewBankStatementQueryHandlerTest extends TestCase
 {
-    private const string MINIMAL_OFX = <<<OFX
+    private const string MINIMAL_OFX = <<<'OFX'
         OFXHEADER:100
         DATA:OFXSGML
         VERSION:102
@@ -66,7 +68,7 @@ final class PreviewBankStatementQueryHandlerTest extends TestCase
         </OFX>
         OFX;
 
-    public function test_it_parses_expenses_and_credits_correctly(): void
+    public function testItParsesExpensesAndCreditsCorrectly(): void
     {
         $handler = $this->buildHandler(embeddingCandidates: []);
 
@@ -81,7 +83,7 @@ final class PreviewBankStatementQueryHandlerTest extends TestCase
         self::assertTrue($result->expenses[0]->isNew);
     }
 
-    public function test_it_attaches_embedding_candidates_to_expense_lines(): void
+    public function testItAttachesEmbeddingCandidatesToExpenseLines(): void
     {
         $candidate = new EmbeddingCandidateDto(
             candidateId: 'expense-uuid-1',
@@ -100,7 +102,7 @@ final class PreviewBankStatementQueryHandlerTest extends TestCase
         self::assertSame(0.92, $expense->embeddingCandidates[0]->score);
     }
 
-    public function test_it_attaches_empty_candidates_when_embedding_service_unavailable(): void
+    public function testItAttachesEmptyCandidatesWhenEmbeddingServiceUnavailable(): void
     {
         $handler = $this->buildHandler(embeddingCandidates: []);
 
@@ -109,7 +111,7 @@ final class PreviewBankStatementQueryHandlerTest extends TestCase
         self::assertSame([], $result->expenses[0]->embeddingCandidates);
     }
 
-    public function test_it_does_not_attach_embedding_candidates_to_credit_lines(): void
+    public function testItDoesNotAttachEmbeddingCandidatesToCreditLines(): void
     {
         $candidate = new EmbeddingCandidateDto('uuid', 'label', 0.9, 'model');
 
@@ -121,7 +123,7 @@ final class PreviewBankStatementQueryHandlerTest extends TestCase
         self::assertSame([], $result->credits[0]->embeddingCandidates);
     }
 
-    public function test_credit_preview_classifies_boleto_memo_as_settlement(): void
+    public function testCreditPreviewClassifiesBoletoMemoAsSettlement(): void
     {
         $handler = $this->buildHandler(embeddingCandidates: []);
 
@@ -134,7 +136,7 @@ final class PreviewBankStatementQueryHandlerTest extends TestCase
         self::assertStringStartsWith('memo_pattern:settlement:', (string) $credit->creditClassificationSource);
     }
 
-    public function test_credit_preview_classifies_yield_memo_as_other(): void
+    public function testCreditPreviewClassifiesYieldMemoAsOther(): void
     {
         $ofx = str_replace(
             '<MEMO>BOLETOS RECEBIDOS</MEMO>',
@@ -152,14 +154,14 @@ final class PreviewBankStatementQueryHandlerTest extends TestCase
         self::assertStringStartsWith('memo_pattern:other:', (string) $credit->creditClassificationSource);
     }
 
-    public function test_debit_preview_hydrates_suggested_fields_from_top_embedding_match(): void
+    public function testDebitPreviewHydratesSuggestedFieldsFromTopEmbeddingMatch(): void
     {
         $matched = ExpenseMother::create(id: 'expense-uuid-1');
 
         $candidate = new EmbeddingCandidateDto(
             candidateId: 'expense-uuid-1',
-            label:       'COPASA água mensal',
-            score:       0.92,
+            label: 'COPASA água mensal',
+            score: 0.92,
             embeddingModel: 'nomic-embed-text',
         );
 
@@ -175,13 +177,13 @@ final class PreviewBankStatementQueryHandlerTest extends TestCase
         self::assertGreaterThanOrEqual(0.92, $expensePreview->confidence);
     }
 
-    public function test_debit_preview_does_not_hydrate_from_embedding_when_score_below_threshold(): void
+    public function testDebitPreviewDoesNotHydrateFromEmbeddingWhenScoreBelowThreshold(): void
     {
         $matched = ExpenseMother::create(id: 'expense-uuid-1');
         $candidate = new EmbeddingCandidateDto(
             candidateId: 'expense-uuid-1',
-            label:       'weak',
-            score:       0.50,
+            label: 'weak',
+            score: 0.50,
             embeddingModel: 'nomic-embed-text',
         );
 
@@ -195,7 +197,7 @@ final class PreviewBankStatementQueryHandlerTest extends TestCase
         self::assertSame('needs_review', $expensePreview->status);
     }
 
-    public function test_debit_preview_suggests_expected_expense_from_memo_when_no_recurring(): void
+    public function testDebitPreviewSuggestsExpectedExpenseFromMemoWhenNoRecurring(): void
     {
         $handler = $this->buildHandler(embeddingCandidates: []);
 
@@ -211,7 +213,7 @@ final class PreviewBankStatementQueryHandlerTest extends TestCase
         self::assertSame(5, $expense->suggestedExpectedExpense['createOrUpdate']['dueDay']);
     }
 
-    public function test_debit_preview_suggests_expected_expense_from_existing_recurring(): void
+    public function testDebitPreviewSuggestsExpectedExpenseFromExistingRecurring(): void
     {
         $recurring = RecurringExpenseMother::create(description: 'Copasa mensual');
 
@@ -241,7 +243,7 @@ final class PreviewBankStatementQueryHandlerTest extends TestCase
         self::assertSame('Copasa mensual', $expense->suggestedExpectedExpense['createOrUpdate']['displayName']);
     }
 
-    public function test_credit_preview_does_not_suggest_expected_expense(): void
+    public function testCreditPreviewDoesNotSuggestExpectedExpense(): void
     {
         $handler = $this->buildHandler(embeddingCandidates: []);
 
@@ -278,6 +280,7 @@ final class PreviewBankStatementQueryHandlerTest extends TestCase
         $embeddingMatcher->method('findSimilar')->willReturn($embeddingCandidates);
 
         $expenseRepository = $this->createMock(ExpenseRepository::class);
+
         if ($embeddingMatchedExpense !== null) {
             $expenseRepository->method('findOneById')->willReturnCallback(
                 static fn (string $id): ?Expense => $id === $embeddingMatchedExpense->id() ? $embeddingMatchedExpense : null,
@@ -294,6 +297,7 @@ final class PreviewBankStatementQueryHandlerTest extends TestCase
         ]);
 
         $recurringRepo = $this->createMock(RecurringExpenseRepository::class);
+
         if ($recurringExpense !== null) {
             $recurringRepo->method('findOneByIdOrFail')->willReturn($recurringExpense);
         }

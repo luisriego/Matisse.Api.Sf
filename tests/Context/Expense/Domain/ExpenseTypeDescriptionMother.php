@@ -6,6 +6,8 @@ namespace App\Tests\Context\Expense\Domain;
 
 use App\Context\Expense\Domain\ValueObject\ExpenseTypeDescription;
 
+use function array_rand;
+
 final class ExpenseTypeDescriptionMother
 {
     private const DESCRIPTIONS = [

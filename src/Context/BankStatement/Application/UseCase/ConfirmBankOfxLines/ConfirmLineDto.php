@@ -24,20 +24,20 @@ final readonly class ConfirmLineDto
     public const CREDIT_KIND_OTHER             = 'other';
 
     public function __construct(
-        public readonly string  $importLineKey,
-        public readonly int     $amountInCents,
-        public readonly string  $postedAt,
-        public readonly string  $memo,
-        public readonly string  $accountId,
-        public readonly string  $dueDate,
-        public readonly string  $lineType           = self::TYPE_EXPENSE,
+        public readonly string $importLineKey,
+        public readonly int $amountInCents,
+        public readonly string $postedAt,
+        public readonly string $memo,
+        public readonly string $accountId,
+        public readonly string $dueDate,
+        public readonly string $lineType           = self::TYPE_EXPENSE,
         public readonly ?string $expenseTypeId      = null,
         public readonly ?string $incomeTypeId       = null,
         public readonly ?string $description        = null,
         public readonly ?string $recurringExpenseId = null,
         public readonly ?string $residentUnitId     = null,
-        public readonly string  $creditKind         = self::CREDIT_KIND_BOLETO_SETTLEMENT,
-        public readonly bool    $isExpectedExpense  = true,
+        public readonly string $creditKind         = self::CREDIT_KIND_BOLETO_SETTLEMENT,
+        public readonly bool $isExpectedExpense  = true,
         public readonly ?ExpectedExpenseSpecDto $expectedExpense = null,
     ) {}
 

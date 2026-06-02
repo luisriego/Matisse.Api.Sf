@@ -6,9 +6,12 @@ namespace App\Context\Expense\Application\Service;
 
 use InvalidArgumentException;
 
+use function array_map;
+use function array_unique;
 use function array_values;
 use function range;
 use function sort;
+use function sprintf;
 
 final class ExpectedExpenseFrequencyMapper
 {

@@ -6,6 +6,8 @@ namespace App\Tests\Context\Expense\Domain;
 
 use App\Context\Expense\Domain\ValueObject\ExpenseTypeDistributionMethod;
 
+use function array_rand;
+
 final class ExpenseTypeDistributionMethodMother
 {
     private const METHODS = [

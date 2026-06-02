@@ -10,8 +10,8 @@ use App\Context\Income\Domain\ValueObject\IncomeAmount;
 use App\Context\Income\Domain\ValueObject\IncomeDueDate;
 use App\Context\Income\Domain\ValueObject\IncomeId;
 use App\Context\ResidentUnit\Domain\ResidentUnit;
-use App\Tests\Context\ResidentUnit\Domain\ResidentUnitMother;
 use App\Shared\Domain\ValueObject\Uuid;
+use App\Tests\Context\ResidentUnit\Domain\ResidentUnitMother;
 use App\Tests\Shared\Domain\UuidMother;
 use DateTime;
 
@@ -24,7 +24,7 @@ final class IncomeMother
         ?IncomeType $type = null,
         ?string $accountId = null,
         ?IncomeDueDate $dueDate = null,
-        ?string $description = null
+        ?string $description = null,
     ): Income {
         return Income::create(
             $id ?? new IncomeId(Uuid::random()->value()),
@@ -33,7 +33,7 @@ final class IncomeMother
             $type ?? IncomeTypeMother::create(),
             $accountId ?? UuidMother::create(),
             $dueDate ?? new IncomeDueDate(new DateTime('+1 day')),
-            $description ?? 'Random income description'
+            $description ?? 'Random income description',
         );
     }
 }

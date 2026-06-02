@@ -13,7 +13,7 @@ use PHPUnit\Framework\TestCase;
 
 final class BankOfxMatchingContextQueryHandlerTest extends TestCase
 {
-    public function test_it_marks_manual_debit_when_no_history_and_no_embeddings(): void
+    public function testItMarksManualDebitWhenNoHistoryAndNoEmbeddings(): void
     {
         $expenseRepo = $this->createMock(ExpenseRepository::class);
         $expenseRepo->method('countActiveInDueDateRange')->willReturn(0);
@@ -36,7 +36,7 @@ final class BankOfxMatchingContextQueryHandlerTest extends TestCase
         self::assertTrue($dto->manualDebitClassificationExpected);
     }
 
-    public function test_it_detects_debit_sql_history(): void
+    public function testItDetectsDebitSqlHistory(): void
     {
         $expenseRepo = $this->createMock(ExpenseRepository::class);
         $expenseRepo->method('countActiveInDueDateRange')->willReturn(3);
@@ -57,7 +57,7 @@ final class BankOfxMatchingContextQueryHandlerTest extends TestCase
         self::assertFalse($dto->manualDebitClassificationExpected);
     }
 
-    public function test_it_detects_semantic_index_without_sql(): void
+    public function testItDetectsSemanticIndexWithoutSql(): void
     {
         $expenseRepo = $this->createMock(ExpenseRepository::class);
         $expenseRepo->method('countActiveInDueDateRange')->willReturn(0);

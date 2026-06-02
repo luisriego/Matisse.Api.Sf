@@ -21,7 +21,11 @@ use Throwable;
         new OA\Parameter(name: 'id', in: 'path', required: true, schema: new OA\Schema(type: 'string', format: 'uuid')),
     ],
     responses: [
-        new OA\Response(response: 200, description: 'Resident unit details.'),
+        new OA\Response(
+            response: 200,
+            description: 'Resident unit details.',
+            content: new OA\JsonContent(ref: '#/components/schemas/ResidentUnit'),
+        ),
         new OA\Response(response: 404, description: 'Resident unit not found.'),
         new OA\Response(response: 401, description: 'Unauthorized'),
     ],

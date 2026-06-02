@@ -17,7 +17,7 @@ final class AccountDisablerPatchControllerTest extends ApiTestCase
         $this->createAuthenticatedClient();
     }
 
-    public function test_it_should_disable_account(): void
+    public function testItShouldDisableAccount(): void
     {
         // 1. Create an enabled account
         $account = AccountMother::create();
@@ -31,7 +31,7 @@ final class AccountDisablerPatchControllerTest extends ApiTestCase
         // 2. Send the PATCH request to disable it
         $this->client->request(
             'PATCH',
-            '/api/v1/accounts/disable/' . $account->id()
+            '/api/v1/accounts/disable/' . $account->id(),
         );
 
         // 3. Assert the response

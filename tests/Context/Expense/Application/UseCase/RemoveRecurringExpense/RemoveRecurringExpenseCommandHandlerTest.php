@@ -10,13 +10,14 @@ use App\Context\Expense\Domain\RecurringExpenseRepository;
 use App\Context\Expense\Domain\ValueObject\ExpenseId;
 use App\Tests\Context\Expense\Domain\ExpenseIdMother;
 use App\Tests\Context\Expense\Domain\RecurringExpenseMother;
+use DateMalformedStringException;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 use RuntimeException;
 
 class RemoveRecurringExpenseCommandHandlerTest extends TestCase
 {
-    private RecurringExpenseRepository&MockObject $repository;
+    private MockObject&RecurringExpenseRepository $repository;
     private RemoveRecurringExpenseCommandHandler $handler;
 
     protected function setUp(): void
@@ -27,9 +28,9 @@ class RemoveRecurringExpenseCommandHandlerTest extends TestCase
     }
 
     /** @test
-     * @throws \DateMalformedStringException
+     * @throws DateMalformedStringException
      */
-    public function test_it_removes_existing_recurring_expense(): void
+    public function testItRemovesExistingRecurringExpense(): void
     {
         // Arrange
         $recurringExpense = RecurringExpenseMother::create();
@@ -52,8 +53,10 @@ class RemoveRecurringExpenseCommandHandlerTest extends TestCase
         ($this->handler)($command);
     }
 
-    /** @test */
-    public function test_it_propagates_exception_when_not_found(): void
+    /**
+     * @test
+     */
+    public function testItPropagatesExceptionWhenNotFound(): void
     {
         // Arrange
         $idValue = ExpenseIdMother::create()->value();

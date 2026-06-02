@@ -22,11 +22,14 @@ use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 
+use function count;
+use function is_string;
+
 final class RegisterUserCommandHandlerTest extends TestCase
 {
     private MockObject|UserRepository $userRepository;
     private MockObject|UserPasswordHasherInterface $passwordHasher;
-    private MockObject|EventBus $eventBus;
+    private EventBus|MockObject $eventBus;
     private MockObject|ResidentUnitRepository $residentUnitRepository;
     private RegisterUserCommandHandler $handler;
 
@@ -41,11 +44,11 @@ final class RegisterUserCommandHandlerTest extends TestCase
             $this->userRepository,
             $this->passwordHasher,
             $this->eventBus,
-            $this->residentUnitRepository
+            $this->residentUnitRepository,
         );
     }
 
-    public function test_it_should_register_a_user_and_publish_event(): void
+    public function testItShouldRegisterAUserAndPublishEvent(): void
     {
         $command = $this->createRegisterUserCommand();
 
@@ -60,8 +63,12 @@ final class RegisterUserCommandHandlerTest extends TestCase
             ->method('save')
             ->with($this->callback(function (User $user) use ($command) {
                 $events = $user->pullDomainEvents();
-                if (count($events) !== 1) return false;
+
+                if (count($events) !== 1) {
+                    return false;
+                }
                 $event = $events[0];
+
                 return $event instanceof UserWasRegistered
                     && $event->email() === $command->email()
                     && $event->name() === $command->name()
@@ -81,7 +88,7 @@ final class RegisterUserCommandHandlerTest extends TestCase
         ($this->handler)($command);
     }
 
-    public function test_it_should_register_a_user_with_resident_unit_id(): void
+    public function testItShouldRegisterAUserWithResidentUnitId(): void
     {
         $residentUnitId = 'some-resident-unit-id';
         $command = $this->createRegisterUserCommand($residentUnitId);
@@ -104,6 +111,7 @@ final class RegisterUserCommandHandlerTest extends TestCase
             ->method('save')
             ->with($this->callback(function (User $user) {
                 $events = $user->pullDomainEvents();
+
                 return count($events) === 1 && $events[0] instanceof UserWasRegistered;
             }));
 
@@ -117,7 +125,7 @@ final class RegisterUserCommandHandlerTest extends TestCase
         ($this->handler)($command);
     }
 
-    public function test_it_should_throw_exception_when_user_already_exists(): void
+    public function testItShouldThrowExceptionWhenUserAlreadyExists(): void
     {
         $this->expectException(ResourceAlreadyExistException::class);
 
@@ -137,7 +145,7 @@ final class RegisterUserCommandHandlerTest extends TestCase
         ($this->handler)($command);
     }
 
-    public function test_it_should_throw_exception_when_resident_unit_not_found(): void
+    public function testItShouldThrowExceptionWhenResidentUnitNotFound(): void
     {
         $this->expectException(ResourceNotFoundException::class);
 
@@ -169,7 +177,7 @@ final class RegisterUserCommandHandlerTest extends TestCase
             UserNameMother::create()->value(),
             EmailMother::create()->value(),
             PasswordMother::create()->value(),
-            $residentUnitId
+            $residentUnitId,
         );
     }
 }

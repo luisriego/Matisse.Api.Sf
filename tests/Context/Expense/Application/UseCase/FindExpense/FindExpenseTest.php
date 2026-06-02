@@ -17,7 +17,7 @@ class FindExpenseTest extends TestCase
 {
     private FindExpenseQueryHandler $handler;
     private ExpenseRepository|MockInterface $repository;
-    private SerializerInterface|MockInterface $serializer;
+    private MockInterface|SerializerInterface $serializer;
 
     protected function setUp(): void
     {
@@ -31,7 +31,7 @@ class FindExpenseTest extends TestCase
         Mockery::close();
     }
 
-    public function test_it_should_find_an_expense(): void
+    public function testItShouldFindAnExpense(): void
     {
         $expense = ExpenseMother::create();
         $query = new FindExpenseQuery($expense->id());

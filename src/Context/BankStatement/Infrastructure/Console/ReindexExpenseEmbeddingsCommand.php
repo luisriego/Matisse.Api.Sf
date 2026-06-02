@@ -19,6 +19,7 @@ use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Style\SymfonyStyle;
 use Symfony\Component\Uid\Uuid;
 
+use function count;
 use function sprintf;
 
 #[AsCommand(
@@ -28,10 +29,10 @@ use function sprintf;
 final class ReindexExpenseEmbeddingsCommand extends Command
 {
     public function __construct(
-        private readonly ExpenseRepository             $expenseRepository,
-        private readonly ExpenseEmbeddingRepository    $embeddingRepository,
+        private readonly ExpenseRepository $expenseRepository,
+        private readonly ExpenseEmbeddingRepository $embeddingRepository,
         private readonly EmbeddingVectorClientInterface $vectorClient,
-        private readonly string                         $embeddingModel,
+        private readonly string $embeddingModel,
     ) {
         parent::__construct();
     }
@@ -62,6 +63,7 @@ final class ReindexExpenseEmbeddingsCommand extends Command
 
             if ($description === null || $description === '') {
                 ++$skipped;
+
                 continue;
             }
 
@@ -71,14 +73,15 @@ final class ReindexExpenseEmbeddingsCommand extends Command
             if ($vector === null) {
                 $io->warning(sprintf('  Ollama failed for expense %s — skipped.', $expense->id()));
                 ++$skipped;
+
                 continue;
             }
 
             $this->embeddingRepository->upsert(new ExpenseEmbedding(
-                id:             Uuid::v4()->toRfc4122(),
-                expenseId:      $expense->id(),
-                vector:         $vector,
-                description:    $description,
+                id: Uuid::v4()->toRfc4122(),
+                expenseId: $expense->id(),
+                vector: $vector,
+                description: $description,
                 embeddingModel: $this->embeddingModel,
             ));
 

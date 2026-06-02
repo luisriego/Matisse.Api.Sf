@@ -12,6 +12,7 @@ final class UserNameMother
     public static function create(?string $value = null): UserName
     {
         $faker = Factory::create();
+
         return UserName::fromString($value ?? $faker->name());
     }
 }

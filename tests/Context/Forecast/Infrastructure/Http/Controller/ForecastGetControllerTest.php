@@ -8,6 +8,8 @@ use App\Tests\Context\ResidentUnit\Domain\ResidentUnitMother;
 use App\Tests\Shared\Infrastructure\PhpUnit\ApiTestCase;
 use Symfony\Component\HttpFoundation\Response;
 
+use function json_decode;
+
 final class ForecastGetControllerTest extends ApiTestCase
 {
     protected function setUp(): void
@@ -16,7 +18,7 @@ final class ForecastGetControllerTest extends ApiTestCase
         $this->client = $this->createAuthenticatedClient();
     }
 
-    public function test_it_returns_forecast_payload_for_valid_target_month(): void
+    public function testItReturnsForecastPayloadForValidTargetMonth(): void
     {
         $unit = ResidentUnitMother::create();
         $this->entityManager->persist($unit);
@@ -39,7 +41,7 @@ final class ForecastGetControllerTest extends ApiTestCase
         $this->assertArrayHasKey('totals', $data['data']);
     }
 
-    public function test_it_returns_bad_request_on_invalid_reconciliation_month(): void
+    public function testItReturnsBadRequestOnInvalidReconciliationMonth(): void
     {
         $unit = ResidentUnitMother::create();
         $this->entityManager->persist($unit);

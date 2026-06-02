@@ -103,4 +103,3 @@ final class ExpenseTypeAccountRelationTest extends TestCase
         $this->assertCount(0, $account->expenseTypes());
     }
 }
-

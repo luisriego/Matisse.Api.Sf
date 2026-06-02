@@ -107,7 +107,7 @@ class ResidentUnit extends AggregateRoot
 
     public function idealFractionMustNotBeMoreThan1(float $accumulatedIF, float $presentValue): bool
     {
-        return $accumulatedIF + $presentValue <= 1;
+        return IdealFractionSumPolicy::isWithinMaximum($accumulatedIF, $presentValue);
     }
 
     public function notificationRecipients(): array

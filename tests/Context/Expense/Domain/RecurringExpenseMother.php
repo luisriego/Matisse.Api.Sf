@@ -11,11 +11,13 @@ use App\Context\Expense\Domain\ValueObject\ExpenseDueDay;
 use App\Context\Expense\Domain\ValueObject\ExpenseEndDate;
 use App\Context\Expense\Domain\ValueObject\ExpenseId;
 use App\Context\Expense\Domain\ValueObject\ExpenseStartDate;
+use DateMalformedStringException;
+use DateTime;
 
 final class RecurringExpenseMother
 {
     /**
-     * @throws \DateMalformedStringException
+     * @throws DateMalformedStringException
      */
     public static function create(
         ?ExpenseId $id = null,
@@ -26,17 +28,17 @@ final class RecurringExpenseMother
         ?array $monthsOfYear = null,
         ?ExpenseStartDate $startDate = null,
         ?ExpenseEndDate $endDate = null,
-        ?string $description = null
+        ?string $description = null,
     ): RecurringExpense {
-        $id            = $id            ?? ExpenseIdMother::create();
-        $accountId     = $accountId     ?? 'a5a4c7e4-9c5b-4b8f-8c6e-1e2b3c4d5e6f'; // Default test account ID
-        $amount        = $amount        ?? ExpenseAmountMother::create();
-        $expenseType   = $expenseType   ?? ExpenseTypeMother::create();
-        $dueDay        = $dueDay        ?? new ExpenseDueDay(15);
-        $monthsOfYear  = $monthsOfYear  ?? [1, 4, 7, 10];
-        $startDate     = $startDate     ?? new ExpenseStartDate((new \DateTime())->modify('+1 day'));
-        $endDate       = $endDate       ?? new ExpenseEndDate((new \DateTime())->modify('+1 year'));
-        $description   = $description   ?? 'Default recurring description';
+        $id ??= ExpenseIdMother::create();
+        $accountId ??= 'a5a4c7e4-9c5b-4b8f-8c6e-1e2b3c4d5e6f'; // Default test account ID
+        $amount ??= ExpenseAmountMother::create();
+        $expenseType ??= ExpenseTypeMother::create();
+        $dueDay ??= new ExpenseDueDay(15);
+        $monthsOfYear ??= [1, 4, 7, 10];
+        $startDate ??= new ExpenseStartDate((new DateTime())->modify('+1 day'));
+        $endDate ??= new ExpenseEndDate((new DateTime())->modify('+1 year'));
+        $description ??= 'Default recurring description';
 
         return RecurringExpense::create(
             $id,
@@ -47,7 +49,7 @@ final class RecurringExpenseMother
             $monthsOfYear,
             $startDate,
             $endDate,
-            $description
+            $description,
         );
     }
 }

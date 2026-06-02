@@ -7,7 +7,7 @@ namespace App\Context\BankStatement\Application\UseCase\ConfirmBankOfxLines;
 final readonly class ConfirmBankOfxLinesResult
 {
     public function __construct(
-        public readonly int     $imported,
+        public readonly int $imported,
         /**
          * Id of the consolidated income created from "boleto_settlement" lines (if any).
          * Null when there were no settlement lines in this request.

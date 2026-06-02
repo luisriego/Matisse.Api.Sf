@@ -6,16 +6,17 @@ namespace App\Tests\Context\Slip\Domain\Service;
 
 use App\Context\Expense\Domain\Expense;
 use App\Context\Expense\Domain\ExpenseType;
-use App\Context\Slip\Domain\Service\GasExpenseByUnitResolver;
 use App\Context\ResidentUnit\Domain\ResidentUnit;
+use App\Context\Slip\Domain\Service\GasExpenseByUnitResolver;
 use App\Context\Slip\Domain\Service\MonthlyExpenseAggregatorService;
 use App\Context\Slip\Domain\Service\RecurringExpenseSlipContributionService;
 use App\Context\Slip\Domain\Service\SlipComponentBreakdownService;
 use App\Context\Slip\Domain\Service\SlipFactory;
 use App\Context\Slip\Domain\Service\SyndicFeeSlipPoolAdjustmentService;
 use App\Context\Slip\Domain\Slip;
-use DateTimeImmutable;
-use PHPUnit\Framework\MockObject\MockObject; // Asegúrate de que esta línea exista
+use DateMalformedStringException;
+use DateTimeImmutable; // Asegúrate de que esta línea exista
+use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 use Psr\Log\LoggerInterface;
 
@@ -24,8 +25,8 @@ class SlipFactoryTest extends TestCase
     private SlipFactory $factory;
     private MockObject|MonthlyExpenseAggregatorService $monthlyExpenseAggregatorService; // Añadido
     private SlipComponentBreakdownService $slipComponentBreakdownService;
-    private MockObject|GasExpenseByUnitResolver $gasExpenseByUnitResolver;
-    private MockObject|LoggerInterface $logger; // Añadido
+    private GasExpenseByUnitResolver|MockObject $gasExpenseByUnitResolver;
+    private LoggerInterface|MockObject $logger; // Añadido
 
     protected function setUp(): void
     {
@@ -54,7 +55,7 @@ class SlipFactoryTest extends TestCase
     }
 
     /**
-     * @throws \DateMalformedStringException
+     * @throws DateMalformedStringException
      */
     public function testCreateFromExpensesAndUnitsHappyPath(): void
     {
@@ -85,6 +86,7 @@ class SlipFactoryTest extends TestCase
         $this->assertContainsOnlyInstancesOf(Slip::class, $slips);
 
         $amounts = [];
+
         foreach ($slips as $slip) {
             $amounts[$slip->residentUnit()->id()] = $slip->amount();
         }
@@ -94,14 +96,14 @@ class SlipFactoryTest extends TestCase
     }
 
     /**
-     * @throws \DateMalformedStringException
+     * @throws DateMalformedStringException
      */
     public function testFactorySkipsSlipForZeroAmountResident(): void
     {
         // Arrange (Rewritten for clarity)
         $typeFraction = $this->createConfiguredMock(ExpenseType::class, ['distributionMethod' => 'FRACTION']);
         $allExpenses = [
-            $this->createConfiguredMock(Expense::class, ['amount' => 50000, 'type' => $typeFraction])
+            $this->createConfiguredMock(Expense::class, ['amount' => 50000, 'type' => $typeFraction]),
         ];
 
         $residentWithZeroAmount = $this->createConfiguredMock(ResidentUnit::class, ['id' => 'resident-zero', 'idealFraction' => 0.0, 'unit' => '101']);
@@ -126,7 +128,7 @@ class SlipFactoryTest extends TestCase
     }
 
     /**
-     * @throws \DateMalformedStringException
+     * @throws DateMalformedStringException
      */
     public function testFactoryReturnsEmptyArrayWhenNoExpenses(): void
     {
@@ -147,7 +149,7 @@ class SlipFactoryTest extends TestCase
     }
 
     /**
-     * @throws \DateMalformedStringException
+     * @throws DateMalformedStringException
      */
     public function testFactoryReturnsEmptyArrayWhenNoResidents(): void
     {
@@ -162,7 +164,7 @@ class SlipFactoryTest extends TestCase
     }
 
     /**
-     * @throws \DateMalformedStringException
+     * @throws DateMalformedStringException
      */
     public function testFactorySetsCorrectDueDate(): void
     {

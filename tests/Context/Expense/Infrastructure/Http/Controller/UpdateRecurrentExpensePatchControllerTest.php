@@ -9,6 +9,8 @@ use App\Tests\Context\Expense\Domain\RecurringExpenseMother;
 use App\Tests\Shared\Infrastructure\PhpUnit\ApiTestCase;
 use Symfony\Component\HttpFoundation\Response;
 
+use function json_encode;
+
 final class UpdateRecurrentExpensePatchControllerTest extends ApiTestCase
 {
     protected function setUp(): void
@@ -17,7 +19,7 @@ final class UpdateRecurrentExpensePatchControllerTest extends ApiTestCase
         $this->createAuthenticatedClient();
     }
 
-    public function test_it_should_update_recurring_expense(): void
+    public function testItShouldUpdateRecurringExpense(): void
     {
         // 1. Create an initial recurring expense
         $recurringExpense = RecurringExpenseMother::create();
@@ -43,7 +45,7 @@ final class UpdateRecurrentExpensePatchControllerTest extends ApiTestCase
             [],
             [],
             ['CONTENT_TYPE' => 'application/json'],
-            json_encode($payload)
+            json_encode($payload),
         );
 
         // 4. Assert the response

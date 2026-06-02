@@ -6,14 +6,14 @@ namespace App\Tests\Context\Slip\Application\UseCase;
 
 use App\Context\BillingPolicy\Domain\BillingPolicyResolverPort;
 use App\Context\BillingPolicy\Domain\ResolvedBillingPolicy;
-use App\Context\Expense\Domain\RecurringExpense;
 use App\Context\Expense\Domain\Expense;
+use App\Context\Expense\Domain\ExpenseRepository;
+use App\Context\Expense\Domain\RecurringExpense;
+use App\Context\Expense\Domain\RecurringExpenseRepository;
 use App\Context\ResidentUnit\Domain\ResidentUnit;
 use App\Context\ResidentUnit\Domain\ResidentUnitRepository;
 use App\Context\Slip\Application\UseCase\SlipGeneration\SlipGenerationCommand;
 use App\Context\Slip\Application\UseCase\SlipGeneration\SlipGenerationCommandHandler;
-use App\Context\Expense\Domain\RecurringExpenseRepository;
-use App\Context\Expense\Domain\ExpenseRepository;
 use App\Context\Slip\Domain\PeriodClosureRepository;
 use App\Context\Slip\Domain\Service\PeriodClosureGuard;
 use App\Context\Slip\Domain\Service\SlipFactory;
@@ -22,20 +22,23 @@ use App\Context\Slip\Domain\Slip;
 use App\Context\Slip\Domain\SlipGenerationParameterSnapshotRepository;
 use App\Context\Slip\Domain\SlipRepository;
 use App\Shared\Domain\ValueObject\DateRange;
+use DateMalformedStringException;
 use PHPUnit\Framework\Attributes\Test;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 
+use function array_shift;
+
 final class SlipGenerationCommandHandlerTest extends TestCase
 {
     private SlipGenerationCommandHandler $handler;
-    private SlipRepository&MockObject $slipRepo;
+    private MockObject&SlipRepository $slipRepo;
     private ExpenseRepository&MockObject $expenseRepo;
-    private RecurringExpenseRepository&MockObject $recurringRepo;
-    private ResidentUnitRepository&MockObject $residentUnitRepo;
+    private MockObject&RecurringExpenseRepository $recurringRepo;
+    private MockObject&ResidentUnitRepository $residentUnitRepo;
     private MockObject|SlipGenerationPolicy $generationPolicy;
-    private SlipFactory&MockObject $slipFactory;
-    private SlipGenerationParameterSnapshotRepository&MockObject $snapshotRepo;
+    private MockObject&SlipFactory $slipFactory;
+    private MockObject&SlipGenerationParameterSnapshotRepository $snapshotRepo;
     private BillingPolicyResolverPort&MockObject $billingPolicyResolverService;
 
     protected function setUp(): void
@@ -71,10 +74,10 @@ final class SlipGenerationCommandHandlerTest extends TestCase
     }
 
     /**
-     * @throws \DateMalformedStringException
+     * @throws DateMalformedStringException
      */
     #[Test]
-    public function it_generates_and_persists_slips_correctly(): void
+    public function itGeneratesAndPersistsSlipsCorrectly(): void
     {
         // Arrange
         $year = 2099;
@@ -135,9 +138,10 @@ final class SlipGenerationCommandHandlerTest extends TestCase
                 $this->callback(function (Slip $slip) use (&$generatedSlips) {
                     $expectedSlip = array_shift($generatedSlips);
                     $this->assertSame($expectedSlip, $slip, 'The correct slip object should be saved in order.');
+
                     return true;
                 }),
-                $this->equalTo(false)
+                $this->equalTo(false),
             );
 
         $this->slipRepo->expects($this->once())->method('flush');

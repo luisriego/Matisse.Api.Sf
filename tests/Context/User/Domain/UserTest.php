@@ -15,7 +15,7 @@ use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 
 final class UserTest extends TestCase
 {
-    public function test_it_should_create_a_user_correctly(): void
+    public function testItShouldCreateAUserCorrectly(): void
     {
         $id = UserIdMother::create();
         $name = UserNameMother::create();
@@ -34,7 +34,7 @@ final class UserTest extends TestCase
         $this->assertContains('ROLE_USER', $user->getRoles());
     }
 
-    public function test_it_should_record_a_domain_event_on_creation(): void
+    public function testItShouldRecordADomainEventOnCreation(): void
     {
         $user = UserMother::createRandom();
         $events = $user->pullDomainEvents();

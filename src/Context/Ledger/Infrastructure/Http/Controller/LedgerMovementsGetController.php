@@ -11,6 +11,8 @@ use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 
+use function is_string;
+
 #[OA\Get(
     path: '/api/v1/ledger/movements/{year}/{month}',
     summary: 'Get ledger movements for a month',
@@ -19,8 +21,13 @@ use Symfony\Component\HttpFoundation\Response;
     parameters: [
         new OA\Parameter(name: 'year', in: 'path', required: true, schema: new OA\Schema(type: 'integer')),
         new OA\Parameter(name: 'month', in: 'path', required: true, schema: new OA\Schema(type: 'integer', minimum: 1, maximum: 12)),
-        new OA\Parameter(name: 'accountId', in: 'query', required: false, schema: new OA\Schema(type: 'string', format: 'uuid'),
-            description: 'Filter by ledger account ID'),
+        new OA\Parameter(
+            name: 'accountId',
+            in: 'query',
+            required: false,
+            schema: new OA\Schema(type: 'string', format: 'uuid'),
+            description: 'Filter by ledger account ID',
+        ),
     ],
     responses: [
         new OA\Response(response: 200, description: 'Ledger movements.'),

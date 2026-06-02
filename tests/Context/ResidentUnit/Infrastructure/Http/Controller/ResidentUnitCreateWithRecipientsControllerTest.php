@@ -13,6 +13,9 @@ use App\Tests\Shared\Domain\UuidMother;
 use App\Tests\Shared\Infrastructure\PhpUnit\ApiTestCase;
 use Symfony\Component\HttpFoundation\Response;
 
+use function json_decode;
+use function json_encode;
+
 /**
  * @covers \App\Context\ResidentUnit\Infrastructure\Http\Controller\ResidentUnitCreateWithRecipientsController
  */
@@ -24,7 +27,7 @@ final class ResidentUnitCreateWithRecipientsControllerTest extends ApiTestCase
         $this->createAuthenticatedClient();
     }
 
-    public function test_it_should_create_resident_unit_with_recipients(): void
+    public function testItShouldCreateResidentUnitWithRecipients(): void
     {
         // 1. Define the payload
         $residentUnitId = UuidMother::create();
@@ -45,7 +48,7 @@ final class ResidentUnitCreateWithRecipientsControllerTest extends ApiTestCase
             [],
             [],
             ['CONTENT_TYPE' => 'application/json'],
-            json_encode($payload)
+            json_encode($payload),
         );
 
         // 3. Assert the response
@@ -62,7 +65,7 @@ final class ResidentUnitCreateWithRecipientsControllerTest extends ApiTestCase
         self::assertEquals($payload['notificationRecipients'], $createdResidentUnit->notificationRecipients());
     }
 
-    public function test_it_should_return_bad_request_if_ideal_fraction_is_invalid(): void
+    public function testItShouldReturnBadRequestIfIdealFractionIsInvalid(): void
     {
         $residentUnitId = UuidMother::create();
         $payload = [
@@ -78,7 +81,7 @@ final class ResidentUnitCreateWithRecipientsControllerTest extends ApiTestCase
             [],
             [],
             ['CONTENT_TYPE' => 'application/json'],
-            json_encode($payload)
+            json_encode($payload),
         );
 
         $this->assertResponseStatusCodeSame(Response::HTTP_BAD_REQUEST);
@@ -86,7 +89,7 @@ final class ResidentUnitCreateWithRecipientsControllerTest extends ApiTestCase
         $this->assertStringContainsString('A fração ideal deve ser maior ou igual a zero e menor ou igual a um.', $responseContent['message']);
     }
 
-    public function test_it_should_return_conflict_if_resident_unit_already_exists(): void
+    public function testItShouldReturnConflictIfResidentUnitAlreadyExists(): void
     {
         // 1. Create a resident unit first
         $existingResidentUnit = ResidentUnitMother::create();
@@ -107,7 +110,7 @@ final class ResidentUnitCreateWithRecipientsControllerTest extends ApiTestCase
             [],
             [],
             ['CONTENT_TYPE' => 'application/json'],
-            json_encode($payload)
+            json_encode($payload),
         );
 
         $this->assertResponseStatusCodeSame(Response::HTTP_CONFLICT);
@@ -116,7 +119,7 @@ final class ResidentUnitCreateWithRecipientsControllerTest extends ApiTestCase
         $this->assertStringContainsString('already exists', $responseContent['message']);
     }
 
-    public function test_it_maps_exceptions_correctly(): void
+    public function testItMapsExceptionsCorrectly(): void
     {
         $controller = $this->getContainer()->get(ResidentUnitCreateWithRecipientsController::class);
         $exceptions = $controller->exceptions();

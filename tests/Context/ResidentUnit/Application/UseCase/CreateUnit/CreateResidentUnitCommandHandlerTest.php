@@ -1,10 +1,14 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Tests\Context\ResidentUnit\Application\UseCase\CreateUnit;
 
 use App\Context\ResidentUnit\Application\UseCase\CreateUnit\CreateResidentUnitCommand;
 use App\Context\ResidentUnit\Application\UseCase\CreateUnit\CreateResidentUnitCommandHandler;
+use App\Context\ResidentUnit\Domain\Exception\IdealFractionSumExceedsLimitException;
 use App\Context\ResidentUnit\Domain\ResidentUnit;
+use App\Context\ResidentUnit\Domain\ResidentUnitId;
 use App\Context\ResidentUnit\Domain\ResidentUnitRepository;
 use App\Shared\Domain\Exception\InvalidArgumentException;
 use App\Tests\Context\ResidentUnit\Domain\ResidentUnitIdealFractionMother;
@@ -12,8 +16,8 @@ use App\Tests\Context\ResidentUnit\Domain\ResidentUnitIdMother;
 use App\Tests\Context\ResidentUnit\Domain\ResidentUnitVOMother;
 use PHPUnit\Framework\MockObject\Exception;
 use PHPUnit\Framework\TestCase;
-use App\Context\ResidentUnit\Domain\ResidentUnitId;
-use App\Context\ResidentUnit\Domain\ResidentUnitIdealFraction;
+
+use function sprintf;
 
 class CreateResidentUnitCommandHandlerTest extends TestCase
 {
@@ -29,7 +33,7 @@ class CreateResidentUnitCommandHandlerTest extends TestCase
         $this->handler = new CreateResidentUnitCommandHandler($this->repository);
     }
 
-    public function test_it_should_create_a_resident_unit_successfully(): void
+    public function testItShouldCreateAResidentUnitSuccessfully(): void
     {
         $id = ResidentUnitIdMother::create();
         $unit = ResidentUnitVOMother::create();
@@ -38,7 +42,7 @@ class CreateResidentUnitCommandHandlerTest extends TestCase
         $command = new CreateResidentUnitCommand(
             $id->value(),
             $unit->value(),
-            $idealFraction->value()
+            $idealFraction->value(),
         );
 
         $this->repository->expects($this->once())
@@ -58,7 +62,33 @@ class CreateResidentUnitCommandHandlerTest extends TestCase
         ($this->handler)($command);
     }
 
-    public function test_it_throws_exception_when_ideal_fraction_exceeds_one(): void
+    public function testItAcceptsTotalJustAboveOneWithinFloatingPointTolerance(): void
+    {
+        $id = ResidentUnitIdMother::create();
+
+        $this->repository
+            ->method('calculateTotalIdealFraction')
+            ->willReturn(0.99999995);
+
+        $this->repository->expects($this->once())
+            ->method('exists')
+            ->with(self::isInstanceOf(ResidentUnitId::class))
+            ->willReturn(false);
+
+        $this->repository->expects($this->once())
+            ->method('save')
+            ->with(self::isInstanceOf(ResidentUnit::class), true);
+
+        $command = new CreateResidentUnitCommand(
+            $id->value(),
+            'Unit Name',
+            0.0000001,
+        );
+
+        ($this->handler)($command);
+    }
+
+    public function testItThrowsExceptionWhenIdealFractionExceedsOne(): void
     {
         // Use a valid ID for this test
         $id = ResidentUnitIdMother::create();
@@ -76,16 +106,16 @@ class CreateResidentUnitCommandHandlerTest extends TestCase
         $command = new CreateResidentUnitCommand(
             $id->value(), // Use a valid ID
             'Unit Name',
-            0.2 // New fraction that exceeds the limit
+            0.2, // New fraction that exceeds the limit
         );
 
-        $this->expectException(InvalidArgumentException::class);
-        $this->expectExceptionMessage('A fração ideal não pode ser maior que 1.');
+        $this->expectException(IdealFractionSumExceedsLimitException::class);
+        $this->expectExceptionMessage('A soma das frações ideais não pode ser maior que 1.');
 
         $this->handler->__invoke($command);
     }
 
-    public function test_it_should_throw_exception_if_id_is_invalid(): void
+    public function testItShouldThrowExceptionIfIdIsInvalid(): void
     {
         $invalidId = 'not-a-valid-uuid';
         $unit = ResidentUnitVOMother::create();
@@ -94,7 +124,7 @@ class CreateResidentUnitCommandHandlerTest extends TestCase
         $command = new CreateResidentUnitCommand(
             $invalidId,
             $unit->value(),
-            $idealFraction->value()
+            $idealFraction->value(),
         );
 
         // The exists method will NOT be called because ResidentUnitId constructor will throw an exception first
@@ -103,12 +133,12 @@ class CreateResidentUnitCommandHandlerTest extends TestCase
         $this->repository->expects($this->never())->method('save');
 
         $this->expectException(InvalidArgumentException::class);
-        $this->expectExceptionMessage(sprintf('<%s> does not allow the value <%s>.', \App\Context\ResidentUnit\Domain\ResidentUnitId::class, $invalidId));
+        $this->expectExceptionMessage(sprintf('<%s> does not allow the value <%s>.', ResidentUnitId::class, $invalidId));
 
         ($this->handler)($command);
     }
 
-    public function test_it_should_throw_exception_if_ideal_fraction_is_not_between_zero_and_one(): void
+    public function testItShouldThrowExceptionIfIdealFractionIsNotBetweenZeroAndOne(): void
     {
         $id = ResidentUnitIdMother::create();
         $unit = ResidentUnitVOMother::create();
@@ -117,7 +147,7 @@ class CreateResidentUnitCommandHandlerTest extends TestCase
         $command = new CreateResidentUnitCommand(
             $id->value(),
             $unit->value(),
-            $invalidIdealFraction
+            $invalidIdealFraction,
         );
 
         // Mock the exists method to return false, indicating the unit does not exist

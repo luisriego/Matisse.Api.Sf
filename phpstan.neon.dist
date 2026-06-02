@@ -1,0 +1,15 @@
+parameters:
+    level: 5
+    paths:
+        - src/Context
+        - src/Shared
+    excludePaths:
+        - src/Kernel.php
+    symfony:
+        containerXmlPath: var/cache/dev/App_KernelDevDebugContainer.xml
+    treatPhpDocTypesAsCertain: false
+
+includes:
+    - phpstan-baseline.neon
+    - vendor/phpstan/phpstan-symfony/extension.neon
+    - vendor/phpstan/phpstan-doctrine/extension.neon

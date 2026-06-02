@@ -11,6 +11,8 @@ use App\Tests\Shared\Domain\UuidMother;
 use App\Tests\Shared\Infrastructure\PhpUnit\ApiTestCase;
 use Symfony\Component\HttpFoundation\Response;
 
+use function json_decode;
+
 /**
  * @covers \App\Context\Expense\Infrastructure\Http\Controller\GetExpenseByIdController
  */
@@ -22,7 +24,7 @@ final class GetExpenseByIdControllerTest extends ApiTestCase
         $this->createAuthenticatedClient();
     }
 
-    public function test_it_should_return_expense_when_found(): void
+    public function testItShouldReturnExpenseWhenFound(): void
     {
         // 1. Create an expense to be found
         $expense = ExpenseMother::create();
@@ -45,7 +47,7 @@ final class GetExpenseByIdControllerTest extends ApiTestCase
         $this->assertEquals($expense->description(), $data['description']);
     }
 
-    public function test_it_should_return_not_found_when_expense_does_not_exist(): void
+    public function testItShouldReturnNotFoundWhenExpenseDoesNotExist(): void
     {
         // 1. Generate a random non-existent ID
         $nonExistentId = UuidMother::create();
@@ -57,7 +59,7 @@ final class GetExpenseByIdControllerTest extends ApiTestCase
         $this->assertResponseStatusCodeSame(Response::HTTP_NOT_FOUND);
     }
 
-    public function test_it_maps_exceptions_correctly(): void
+    public function testItMapsExceptionsCorrectly(): void
     {
         $controller = $this->getContainer()->get(GetExpenseByIdController::class);
         $exceptions = $controller->exceptions();

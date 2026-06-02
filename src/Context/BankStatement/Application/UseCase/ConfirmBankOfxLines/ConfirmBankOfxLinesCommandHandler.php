@@ -31,11 +31,15 @@ use Symfony\Component\Messenger\MessageBusInterface;
 use Symfony\Component\Uid\Uuid;
 
 use function array_filter;
+use function array_sum;
 use function array_values;
 use function count;
+use function is_array;
+use function mb_strtolower;
 use function preg_match;
 use function sprintf;
 use function trim;
+use function usort;
 
 final class ConfirmBankOfxLinesCommandHandler implements CommandHandler
 {
@@ -111,9 +115,11 @@ final class ConfirmBankOfxLinesCommandHandler implements CommandHandler
 
         foreach ($expenses as $line) {
             $outcome = $this->dispatchExpense($line, $command->bankAccountId);
+
             if ($outcome['linked']) {
                 ++$expectedExpensesLinked;
             }
+
             if ($outcome['created']) {
                 ++$expectedExpensesCreated;
             }
@@ -126,14 +132,14 @@ final class ConfirmBankOfxLinesCommandHandler implements CommandHandler
         }
 
         return new ConfirmBankOfxLinesResult(
-            imported:                        $imported,
-            consolidatedIncomeId:            $consolidatedIncomeId,
-            settlementMonth:                 $settlementMonthStr,
+            imported: $imported,
+            consolidatedIncomeId: $consolidatedIncomeId,
+            settlementMonth: $settlementMonthStr,
             settlementExpectedSlipTotalCents: $settlementExpectedSlipTotalCents,
-            settlementValidatedAgainstSlips:   $settlementValidatedAgainstSlips,
-            settlementSplitIncomeIds:         $settlementSplitIncomeIds,
-            expectedExpensesLinked:           $expectedExpensesLinked,
-            expectedExpensesCreated:          $expectedExpensesCreated,
+            settlementValidatedAgainstSlips: $settlementValidatedAgainstSlips,
+            settlementSplitIncomeIds: $settlementSplitIncomeIds,
+            expectedExpensesLinked: $expectedExpensesLinked,
+            expectedExpensesCreated: $expectedExpensesCreated,
         );
     }
 
@@ -160,13 +166,13 @@ final class ConfirmBankOfxLinesCommandHandler implements CommandHandler
 
         if (!$line->isExpectedExpense) {
             $this->commandBus->dispatch(new EnterExpenseCommand(
-                id:             $expenseId,
-                amount:         $line->amountInCents,
-                type:           $line->expenseTypeId,
-                accountId:      $accountId,
-                dueDate:        $line->dueDate,
-                isActive:       true,
-                description:    $line->description ?? $line->memo,
+                id: $expenseId,
+                amount: $line->amountInCents,
+                type: $line->expenseTypeId,
+                accountId: $accountId,
+                dueDate: $line->dueDate,
+                isActive: true,
+                description: $line->description ?? $line->memo,
                 residentUnitId: $line->residentUnitId,
             ));
 
@@ -174,6 +180,7 @@ final class ConfirmBankOfxLinesCommandHandler implements CommandHandler
         }
 
         $spec = $line->expectedExpense;
+
         if ($spec === null && ($line->recurringExpenseId === null || $line->recurringExpenseId === '')) {
             $spec = new ExpectedExpenseSpecDto(
                 null,
@@ -232,15 +239,15 @@ final class ConfirmBankOfxLinesCommandHandler implements CommandHandler
         $accountId = $this->resolveLedgerAccountId($line->accountId, $importBankAccountId);
 
         $this->commandBus->dispatch(new EnterIncomeCommand(
-            id:               $incomeId,
-            amount:           $line->amountInCents,
-            residentUnitId:   $line->residentUnitId,
-            type:             $line->incomeTypeId,
-            accountId:        $accountId,
-            dueDate:          $postedAt,
-            description:      $line->description ?? $line->memo,
+            id: $incomeId,
+            amount: $line->amountInCents,
+            residentUnitId: $line->residentUnitId,
+            type: $line->incomeTypeId,
+            accountId: $accountId,
+            dueDate: $postedAt,
+            description: $line->description ?? $line->memo,
             allowPastDueDate: true,
-            paidAt:           $postedAt,
+            paidAt: $postedAt,
         ));
     }
 
@@ -251,19 +258,23 @@ final class ConfirmBankOfxLinesCommandHandler implements CommandHandler
     private function resolveLedgerAccountId(string $lineAccountId, string $importBankAccountId): string
     {
         $t = trim($lineAccountId);
+
         if ($t !== '' && Uuid::isValid($t)) {
             return $t;
         }
 
         $default = trim((string) ($this->defaultBankLedgerAccountId ?? ''));
+
         if ($default !== '' && Uuid::isValid($default)) {
             return $default;
         }
 
         $openingLedger = $this->openingReferenceLedgerAccountId();
+
         if ($openingLedger !== null) {
             try {
                 $openingAccount = $this->accountRepository->findOneByIdOrFail($openingLedger);
+
                 if ($this->accountDefaultBookingTier($openingAccount) < 2) {
                     return $openingLedger;
                 }
@@ -272,6 +283,7 @@ final class ConfirmBankOfxLinesCommandHandler implements CommandHandler
         }
 
         $fromChart = $this->pickPreferredDefaultLedgerAccountId();
+
         if ($fromChart !== null) {
             return $fromChart;
         }
@@ -281,6 +293,7 @@ final class ConfirmBankOfxLinesCommandHandler implements CommandHandler
         }
 
         $b = trim($importBankAccountId);
+
         if ($b !== '' && Uuid::isValid($b)) {
             return $b;
         }
@@ -293,10 +306,12 @@ final class ConfirmBankOfxLinesCommandHandler implements CommandHandler
     private function openingReferenceLedgerAccountId(): ?string
     {
         $opening = $this->setupStatusChecker->status()['openingReference'] ?? null;
-        if (!\is_array($opening)) {
+
+        if (!is_array($opening)) {
             return null;
         }
         $ledgerId = trim((string) ($opening['ledgerAccountId'] ?? ''));
+
         if ($ledgerId === '' || !Uuid::isValid($ledgerId)) {
             return null;
         }
@@ -310,9 +325,11 @@ final class ConfirmBankOfxLinesCommandHandler implements CommandHandler
     private function pickPreferredDefaultLedgerAccountId(): ?string
     {
         $accounts = $this->accountRepository->findAllActive();
+
         if ($accounts === []) {
             $accounts = $this->accountRepository->findAll();
         }
+
         if ($accounts === []) {
             return null;
         }
@@ -325,11 +342,11 @@ final class ConfirmBankOfxLinesCommandHandler implements CommandHandler
     {
         return [
             $this->accountDefaultBookingTier($a),
-            strtolower((string) $a->name()),
+            mb_strtolower((string) $a->name()),
             $a->id(),
         ] <=> [
             $this->accountDefaultBookingTier($b),
-            strtolower((string) $b->name()),
+            mb_strtolower((string) $b->name()),
             $b->id(),
         ];
     }
@@ -339,7 +356,7 @@ final class ConfirmBankOfxLinesCommandHandler implements CommandHandler
      */
     private function accountDefaultBookingTier(Account $account): int
     {
-        $n = strtolower((string) $account->name());
+        $n = mb_strtolower((string) $account->name());
 
         if (preg_match(
             '/conta\s+principal|cuenta\s+principal|caja\s+corriente|conta\s+corrente|\bprincipal\b|^principal$|main\s+account|cc\s+banco/i',
@@ -380,6 +397,7 @@ final class ConfirmBankOfxLinesCommandHandler implements CommandHandler
         ?int $settlementReserveFundFallbackPerUnitCents,
     ): array {
         $incomeTypeId = $this->defaultCreditIncomeTypeId;
+
         foreach ($settlements as $line) {
             if ($line->incomeTypeId !== null && $line->incomeTypeId !== '') {
                 $incomeTypeId = $line->incomeTypeId;
@@ -395,9 +413,11 @@ final class ConfirmBankOfxLinesCommandHandler implements CommandHandler
 
         $receivedCents = 0;
         $latestPosted  = null;
+
         foreach ($settlements as $line) {
             $receivedCents += $line->amountInCents;
             $postedAt       = new DateTimeImmutable($line->postedAt);
+
             if ($latestPosted === null || $postedAt > $latestPosted) {
                 $latestPosted = $postedAt;
             }
@@ -415,11 +435,12 @@ final class ConfirmBankOfxLinesCommandHandler implements CommandHandler
         [$expectedYear, $expectedMonth] = $this->previousMonthOf($settlementYear, $settlementMonth);
 
         $validatedAgainstSlips = $expectedCents > 0;
+
         if ($validatedAgainstSlips && $expectedCents !== $receivedCents) {
             throw new BoletoSettlementMismatchException(
-                expectedCents:   $expectedCents,
-                receivedCents:   $receivedCents,
-                settlementYear:  $expectedYear,
+                expectedCents: $expectedCents,
+                receivedCents: $receivedCents,
+                settlementYear: $expectedYear,
                 settlementMonth: $expectedMonth,
             );
         }
@@ -439,6 +460,7 @@ final class ConfirmBankOfxLinesCommandHandler implements CommandHandler
                 $settlementReserveFundFallbackPerUnitCents,
             );
             $primaryIncomeId = $splitIncomeRows[0]['incomeId'] ?? null;
+
             if ($primaryIncomeId === null) {
                 throw new InvalidArgumentException('Divisão de liquidação: não foi gerada nenhuma linha de ingresso.');
             }
@@ -447,18 +469,18 @@ final class ConfirmBankOfxLinesCommandHandler implements CommandHandler
             $descriptionText = sprintf('Compensação de boletos — %s', $periodLabel);
 
             $this->commandBus->dispatch(new EnterIncomeCommand(
-                id:               $primaryIncomeId,
-                amount:           $receivedCents,
-                residentUnitId:   null,
-                type:             $incomeTypeId,
-                accountId:        $this->resolveLedgerAccountId(
+                id: $primaryIncomeId,
+                amount: $receivedCents,
+                residentUnitId: null,
+                type: $incomeTypeId,
+                accountId: $this->resolveLedgerAccountId(
                     $settlements[0]->accountId,
                     $bankAccountId,
                 ),
-                dueDate:          $paidAt,
-                description:      $descriptionText,
+                dueDate: $paidAt,
+                description: $descriptionText,
                 allowPastDueDate: true,
-                paidAt:           $paidAt,
+                paidAt: $paidAt,
             ));
         }
 
@@ -525,19 +547,23 @@ final class ConfirmBankOfxLinesCommandHandler implements CommandHandler
         /** @var array<string, int|string> $components */
         $components = $breakdown['components'];
         $amountsByKey = [];
+
         foreach (self::COMPONENT_TO_BREAKDOWN_TOTAL as $componentKey => $breakdownKey) {
             $amountsByKey[$componentKey] = (int) ($components[$breakdownKey] ?? 0);
         }
 
         $sumAllocated = (int) array_sum($amountsByKey);
         $delta         = $receivedCents - $sumAllocated;
+
         if ($delta !== 0) {
             $amountsByKey['base'] += $delta;
         }
 
         $out = [];
+
         foreach (self::SETTLEMENT_COMPONENT_ORDER as $componentKey) {
             $amount = $amountsByKey[$componentKey] ?? 0;
+
             if ($amount <= 0) {
                 continue;
             }
@@ -548,15 +574,15 @@ final class ConfirmBankOfxLinesCommandHandler implements CommandHandler
             $description = sprintf('Liquidação de boletos — %s (%s)', $periodLabel, $label);
 
             $this->commandBus->dispatch(new EnterIncomeCommand(
-                id:               $incomeId,
-                amount:           $amount,
-                residentUnitId:   null,
-                type:             $map['incomeTypeId'],
-                accountId:        $map['accountId'],
-                dueDate:          $paidAt,
-                description:      $description,
+                id: $incomeId,
+                amount: $amount,
+                residentUnitId: null,
+                type: $map['incomeTypeId'],
+                accountId: $map['accountId'],
+                dueDate: $paidAt,
+                description: $description,
                 allowPastDueDate: true,
-                paidAt:           $paidAt,
+                paidAt: $paidAt,
             ));
 
             $out[] = [

@@ -6,21 +6,21 @@ namespace App\Tests\Context\Slip\Application\UseCase\SlipGeneration;
 
 use App\Context\BillingPolicy\Domain\BillingPolicyResolverPort;
 use App\Context\BillingPolicy\Domain\ResolvedBillingPolicy;
-use App\Context\Slip\Domain\Service\GasExpenseByUnitResolver;
 use App\Context\Expense\Domain\Expense;
 use App\Context\Expense\Domain\ExpenseRepository;
-use App\Context\Expense\Domain\RecurringExpenseRepository;
 use App\Context\Expense\Domain\ExpenseType;
+use App\Context\Expense\Domain\RecurringExpenseRepository;
 use App\Context\ResidentUnit\Domain\ResidentUnit;
 use App\Context\ResidentUnit\Domain\ResidentUnitRepository;
 use App\Context\Slip\Application\UseCase\SlipGeneration\SlipGenerationCommand;
 use App\Context\Slip\Application\UseCase\SlipGeneration\SlipGenerationCommandHandler;
+use App\Context\Slip\Domain\PeriodClosureRepository;
+use App\Context\Slip\Domain\Service\GasExpenseByUnitResolver;
 use App\Context\Slip\Domain\Service\MonthlyExpenseAggregatorService;
+use App\Context\Slip\Domain\Service\PeriodClosureGuard;
 use App\Context\Slip\Domain\Service\RecurringExpenseSlipContributionService;
 use App\Context\Slip\Domain\Service\SlipComponentBreakdownService;
 use App\Context\Slip\Domain\Service\SlipFactory;
-use App\Context\Slip\Domain\PeriodClosureRepository;
-use App\Context\Slip\Domain\Service\PeriodClosureGuard;
 use App\Context\Slip\Domain\Service\SlipGenerationPolicy;
 use App\Context\Slip\Domain\Service\SyndicFeeSlipPoolAdjustmentService;
 use App\Context\Slip\Domain\SlipGenerationParameterSnapshotRepository;
@@ -28,21 +28,22 @@ use App\Context\Slip\Domain\SlipRepository;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 use Psr\Log\LoggerInterface;
+use RuntimeException;
 
 class SlipGenerationCommandHandlerTest extends TestCase
 {
     private MockObject|SlipRepository $slipRepository;
-    private MockObject|ExpenseRepository $expenseRepository;
+    private ExpenseRepository|MockObject $expenseRepository;
     private MockObject|RecurringExpenseRepository $recurringExpenseRepository;
     private MockObject|ResidentUnitRepository $residentUnitRepository;
     private MockObject|SlipGenerationPolicy $generationPolicy;
     private MockObject|MonthlyExpenseAggregatorService $monthlyExpenseAggregatorService;
     private SlipComponentBreakdownService $slipComponentBreakdownService;
-    private MockObject|GasExpenseByUnitResolver $gasExpenseByUnitResolver;
-    private MockObject|LoggerInterface $logger;
+    private GasExpenseByUnitResolver|MockObject $gasExpenseByUnitResolver;
+    private LoggerInterface|MockObject $logger;
     private MockObject|SlipGenerationParameterSnapshotRepository $snapshotRepository;
     private MockObject|PeriodClosureRepository $periodClosureRepository;
-    private MockObject|BillingPolicyResolverPort $billingPolicyResolverService;
+    private BillingPolicyResolverPort|MockObject $billingPolicyResolverService;
 
     private SlipFactory $slipFactory;
     private SlipGenerationCommandHandler $handler;
@@ -137,7 +138,7 @@ class SlipGenerationCommandHandlerTest extends TestCase
 
         $this->generationPolicy->expects($this->once())
             ->method('check')
-            ->willThrowException(new \RuntimeException('Generation not allowed.'));
+            ->willThrowException(new RuntimeException('Generation not allowed.'));
 
         $this->slipRepository->expects($this->never())->method('deleteByDateRange');
         $this->slipRepository->expects($this->never())->method('save');
@@ -145,7 +146,7 @@ class SlipGenerationCommandHandlerTest extends TestCase
         $this->snapshotRepository->expects($this->never())->method('upsertForExpenseMonth');
 
         // Act & Assert
-        $this->expectException(\RuntimeException::class);
+        $this->expectException(RuntimeException::class);
         ($this->handler)($command);
     }
 

@@ -15,11 +15,16 @@ use RuntimeException;
 use function abs;
 use function array_filter;
 use function array_values;
+use function mb_strlen;
+use function mb_strpos;
+use function mb_substr;
 use function preg_match;
+use function preg_match_all;
 use function preg_replace;
 use function round;
 use function str_replace;
 use function trim;
+use function uniqid;
 
 /**
  * Parses OFX 102 (SGML-style) bank statements.
@@ -71,13 +76,13 @@ final class OfxParser
     private function extractBody(string $content): string
     {
         // Strip OFX headers (lines before <OFX>)
-        $pos = strpos($content, '<OFX>');
+        $pos = mb_strpos($content, '<OFX>');
 
         if ($pos === false) {
             throw new RuntimeException('Invalid OFX file: missing <OFX> root element.');
         }
 
-        return substr($content, $pos);
+        return mb_substr($content, $pos);
     }
 
     private function extractTag(string $content, string $tag): ?string
@@ -91,6 +96,7 @@ final class OfxParser
 
     /**
      * @return BankTransaction[]
+     *
      * @throws DateMalformedStringException
      */
     private function parseTransactions(string $body, string $accountId): array
@@ -136,8 +142,8 @@ final class OfxParser
         $clean = trim($clean ?? $raw);
 
         $immutable = match (true) {
-            strlen($clean) >= 14 => DateTimeImmutable::createFromFormat('YmdHis', substr($clean, 0, 14), new DateTimeZone('UTC')),
-            strlen($clean) >= 8  => DateTimeImmutable::createFromFormat('Ymd', substr($clean, 0, 8), new DateTimeZone('UTC')),
+            mb_strlen($clean) >= 14 => DateTimeImmutable::createFromFormat('YmdHis', mb_substr($clean, 0, 14), new DateTimeZone('UTC')),
+            mb_strlen($clean) >= 8  => DateTimeImmutable::createFromFormat('Ymd', mb_substr($clean, 0, 8), new DateTimeZone('UTC')),
             default              => new DateTimeImmutable('now', new DateTimeZone('UTC')),
         };
 

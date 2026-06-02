@@ -9,6 +9,9 @@ use App\Context\Expense\Domain\ExpenseType;
 use App\Context\Expense\Domain\ExpenseTypeRepository;
 use DateTimeImmutable;
 
+use function is_array;
+use function sprintf;
+
 /**
  * Suma neta por unidad desde eventos expense.entered / expense.compensated
  * con tipo SP3GA, en un mes calendario concreto.

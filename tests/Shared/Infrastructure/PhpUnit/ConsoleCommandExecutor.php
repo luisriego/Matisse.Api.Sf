@@ -7,6 +7,9 @@ namespace App\Tests\Shared\Infrastructure\PhpUnit;
 use Symfony\Bundle\FrameworkBundle\Console\Application;
 use Symfony\Component\Console\Tester\CommandTester;
 
+use function explode;
+use function str_starts_with;
+
 trait ConsoleCommandExecutor
 {
     protected function runCommand(string $commandWithArgs): int
@@ -17,16 +20,18 @@ trait ConsoleCommandExecutor
         // The first element is the command name, the rest are arguments
         $commandParts = explode(' ', $commandWithArgs);
         $commandName = $commandParts[0];
-        
+
         $command = $application->find($commandName);
         $commandTester = new CommandTester($command);
-        
+
         // Prepare arguments and options for the execute method
         $input = [];
+
         foreach ($commandParts as $index => $part) {
             if ($index === 0) {
                 continue; // Skip command name
             }
+
             // Simple parsing: assumes arguments are separated by spaces
             // and options start with --
             if (str_starts_with($part, '--')) {

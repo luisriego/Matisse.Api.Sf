@@ -7,6 +7,8 @@ namespace App\Tests\Context\Slip\Infrastructure\Http\Controller;
 use App\Tests\Shared\Infrastructure\PhpUnit\ApiTestCase;
 use Symfony\Component\HttpFoundation\Response;
 
+use function json_encode;
+
 final class SlipGenerationPostControllerTest extends ApiTestCase
 {
     protected function setUp(): void
@@ -15,7 +17,7 @@ final class SlipGenerationPostControllerTest extends ApiTestCase
         $this->client = $this->createAuthenticatedClient();
     }
 
-    public function test_it_should_generate_slips_and_return_created(): void
+    public function testItShouldGenerateSlipsAndReturnCreated(): void
     {
         $payload = [
             'targetMonth' => '2024-08',
@@ -28,13 +30,13 @@ final class SlipGenerationPostControllerTest extends ApiTestCase
             [],
             [],
             ['CONTENT_TYPE' => 'application/json'],
-            json_encode($payload)
+            json_encode($payload),
         );
 
         $this->assertResponseStatusCodeSame(Response::HTTP_CREATED);
     }
 
-    public function test_it_should_return_bad_request_on_invalid_target_month_format(): void
+    public function testItShouldReturnBadRequestOnInvalidTargetMonthFormat(): void
     {
         $payload = [
             'targetMonth' => 'invalid-date',
@@ -46,7 +48,7 @@ final class SlipGenerationPostControllerTest extends ApiTestCase
             [],
             [],
             ['CONTENT_TYPE' => 'application/json'],
-            json_encode($payload)
+            json_encode($payload),
         );
 
         $this->assertResponseStatusCodeSame(Response::HTTP_BAD_REQUEST);

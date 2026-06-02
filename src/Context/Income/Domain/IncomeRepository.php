@@ -27,7 +27,9 @@ interface IncomeRepository
      */
     public function findByDueDateInRange(DateRange $dateRange): array;
 
-    /** Incomes whose dueDate falls in the range (inclusive), any active flag. */
+    /**
+     * Incomes whose dueDate falls in the range (inclusive), any active flag.
+     */
     public function countInDueDateRange(DateRange $dateRange): int;
 
     /**

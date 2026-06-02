@@ -5,14 +5,16 @@ declare(strict_types=1);
 namespace App\Tests\Shared\Infrastructure;
 
 use App\Shared\Domain\Clock;
+use DateMalformedStringException;
 use DateTimeImmutable;
+use Exception;
 
 final class FixedClock implements Clock
 {
     private DateTimeImmutable $now;
 
     /**
-     * @throws \DateMalformedStringException
+     * @throws DateMalformedStringException
      */
     public function __construct(?string $now = 'now')
     {
@@ -25,7 +27,7 @@ final class FixedClock implements Clock
     }
 
     /**
-     * @throws \Exception
+     * @throws Exception
      */
     public function set(string $dateTime): void
     {

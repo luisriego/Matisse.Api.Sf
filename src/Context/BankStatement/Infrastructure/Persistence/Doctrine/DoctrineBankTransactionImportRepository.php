@@ -9,7 +9,6 @@ use App\Context\BankStatement\Domain\BankTransactionImportRepository;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
 
-use function array_column;
 use function array_map;
 
 final class DoctrineBankTransactionImportRepository extends ServiceEntityRepository implements BankTransactionImportRepository

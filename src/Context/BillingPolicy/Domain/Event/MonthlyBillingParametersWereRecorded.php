@@ -10,6 +10,8 @@ use App\Shared\Domain\ValueObject\Uuid;
 use DateMalformedStringException;
 use DateTimeImmutable;
 
+use function array_key_exists;
+
 final readonly class MonthlyBillingParametersWereRecorded extends DomainEvent
 {
     public function __construct(

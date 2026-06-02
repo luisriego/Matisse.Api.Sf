@@ -11,6 +11,7 @@ use RuntimeException;
 
 use function array_key_exists;
 use function end;
+use function is_array;
 use function is_numeric;
 use function round;
 

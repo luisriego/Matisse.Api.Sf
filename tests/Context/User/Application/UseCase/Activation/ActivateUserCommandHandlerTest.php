@@ -25,7 +25,7 @@ final class ActivateUserCommandHandlerTest extends TestCase
         $this->handler = new ActivateUserCommandHandler($this->userRepository);
     }
 
-    public function test_it_should_activate_a_user_with_a_valid_token(): void
+    public function testItShouldActivateAUserWithAValidToken(): void
     {
         // 1. Arrange
         $user = UserMother::createRandom(); // This user is inactive and has a token by default
@@ -49,7 +49,7 @@ final class ActivateUserCommandHandlerTest extends TestCase
         ($this->handler)($command);
     }
 
-    public function test_it_should_throw_exception_if_user_not_found(): void
+    public function testItShouldThrowExceptionIfUserNotFound(): void
     {
         // 1. Arrange
         $this->expectException(ResourceNotFoundException::class);
@@ -66,7 +66,7 @@ final class ActivateUserCommandHandlerTest extends TestCase
         ($this->handler)($command);
     }
 
-    public function test_it_should_throw_exception_for_an_invalid_token(): void
+    public function testItShouldThrowExceptionForAnInvalidToken(): void
     {
         // 1. Arrange
         $this->expectException(InvalidArgumentException::class);

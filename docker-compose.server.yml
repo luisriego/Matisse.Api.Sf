@@ -1,0 +1,51 @@
+# Play/staging stack for a remote server (e.g. Hetzner).
+# Usage: docker compose -f docker-compose.server.yml up -d --build
+services:
+  matisse-app:
+    container_name: matisse-app
+    build:
+      context: ./docker
+      target: development
+      args:
+        UID: ${U_ID:-1000}
+    volumes:
+      - ./:/var/www/html
+    env_file:
+      - .env
+      - .env.local
+    ports:
+      - '127.0.0.1:${APP_PORT:-8080}:80'
+    networks:
+      - matisse-network
+    depends_on:
+      matisse-db:
+        condition: service_healthy
+    restart: unless-stopped
+
+  matisse-db:
+    container_name: matisse-db
+    image: pgvector/pgvector:pg16
+    env_file:
+      - .env
+      - .env.local
+    environment:
+      POSTGRES_DB: ${POSTGRES_DB:-app}
+      POSTGRES_USER: ${POSTGRES_USER:-app}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?Set POSTGRES_PASSWORD in .env.local}
+    volumes:
+      - database_data:/var/lib/postgresql/data
+      - ./docker/postgres/init:/docker-entrypoint-initdb.d
+    networks:
+      - matisse-network
+    healthcheck:
+      test: ['CMD-SHELL', 'pg_isready -U ${POSTGRES_USER:-app} -d ${POSTGRES_DB:-app}']
+      interval: 5s
+      timeout: 5s
+      retries: 10
+    restart: unless-stopped
+
+networks:
+  matisse-network:
+
+volumes:
+  database_data:

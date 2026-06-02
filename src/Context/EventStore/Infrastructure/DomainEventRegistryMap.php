@@ -7,6 +7,7 @@ namespace App\Context\EventStore\Infrastructure;
 use App\Context\Account\Domain\Event\AccountWasDisabled;
 use App\Context\Account\Domain\Event\AccountWasEnabled;
 use App\Context\Account\Domain\Event\InitialBalanceSet;
+use App\Context\BillingPolicy\Domain\Event\MonthlyBillingParametersWereRecorded;
 use App\Context\EventStore\Domain\DomainEventRegistry;
 use App\Context\Expense\Domain\Event\ExpenseWasActivated;
 use App\Context\Expense\Domain\Event\ExpenseWasCompensated;
@@ -15,7 +16,6 @@ use App\Context\Expense\Domain\Event\RecurringExpenseWasCreated;
 use App\Context\Gas\Domain\Event\GasPriceWasDefined;
 use App\Context\Gas\Domain\Event\GasReadingWasRecorded;
 use App\Context\Income\Domain\Event\IncomeWasEntered;
-use App\Context\BillingPolicy\Domain\Event\MonthlyBillingParametersWereRecorded;
 use App\Context\Setup\Domain\Event\OpeningReferenceMonthWasRecorded;
 use App\Context\Setup\Domain\Event\SetupWasCompleted;
 

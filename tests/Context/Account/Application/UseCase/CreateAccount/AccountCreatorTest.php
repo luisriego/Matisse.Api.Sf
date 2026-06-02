@@ -21,8 +21,10 @@ final class AccountCreatorTest extends AccountModuleUnitTestCase
         $this->creator = new AccountCreator($this->repository());
     }
 
-    /** @test  */
-    public function test_it_should_create_an_account(): void
+    /**
+     * @test
+     */
+    public function testItShouldCreateAnAccount(): void
     {
         $id = AccountIdMother::create();
         $name = AccountNameMother::create();

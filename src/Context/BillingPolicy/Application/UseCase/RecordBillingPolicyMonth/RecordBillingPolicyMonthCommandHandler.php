@@ -12,6 +12,8 @@ use App\Shared\Domain\Exception\InvalidDataException;
 use DateTimeImmutable;
 use Symfony\Component\Messenger\Attribute\AsMessageHandler;
 
+use function array_map;
+use function explode;
 use function preg_match;
 
 #[AsMessageHandler]
@@ -29,6 +31,7 @@ final readonly class RecordBillingPolicyMonthCommandHandler implements CommandHa
         }
 
         [$year, $month] = array_map('intval', explode('-', $command->targetMonth(), 2));
+
         if ($month < 1 || $month > 12 || $year < 2000 || $year > 2100) {
             throw new InvalidDataException('targetMonth is out of range.');
         }
@@ -46,6 +49,7 @@ final readonly class RecordBillingPolicyMonthCommandHandler implements CommandHa
         }
 
         $gasPrice = $command->gasPricePerM3Cents();
+
         if ($gasPrice !== null && $gasPrice < 0) {
             throw new InvalidDataException('gasPricePerM3Cents must be >= 0 when provided.');
         }

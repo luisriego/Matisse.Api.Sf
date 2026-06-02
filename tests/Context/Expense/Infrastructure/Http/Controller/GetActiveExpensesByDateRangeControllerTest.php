@@ -13,6 +13,8 @@ use App\Tests\Shared\Infrastructure\PhpUnit\ApiTestCase;
 use DateTime;
 use Symfony\Component\HttpFoundation\Response;
 
+use function json_decode;
+
 /**
  * @covers \App\Context\Expense\Infrastructure\Http\Controller\GetActiveExpensesByDateRangeController
  */
@@ -24,7 +26,7 @@ final class GetActiveExpensesByDateRangeControllerTest extends ApiTestCase
         $this->createAuthenticatedClient();
     }
 
-    public function test_it_should_return_only_active_expenses_in_date_range(): void
+    public function testItShouldReturnOnlyActiveExpensesInDateRange(): void
     {
         // 1. Create expenses for the test scenario
         $year = 2025;
@@ -36,7 +38,7 @@ final class GetActiveExpensesByDateRangeControllerTest extends ApiTestCase
         $activeExpenseInOctober = ExpenseMother::create(
             account: $account1,
             type: $type1,
-            dueDate: new DateTime("$year-$month-15")
+            dueDate: new DateTime("{$year}-{$month}-15"),
         );
 
         // Expenses that should NOT be found
@@ -45,7 +47,7 @@ final class GetActiveExpensesByDateRangeControllerTest extends ApiTestCase
         $activeExpenseInNovember = ExpenseMother::create(
             account: $account2,
             type: $type2,
-            dueDate: new DateTime("$year-11-15")
+            dueDate: new DateTime("{$year}-11-15"),
         );
 
         $account3 = AccountMother::create();
@@ -53,7 +55,7 @@ final class GetActiveExpensesByDateRangeControllerTest extends ApiTestCase
         $inactiveExpenseInOctober = ExpenseMother::createInactive(
             account: $account3,
             type: $type3,
-            dueDate: new DateTime("$year-$month-20")
+            dueDate: new DateTime("{$year}-{$month}-20"),
         );
 
         // 2. Persist all entities
@@ -72,7 +74,7 @@ final class GetActiveExpensesByDateRangeControllerTest extends ApiTestCase
         $this->entityManager->flush();
 
         // 3. Send the GET request
-        $this->client->request('GET', "/api/v1/expenses/date-range/$year/$month");
+        $this->client->request('GET', "/api/v1/expenses/date-range/{$year}/{$month}");
 
         // 4. Assert the response
         $this->assertResponseStatusCodeSame(Response::HTTP_OK);
@@ -85,7 +87,7 @@ final class GetActiveExpensesByDateRangeControllerTest extends ApiTestCase
         $this->assertEquals($activeExpenseInOctober->id(), $data[0]['id']);
     }
 
-    public function test_it_maps_exceptions_correctly(): void
+    public function testItMapsExceptionsCorrectly(): void
     {
         $controller = $this->getContainer()->get(GetActiveExpensesByDateRangeController::class);
         $exceptions = $controller->exceptions();

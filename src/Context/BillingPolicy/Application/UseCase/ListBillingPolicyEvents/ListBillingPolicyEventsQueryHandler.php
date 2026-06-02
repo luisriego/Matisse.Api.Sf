@@ -8,6 +8,14 @@ use App\Context\BillingPolicy\Domain\Event\MonthlyBillingParametersWereRecorded;
 use App\Context\EventStore\Domain\StoredEventRepository;
 use App\Shared\Application\QueryHandler;
 
+use function array_key_exists;
+use function array_slice;
+use function max;
+use function min;
+use function usort;
+
+use const DATE_ATOM;
+
 final readonly class ListBillingPolicyEventsQueryHandler implements QueryHandler
 {
     public function __construct(private StoredEventRepository $storedEventRepository) {}
@@ -31,9 +39,10 @@ final readonly class ListBillingPolicyEventsQueryHandler implements QueryHandler
         );
 
         $limit = max(1, min(200, $query->limit()));
-        $events = \array_slice($events, 0, $limit);
+        $events = array_slice($events, 0, $limit);
 
         $out = [];
+
         foreach ($events as $event) {
             $payload = $event->payload();
             $out[] = [

@@ -13,7 +13,7 @@ final class ResidentUnitMother
     {
         return new ResidentUnit(
             $id ?? UuidMother::create(),
-            $unit ?? 'Unit-A'
+            $unit ?? 'Unit-A',
         );
     }
 }

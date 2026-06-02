@@ -17,17 +17,17 @@ class ContainerSmokeTest extends KernelTestCase
         $_SERVER['DATABASE_URL'] = 'sqlite:///%kernel.project_dir%/var/data_test.db';
     }
 
-    protected static function getKernelClass(): string
-    {
-        return Kernel::class;
-    }
-
-    public function test_container_compiles_successfully(): void
+    public function testContainerCompilesSuccessfully(): void
     {
         self::bootKernel();
 
         $container = self::getContainer();
 
         $this->assertNotNull($container, 'The service container should be available after booting the kernel.');
+    }
+
+    protected static function getKernelClass(): string
+    {
+        return Kernel::class;
     }
 }

@@ -14,14 +14,14 @@ final class RecordGasReadingCommandMother
         ?string $residentUnitId = null,
         ?int $year = null,
         ?int $month = null,
-        ?float $reading = null
+        ?float $reading = null,
     ): RecordGasReadingCommand {
         return new RecordGasReadingCommand(
             $id ?? UuidMother::create(),
             $residentUnitId ?? UuidMother::create(),
             $year ?? 2024,
             $month ?? 5,
-            $reading ?? 1234.56
+            $reading ?? 1234.56,
         );
     }
 }

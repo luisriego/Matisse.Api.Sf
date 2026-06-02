@@ -30,15 +30,10 @@ class DefineGasPriceCommandHandlerTest extends TestCase
         $this->handler = new DefineGasPriceCommandHandler($this->eventBus, $this->eventStore);
     }
 
-    private static function expectedPricePerM3InCents(int $billCents, int $kg, int $bufferPct): int
-    {
-        return (int) round((2 * $billCents * (100 + $bufferPct)) / ($kg * 100));
-    }
-
     /**
      * @throws DateMalformedStringException
      */
-    public function test_it_should_define_gas_price_and_publish_event(): void
+    public function testItShouldDefineGasPriceAndPublishEvent(): void
     {
         $billAmountInCents = 10000;
         $cylinderCapacityInKg = 45;
@@ -47,7 +42,7 @@ class DefineGasPriceCommandHandlerTest extends TestCase
         $command = DefineGasPriceCommandMother::create(
             $billAmountInCents,
             $cylinderCapacityInKg,
-            $bufferPercentage
+            $bufferPercentage,
         );
 
         $expectedPricePerM3InCents = self::expectedPricePerM3InCents($billAmountInCents, $cylinderCapacityInKg, $bufferPercentage);
@@ -59,6 +54,7 @@ class DefineGasPriceCommandHandlerTest extends TestCase
             ->with($this->callback(function (GasPriceWasDefined $event) use ($expectedPricePerM3InCents) {
                 $this->assertNotNull($event->aggregateId());
                 $this->assertSame($expectedPricePerM3InCents, $event->pricePerM3InCents);
+
                 return true;
             }));
 
@@ -68,7 +64,7 @@ class DefineGasPriceCommandHandlerTest extends TestCase
     /**
      * @throws DateMalformedStringException
      */
-    public function test_it_should_define_gas_price_with_default_values_and_publish_event(): void
+    public function testItShouldDefineGasPriceWithDefaultValuesAndPublishEvent(): void
     {
         $command = DefineGasPriceCommandMother::create(billAmountInCents: 10000, cylinderCapacityInKg: null, bufferPercentage: null);
 
@@ -81,6 +77,7 @@ class DefineGasPriceCommandHandlerTest extends TestCase
             ->with($this->callback(function (GasPriceWasDefined $event) use ($expectedPricePerM3InCents) {
                 $this->assertNotNull($event->aggregateId());
                 $this->assertSame($expectedPricePerM3InCents, $event->pricePerM3InCents);
+
                 return true;
             }));
 
@@ -90,7 +87,7 @@ class DefineGasPriceCommandHandlerTest extends TestCase
     /**
      * @throws DateMalformedStringException
      */
-    public function test_it_should_define_gas_price_with_zero_buffer_percentage(): void
+    public function testItShouldDefineGasPriceWithZeroBufferPercentage(): void
     {
         $billAmountInCents = 10000;
         $cylinderCapacityInKg = 45;
@@ -99,7 +96,7 @@ class DefineGasPriceCommandHandlerTest extends TestCase
         $command = DefineGasPriceCommandMother::create(
             $billAmountInCents,
             $cylinderCapacityInKg,
-            $bufferPercentage
+            $bufferPercentage,
         );
 
         $expectedPricePerM3InCents = self::expectedPricePerM3InCents($billAmountInCents, $cylinderCapacityInKg, $bufferPercentage);
@@ -111,6 +108,7 @@ class DefineGasPriceCommandHandlerTest extends TestCase
             ->with($this->callback(function (GasPriceWasDefined $event) use ($expectedPricePerM3InCents) {
                 $this->assertNotNull($event->aggregateId());
                 $this->assertSame($expectedPricePerM3InCents, $event->pricePerM3InCents);
+
                 return true;
             }));
 
@@ -120,7 +118,7 @@ class DefineGasPriceCommandHandlerTest extends TestCase
     /**
      * @throws DateMalformedStringException
      */
-    public function test_it_should_define_gas_price_with_max_buffer_percentage(): void
+    public function testItShouldDefineGasPriceWithMaxBufferPercentage(): void
     {
         $billAmountInCents = 10000;
         $cylinderCapacityInKg = 45;
@@ -129,7 +127,7 @@ class DefineGasPriceCommandHandlerTest extends TestCase
         $command = DefineGasPriceCommandMother::create(
             $billAmountInCents,
             $cylinderCapacityInKg,
-            $bufferPercentage
+            $bufferPercentage,
         );
 
         $expectedPricePerM3InCents = self::expectedPricePerM3InCents($billAmountInCents, $cylinderCapacityInKg, $bufferPercentage);
@@ -141,41 +139,42 @@ class DefineGasPriceCommandHandlerTest extends TestCase
             ->with($this->callback(function (GasPriceWasDefined $event) use ($expectedPricePerM3InCents) {
                 $this->assertNotNull($event->aggregateId());
                 $this->assertSame($expectedPricePerM3InCents, $event->pricePerM3InCents);
+
                 return true;
             }));
 
         ($this->handler)($command);
     }
 
-    public function test_it_should_throw_exception_for_invalid_bill_amount(): void
+    public function testItShouldThrowExceptionForInvalidBillAmount(): void
     {
         $this->expectException(InvalidArgumentException::class);
         $command = DefineGasPriceCommandMother::create(billAmountInCents: -100);
         ($this->handler)($command);
     }
 
-    public function test_it_should_throw_exception_for_invalid_cylinder_capacity(): void
+    public function testItShouldThrowExceptionForInvalidCylinderCapacity(): void
     {
         $this->expectException(InvalidArgumentException::class);
         $command = DefineGasPriceCommandMother::create(cylinderCapacityInKg: -10);
         ($this->handler)($command);
     }
 
-    public function test_it_should_throw_exception_for_invalid_buffer_percentage(): void
+    public function testItShouldThrowExceptionForInvalidBufferPercentage(): void
     {
         $this->expectException(InvalidArgumentException::class);
         $command = DefineGasPriceCommandMother::create(bufferPercentage: -1);
         ($this->handler)($command);
     }
 
-    public function test_it_should_throw_exception_for_buffer_percentage_greater_than_100(): void
+    public function testItShouldThrowExceptionForBufferPercentageGreaterThan100(): void
     {
         $this->expectException(InvalidArgumentException::class);
         $command = DefineGasPriceCommandMother::create(bufferPercentage: 101);
         ($this->handler)($command);
     }
 
-    public function test_it_should_propagate_exception_from_event_bus(): void
+    public function testItShouldPropagateExceptionFromEventBus(): void
     {
         $command = DefineGasPriceCommandMother::create();
 
@@ -189,5 +188,10 @@ class DefineGasPriceCommandHandlerTest extends TestCase
         $this->expectExceptionMessage('Event bus failure');
 
         ($this->handler)($command);
+    }
+
+    private static function expectedPricePerM3InCents(int $billCents, int $kg, int $bufferPct): int
+    {
+        return (int) round((2 * $billCents * (100 + $bufferPct)) / ($kg * 100));
     }
 }

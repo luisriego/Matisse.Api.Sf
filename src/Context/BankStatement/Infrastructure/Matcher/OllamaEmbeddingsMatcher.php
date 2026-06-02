@@ -10,6 +10,7 @@ use App\Context\BankStatement\Application\Matcher\EmbeddingVectorClientInterface
 use App\Context\BankStatement\Domain\ExpenseEmbeddingRepository;
 
 use function array_map;
+use function round;
 
 /**
  * Semantic embedding matcher backed by pgvector.
@@ -23,9 +24,9 @@ use function array_map;
 final class OllamaEmbeddingsMatcher implements EmbeddingMatcherInterface
 {
     public function __construct(
-        private readonly ExpenseEmbeddingRepository    $embeddingRepository,
+        private readonly ExpenseEmbeddingRepository $embeddingRepository,
         private readonly EmbeddingVectorClientInterface $embeddingClient,
-        private readonly string                         $embeddingModel,
+        private readonly string $embeddingModel,
     ) {}
 
     /**
@@ -43,9 +44,9 @@ final class OllamaEmbeddingsMatcher implements EmbeddingMatcherInterface
 
         return array_map(
             fn (array $row) => new EmbeddingCandidateDto(
-                candidateId:    $row['expenseId'],
-                label:          $row['description'],
-                score:          round((float) $row['score'], 4),
+                candidateId: $row['expenseId'],
+                label: $row['description'],
+                score: round((float) $row['score'], 4),
                 embeddingModel: $this->embeddingModel,
             ),
             $rows,

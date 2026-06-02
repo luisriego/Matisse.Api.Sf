@@ -17,7 +17,7 @@ use PHPUnit\Framework\TestCase;
 
 class FindResidentUnitByIdQueryHandlerTest extends TestCase
 {
-    private ResidentUnitRepository|MockInterface $repository;
+    private MockInterface|ResidentUnitRepository $repository;
     private FindResidentUnitByIdQueryHandler $handler;
 
     protected function setUp(): void
@@ -33,7 +33,7 @@ class FindResidentUnitByIdQueryHandlerTest extends TestCase
         Mockery::close();
     }
 
-    public function test_it_should_find_a_resident_unit(): void
+    public function testItShouldFindAResidentUnit(): void
     {
         // Arrange
         $residentUnit = ResidentUnitMother::create();
@@ -55,7 +55,7 @@ class FindResidentUnitByIdQueryHandlerTest extends TestCase
         $this->assertEquals($residentUnit->idealFraction(), $result->idealFraction);
     }
 
-    public function test_it_should_throw_exception_when_not_found(): void
+    public function testItShouldThrowExceptionWhenNotFound(): void
     {
         // Arrange
         $residentUnitId = ResidentUnitIdMother::create()->value();

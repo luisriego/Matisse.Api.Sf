@@ -56,7 +56,7 @@ final class GetSlipDetailsQueryHandlerTest extends TestCase
 
         $this->mockRepository->expects($this->once())
             ->method('findOneByIdOrFail')
-            ->with($this->callback(fn($arg) => $arg->value() === $slipId))
+            ->with($this->callback(fn ($arg) => $arg->value() === $slipId))
             ->willReturn($slip);
 
         $expected = [
@@ -114,7 +114,7 @@ final class GetSlipDetailsQueryHandlerTest extends TestCase
 
         $this->mockRepository->expects($this->once())
             ->method('findOneByIdOrFail')
-            ->with($this->callback(fn($arg) => $arg->value() === $slipId)) // Check the value inside the ValueObject
+            ->with($this->callback(fn ($arg) => $arg->value() === $slipId)) // Check the value inside the ValueObject
             ->willThrowException(new ResourceNotFoundException());
 
         $this->expectException(ResourceNotFoundException::class);

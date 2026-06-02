@@ -23,7 +23,7 @@ final class UserMother
         ?UserName $name = null,
         ?Email $email = null,
         ?Password $password = null,
-        ?UserPasswordHasherInterface $passwordHasher = null
+        ?UserPasswordHasherInterface $passwordHasher = null,
     ): User {
         // A mock hasher is needed for User::create. If not provided, create a simple one.
         $hasher = $passwordHasher ?? new class implements UserPasswordHasherInterface {
@@ -48,7 +48,7 @@ final class UserMother
             $name ?? UserNameMother::create(),
             $email ?? EmailMother::create(),
             $password ?? PasswordMother::create(),
-            $hasher
+            $hasher,
         );
     }
 }

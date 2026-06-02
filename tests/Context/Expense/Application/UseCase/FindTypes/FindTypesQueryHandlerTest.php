@@ -17,7 +17,7 @@ class FindTypesQueryHandlerTest extends TestCase
 {
     private FindTypesQueryHandler $handler;
     private ExpenseTypeRepository|MockInterface $repository;
-    private SerializerInterface|MockInterface $serializer;
+    private MockInterface|SerializerInterface $serializer;
 
     protected function setUp(): void
     {
@@ -31,7 +31,7 @@ class FindTypesQueryHandlerTest extends TestCase
         Mockery::close();
     }
 
-    public function test_it_should_find_all_expense_types(): void
+    public function testItShouldFindAllExpenseTypes(): void
     {
         // Arrange
         $type1 = ExpenseTypeMother::create();
@@ -60,7 +60,7 @@ class FindTypesQueryHandlerTest extends TestCase
         $this->assertEquals($typesArray, $result);
     }
 
-    public function test_it_should_return_empty_array_if_no_types_found(): void
+    public function testItShouldReturnEmptyArrayIfNoTypesFound(): void
     {
         // Arrange
         $this->repository->shouldReceive('findAll')

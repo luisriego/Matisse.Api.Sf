@@ -6,7 +6,6 @@ namespace App\Tests\Context\User\Application\UseCase\FindUser;
 
 use App\Context\User\Application\UseCase\FindUser\FindUserQuery;
 use App\Context\User\Application\UseCase\FindUser\FindUserQueryHandler;
-use App\Context\User\Domain\User;
 use App\Context\User\Domain\UserRepository;
 use App\Tests\Context\User\Domain\UserMother;
 use PHPUnit\Framework\MockObject\MockObject;
@@ -23,7 +22,7 @@ final class FindUserQueryHandlerTest extends TestCase
         $this->handler = new FindUserQueryHandler($this->userRepository);
     }
 
-    public function test_it_should_return_user_when_found(): void
+    public function testItShouldReturnUserWhenFound(): void
     {
         $user = UserMother::createRandom();
         $query = new FindUserQuery($user->getId());
@@ -39,7 +38,7 @@ final class FindUserQueryHandlerTest extends TestCase
         $this->assertSame($user, $result);
     }
 
-    public function test_it_should_return_null_when_user_not_found(): void
+    public function testItShouldReturnNullWhenUserNotFound(): void
     {
         $query = new FindUserQuery('non-existent-uuid');
 

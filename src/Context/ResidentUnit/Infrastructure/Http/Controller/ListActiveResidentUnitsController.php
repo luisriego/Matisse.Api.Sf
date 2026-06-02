@@ -17,10 +17,18 @@ use function array_map;
 #[OA\Get(
     path: '/api/v1/resident-unit/actives',
     summary: 'List active resident units',
+    description: 'Returns units where `isActive` is true and `idealFraction` is greater than zero, ordered by `unit` ascending.',
     tags: ['Resident Units'],
     security: [['bearerAuth' => []]],
     responses: [
-        new OA\Response(response: 200, description: 'List of active resident units.'),
+        new OA\Response(
+            response: 200,
+            description: 'Array of active resident units (no wrapper object).',
+            content: new OA\JsonContent(
+                type: 'array',
+                items: new OA\Items(ref: '#/components/schemas/ResidentUnit'),
+            ),
+        ),
         new OA\Response(response: 401, description: 'Unauthorized'),
     ],
 )]

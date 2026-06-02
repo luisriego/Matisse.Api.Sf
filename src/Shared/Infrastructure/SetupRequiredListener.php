@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Shared\Infrastructure;
 
+use App\Context\Setup\Application\Service\SetupFinalizationService;
 use App\Context\Setup\Application\Service\SetupStatusChecker;
 use Symfony\Component\DependencyInjection\Attribute\Autowire;
 use Symfony\Component\HttpFoundation\JsonResponse;
@@ -11,8 +12,6 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Event\RequestEvent;
 
 use function str_starts_with;
-
-use App\Context\Setup\Application\Service\SetupFinalizationService;
 
 final class SetupRequiredListener
 {
@@ -22,6 +21,7 @@ final class SetupRequiredListener
      */
     private const EXEMPT_PREFIXES = [
         '/api/v1/setup/',
+        '/api/v1/doc',
         '/api/v1/users/register',
         '/api/v1/users/activate',
         '/api/v1/users/password-reset',
@@ -30,7 +30,9 @@ final class SetupRequiredListener
         '/api/v1/resident-unit/',
         '/api/v1/gas/',
         '/api/v1/expense-types',
+        '/api/v1/income-types',
         '/api/v1/expenses',
+        '/api/v1/incomes',
         '/api/v1/recurring-expenses',
     ];
 

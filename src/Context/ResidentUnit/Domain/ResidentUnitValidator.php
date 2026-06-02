@@ -19,7 +19,7 @@ final class ResidentUnitValidator
     {
         $totalFraction = $this->repository->calculateTotalIdealFraction();
 
-        if ($totalFraction + $newFraction->value() > 1.0) {
+        if (IdealFractionSumPolicy::exceedsMaximum($totalFraction + $newFraction->value())) {
             throw new InvalidArgumentException('The total of all ideal fractions cannot exceed 1.0.');
         }
     }

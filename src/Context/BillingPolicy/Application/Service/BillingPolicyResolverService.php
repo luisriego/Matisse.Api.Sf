@@ -17,9 +17,11 @@ use App\Context\Setup\Domain\OpeningSetupAggregateId;
 use DateTimeImmutable;
 
 use function array_key_exists;
+use function array_key_last;
 use function end;
 use function is_numeric;
 use function round;
+use function usort;
 
 final readonly class BillingPolicyResolverService implements BillingPolicyResolverPort
 {
@@ -53,11 +55,13 @@ final readonly class BillingPolicyResolverService implements BillingPolicyResolv
         }
 
         $opening = $this->latestOpeningReference();
+
         if ($opening === null) {
             return [];
         }
 
         $referenceMonth = (string) ($opening->payload()['referenceMonth'] ?? '');
+
         if ($referenceMonth === '') {
             return [];
         }
@@ -88,6 +92,7 @@ final readonly class BillingPolicyResolverService implements BillingPolicyResolv
             $events,
             static function (StoredEvent $a, StoredEvent $b): int {
                 $byTime = $a->occurredAt() <=> $b->occurredAt();
+
                 if (0 !== $byTime) {
                     return $byTime;
                 }
@@ -96,12 +101,13 @@ final readonly class BillingPolicyResolverService implements BillingPolicyResolv
             },
         );
 
-        return $events[\array_key_last($events)];
+        return $events[array_key_last($events)];
     }
 
     private function latestGlobalGasPricePerM3Cents(): ?int
     {
         $events = $this->storedEventRepository->findByEventType(GasPriceWasDefined::eventName());
+
         if ($events === []) {
             return null;
         }

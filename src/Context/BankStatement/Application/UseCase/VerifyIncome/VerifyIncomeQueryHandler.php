@@ -52,23 +52,23 @@ final class VerifyIncomeQueryHandler implements QueryHandler
 
         $unpaidDtos = array_map(
             static fn (Slip $s) => new UnpaidSlipDto(
-                slipId:         $s->id(),
-                amountInCents:  $s->amount(),
-                status:         $s->getStatus(),
+                slipId: $s->id(),
+                amountInCents: $s->amount(),
+                status: $s->getStatus(),
                 residentUnitId: $s->residentUnit()->id(),
-                dueDate:        $s->dueDate()->format('Y-m-d'),
+                dueDate: $s->dueDate()->format('Y-m-d'),
             ),
             $unpaidSlips,
         );
 
         return new VerifyIncomeResultDto(
-            expectedInCents:   $expected,
-            receivedInCents:   $received,
+            expectedInCents: $expected,
+            receivedInCents: $received,
             differenceInCents: $difference,
-            status:            $status,
-            totalSlips:        count($slips),
-            paidSlips:         $paidCount,
-            unpaidSlips:       $unpaidDtos,
+            status: $status,
+            totalSlips: count($slips),
+            paidSlips: $paidCount,
+            unpaidSlips: $unpaidDtos,
         );
     }
 }

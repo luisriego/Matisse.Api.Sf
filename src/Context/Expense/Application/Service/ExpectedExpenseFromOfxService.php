@@ -19,7 +19,6 @@ use DateMalformedStringException;
 use DateTimeImmutable;
 use InvalidArgumentException;
 
-use function sprintf;
 use function trim;
 
 /**

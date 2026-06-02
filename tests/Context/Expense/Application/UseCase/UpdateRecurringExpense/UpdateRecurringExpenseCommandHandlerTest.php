@@ -6,23 +6,25 @@ namespace App\Tests\Context\Expense\Application\UseCase\UpdateRecurringExpense;
 
 use App\Context\Expense\Application\UseCase\UpdateRecurringExpense\UpdateRecurrentExpenseCommand;
 use App\Context\Expense\Application\UseCase\UpdateRecurringExpense\UpdateRecurrentExpenseCommandHandler;
+use App\Context\Expense\Domain\ExpenseTypeRepository;
 use App\Context\Expense\Domain\RecurringExpense;
 use App\Context\Expense\Domain\RecurringExpenseRepository;
 use App\Context\Expense\Domain\ValueObject\ExpenseTypeId;
-use App\Context\Expense\Domain\ExpenseTypeRepository;
 use App\Shared\Domain\Exception\InvalidArgumentException;
 use App\Tests\Context\Expense\Domain\ExpenseIdMother;
 use App\Tests\Context\Expense\Domain\ExpenseTypeMother;
+use DateMalformedStringException;
 use DateTime;
 use PHPUnit\Framework\MockObject\Exception;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 use RuntimeException;
 
+use function sprintf;
 
 class UpdateRecurringExpenseCommandHandlerTest extends TestCase
 {
-    private RecurringExpenseRepository&MockObject $recurringExpenseRepo;
+    private MockObject&RecurringExpenseRepository $recurringExpenseRepo;
     private ExpenseTypeRepository&MockObject $typeRepo;
     private UpdateRecurrentExpenseCommandHandler $handler;
 
@@ -36,15 +38,15 @@ class UpdateRecurringExpenseCommandHandlerTest extends TestCase
         $this->typeRepo = $this->createMock(ExpenseTypeRepository::class);
         $this->handler = new UpdateRecurrentExpenseCommandHandler(
             $this->recurringExpenseRepo,
-            $this->typeRepo
+            $this->typeRepo,
         );
     }
 
     /** @test
      * @throws Exception
-     * @throws \DateMalformedStringException
+     * @throws DateMalformedStringException
      */
-    public function test_it_updates_all_fields(): void
+    public function testItUpdatesAllFields(): void
     {
         $idMother    = ExpenseIdMother::create();
         $typeMother  = ExpenseTypeMother::create();
@@ -63,7 +65,7 @@ class UpdateRecurringExpenseCommandHandlerTest extends TestCase
             $startString,
             $endString,
             $description,
-            $notes
+            $notes,
         );
 
         $expenseMock = $this->createMock(RecurringExpense::class);
@@ -89,10 +91,10 @@ class UpdateRecurringExpenseCommandHandlerTest extends TestCase
         $expenseMock->expects(self::once())->method('updateMonthsOfYear')->with($months);
         $expenseMock->expects(self::once())
             ->method('updateStartDate')
-            ->with(self::callback(fn($dt) => $dt instanceof DateTime && $dt->format('Y-m-d') === $startString));
+            ->with(self::callback(fn ($dt) => $dt instanceof DateTime && $dt->format('Y-m-d') === $startString));
         $expenseMock->expects(self::once())
             ->method('updateEndDate')
-            ->with(self::callback(fn($dt) => $dt instanceof DateTime && $dt->format('Y-m-d') === $endString));
+            ->with(self::callback(fn ($dt) => $dt instanceof DateTime && $dt->format('Y-m-d') === $endString));
         $expenseMock->expects(self::once())->method('updateDescription')->with($description);
         $expenseMock->expects(self::once())->method('updateNotes')->with($notes);
 
@@ -107,10 +109,10 @@ class UpdateRecurringExpenseCommandHandlerTest extends TestCase
     }
 
     /** @test
-     * @throws \DateMalformedStringException
+     * @throws DateMalformedStringException
      * @throws Exception
      */
-    public function test_it_updates_only_non_null_fields(): void
+    public function testItUpdatesOnlyNonNullFields(): void
     {
         $idMother = ExpenseIdMother::create();
         $command  = new UpdateRecurrentExpenseCommand(
@@ -122,7 +124,7 @@ class UpdateRecurringExpenseCommandHandlerTest extends TestCase
             null,
             null,
             null,
-            null
+            null,
         );
 
         $expenseMock = $this->createMock(RecurringExpense::class);
@@ -159,13 +161,21 @@ class UpdateRecurringExpenseCommandHandlerTest extends TestCase
     }
 
     /** @test
-     * @throws \DateMalformedStringException
+     * @throws DateMalformedStringException
      */
-    public function test_it_propagates_exception_when_recurring_not_found(): void
+    public function testItPropagatesExceptionWhenRecurringNotFound(): void
     {
         $idValue = ExpenseIdMother::create()->value();
         $command = new UpdateRecurrentExpenseCommand(
-            $idValue, null, null, null, null, null, null, null, null
+            $idValue,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
         );
 
         $this->recurringExpenseRepo
@@ -181,10 +191,10 @@ class UpdateRecurringExpenseCommandHandlerTest extends TestCase
     }
 
     /** @test
-     * @throws \DateMalformedStringException
+     * @throws DateMalformedStringException
      * @throws Exception
      */
-    public function test_it_propagates_exception_when_type_not_found(): void
+    public function testItPropagatesExceptionWhenTypeNotFound(): void
     {
         $idMother  = ExpenseIdMother::create();
         $badTypeId = 'non-existent-type';
@@ -197,7 +207,7 @@ class UpdateRecurringExpenseCommandHandlerTest extends TestCase
             null,
             null,
             null,
-            null
+            null,
         );
 
         $expenseMock = $this->createMock(RecurringExpense::class);
@@ -210,7 +220,7 @@ class UpdateRecurringExpenseCommandHandlerTest extends TestCase
         $this->expectExceptionMessage(sprintf(
             '<%s> does not allow the value <%s>.',
             ExpenseTypeId::class,
-            $badTypeId
+            $badTypeId,
         ));
 
         ($this->handler)($command);

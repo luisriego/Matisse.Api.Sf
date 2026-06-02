@@ -17,6 +17,9 @@ use Doctrine\ORM\Exception\ORMException;
 use Doctrine\ORM\OptimisticLockException;
 use Symfony\Component\HttpFoundation\Response;
 
+use function json_decode;
+use function json_encode;
+
 /**
  * @covers \App\Context\ResidentUnit\Infrastructure\Http\Controller\ResidentUnitIdealFractionPatchController
  */
@@ -32,7 +35,7 @@ final class ResidentUnitIdealFractionPatchControllerTest extends ApiTestCase
      * @throws OptimisticLockException
      * @throws ORMException
      */
-    public function test_it_should_patch_ideal_fraction_successfully(): void
+    public function testItShouldPatchIdealFractionSuccessfully(): void
     {
         // 1. Create a resident unit
         $residentUnit = ResidentUnitMother::create();
@@ -50,7 +53,7 @@ final class ResidentUnitIdealFractionPatchControllerTest extends ApiTestCase
             [],
             [],
             ['CONTENT_TYPE' => 'application/json'],
-            json_encode($payload)
+            json_encode($payload),
         );
 
         // 4. Assert the response
@@ -65,7 +68,7 @@ final class ResidentUnitIdealFractionPatchControllerTest extends ApiTestCase
         self::assertEquals($newIdealFraction, $updatedResidentUnit->idealFraction());
     }
 
-    public function test_it_should_return_not_found_when_resident_unit_does_not_exist(): void
+    public function testItShouldReturnNotFoundWhenResidentUnitDoesNotExist(): void
     {
         $nonExistentId = UuidMother::create();
         $payload = ['idealFraction' => 0.5];
@@ -76,7 +79,7 @@ final class ResidentUnitIdealFractionPatchControllerTest extends ApiTestCase
             [],
             [],
             ['CONTENT_TYPE' => 'application/json'],
-            json_encode($payload)
+            json_encode($payload),
         );
 
         $this->assertResponseStatusCodeSame(Response::HTTP_NOT_FOUND);
@@ -86,7 +89,7 @@ final class ResidentUnitIdealFractionPatchControllerTest extends ApiTestCase
      * @throws OptimisticLockException
      * @throws ORMException
      */
-    public function test_it_should_return_bad_request_for_invalid_ideal_fraction_value(): void
+    public function testItShouldReturnBadRequestForInvalidIdealFractionValue(): void
     {
         $residentUnit = ResidentUnitMother::create();
         $this->entityManager->persist($residentUnit);
@@ -100,7 +103,7 @@ final class ResidentUnitIdealFractionPatchControllerTest extends ApiTestCase
             [],
             [],
             ['CONTENT_TYPE' => 'application/json'],
-            json_encode($payload)
+            json_encode($payload),
         );
 
         $this->assertResponseStatusCodeSame(Response::HTTP_BAD_REQUEST);
@@ -112,7 +115,7 @@ final class ResidentUnitIdealFractionPatchControllerTest extends ApiTestCase
      * @throws OptimisticLockException
      * @throws ORMException
      */
-    public function test_it_should_return_conflict_when_ideal_fraction_sum_exceeds_limit(): void
+    public function testItShouldReturnConflictWhenIdealFractionSumExceedsLimit(): void
     {
         // 1. Create a resident unit with a high ideal fraction
         $residentUnit1 = ResidentUnitMother::create(idealFraction: new ResidentUnitIdealFraction(0.8));
@@ -132,7 +135,7 @@ final class ResidentUnitIdealFractionPatchControllerTest extends ApiTestCase
             [],
             [],
             ['CONTENT_TYPE' => 'application/json'],
-            json_encode($payload)
+            json_encode($payload),
         );
 
         $this->assertResponseStatusCodeSame(Response::HTTP_CONFLICT);
@@ -140,7 +143,7 @@ final class ResidentUnitIdealFractionPatchControllerTest extends ApiTestCase
         $this->assertStringContainsString('A soma das frações ideais não pode ser maior que 1.', $responseContent['message']);
     }
 
-    public function test_it_maps_exceptions_correctly(): void
+    public function testItMapsExceptionsCorrectly(): void
     {
         $controller = $this->getContainer()->get(ResidentUnitIdealFractionPatchController::class);
         $exceptions = $controller->exceptions();

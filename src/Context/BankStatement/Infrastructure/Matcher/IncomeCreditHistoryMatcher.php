@@ -15,7 +15,10 @@ use App\Shared\Domain\ValueObject\DateTimeValueObject;
 
 use function abs;
 use function mb_strtoupper;
+use function min;
+use function round;
 use function similar_text;
+use function sprintf;
 use function str_contains;
 use function usort;
 
@@ -41,6 +44,7 @@ final readonly class IncomeCreditHistoryMatcher implements IncomeCreditHistoryMa
 
         foreach ($pastIncomes as $income) {
             $desc = $income->description();
+
             if ($desc === null || $desc === '') {
                 continue;
             }
@@ -66,6 +70,7 @@ final readonly class IncomeCreditHistoryMatcher implements IncomeCreditHistoryMa
         usort($matched, static fn (array $a, array $b) => $b['score'] <=> $a['score']);
 
         $assignments = [];
+
         foreach ($matched as $item) {
             $assignments[] = $this->toDto($item['income'], (float) $item['score']);
         }
@@ -80,7 +85,9 @@ final readonly class IncomeCreditHistoryMatcher implements IncomeCreditHistoryMa
         ];
     }
 
-    /** @return Income[] */
+    /**
+     * @return Income[]
+     */
     private function fetchIncomesInWindow(DateTimeValueObject $referenceDate): array
     {
         $endDate   = clone $referenceDate->toDateTime();

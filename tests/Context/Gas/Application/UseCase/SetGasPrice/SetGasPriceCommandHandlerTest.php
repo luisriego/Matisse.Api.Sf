@@ -31,7 +31,7 @@ final class SetGasPriceCommandHandlerTest extends TestCase
     /**
      * @throws DateMalformedStringException
      */
-    public function test_it_should_append_and_publish_gas_price_was_defined(): void
+    public function testItShouldAppendAndPublishGasPriceWasDefined(): void
     {
         $pricePerM3InCents = 2600;
 
@@ -39,20 +39,20 @@ final class SetGasPriceCommandHandlerTest extends TestCase
             self::callback(static function ($event) use ($pricePerM3InCents): bool {
                 return $event instanceof GasPriceWasDefined
                     && $pricePerM3InCents === $event->pricePerM3InCents;
-            })
+            }),
         );
 
         $this->eventBus->expects(self::once())->method('publish')->with(
             self::callback(static function ($event) use ($pricePerM3InCents): bool {
                 return $event instanceof GasPriceWasDefined
                     && $pricePerM3InCents === $event->pricePerM3InCents;
-            })
+            }),
         );
 
         ($this->handler)(new SetGasPriceCommand($pricePerM3InCents));
     }
 
-    public function test_it_should_propagate_exception_from_event_bus(): void
+    public function testItShouldPropagateExceptionFromEventBus(): void
     {
         $this->eventStore->expects(self::once())->method('append');
         $this->eventBus

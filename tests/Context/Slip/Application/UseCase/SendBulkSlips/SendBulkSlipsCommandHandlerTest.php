@@ -7,12 +7,13 @@ namespace App\Tests\Context\Slip\Application\UseCase\SendBulkSlips;
 use App\Context\Slip\Application\UseCase\SendBulkSlips\SendBulkSlipsCommand;
 use App\Context\Slip\Application\UseCase\SendBulkSlips\SendBulkSlipsCommandHandler;
 use App\Context\Slip\Domain\Slip;
-use App\Context\Slip\Domain\SlipRepository;
 use App\Tests\Context\Slip\Domain\SlipMother;
 use App\Tests\Context\Slip\SlipModuleUnitTestCase;
 use PHPUnit\Framework\MockObject\MockObject;
 use Symfony\Component\Workflow\Marking;
 use Symfony\Component\Workflow\WorkflowInterface;
+
+use function array_map;
 
 final class SendBulkSlipsCommandHandlerTest extends SlipModuleUnitTestCase
 {
@@ -27,17 +28,19 @@ final class SendBulkSlipsCommandHandlerTest extends SlipModuleUnitTestCase
 
         $this->handler = new SendBulkSlipsCommandHandler(
             $this->repository(),
-            $this->slipStateMachine
+            $this->slipStateMachine,
         );
     }
 
-    /** @test */
-    public function test_it_should_apply_send_transition_to_multiple_slips(): void
+    /**
+     * @test
+     */
+    public function testItShouldApplySendTransitionToMultipleSlips(): void
     {
         $slip1 = SlipMother::create();
         $slip2 = SlipMother::create();
         $slips = [$slip1, $slip2];
-        $slipIds = array_map(fn(Slip $slip) => $slip->id(), $slips);
+        $slipIds = array_map(fn (Slip $slip) => $slip->id(), $slips);
         $command = new SendBulkSlipsCommand($slipIds);
 
         $this->repository()->method('findManyByIds')->with($slipIds)->willReturn($slips);
@@ -53,6 +56,7 @@ final class SendBulkSlipsCommandHandlerTest extends SlipModuleUnitTestCase
             ->method('apply')
             ->willReturnCallback(function (...$args) use (&$capturedArgs) {
                 $capturedArgs[] = $args;
+
                 return $this->createMock(Marking::class);
             });
 
@@ -63,13 +67,15 @@ final class SendBulkSlipsCommandHandlerTest extends SlipModuleUnitTestCase
         self::assertEquals([$slip2, 'send', []], $capturedArgs[1]);
     }
 
-    /** @test */
-    public function test_it_should_only_apply_transition_when_possible(): void
+    /**
+     * @test
+     */
+    public function testItShouldOnlyApplyTransitionWhenPossible(): void
     {
         $validSlip = SlipMother::create();
         $invalidSlip = SlipMother::create();
         $slips = [$validSlip, $invalidSlip];
-        $slipIds = array_map(fn(Slip $slip) => $slip->id(), $slips);
+        $slipIds = array_map(fn (Slip $slip) => $slip->id(), $slips);
         $command = new SendBulkSlipsCommand($slipIds);
 
         $this->repository()->method('findManyByIds')->with($slipIds)->willReturn($slips);

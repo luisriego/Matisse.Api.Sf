@@ -15,9 +15,11 @@ use App\Tests\Context\Expense\Domain\ExpenseTypeMother;
 use App\Tests\Shared\Domain\UuidMother;
 use PHPUnit\Framework\TestCase;
 
+use function range;
+
 final class RecurringExpenseSlipContributionServiceForecastTest extends TestCase
 {
-    public function test_forecast_contribution_includes_variable_recurring_amounts(): void
+    public function testForecastContributionIncludesVariableRecurringAmounts(): void
     {
         $recurring = $this->variableRecurring(18074);
 
@@ -28,7 +30,7 @@ final class RecurringExpenseSlipContributionServiceForecastTest extends TestCase
         $this->assertSame(0, $slice['fraction']);
     }
 
-    public function test_slip_contribution_still_skips_variable_recurring_amounts(): void
+    public function testSlipContributionStillSkipsVariableRecurringAmounts(): void
     {
         $recurring = $this->variableRecurring(18074);
 

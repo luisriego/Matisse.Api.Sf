@@ -43,3 +43,16 @@ nelmio_api_doc:
     areas:
         path_patterns:
             - ^/api/v1(?!/doc$)
+    models:
+        names:
+            - { alias: BankStatementPreview, type: App\Context\BankStatement\Application\Dto\BankStatementPreviewDto }
+            - { alias: TransactionPreview, type: App\Context\BankStatement\Application\Dto\TransactionPreviewDto }
+            - { alias: ExpectedExpensePreview, type: App\Context\BankStatement\Application\Dto\ExpectedExpensePreviewDto }
+            - { alias: PastAssignment, type: App\Context\BankStatement\Application\Dto\PastAssignmentDto }
+            - { alias: IncomePastAssignment, type: App\Context\BankStatement\Application\Dto\IncomePastAssignmentDto }
+            - { alias: EmbeddingCandidate, type: App\Context\BankStatement\Application\Matcher\EmbeddingCandidateDto }
+            - { alias: UnpaidSlip, type: App\Context\BankStatement\Application\Dto\UnpaidSlipDto }
+            - { alias: VerifyIncomeResult, type: App\Context\BankStatement\Application\Dto\VerifyIncomeResultDto }
+            - { alias: ConfirmLine, type: App\Context\BankStatement\Infrastructure\Http\Dto\ConfirmLineRequestDto }
+            - { alias: ResidentUnit, type: App\Context\ResidentUnit\Infrastructure\Http\OpenApi\ResidentUnitSchema }
+            - { alias: ResidentUnitNotificationRecipient, type: App\Context\ResidentUnit\Infrastructure\Http\OpenApi\ResidentUnitNotificationRecipientSchema }

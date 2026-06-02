@@ -1,0 +1,31 @@
+# Caddy reverse proxy: static Vite SPA + Symfony API
+# Install: sudo apt install caddy
+# Copy to /etc/caddy/Caddyfile and: sudo systemctl reload caddy
+#
+# Prerequisites:
+#   - API: docker compose -f docker-compose.server.yml with ports 127.0.0.1:8080:80
+#   - Frontend build in /opt/matisse-web (index.html at root)
+
+:80 {
+    handle /api/* {
+        reverse_proxy 127.0.0.1:8080
+    }
+
+    handle {
+        root * /opt/matisse-web
+        try_files {path} /index.html
+        file_server
+    }
+}
+
+# With a domain (automatic HTTPS):
+# matisse.example.com {
+#     handle /api/* {
+#         reverse_proxy 127.0.0.1:8080
+#     }
+#     handle {
+#         root * /opt/matisse-web
+#         try_files {path} /index.html
+#         file_server
+#     }
+# }

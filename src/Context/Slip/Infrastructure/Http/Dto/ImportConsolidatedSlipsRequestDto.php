@@ -28,6 +28,7 @@ class ImportConsolidatedSlipsRequestDto implements RequestDto
         $payload = $request->toArray();
 
         $monthValue = $payload['targetMonth'] ?? null;
+
         if (!is_string($monthValue) || 1 !== preg_match('/^\d{4}-\d{2}$/', $monthValue)) {
             throw new InvalidArgumentException('Invalid targetMonth. Expected YYYY-MM.');
         }
@@ -42,14 +43,16 @@ class ImportConsolidatedSlipsRequestDto implements RequestDto
         $this->month = $month;
 
         $rawSlips = $payload['slips'] ?? null;
+
         if (!is_array($rawSlips) || $rawSlips === []) {
             throw new InvalidArgumentException('slips array is required and must not be empty.');
         }
 
         $parsed = [];
+
         foreach ($rawSlips as $i => $entry) {
             if (!is_array($entry) || !isset($entry['residentUnitId'], $entry['amountCents'])) {
-                throw new InvalidArgumentException("slips[$i] must have residentUnitId and amountCents.");
+                throw new InvalidArgumentException("slips[{$i}] must have residentUnitId and amountCents.");
             }
 
             $item = [

@@ -8,6 +8,7 @@ use App\Context\Gas\Application\UseCase\RecordGasReading\RecordGasReadingCommand
 use App\Context\Gas\Domain\Event\GasReadingWasRecorded;
 use App\Shared\Application\EventStore;
 use App\Shared\Domain\Event\EventBus;
+use App\Shared\Domain\Exception\InvalidArgumentException;
 use DateMalformedStringException;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
@@ -30,7 +31,7 @@ class RecordGasReadingCommandHandlerTest extends TestCase
     /**
      * @throws DateMalformedStringException
      */
-    public function test_it_should_record_gas_reading_and_publish_event(): void
+    public function testItShouldRecordGasReadingAndPublishEvent(): void
     {
         $command = RecordGasReadingCommandMother::create();
 
@@ -44,40 +45,41 @@ class RecordGasReadingCommandHandlerTest extends TestCase
                 $this->assertSame($command->year(), $event->year);
                 $this->assertSame($command->month(), $event->month);
                 $this->assertSame($command->reading(), $event->reading);
+
                 return true;
             }));
 
         ($this->handler)($command);
     }
 
-    public function test_it_should_throw_exception_for_invalid_reading(): void
+    public function testItShouldThrowExceptionForInvalidReading(): void
     {
-        $this->expectException(\App\Shared\Domain\Exception\InvalidArgumentException::class);
-        
+        $this->expectException(InvalidArgumentException::class);
+
         $command = RecordGasReadingCommandMother::create(reading: -100.0);
 
         ($this->handler)($command);
     }
 
-    public function test_it_should_throw_exception_for_invalid_month(): void
+    public function testItShouldThrowExceptionForInvalidMonth(): void
     {
-        $this->expectException(\App\Shared\Domain\Exception\InvalidArgumentException::class);
-        
+        $this->expectException(InvalidArgumentException::class);
+
         $command = RecordGasReadingCommandMother::create(month: 13);
 
         ($this->handler)($command);
     }
-    
-    public function test_it_should_throw_exception_for_invalid_year(): void
+
+    public function testItShouldThrowExceptionForInvalidYear(): void
     {
-        $this->expectException(\App\Shared\Domain\Exception\InvalidArgumentException::class);
-        
+        $this->expectException(InvalidArgumentException::class);
+
         $command = RecordGasReadingCommandMother::create(year: 1900);
 
         ($this->handler)($command);
     }
 
-    public function test_it_should_propagate_exception_from_event_bus(): void
+    public function testItShouldPropagateExceptionFromEventBus(): void
     {
         $command = RecordGasReadingCommandMother::create();
 

@@ -10,10 +10,13 @@ use App\Tests\Context\Income\Domain\IncomeTypeMother;
 use App\Tests\Context\ResidentUnit\Domain\ResidentUnitMother;
 use App\Tests\Shared\Domain\UuidMother;
 use App\Tests\Shared\Infrastructure\PhpUnit\ApiTestCase;
+use DateMalformedStringException;
 use DateTimeImmutable;
 use Doctrine\ORM\Exception\ORMException;
 use Doctrine\ORM\OptimisticLockException;
 use Symfony\Component\HttpFoundation\Response;
+
+use function json_encode;
 
 final class IncomeEnterPutControllerTest extends ApiTestCase
 {
@@ -24,11 +27,11 @@ final class IncomeEnterPutControllerTest extends ApiTestCase
     }
 
     /**
-     * @throws \DateMalformedStringException
+     * @throws DateMalformedStringException
      * @throws OptimisticLockException
      * @throws ORMException
      */
-    public function test_it_should_enter_income_and_store_event(): void
+    public function testItShouldEnterIncomeAndStoreEvent(): void
     {
         $incomeId = UuidMother::create();
         $residentUnit = ResidentUnitMother::create();
@@ -57,7 +60,7 @@ final class IncomeEnterPutControllerTest extends ApiTestCase
             [],
             [],
             ['CONTENT_TYPE' => 'application/json'],
-            json_encode($payload)
+            json_encode($payload),
         );
 
         $this->assertResponseStatusCodeSame(Response::HTTP_CREATED);

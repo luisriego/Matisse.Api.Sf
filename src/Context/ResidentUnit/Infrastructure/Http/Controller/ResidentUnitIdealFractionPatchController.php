@@ -33,7 +33,8 @@ use Throwable;
         new OA\Parameter(name: 'id', in: 'path', required: true, schema: new OA\Schema(type: 'string', format: 'uuid')),
     ],
     responses: [
-        new OA\Response(response: 200, description: 'Ideal fraction updated.'),
+        new OA\Response(response: 200, description: 'Ideal fraction updated. Empty response body.'),
+        new OA\Response(response: 400, description: 'Validation error.'),
         new OA\Response(response: 404, description: 'Resident unit not found.'),
         new OA\Response(response: 409, description: 'Ideal fraction sum exceeds limit.'),
         new OA\Response(response: 401, description: 'Unauthorized'),

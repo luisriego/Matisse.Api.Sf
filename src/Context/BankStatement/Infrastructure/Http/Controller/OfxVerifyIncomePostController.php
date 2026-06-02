@@ -5,12 +5,15 @@ declare(strict_types=1);
 namespace App\Context\BankStatement\Infrastructure\Http\Controller;
 
 use App\Context\BankStatement\Application\Dto\CreditLineDto;
+use App\Context\BankStatement\Application\Dto\VerifyIncomeResultDto;
 use App\Context\BankStatement\Application\UseCase\VerifyIncome\VerifyIncomeQuery;
 use App\Context\BankStatement\Infrastructure\Http\Dto\VerifyIncomeRequestDto;
 use App\Shared\Infrastructure\Symfony\ApiController;
 use OpenApi\Attributes as OA;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Response;
+
+use function array_map;
 
 #[OA\Post(
     path: '/api/v1/bank/ofx-verify-income',
@@ -22,7 +25,7 @@ use Symfony\Component\HttpFoundation\Response;
             required: ['month', 'year', 'creditLines'],
             properties: [
                 new OA\Property(property: 'month', type: 'integer', example: 3, description: 'Month 1–12'),
-                new OA\Property(property: 'year',  type: 'integer', example: 2026),
+                new OA\Property(property: 'year', type: 'integer', example: 2026),
                 new OA\Property(
                     property: 'creditLines',
                     type: 'array',
@@ -36,7 +39,7 @@ use Symfony\Component\HttpFoundation\Response;
                                 description: 'Echo from preview. Older payloads may use the previous JSON property name for this field.',
                             ),
                             new OA\Property(property: 'amountInCents', type: 'integer', example: 25000),
-                            new OA\Property(property: 'memo',          type: 'string',  example: 'BOLETOS RECEBIDOS 10/03S'),
+                            new OA\Property(property: 'memo', type: 'string', example: 'BOLETOS RECEBIDOS 10/03S'),
                         ],
                     ),
                 ),
@@ -50,27 +53,43 @@ use Symfony\Component\HttpFoundation\Response;
             description: 'Income reconciliation result.',
             content: new OA\JsonContent(
                 properties: [
-                    new OA\Property(property: 'expectedInCents',   type: 'integer', example: 50000,
-                        description: 'Total of non-cancelled slips due in the given month.'),
-                    new OA\Property(property: 'receivedInCents',   type: 'integer', example: 50000,
-                        description: 'Sum of all credit lines passed in the request.'),
-                    new OA\Property(property: 'differenceInCents', type: 'integer', example: 0,
-                        description: 'received − expected. Negative = shortfall, positive = surplus.'),
-                    new OA\Property(property: 'status', type: 'string',
-                        enum: ['balanced', 'shortfall', 'surplus'], example: 'balanced'),
+                    new OA\Property(
+                        property: 'expectedInCents',
+                        type: 'integer',
+                        example: 50000,
+                        description: 'Total of non-cancelled slips due in the given month.',
+                    ),
+                    new OA\Property(
+                        property: 'receivedInCents',
+                        type: 'integer',
+                        example: 50000,
+                        description: 'Sum of all credit lines passed in the request.',
+                    ),
+                    new OA\Property(
+                        property: 'differenceInCents',
+                        type: 'integer',
+                        example: 0,
+                        description: 'received − expected. Negative = shortfall, positive = surplus.',
+                    ),
+                    new OA\Property(
+                        property: 'status',
+                        type: 'string',
+                        enum: ['balanced', 'shortfall', 'surplus'],
+                        example: 'balanced',
+                    ),
                     new OA\Property(property: 'totalSlips', type: 'integer', example: 2),
-                    new OA\Property(property: 'paidSlips',  type: 'integer', example: 2),
+                    new OA\Property(property: 'paidSlips', type: 'integer', example: 2),
                     new OA\Property(
                         property: 'unpaidSlips',
                         type: 'array',
                         description: 'Empty when status is balanced or surplus.',
                         items: new OA\Items(
                             properties: [
-                                new OA\Property(property: 'slipId',         type: 'string', format: 'uuid'),
-                                new OA\Property(property: 'amountInCents',  type: 'integer', example: 25000),
-                                new OA\Property(property: 'status',         type: 'string', example: 'issued'),
+                                new OA\Property(property: 'slipId', type: 'string', format: 'uuid'),
+                                new OA\Property(property: 'amountInCents', type: 'integer', example: 25000),
+                                new OA\Property(property: 'status', type: 'string', example: 'issued'),
                                 new OA\Property(property: 'residentUnitId', type: 'string', format: 'uuid'),
-                                new OA\Property(property: 'dueDate',        type: 'string', format: 'date', example: '2026-03-10'),
+                                new OA\Property(property: 'dueDate', type: 'string', format: 'date', example: '2026-03-10'),
                             ],
                         ),
                     ),
@@ -87,15 +106,15 @@ final class OfxVerifyIncomePostController extends ApiController
             static fn (array $line) => new CreditLineDto(
                 importLineKey: $line['importLineKey'],
                 amountInCents: $line['amountInCents'],
-                memo:          $line['memo'],
+                memo: $line['memo'],
             ),
             $request->creditLines,
         );
 
-        /** @var \App\Context\BankStatement\Application\Dto\VerifyIncomeResultDto $result */
+        /** @var VerifyIncomeResultDto $result */
         $result = $this->ask(new VerifyIncomeQuery(
-            month:       $request->month,
-            year:        $request->year,
+            month: $request->month,
+            year: $request->year,
             creditLines: $creditLines,
         ));
 

@@ -8,8 +8,8 @@ use App\Context\Expense\Application\UseCase\PayedAtExpense\ExpensePayedCommandHa
 use App\Context\Expense\Application\UseCase\PayedAtExpense\PayedAtExpenseCommand;
 use App\Context\Expense\Domain\ExpenseRepository;
 use App\Tests\Context\Expense\Domain\ExpenseMother;
-use PHPUnit\Framework\TestCase;
 use Exception;
+use PHPUnit\Framework\TestCase;
 
 class ExpensePayedCommandHandlerTest extends TestCase
 {
@@ -22,7 +22,7 @@ class ExpensePayedCommandHandlerTest extends TestCase
         $this->handler = new ExpensePayedCommandHandler($this->repository);
     }
 
-    public function test_it_should_mark_an_expense_as_paid(): void
+    public function testItShouldMarkAnExpenseAsPaid(): void
     {
         $expense = ExpenseMother::create();
         $command = new PayedAtExpenseCommand($expense->id());
@@ -41,7 +41,7 @@ class ExpensePayedCommandHandlerTest extends TestCase
         $this->assertNotNull($expense->paidAt());
     }
 
-    public function test_it_should_throw_exception_if_expense_not_found(): void
+    public function testItShouldThrowExceptionIfExpenseNotFound(): void
     {
         $command = new PayedAtExpenseCommand('non-existent-id');
 
@@ -56,7 +56,7 @@ class ExpensePayedCommandHandlerTest extends TestCase
         ($this->handler)($command);
     }
 
-    public function test_it_should_not_repay_an_already_paid_expense(): void
+    public function testItShouldNotRepayAnAlreadyPaidExpense(): void
     {
         $expense = ExpenseMother::create();
         $expense->markAsPaid(); // Mark it as paid initially

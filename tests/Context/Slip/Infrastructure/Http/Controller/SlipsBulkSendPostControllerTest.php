@@ -4,11 +4,11 @@ declare(strict_types=1);
 
 namespace App\Tests\Context\Slip\Infrastructure\Http\Controller;
 
-use App\Context\Slip\Domain\Slip;
 use App\Tests\Context\Slip\Domain\SlipMother;
 use App\Tests\Shared\Infrastructure\PhpUnit\ApiTestCase;
-use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\HttpFoundation\Response;
+
+use function json_encode;
 
 final class SlipsBulkSendPostControllerTest extends ApiTestCase
 {
@@ -19,8 +19,10 @@ final class SlipsBulkSendPostControllerTest extends ApiTestCase
         $this->entityManager = $this->client->getContainer()->get('doctrine.orm.entity_manager');
     }
 
-    /** @test */
-    public function test_it_should_send_multiple_slips_and_return_accepted(): void
+    /**
+     * @test
+     */
+    public function testItShouldSendMultipleSlipsAndReturnAccepted(): void
     {
         $slip1 = SlipMother::create();
         $slip2 = SlipMother::create();
@@ -37,14 +39,16 @@ final class SlipsBulkSendPostControllerTest extends ApiTestCase
             [],
             [],
             ['CONTENT_TYPE' => 'application/json'],
-            json_encode(['slip_ids' => $slipIds])
+            json_encode(['slip_ids' => $slipIds]),
         );
 
         $this->assertResponseStatusCodeSame(Response::HTTP_ACCEPTED);
     }
 
-    /** @test */
-    public function test_it_should_only_send_valid_slips_in_a_batch(): void
+    /**
+     * @test
+     */
+    public function testItShouldOnlySendValidSlipsInABatch(): void
     {
         $pendingSlip = SlipMother::create();
         $paidSlip = SlipMother::create();
@@ -62,7 +66,7 @@ final class SlipsBulkSendPostControllerTest extends ApiTestCase
             [],
             [],
             ['CONTENT_TYPE' => 'application/json'],
-            json_encode(['slip_ids' => $slipIds])
+            json_encode(['slip_ids' => $slipIds]),
         );
 
         $this->assertResponseStatusCodeSame(Response::HTTP_ACCEPTED);

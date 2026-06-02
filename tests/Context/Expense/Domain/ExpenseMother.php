@@ -24,7 +24,7 @@ final class ExpenseMother
         ?bool $isActive = true,
         ?string $description = 'Default Description',
         ?string $residentUnitId = null,
-        bool $forceAccount = true // Flag to control account creation
+        bool $forceAccount = true, // Flag to control account creation
     ): Expense {
         $finalAccount = $forceAccount ? ($account ?? AccountMother::create()) : $account;
 
@@ -36,7 +36,7 @@ final class ExpenseMother
             $dueDate ?? ExpenseDueDateMother::create()->toDateTime(),
             $isActive,
             $description,
-            $residentUnitId
+            $residentUnitId,
         );
     }
 
@@ -48,7 +48,7 @@ final class ExpenseMother
         ?ExpenseType $type = null,
         ?bool $isActive = true,
         ?string $description = 'Default Description',
-        ?string $residentUnitId = null
+        ?string $residentUnitId = null,
     ): Expense {
         return new Expense(
             $id->value(),
@@ -58,7 +58,7 @@ final class ExpenseMother
             $dueDate->toDateTime(),
             $isActive,
             $description,
-            $residentUnitId
+            $residentUnitId,
         );
     }
 
@@ -69,7 +69,7 @@ final class ExpenseMother
         ?Account $account = null,
         ?DateTime $dueDate = null,
         ?string $description = 'Default Description',
-        ?string $residentUnitId = null
+        ?string $residentUnitId = null,
     ): Expense {
         return self::create($id, $amount, $type, $account, $dueDate, false, $description, $residentUnitId);
     }
@@ -81,7 +81,7 @@ final class ExpenseMother
         ?DateTime $dueDate = null,
         ?bool $isActive = true,
         ?string $description = 'Default Description',
-        ?string $residentUnitId = null
+        ?string $residentUnitId = null,
     ): Expense {
         // Call create but force the account to be null
         return self::create($id, $amount, $type, null, $dueDate, $isActive, $description, $residentUnitId, false);

@@ -8,6 +8,9 @@ use App\Context\ResidentUnit\Domain\ResidentUnit;
 use App\Context\Slip\Domain\Service\SlipComponentBreakdownService;
 use PHPUnit\Framework\TestCase;
 
+use function array_map;
+use function array_sum;
+
 final class SlipComponentBreakdownServiceTest extends TestCase
 {
     private SlipComponentBreakdownService $service;
@@ -51,7 +54,7 @@ final class SlipComponentBreakdownServiceTest extends TestCase
         $this->assertSame(0, $result['totals']['differenceCents']);
         $this->assertSame(
             $result['totals']['totalCents'],
-            array_sum(array_map(static fn(array $u): int => $u['totalCents'], $result['units'])),
+            array_sum(array_map(static fn (array $u): int => $u['totalCents'], $result['units'])),
         );
 
         foreach ($result['units'] as $unit) {
@@ -90,7 +93,7 @@ final class SlipComponentBreakdownServiceTest extends TestCase
         );
 
         $despesasPrevistas = array_map(
-            static fn(array $u): int => $u['equalShareCents'],
+            static fn (array $u): int => $u['equalShareCents'],
             $result['units'],
         );
 
@@ -120,13 +123,13 @@ final class SlipComponentBreakdownServiceTest extends TestCase
             0,
         );
 
-        $legacyPerUnit = array_map(static fn(array $u): int => $u['equalShareCents'], $result['units']);
+        $legacyPerUnit = array_map(static fn (array $u): int => $u['equalShareCents'], $result['units']);
         $this->assertSame(300000, array_sum($legacyPerUnit));
         $this->assertSame(300000, $result['components']['despesasPrevistasTotalCents']);
         $this->assertSame(60000, $result['components']['syndicTotalCents']);
     }
 
-    public function test_pf1se_line_passed_whole_to_equal_pool_without_syndic_split(): void
+    public function testPf1seLinePassedWholeToEqualPoolWithoutSyndicSplit(): void
     {
         $units = [
             $this->unit('u-101', '101', 0.20),

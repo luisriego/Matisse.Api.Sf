@@ -14,9 +14,9 @@ use OpenApi\Attributes as OA;
 #[OA\Schema(
     schema: 'EmbeddingCandidate',
     properties: [
-        new OA\Property(property: 'candidateId',    type: 'string', format: 'uuid',  description: 'ID of the matched Expense'),
-        new OA\Property(property: 'label',          type: 'string', example: 'COPASA água fatura mensal'),
-        new OA\Property(property: 'score',          type: 'number', format: 'float', example: 0.9842, description: 'Cosine similarity [0,1]'),
+        new OA\Property(property: 'candidateId', type: 'string', format: 'uuid', description: 'ID of the matched Expense'),
+        new OA\Property(property: 'label', type: 'string', example: 'COPASA água fatura mensal'),
+        new OA\Property(property: 'score', type: 'number', format: 'float', example: 0.9842, description: 'Cosine similarity [0,1]'),
         new OA\Property(property: 'embeddingModel', type: 'string', example: 'nomic-embed-text'),
     ],
 )]

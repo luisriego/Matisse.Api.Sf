@@ -19,7 +19,9 @@ use App\Shared\Application\QueryHandler;
 use DateMalformedStringException;
 use Symfony\Component\Messenger\Attribute\AsMessageHandler;
 
+use function max;
 use function min;
+use function round;
 
 #[AsMessageHandler(bus: 'query.bus')]
 final readonly class PreviewBankStatementQueryHandler implements QueryHandler
@@ -118,20 +120,26 @@ final readonly class PreviewBankStatementQueryHandler implements QueryHandler
         if ($embeddingCandidates !== []) {
             $best                 = $embeddingCandidates[0];
             $bestEmbeddingScore   = $best->score;
+
             if ($best->score >= self::EMBEDDING_SUGGEST_MIN_SCORE) {
                 $matchedExpense = $this->expenseRepository->findOneById($best->candidateId);
+
                 if (null !== $matchedExpense && null !== $matchedExpense->type()) {
                     $fromEmbedding = true;
+
                     if (null === $suggestedExpenseTypeId) {
                         $suggestedExpenseTypeId     = $matchedExpense->type()->id();
                         $suggestedExpenseTypeName   = $matchedExpense->type()->name();
                     }
+
                     if (null === $suggestedAccountId && null !== $matchedExpense->account()) {
                         $suggestedAccountId = $matchedExpense->account()->id();
                     }
+
                     if (null === $suggestedRecurringExpenseId && null !== $matchedExpense->recurringExpense()) {
                         $suggestedRecurringExpenseId = $matchedExpense->recurringExpense()->id();
                     }
+
                     if (null === $suggestedResidentUnitId && null !== $matchedExpense->residentUnitId()) {
                         $suggestedResidentUnitId = $matchedExpense->residentUnitId();
                     }

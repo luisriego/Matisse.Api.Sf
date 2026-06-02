@@ -9,6 +9,9 @@ use App\Context\BankStatement\Application\Dto\ExpectedExpenseSpecDto;
 use App\Shared\Infrastructure\RequestDto;
 use Symfony\Component\HttpFoundation\Request;
 
+use function array_map;
+use function is_array;
+
 final class ConfirmBankOfxLinesRequestDto implements RequestDto
 {
     public readonly string $bankAccountId;
@@ -32,21 +35,21 @@ final class ConfirmBankOfxLinesRequestDto implements RequestDto
 
         $this->lines = array_map(
             static fn (array $line) => new ConfirmLineRequestDto(
-                importLineKey:      (string) ($line['importLineKey'] ?? $line['fitId'] ?? ''),
-                amountInCents:      (int) ($line['amountInCents'] ?? 0),
-                postedAt:           (string) ($line['postedAt'] ?? ''),
-                memo:               (string) ($line['memo'] ?? ''),
-                accountId:          (string) ($line['accountId'] ?? ''),
-                dueDate:            (string) ($line['dueDate'] ?? ''),
-                lineType:           (string) ($line['lineType'] ?? 'expense'),
-                expenseTypeId:      isset($line['expenseTypeId'])      ? (string) $line['expenseTypeId']      : null,
-                incomeTypeId:       isset($line['incomeTypeId'])       ? (string) $line['incomeTypeId']       : null,
-                description:        isset($line['description'])        ? (string) $line['description']        : null,
+                importLineKey: (string) ($line['importLineKey'] ?? $line['fitId'] ?? ''),
+                amountInCents: (int) ($line['amountInCents'] ?? 0),
+                postedAt: (string) ($line['postedAt'] ?? ''),
+                memo: (string) ($line['memo'] ?? ''),
+                accountId: (string) ($line['accountId'] ?? ''),
+                dueDate: (string) ($line['dueDate'] ?? ''),
+                lineType: (string) ($line['lineType'] ?? 'expense'),
+                expenseTypeId: isset($line['expenseTypeId']) ? (string) $line['expenseTypeId'] : null,
+                incomeTypeId: isset($line['incomeTypeId']) ? (string) $line['incomeTypeId'] : null,
+                description: isset($line['description']) ? (string) $line['description'] : null,
                 recurringExpenseId: isset($line['recurringExpenseId']) ? (string) $line['recurringExpenseId'] : null,
-                residentUnitId:     isset($line['residentUnitId'])     ? (string) $line['residentUnitId']     : null,
-                creditKind:         (string) ($line['creditKind'] ?? 'boleto_settlement'),
-                isExpectedExpense:  !isset($line['isExpectedExpense']) || (bool) $line['isExpectedExpense'],
-                expectedExpense:    isset($line['expectedExpense']) && is_array($line['expectedExpense'])
+                residentUnitId: isset($line['residentUnitId']) ? (string) $line['residentUnitId'] : null,
+                creditKind: (string) ($line['creditKind'] ?? 'boleto_settlement'),
+                isExpectedExpense: !isset($line['isExpectedExpense']) || (bool) $line['isExpectedExpense'],
+                expectedExpense: isset($line['expectedExpense']) && is_array($line['expectedExpense'])
                     ? self::parseExpectedExpense($line['expectedExpense']) : null,
             ),
             $data['lines'] ?? [],
@@ -56,11 +59,13 @@ final class ConfirmBankOfxLinesRequestDto implements RequestDto
     private static function parseExpectedExpense(array $raw): ExpectedExpenseSpecDto
     {
         $recurringId = isset($raw['recurringExpenseId']) ? (string) $raw['recurringExpenseId'] : null;
+
         if ($recurringId === '') {
             $recurringId = null;
         }
 
         $createOrUpdate = null;
+
         if (isset($raw['createOrUpdate']) && is_array($raw['createOrUpdate'])) {
             $cu = $raw['createOrUpdate'];
             $months = isset($cu['monthsOfYear']) && is_array($cu['monthsOfYear'])

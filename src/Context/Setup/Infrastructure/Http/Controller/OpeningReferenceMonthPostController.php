@@ -14,8 +14,10 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Uid\Uuid;
 
 use function array_key_exists;
+use function is_array;
 use function is_int;
 use function json_decode;
+use function sprintf;
 
 #[OA\Post(
     path: '/api/v1/setup/opening-reference-month',
@@ -57,6 +59,7 @@ final class OpeningReferenceMonthPostController extends ApiController
         }
 
         $required = ['referenceMonth', 'syndicAllocationRule', 'extraFeePerUnitCents', 'reserveFundPerUnitCents'];
+
         foreach ($required as $key) {
             if (!array_key_exists($key, $data)) {
                 throw new InvalidDataException(sprintf('Missing field "%s".', $key));
@@ -89,6 +92,13 @@ final class OpeningReferenceMonthPostController extends ApiController
         return new JsonResponse(['recorded' => true], Response::HTTP_CREATED);
     }
 
+    public function exceptions(): array
+    {
+        return [
+            InvalidDataException::class => Response::HTTP_BAD_REQUEST,
+        ];
+    }
+
     /**
      * @param array<string, mixed> $data
      */
@@ -115,17 +125,11 @@ final class OpeningReferenceMonthPostController extends ApiController
         }
 
         $id = (string) $data['ledgerAccountId'];
+
         if (!Uuid::isValid($id)) {
             throw new InvalidDataException('ledgerAccountId must be a valid UUID when provided.');
         }
 
         return $id;
-    }
-
-    public function exceptions(): array
-    {
-        return [
-            InvalidDataException::class => Response::HTTP_BAD_REQUEST,
-        ];
     }
 }

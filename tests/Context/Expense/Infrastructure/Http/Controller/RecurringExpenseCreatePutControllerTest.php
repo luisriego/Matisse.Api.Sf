@@ -11,6 +11,8 @@ use App\Tests\Shared\Domain\UuidMother;
 use App\Tests\Shared\Infrastructure\PhpUnit\ApiTestCase;
 use Symfony\Component\HttpFoundation\Response;
 
+use function json_encode;
+
 final class RecurringExpenseCreatePutControllerTest extends ApiTestCase
 {
     protected function setUp(): void
@@ -19,7 +21,7 @@ final class RecurringExpenseCreatePutControllerTest extends ApiTestCase
         $this->createAuthenticatedClient();
     }
 
-    public function test_it_should_create_recurring_expense(): void
+    public function testItShouldCreateRecurringExpense(): void
     {
         // 1. Create dependencies
         $account = AccountMother::create();
@@ -51,7 +53,7 @@ final class RecurringExpenseCreatePutControllerTest extends ApiTestCase
             [],
             [],
             ['CONTENT_TYPE' => 'application/json'],
-            json_encode($payload)
+            json_encode($payload),
         );
 
         // 4. Assert the response

@@ -65,8 +65,13 @@ RUN echo "alias test='bin/phpunit --colors=always'" >> /home/appuser/.bashrc \
     && echo "alias tcf='bin/phpunit --coverage-html coverage/ --colors=always --filter'" >> /home/appuser/.bashrc
 
 COPY xdebug.ini /usr/local/etc/php/conf.d/xdebug.ini
+COPY docker-entrypoint.sh /usr/local/bin/docker-entrypoint.sh
+RUN dos2unix /usr/local/bin/docker-entrypoint.sh \
+    && chmod +x /usr/local/bin/docker-entrypoint.sh \
+    && mv "$PHP_INI_DIR/php.ini-development" "$PHP_INI_DIR/php.ini"
 
-RUN mv "$PHP_INI_DIR/php.ini-development" "$PHP_INI_DIR/php.ini"
+ENTRYPOINT ["/usr/local/bin/docker-entrypoint.sh"]
+CMD ["apache2-foreground"]
 
 # ─────────────────────────────────────────────────────────────
 # Stage 3: production — clean image without dev tools

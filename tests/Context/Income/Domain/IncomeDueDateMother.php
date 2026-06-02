@@ -17,6 +17,7 @@ final class IncomeDueDateMother
         }
 
         $faker = MotherCreator::random();
+
         // Ensure the date is in the future
         return new IncomeDueDate($faker->dateTimeBetween('tomorrow', '+1 year'));
     }

@@ -10,14 +10,18 @@ use App\Context\Slip\Domain\Exception\RecreationExpiredException;
 use App\Context\Slip\Domain\Service\SlipGenerationPolicy;
 use App\Context\Slip\Domain\SlipRepository;
 use App\Tests\Shared\Infrastructure\FixedClock;
+use DateTimeImmutable;
+use Generator;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\Attributes\Test;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 
+use function sprintf;
+
 final class SlipGenerationPolicyTest extends TestCase
 {
-    private SlipRepository&MockObject $slipRepository;
+    private MockObject&SlipRepository $slipRepository;
     private FixedClock $clock;
     private SlipGenerationPolicy $policy;
 
@@ -31,7 +35,7 @@ final class SlipGenerationPolicyTest extends TestCase
 
     #[Test]
     #[DataProvider('provideSuccessScenarios')]
-    public function it_should_allow_generation_on_valid_scenarios(string $today, int $year, int $month, bool $slipsExist, bool $forced): void
+    public function itShouldAllowGenerationOnValidScenarios(string $today, int $year, int $month, bool $slipsExist, bool $forced): void
     {
         $this->clock->set($today);
 
@@ -39,9 +43,9 @@ final class SlipGenerationPolicyTest extends TestCase
             // When forced, the policy should not check for existing slips.
             $this->slipRepository->expects($this->never())->method('existsForDueDateMonth');
         } else {
-            $dueDateContext = (new \DateTimeImmutable(sprintf('%d-%d-01', $year, $month)))->modify('+1 month');
-            $dueYear = (int)$dueDateContext->format('Y');
-            $dueMonth = (int)$dueDateContext->format('m');
+            $dueDateContext = (new DateTimeImmutable(sprintf('%d-%d-01', $year, $month)))->modify('+1 month');
+            $dueYear = (int) $dueDateContext->format('Y');
+            $dueMonth = (int) $dueDateContext->format('m');
 
             $this->slipRepository->expects($this->once())
                 ->method('existsForDueDateMonth')
@@ -54,7 +58,7 @@ final class SlipGenerationPolicyTest extends TestCase
         $this->addToAssertionCount(1); // Ensures that the test runs and doesn't just do nothing.
     }
 
-    public static function provideSuccessScenarios(): \Generator
+    public static function provideSuccessScenarios(): Generator
     {
         yield 'Forced generation should always be allowed' => ['2024-08-10', 2024, 6, false, true];
         yield 'First time generation, on the 25th' => ['2024-07-25', 2024, 7, false, false];
@@ -65,16 +69,16 @@ final class SlipGenerationPolicyTest extends TestCase
 
     #[Test]
     #[DataProvider('provideFailureScenarios')]
-    public function it_should_throw_exception_on_invalid_scenarios(string $expectedException, string $today, int $year, int $month, bool $slipsExist, bool $forced): void
+    public function itShouldThrowExceptionOnInvalidScenarios(string $expectedException, string $today, int $year, int $month, bool $slipsExist, bool $forced): void
     {
         $this->expectException($expectedException);
 
         $this->clock->set($today);
 
         // All failure scenarios are not forced, so the repository will always be checked.
-        $dueDateContext = (new \DateTimeImmutable(sprintf('%d-%d-01', $year, $month)))->modify('+1 month');
-        $dueYear = (int)$dueDateContext->format('Y');
-        $dueMonth = (int)$dueDateContext->format('m');
+        $dueDateContext = (new DateTimeImmutable(sprintf('%d-%d-01', $year, $month)))->modify('+1 month');
+        $dueYear = (int) $dueDateContext->format('Y');
+        $dueMonth = (int) $dueDateContext->format('m');
 
         $this->slipRepository->expects($this->once())
             ->method('existsForDueDateMonth')
@@ -84,7 +88,7 @@ final class SlipGenerationPolicyTest extends TestCase
         $this->policy->check($year, $month, $forced);
     }
 
-    public static function provideFailureScenarios(): \Generator
+    public static function provideFailureScenarios(): Generator
     {
         yield 'Generation too early' => [GenerationNotAllowedYetException::class, '2024-07-24', 2024, 7, false, false];
         // The logic in SlipGenerationPolicy throws PastMonthGenerationRequiresConfirmationException when today > lastDayForFirstTime

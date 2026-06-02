@@ -7,9 +7,13 @@ namespace App\Tests\Context\BankStatement\Infrastructure\Http\Controller;
 use App\Tests\Shared\Infrastructure\PhpUnit\ApiTestCase;
 use Symfony\Component\HttpFoundation\Response;
 
+use function json_decode;
+
+use const JSON_THROW_ON_ERROR;
+
 final class OfxMatchingContextGetControllerTest extends ApiTestCase
 {
-    public function test_it_returns_matching_context_json(): void
+    public function testItReturnsMatchingContextJson(): void
     {
         $this->createAuthenticatedClient();
         $this->client->request('GET', '/api/v1/bank/ofx-matching-context');

@@ -18,10 +18,10 @@ namespace App\Context\BankStatement\Application\Matcher;
 interface EmbeddingMatcherInterface
 {
     /**
-     * @param string $normalizedMemo  Output of MemoFingerprint::from() or raw memo text.
-     * @param int    $topK            Number of candidates to return (default 3).
+     * @param string $normalizedMemo output of MemoFingerprint::from() or raw memo text
+     * @param int    $topK           number of candidates to return (default 3)
      *
-     * @return EmbeddingCandidateDto[]  Sorted descending by score; empty on failure.
+     * @return EmbeddingCandidateDto[] sorted descending by score; empty on failure
      */
     public function findSimilar(string $normalizedMemo, int $topK = 3): array;
 }

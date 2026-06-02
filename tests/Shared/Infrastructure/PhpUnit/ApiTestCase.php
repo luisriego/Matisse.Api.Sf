@@ -15,11 +15,17 @@ use Doctrine\DBAL\Connection;
 use Doctrine\DBAL\Platforms\PostgreSQLPlatform;
 use Doctrine\DBAL\Platforms\SQLitePlatform;
 use Doctrine\ORM\EntityManagerInterface;
-use Lexik\Bundle\JWTAuthenticationBundle\Services\JWTTokenManagerInterface;
+use PDO;
+use RuntimeException;
 use Symfony\Bundle\FrameworkBundle\KernelBrowser;
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 use Symfony\Component\Dotenv\Dotenv;
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
+
+use function dirname;
+use function method_exists;
+use function sprintf;
+use function str_ends_with;
 
 abstract class ApiTestCase extends WebTestCase
 {
@@ -45,6 +51,7 @@ abstract class ApiTestCase extends WebTestCase
         static::assertConnectedDatabaseIsSafeForDestructiveTests($connection);
 
         $connection->executeStatement('SET session_replication_role = replica');
+
         foreach ($entityManager->getMetadataFactory()->getAllMetadata() as $meta) {
             $connection->executeStatement(sprintf('TRUNCATE TABLE %s CASCADE', $meta->getTableName()));
         }
@@ -53,50 +60,12 @@ abstract class ApiTestCase extends WebTestCase
         // Commit the TRUNCATE so DAMA's per-test beginTransaction() works on a clean slate.
         // Only needed the first time the connection is created (it starts with an outer BEGIN).
         $nativeConn = $connection->getNativeConnection();
-        if ($nativeConn instanceof \PDO && $nativeConn->inTransaction()) {
+
+        if ($nativeConn instanceof PDO && $nativeConn->inTransaction()) {
             StaticDriver::commit();
         }
 
         static::ensureKernelShutdown();
-    }
-
-    /**
-     * Integration tests wipe every mapped table. Uses the real connected DB name (PostgreSQL)
-     * so we never TRUNCATE dev/prod by mistake.
-     */
-    private static function assertConnectedDatabaseIsSafeForDestructiveTests(Connection $connection): void
-    {
-        $platform = $connection->getDatabasePlatform();
-        if ($platform instanceof SQLitePlatform) {
-            return;
-        }
-
-        if (!$platform instanceof PostgreSQLPlatform) {
-            throw new \RuntimeException(
-                'ApiTestCase safety check: add rules for your DB platform or use SQLite/PostgreSQL.',
-            );
-        }
-
-        $dbName = (string) $connection->fetchOne('SELECT current_database()');
-
-        if (str_ends_with($dbName, '_test_test')) {
-            throw new \RuntimeException(sprintf(
-                'Database name %s looks like a double suffix (Doctrine dbname_suffix + .../app_test in DATABASE_URL). '
-                . 'Use a single suffix in the URL (e.g. .../app_test) and set config/packages/test/doctrine.yaml dbname_suffix to empty.',
-                $dbName,
-            ));
-        }
-
-        $allowed = $dbName === 'test_db' || str_ends_with($dbName, '_test');
-
-        if (!$allowed) {
-            throw new \RuntimeException(sprintf(
-                'Refusing to TRUNCATE PostgreSQL database %s: integration tests require a dedicated DB '
-                . '(name must end with _test, e.g. app_test, or test_db for CI). '
-                . 'Point .env.test DATABASE_URL to a different database than dev. See .env.test comments.',
-                $dbName,
-            ));
-        }
     }
 
     protected function setUp(): void
@@ -113,6 +82,18 @@ abstract class ApiTestCase extends WebTestCase
         $this->entityManager = static::getContainer()->get('doctrine.orm.entity_manager');
     }
 
+    protected function tearDown(): void
+    {
+        parent::tearDown();
+
+        if ($this->entityManager !== null) {
+            $this->entityManager->close();
+            $this->entityManager = null;
+        }
+
+        static::ensureKernelShutdown();
+    }
+
     protected function createAuthenticatedClient(?string $email = null, string $password = 'password'): KernelBrowser
     {
         $container = static::getContainer();
@@ -125,7 +106,7 @@ abstract class ApiTestCase extends WebTestCase
             UserNameMother::create('Test User'),
             EmailMother::create($email),
             PasswordMother::create($password),
-            $passwordHasher
+            $passwordHasher,
         );
         $user->activate();
 
@@ -151,15 +132,43 @@ abstract class ApiTestCase extends WebTestCase
         return Kernel::class;
     }
 
-    protected function tearDown(): void
+    /**
+     * Integration tests wipe every mapped table. Uses the real connected DB name (PostgreSQL)
+     * so we never TRUNCATE dev/prod by mistake.
+     */
+    private static function assertConnectedDatabaseIsSafeForDestructiveTests(Connection $connection): void
     {
-        parent::tearDown();
+        $platform = $connection->getDatabasePlatform();
 
-        if ($this->entityManager !== null) {
-            $this->entityManager->close();
-            $this->entityManager = null;
+        if ($platform instanceof SQLitePlatform) {
+            return;
         }
 
-        static::ensureKernelShutdown();
+        if (!$platform instanceof PostgreSQLPlatform) {
+            throw new RuntimeException(
+                'ApiTestCase safety check: add rules for your DB platform or use SQLite/PostgreSQL.',
+            );
+        }
+
+        $dbName = (string) $connection->fetchOne('SELECT current_database()');
+
+        if (str_ends_with($dbName, '_test_test')) {
+            throw new RuntimeException(sprintf(
+                'Database name %s looks like a double suffix (Doctrine dbname_suffix + .../app_test in DATABASE_URL). '
+                . 'Use a single suffix in the URL (e.g. .../app_test) and set config/packages/test/doctrine.yaml dbname_suffix to empty.',
+                $dbName,
+            ));
+        }
+
+        $allowed = $dbName === 'test_db' || str_ends_with($dbName, '_test');
+
+        if (!$allowed) {
+            throw new RuntimeException(sprintf(
+                'Refusing to TRUNCATE PostgreSQL database %s: integration tests require a dedicated DB '
+                . '(name must end with _test, e.g. app_test, or test_db for CI). '
+                . 'Point .env.test DATABASE_URL to a different database than dev. See .env.test comments.',
+                $dbName,
+            ));
+        }
     }
 }

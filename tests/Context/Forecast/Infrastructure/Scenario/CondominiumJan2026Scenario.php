@@ -19,10 +19,15 @@ use App\Tests\Context\ResidentUnit\Domain\ResidentUnitMother;
 use App\Tests\Shared\Domain\UuidMother;
 use DateTime;
 use Doctrine\ORM\EntityManagerInterface;
+use InvalidArgumentException;
 use Symfony\Component\Messenger\MessageBusInterface;
 
+use function array_column;
+use function array_fill_keys;
 use function array_sum;
+use function count;
 use function round;
+use function sprintf;
 
 /**
  * Reproducible snapshot inspired by dev DB: Dec/2025 gas + Jan/2026 reconciled expenses,
@@ -125,6 +130,7 @@ final class CondominiumJan2026Scenario
         $em->persist($expenseType);
 
         $unitsByLabel = [];
+
         foreach (self::UNITS as $spec) {
             $unit = ResidentUnitMother::create(
                 unit: new ResidentUnitVO($spec['label']),
@@ -200,7 +206,7 @@ final class CondominiumJan2026Scenario
             return array_fill_keys(array_column(self::UNITS, 'label'), 0);
         }
 
-        throw new \InvalidArgumentException(sprintf('Unsupported targetMonth %s in scenario.', $targetMonth));
+        throw new InvalidArgumentException(sprintf('Unsupported targetMonth %s in scenario.', $targetMonth));
     }
 
     public static function expectedGasTotalForForecastTargetMonth(string $targetMonth): int
@@ -231,7 +237,7 @@ final class CondominiumJan2026Scenario
     public static function previsaoGoldenUnitTotals(string $targetMonth): array
     {
         if ($targetMonth !== '2026-02') {
-            throw new \InvalidArgumentException('Golden PREVISÃO unit totals defined for 2026-02 only.');
+            throw new InvalidArgumentException('Golden PREVISÃO unit totals defined for 2026-02 only.');
         }
 
         return self::PREVISAO_FEB_2026_UNIT_TOTAL_CENTS;
@@ -243,7 +249,7 @@ final class CondominiumJan2026Scenario
     public static function previsaoGoldenUnitSyndicCents(string $targetMonth): array
     {
         if ($targetMonth !== '2026-02') {
-            throw new \InvalidArgumentException('Golden PREVISÃO syndic cents defined for 2026-02 only.');
+            throw new InvalidArgumentException('Golden PREVISÃO syndic cents defined for 2026-02 only.');
         }
 
         return self::PREVISAO_FEB_2026_UNIT_SYNDIC_CENTS;
@@ -255,8 +261,10 @@ final class CondominiumJan2026Scenario
     private static function gasByUnitFromReadings(string $currentKey, string $previousKey): array
     {
         $out = [];
+
         foreach (self::UNITS as $spec) {
             $consumption = $spec[$currentKey] - $spec[$previousKey];
+
             if ($consumption < 0) {
                 $consumption = 0.0;
             }

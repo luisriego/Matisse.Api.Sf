@@ -9,6 +9,7 @@ use App\Context\BankStatement\Domain\ExpenseEmbeddingRepository;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
 
+use function array_map;
 use function implode;
 use function sprintf;
 
@@ -26,17 +27,17 @@ final class DoctrineExpenseEmbeddingRepository extends ServiceEntityRepository i
         $vectorStr = '[' . implode(',', $embedding->vector()) . ']';
 
         $conn->executeStatement(
-            <<<SQL
-            INSERT INTO expense_embedding (id, expense_id, vector, description, embedding_model, indexed_at)
-            VALUES (:id, :expenseId, :vector::vector, :description, :embeddingModel, NOW())
-            ON CONFLICT (expense_id)
-            DO UPDATE SET
-                id              = EXCLUDED.id,
-                vector          = EXCLUDED.vector,
-                description     = EXCLUDED.description,
-                embedding_model = EXCLUDED.embedding_model,
-                indexed_at      = EXCLUDED.indexed_at
-            SQL,
+            <<<'SQL'
+                INSERT INTO expense_embedding (id, expense_id, vector, description, embedding_model, indexed_at)
+                VALUES (:id, :expenseId, :vector::vector, :description, :embeddingModel, NOW())
+                ON CONFLICT (expense_id)
+                DO UPDATE SET
+                    id              = EXCLUDED.id,
+                    vector          = EXCLUDED.vector,
+                    description     = EXCLUDED.description,
+                    embedding_model = EXCLUDED.embedding_model,
+                    indexed_at      = EXCLUDED.indexed_at
+                SQL,
             [
                 'id'             => $embedding->id(),
                 'expenseId'      => $embedding->expenseId(),
@@ -53,15 +54,15 @@ final class DoctrineExpenseEmbeddingRepository extends ServiceEntityRepository i
 
         $rows = $this->getEntityManager()->getConnection()->fetchAllAssociative(
             sprintf(
-                <<<SQL
-                SELECT expense_id,
-                       description,
-                       1 - (vector <=> :vector::vector) AS score
-                FROM expense_embedding
-                WHERE embedding_model = :model
-                ORDER BY vector <=> :vector::vector ASC
-                LIMIT %d
-                SQL,
+                <<<'SQL'
+                    SELECT expense_id,
+                           description,
+                           1 - (vector <=> :vector::vector) AS score
+                    FROM expense_embedding
+                    WHERE embedding_model = :model
+                    ORDER BY vector <=> :vector::vector ASC
+                    LIMIT %d
+                    SQL,
                 $topK,
             ),
             [

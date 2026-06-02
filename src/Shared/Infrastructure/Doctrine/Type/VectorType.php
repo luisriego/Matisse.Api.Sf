@@ -37,6 +37,7 @@ final class VectorType extends Type
 
     /**
      * @param float[]|string|null $value
+     *
      * @return float[]|null
      */
     public function convertToPHPValue(mixed $value, AbstractPlatform $platform): ?array

@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace App\Tests\Context\ResidentUnit\Infrastructure\Http\Controller;
 
-use App\Context\ResidentUnit\Domain\ResidentUnit;
 use App\Context\ResidentUnit\Infrastructure\Http\Controller\GetResidentUnitByIdController;
 use App\Shared\Domain\Exception\ResourceNotFoundException;
 use App\Tests\Context\ResidentUnit\Domain\ResidentUnitMother;
@@ -13,6 +12,8 @@ use App\Tests\Shared\Infrastructure\PhpUnit\ApiTestCase;
 use Doctrine\ORM\Exception\ORMException;
 use Doctrine\ORM\OptimisticLockException;
 use Symfony\Component\HttpFoundation\Response;
+
+use function json_decode;
 
 /**
  * @covers \App\Context\ResidentUnit\Infrastructure\Http\Controller\GetResidentUnitByIdController
@@ -29,7 +30,7 @@ final class GetResidentUnitByIdControllerTest extends ApiTestCase
      * @throws OptimisticLockException
      * @throws ORMException
      */
-    public function test_it_should_return_resident_unit_when_found(): void
+    public function testItShouldReturnResidentUnitWhenFound(): void
     {
         // 1. Create a resident unit to be found
         $residentUnit = ResidentUnitMother::create();
@@ -49,7 +50,7 @@ final class GetResidentUnitByIdControllerTest extends ApiTestCase
         $this->assertEquals($residentUnit->unit(), $data['unit']); // Corrected from name() to unit()
     }
 
-    public function test_it_should_return_not_found_when_resident_unit_does_not_exist(): void
+    public function testItShouldReturnNotFoundWhenResidentUnitDoesNotExist(): void
     {
         // 1. Generate a random non-existent ID
         $nonExistentId = UuidMother::create();
@@ -61,7 +62,7 @@ final class GetResidentUnitByIdControllerTest extends ApiTestCase
         $this->assertResponseStatusCodeSame(Response::HTTP_NOT_FOUND);
     }
 
-    public function test_it_maps_exceptions_correctly(): void
+    public function testItMapsExceptionsCorrectly(): void
     {
         $controller = $this->getContainer()->get(GetResidentUnitByIdController::class);
         $exceptions = $controller->exceptions();

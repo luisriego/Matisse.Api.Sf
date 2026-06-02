@@ -7,9 +7,10 @@ namespace App\Tests\Context\Expense\Application\UseCase\FindExpenseByRange;
 use App\Context\Expense\Application\UseCase\FindActiveExpensesByDateRange\FindActiveExpensesByDateRangeQuery;
 use App\Context\Expense\Application\UseCase\FindActiveExpensesByDateRange\FindActiveExpensesByDateRangeQueryHandler;
 use App\Context\Expense\Domain\ExpenseRepository;
-use App\Context\Expense\Domain\ValueObject\ExpenseDueDate;
 use App\Tests\Context\Expense\Domain\ExpenseMother;
 use App\Tests\Shared\Domain\DateRangeMother;
+use DateMalformedStringException;
+use DateTime;
 use Mockery;
 use Mockery\MockInterface;
 use PHPUnit\Framework\TestCase;
@@ -18,7 +19,7 @@ use Symfony\Component\Serializer\SerializerInterface;
 class FindActiveExpensesByDateRangeQueryHandlerTest extends TestCase
 {
     private ExpenseRepository|MockInterface $repository;
-    private SerializerInterface|MockInterface $serializer;
+    private MockInterface|SerializerInterface $serializer;
     private FindActiveExpensesByDateRangeQueryHandler $handler;
 
     protected function setUp(): void
@@ -96,14 +97,14 @@ class FindActiveExpensesByDateRangeQueryHandlerTest extends TestCase
     }
 
     /**
-     * @throws \DateMalformedStringException
+     * @throws DateMalformedStringException
      */
     public function testFindActiveExpensesByDateRangeWithSpecificMonth(): void
     {
         // Arrange
         $dateRange = DateRangeMother::fromMonth(2025, 7);
         $activeExpense = ExpenseMother::create(
-            dueDate: new \DateTime("2025-07-15")
+            dueDate: new DateTime('2025-07-15'),
         );
         $activeExpenses = [$activeExpense];
         $activeExpenseArray = [['id' => $activeExpense->id()]];

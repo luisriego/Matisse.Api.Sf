@@ -7,9 +7,9 @@ namespace App\Context\Account\Infrastructure\Http\Controller;
 use App\Context\Account\Application\UseCase\GetAccountBalance\GetAccountBalanceQuery;
 use App\Shared\Domain\Exception\ResourceNotFoundException;
 use App\Shared\Infrastructure\Symfony\ApiController;
-use OpenApi\Attributes as OA;
 use DateMalformedStringException;
 use DateTimeImmutable;
+use OpenApi\Attributes as OA;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -21,8 +21,13 @@ use Symfony\Component\HttpFoundation\Response;
     security: [['bearerAuth' => []]],
     parameters: [
         new OA\Parameter(name: 'id', in: 'path', required: true, schema: new OA\Schema(type: 'string', format: 'uuid')),
-        new OA\Parameter(name: 'upToDate', in: 'query', required: false, schema: new OA\Schema(type: 'string', format: 'date'),
-            description: 'Balance as of this date (Y-m-d). Defaults to today.'),
+        new OA\Parameter(
+            name: 'upToDate',
+            in: 'query',
+            required: false,
+            schema: new OA\Schema(type: 'string', format: 'date'),
+            description: 'Balance as of this date (Y-m-d). Defaults to today.',
+        ),
     ],
     responses: [
         new OA\Response(response: 200, description: 'Account balance.'),

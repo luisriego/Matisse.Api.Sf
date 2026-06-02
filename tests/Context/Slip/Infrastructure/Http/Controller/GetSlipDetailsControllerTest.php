@@ -9,6 +9,8 @@ use App\Tests\Context\Slip\Domain\SlipMother;
 use App\Tests\Shared\Infrastructure\PhpUnit\ApiTestCase;
 use Symfony\Component\HttpFoundation\Response;
 
+use function json_decode;
+
 final class GetSlipDetailsControllerTest extends ApiTestCase
 {
     protected function setUp(): void
@@ -17,7 +19,7 @@ final class GetSlipDetailsControllerTest extends ApiTestCase
         $this->createAuthenticatedClient();
     }
 
-    public function test_it_should_return_slip_details(): void
+    public function testItShouldReturnSlipDetails(): void
     {
         // 1. Arrange: Create a slip for a resident unit
         $residentUnit = ResidentUnitMother::create();
@@ -25,7 +27,7 @@ final class GetSlipDetailsControllerTest extends ApiTestCase
 
         $slip = SlipMother::create(null, null, $residentUnit);
         $this->entityManager->persist($slip);
-        
+
         $this->entityManager->flush();
 
         // 2. Act: Make the API request

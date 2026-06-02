@@ -8,6 +8,13 @@ use App\Context\User\Domain\User;
 use App\Tests\Shared\Infrastructure\PhpUnit\ApiTestCase;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
 
+use function base64_decode;
+use function file_put_contents;
+use function sprintf;
+use function sys_get_temp_dir;
+use function tempnam;
+use function unlink;
+
 final class UploadAvatarControllerTest extends ApiTestCase
 {
     protected function setUp(): void
@@ -16,14 +23,14 @@ final class UploadAvatarControllerTest extends ApiTestCase
         $this->createAuthenticatedClient();
     }
 
-    public function test_it_should_upload_avatar_and_update_user(): void
+    public function testItShouldUploadAvatarAndUpdateUser(): void
     {
         // 1. Get the authenticated User
         $user = $this->getAuthenticatedUser();
 
         // 2. Create a dummy but valid 1x1 GIF file for upload
         $avatarPath = tempnam(sys_get_temp_dir(), 'avatar');
-        $gifContent = base64_decode('R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7');
+        $gifContent = base64_decode('R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7', true);
         file_put_contents($avatarPath, $gifContent);
 
         $uploadedFile = new UploadedFile(
@@ -31,7 +38,7 @@ final class UploadAvatarControllerTest extends ApiTestCase
             'avatar.gif',
             'image/gif',
             null,
-            true
+            true,
         );
 
         // 3. Make the request
@@ -39,7 +46,7 @@ final class UploadAvatarControllerTest extends ApiTestCase
             'POST',
             sprintf('/api/v1/users/%s/avatar', $user->id()),
             [],
-            ['avatar' => $uploadedFile]
+            ['avatar' => $uploadedFile],
         );
 
         // 4. Assert response

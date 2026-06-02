@@ -9,16 +9,16 @@ use App\Context\ResidentUnit\Application\UseCase\CreateUnitWithRecipients\Create
 use App\Context\ResidentUnit\Application\UseCase\CreateUnitWithRecipients\CreateResidentUnitWithRecipientsCommandHandler;
 use App\Context\ResidentUnit\Domain\Exception\IdealFractionSumExceedsLimitException; // Added this import
 use App\Context\ResidentUnit\Domain\ResidentUnit;
+use App\Context\ResidentUnit\Domain\ResidentUnitId;
 use App\Context\ResidentUnit\Domain\ResidentUnitRepository;
 use App\Shared\Domain\Exception\InvalidArgumentException;
 use App\Tests\Context\ResidentUnit\Domain\ResidentUnitIdealFractionMother;
 use App\Tests\Context\ResidentUnit\Domain\ResidentUnitIdMother;
-use App\Tests\Context\ResidentUnit\Domain\ResidentUnitMother;
 use App\Tests\Context\ResidentUnit\Domain\ResidentUnitVOMother;
 use PHPUnit\Framework\TestCase;
-use Symfony\Component\Messenger\MessageBusInterface;
-use App\Context\ResidentUnit\Domain\ResidentUnitId;
-use App\Context\ResidentUnit\Domain\ResidentUnitIdealFraction;
+
+use function count;
+use function sprintf;
 
 class CreateResidentUnitWithRecipientsCommandHandlerTest extends TestCase
 {
@@ -32,11 +32,11 @@ class CreateResidentUnitWithRecipientsCommandHandlerTest extends TestCase
         $this->messageBus = new TestMessageBus(); // Instantiated TestMessageBus
         $this->handler = new CreateResidentUnitWithRecipientsCommandHandler(
             $this->repository,
-            $this->messageBus
+            $this->messageBus,
         );
     }
 
-    public function test_it_should_create_a_resident_unit_with_recipients(): void
+    public function testItShouldCreateAResidentUnitWithRecipients(): void
     {
         $id = ResidentUnitIdMother::create();
         $unit = ResidentUnitVOMother::create();
@@ -50,7 +50,7 @@ class CreateResidentUnitWithRecipientsCommandHandlerTest extends TestCase
             $id->value(),
             $unit->value(),
             $idealFraction->value(),
-            $recipients
+            $recipients,
         );
 
         $this->repository->expects($this->once())
@@ -71,12 +71,13 @@ class CreateResidentUnitWithRecipientsCommandHandlerTest extends TestCase
         $this->messageBus->dispatchCallCount = 0; // Reset for this test
         ($this->handler)($command);
         $this->assertSame(count($recipients), $this->messageBus->dispatchCallCount);
+
         foreach ($this->messageBus->dispatchedMessages as $dispatchedMessage) {
             $this->assertInstanceOf(WelcomeResidentNotification::class, $dispatchedMessage);
         }
     }
 
-    public function test_it_should_throw_exception_if_ideal_fraction_exceeds_one(): void
+    public function testItShouldThrowExceptionIfIdealFractionExceedsOne(): void
     {
         $id = ResidentUnitIdMother::create();
         $unit = ResidentUnitVOMother::create();
@@ -87,7 +88,7 @@ class CreateResidentUnitWithRecipientsCommandHandlerTest extends TestCase
             $id->value(),
             $unit->value(),
             $idealFraction->value(),
-            $recipients
+            $recipients,
         );
 
         $this->repository->expects($this->once())
@@ -110,7 +111,7 @@ class CreateResidentUnitWithRecipientsCommandHandlerTest extends TestCase
         $this->assertSame(0, $this->messageBus->dispatchCallCount);
     }
 
-    public function test_it_should_create_a_resident_unit_without_recipients(): void
+    public function testItShouldCreateAResidentUnitWithoutRecipients(): void
     {
         $id = ResidentUnitIdMother::create();
         $unit = ResidentUnitVOMother::create();
@@ -121,7 +122,7 @@ class CreateResidentUnitWithRecipientsCommandHandlerTest extends TestCase
             $id->value(),
             $unit->value(),
             $idealFraction->value(),
-            $recipients
+            $recipients,
         );
 
         $this->repository->expects($this->once())
@@ -144,7 +145,7 @@ class CreateResidentUnitWithRecipientsCommandHandlerTest extends TestCase
         $this->assertSame(0, $this->messageBus->dispatchCallCount);
     }
 
-    public function test_it_should_throw_exception_if_id_is_invalid(): void
+    public function testItShouldThrowExceptionIfIdIsInvalid(): void
     {
         $invalidId = 'not-a-valid-uuid';
         $unit = ResidentUnitVOMother::create();
@@ -155,7 +156,7 @@ class CreateResidentUnitWithRecipientsCommandHandlerTest extends TestCase
             $invalidId,
             $unit->value(),
             $idealFraction->value(),
-            $recipients
+            $recipients,
         );
 
         // The exists method will NOT be called because ResidentUnitId constructor will throw an exception first
@@ -172,7 +173,7 @@ class CreateResidentUnitWithRecipientsCommandHandlerTest extends TestCase
         $this->assertSame(0, $this->messageBus->dispatchCallCount);
     }
 
-    public function test_it_should_throw_exception_if_ideal_fraction_is_not_positive(): void
+    public function testItShouldThrowExceptionIfIdealFractionIsNotPositive(): void
     {
         $id = ResidentUnitIdMother::create();
         $unit = ResidentUnitVOMother::create();
@@ -183,7 +184,7 @@ class CreateResidentUnitWithRecipientsCommandHandlerTest extends TestCase
             $id->value(),
             $unit->value(),
             $invalidIdealFraction,
-            $recipients
+            $recipients,
         );
 
         // Mock the exists method to return false, indicating the unit does not exist

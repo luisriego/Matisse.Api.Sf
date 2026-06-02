@@ -139,11 +139,11 @@ class DoctrineExpenseRepository extends ServiceEntityRepository implements Expen
         return (int) $this->getEntityManager()
             ->createQuery(
                 <<<'DQL'
-                SELECT COUNT(e.id) FROM App\Context\Expense\Domain\Expense e
-                WHERE e.isActive = true
-                AND e.dueDate >= :startDate
-                AND e.dueDate <= :endDate
-                DQL,
+                    SELECT COUNT(e.id) FROM App\Context\Expense\Domain\Expense e
+                    WHERE e.isActive = true
+                    AND e.dueDate >= :startDate
+                    AND e.dueDate <= :endDate
+                    DQL,
             )
             ->setParameter('startDate', $dateRange->startDate())
             ->setParameter('endDate', $dateRange->endDate())
@@ -155,13 +155,13 @@ class DoctrineExpenseRepository extends ServiceEntityRepository implements Expen
         return (int) $this->getEntityManager()
             ->createQuery(
                 <<<'DQL'
-                SELECT COUNT(e.id) FROM App\Context\Expense\Domain\Expense e
-                WHERE e.isActive = true
-                AND e.dueDate >= :startDate
-                AND e.dueDate <= :endDate
-                AND e.description IS NOT NULL
-                AND TRIM(e.description) <> ''
-                DQL,
+                    SELECT COUNT(e.id) FROM App\Context\Expense\Domain\Expense e
+                    WHERE e.isActive = true
+                    AND e.dueDate >= :startDate
+                    AND e.dueDate <= :endDate
+                    AND e.description IS NOT NULL
+                    AND TRIM(e.description) <> ''
+                    DQL,
             )
             ->setParameter('startDate', $dateRange->startDate())
             ->setParameter('endDate', $dateRange->endDate())

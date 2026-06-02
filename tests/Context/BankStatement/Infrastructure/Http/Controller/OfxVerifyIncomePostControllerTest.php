@@ -11,6 +11,11 @@ use App\Tests\Context\Slip\Domain\ValueObject\SlipDueDateMother;
 use App\Tests\Shared\Infrastructure\PhpUnit\ApiTestCase;
 use Symfony\Component\HttpFoundation\Response;
 
+use function json_decode;
+use function json_encode;
+
+use const JSON_THROW_ON_ERROR;
+
 final class OfxVerifyIncomePostControllerTest extends ApiTestCase
 {
     private const MONTH = 3;
@@ -22,20 +27,20 @@ final class OfxVerifyIncomePostControllerTest extends ApiTestCase
         $this->createAuthenticatedClient();
     }
 
-    public function test_it_returns_balanced_when_credits_match_slips(): void
+    public function testItReturnsBalancedWhenCreditsMatchSlips(): void
     {
         $unit  = ResidentUnitMother::create();
         $slip1 = SlipMother::create(
-            amount:      SlipAmountMother::create(25000),
+            amount: SlipAmountMother::create(25000),
             residentUnit: $unit,
-            dueDate:     SlipDueDateMother::create('2026-03-10'),
+            dueDate: SlipDueDateMother::create('2026-03-10'),
         );
         $slip1->markAsSubmitted();
 
         $slip2 = SlipMother::create(
-            amount:      SlipAmountMother::create(25000),
+            amount: SlipAmountMother::create(25000),
             residentUnit: $unit,
-            dueDate:     SlipDueDateMother::create('2026-03-10'),
+            dueDate: SlipDueDateMother::create('2026-03-10'),
         );
         $slip2->markAsSubmitted();
         $slip2->markAsPaid();
@@ -69,13 +74,13 @@ final class OfxVerifyIncomePostControllerTest extends ApiTestCase
         $this->assertCount(1, $data['unpaidSlips']);
     }
 
-    public function test_it_returns_shortfall_when_credits_are_less_than_expected(): void
+    public function testItReturnsShortfallWhenCreditsAreLessThanExpected(): void
     {
         $unit = ResidentUnitMother::create();
         $slip = SlipMother::create(
-            amount:      SlipAmountMother::create(50000),
+            amount: SlipAmountMother::create(50000),
             residentUnit: $unit,
-            dueDate:     SlipDueDateMother::create('2026-03-10'),
+            dueDate: SlipDueDateMother::create('2026-03-10'),
         );
 
         $this->entityManager->persist($unit);
@@ -103,7 +108,7 @@ final class OfxVerifyIncomePostControllerTest extends ApiTestCase
         $this->assertCount(1, $data['unpaidSlips']);
     }
 
-    public function test_it_returns_balanced_with_no_slips_and_no_credits(): void
+    public function testItReturnsBalancedWithNoSlipsAndNoCredits(): void
     {
         $payload = [
             'month'       => self::MONTH,

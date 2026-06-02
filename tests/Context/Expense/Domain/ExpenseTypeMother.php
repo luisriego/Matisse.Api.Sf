@@ -12,12 +12,12 @@ final class ExpenseTypeMother
     public static function create(
         ?string $id = null,
         ?string $name = null,
-        ?string $description = null
+        ?string $description = null,
     ): ExpenseType {
         return new ExpenseType(
             $id ?? UuidMother::create(),
             $name ?? 'Type',
-            $description ?? 'Default Type Description'
+            $description ?? 'Default Type Description',
         );
     }
 }

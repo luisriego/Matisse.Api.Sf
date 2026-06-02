@@ -10,9 +10,9 @@ use PHPUnit\Framework\MockObject\MockObject;
 
 abstract class SlipModuleUnitTestCase extends UnitTestCase
 {
-    private SlipRepository|MockObject|null $repository = null;
+    private null|MockObject|SlipRepository $repository = null;
 
-    protected function repository(): SlipRepository|MockObject
+    protected function repository(): MockObject|SlipRepository
     {
         return $this->repository ??= $this->createMock(SlipRepository::class);
     }

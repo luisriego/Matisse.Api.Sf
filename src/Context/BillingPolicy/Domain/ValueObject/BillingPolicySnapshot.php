@@ -7,6 +7,8 @@ namespace App\Context\BillingPolicy\Domain\ValueObject;
 use App\Context\BillingPolicy\Domain\BillingPolicyMonthSnapshot;
 use DateTimeImmutable;
 
+use function array_key_exists;
+
 final readonly class BillingPolicySnapshot
 {
     public function __construct(

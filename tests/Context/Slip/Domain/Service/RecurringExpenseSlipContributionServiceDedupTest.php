@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace App\Tests\Context\Slip\Domain\Service;
 
-use App\Context\Expense\Domain\Expense;
 use App\Context\Expense\Domain\ExpenseType;
 use App\Context\Expense\Domain\RecurringExpense;
 use App\Context\Expense\Domain\ValueObject\ExpenseAmount;
@@ -19,6 +18,8 @@ use App\Tests\Shared\Domain\UuidMother;
 use DateTime;
 use PHPUnit\Framework\TestCase;
 
+use function range;
+
 final class RecurringExpenseSlipContributionServiceDedupTest extends TestCase
 {
     private RecurringExpenseSlipContributionService $service;
@@ -29,7 +30,7 @@ final class RecurringExpenseSlipContributionServiceDedupTest extends TestCase
         $this->service = new RecurringExpenseSlipContributionService();
     }
 
-    public function test_fixed_recurring_contributes_when_no_reconciled_expense(): void
+    public function testFixedRecurringContributesWhenNoReconciledExpense(): void
     {
         $type = $this->equalType('UTIL1');
         $recurring = $this->fixedRecurring($type, 25_000);
@@ -39,7 +40,7 @@ final class RecurringExpenseSlipContributionServiceDedupTest extends TestCase
         self::assertSame(25_000, $slice['equal']);
     }
 
-    public function test_skips_recurring_when_expense_is_linked_to_same_recurring(): void
+    public function testSkipsRecurringWhenExpenseIsLinkedToSameRecurring(): void
     {
         $type = $this->equalType('UTIL1');
         $recurring = $this->fixedRecurring($type, 25_000);
@@ -52,7 +53,7 @@ final class RecurringExpenseSlipContributionServiceDedupTest extends TestCase
         self::assertSame(0, $slice['fraction']);
     }
 
-    public function test_skips_recurring_when_reconciled_expense_has_same_type_without_link(): void
+    public function testSkipsRecurringWhenReconciledExpenseHasSameTypeWithoutLink(): void
     {
         $type = $this->equalType('PF1SE');
         $recurring = $this->fixedRecurring($type, 67_000);
@@ -63,7 +64,7 @@ final class RecurringExpenseSlipContributionServiceDedupTest extends TestCase
         self::assertSame(0, $slice['equal']);
     }
 
-    public function test_forecast_still_counts_recurring_when_reconciled_expense_exists(): void
+    public function testForecastStillCountsRecurringWhenReconciledExpenseExists(): void
     {
         $type = $this->equalType('UTIL1');
         $recurring = $this->fixedRecurring($type, 18_074);
@@ -77,7 +78,7 @@ final class RecurringExpenseSlipContributionServiceDedupTest extends TestCase
         self::assertSame(18_074, $forecastSlice['equal']);
     }
 
-    public function test_different_type_expense_does_not_suppress_recurring(): void
+    public function testDifferentTypeExpenseDoesNotSuppressRecurring(): void
     {
         $recurringType = $this->equalType('UTIL1');
         $otherType = $this->equalType('UTIL2');

@@ -6,6 +6,9 @@ namespace App\Context\BankStatement\Domain;
 
 use App\Shared\Domain\ValueObject\DateTimeValueObject;
 
+use function array_filter;
+use function array_values;
+
 final readonly class ParsedBankStatement
 {
     /**
@@ -22,7 +25,9 @@ final readonly class ParsedBankStatement
         public readonly ?DateTimeValueObject $ledgerBalanceDate,
     ) {}
 
-    /** @return BankTransaction[] */
+    /**
+     * @return BankTransaction[]
+     */
     public function debits(): array
     {
         return array_values(array_filter(
@@ -31,7 +36,9 @@ final readonly class ParsedBankStatement
         ));
     }
 
-    /** @return BankTransaction[] */
+    /**
+     * @return BankTransaction[]
+     */
     public function credits(): array
     {
         return array_values(array_filter(

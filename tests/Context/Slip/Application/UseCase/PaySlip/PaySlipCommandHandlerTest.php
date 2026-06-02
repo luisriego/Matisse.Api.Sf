@@ -10,6 +10,7 @@ use App\Context\Slip\Domain\Exception\SlipNotFoundException;
 use App\Context\Slip\Domain\SlipRepository;
 use App\Tests\Context\Slip\Domain\SlipMother;
 use App\Tests\Context\Slip\SlipModuleUnitTestCase;
+use DateMalformedStringException;
 use PHPUnit\Framework\MockObject\MockObject;
 use Symfony\Component\Workflow\Exception\LogicException;
 use Symfony\Component\Workflow\WorkflowInterface;
@@ -17,9 +18,8 @@ use Symfony\Component\Workflow\WorkflowInterface;
 final class PaySlipCommandHandlerTest extends SlipModuleUnitTestCase
 {
     private PaySlipCommandHandler $handler;
-    private SlipRepository|MockObject $repository;
-    private WorkflowInterface|MockObject $slipStateMachine;
-
+    private MockObject|SlipRepository $repository;
+    private MockObject|WorkflowInterface $slipStateMachine;
 
     protected function setUp(): void
     {
@@ -30,14 +30,14 @@ final class PaySlipCommandHandlerTest extends SlipModuleUnitTestCase
 
         $this->handler = new PaySlipCommandHandler(
             $this->repository,
-            $this->slipStateMachine
+            $this->slipStateMachine,
         );
     }
 
     /** @test
-     * @throws \DateMalformedStringException
+     * @throws DateMalformedStringException
      */
-    public function test_it_should_apply_pay_transition_to_slip(): void
+    public function testItShouldApplyPayTransitionToSlip(): void
     {
         $slip = SlipMother::create();
         $command = new PaySlipCommand($slip->id());
@@ -52,9 +52,9 @@ final class PaySlipCommandHandlerTest extends SlipModuleUnitTestCase
     }
 
     /** @test
-     * @throws \DateMalformedStringException
+     * @throws DateMalformedStringException
      */
-    public function test_it_should_throw_an_exception_when_slip_not_found(): void
+    public function testItShouldThrowAnExceptionWhenSlipNotFound(): void
     {
         $this->expectException(SlipNotFoundException::class);
 
@@ -70,8 +70,10 @@ final class PaySlipCommandHandlerTest extends SlipModuleUnitTestCase
         ($this->handler)($command);
     }
 
-    /** @test */
-    public function test_it_should_throw_an_exception_when_transition_is_not_valid(): void
+    /**
+     * @test
+     */
+    public function testItShouldThrowAnExceptionWhenTransitionIsNotValid(): void
     {
         $this->expectException(LogicException::class);
 

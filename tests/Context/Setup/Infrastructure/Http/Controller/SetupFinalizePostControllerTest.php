@@ -15,7 +15,7 @@ final class SetupFinalizePostControllerTest extends ApiTestCase
         $this->createAuthenticatedClient();
     }
 
-    public function test_it_returns_bad_request_when_core_setup_not_satisfied(): void
+    public function testItReturnsBadRequestWhenCoreSetupNotSatisfied(): void
     {
         $this->client->request('POST', '/api/v1/setup/finalize');
         $this->assertResponseStatusCodeSame(Response::HTTP_BAD_REQUEST);

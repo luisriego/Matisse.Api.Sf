@@ -12,6 +12,8 @@ use App\Tests\Context\User\Domain\UserMother;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 
+use function is_string;
+
 final class PasswordResetRequestCommandHandlerTest extends TestCase
 {
     private MockObject|UserRepository $userRepository;
@@ -28,7 +30,7 @@ final class PasswordResetRequestCommandHandlerTest extends TestCase
         );
     }
 
-    public function test_it_should_generate_token_save_and_send_email_when_user_exists(): void
+    public function testItShouldGenerateTokenSaveAndSendEmailWhenUserExists(): void
     {
         $user = UserMother::createRandom();
         $command = new PasswordResetRequestCommand($user->getEmail());
@@ -51,13 +53,13 @@ final class PasswordResetRequestCommandHandlerTest extends TestCase
                 $user->getEmail(),
                 $user->getName(),
                 $user->getId(),
-                $this->callback(fn (mixed $v): bool => is_string($v))
+                $this->callback(fn (mixed $v): bool => is_string($v)),
             );
 
         ($this->handler)($command);
     }
 
-    public function test_it_should_do_nothing_when_user_not_found(): void
+    public function testItShouldDoNothingWhenUserNotFound(): void
     {
         $command = new PasswordResetRequestCommand('nonexistent@example.com');
 

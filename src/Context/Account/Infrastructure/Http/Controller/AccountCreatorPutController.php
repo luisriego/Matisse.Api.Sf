@@ -20,10 +20,19 @@ use Symfony\Component\HttpFoundation\Response;
             properties: [
                 new OA\Property(property: 'id', type: 'string', format: 'uuid'),
                 new OA\Property(property: 'name', type: 'string', example: 'Conta Principal'),
-                new OA\Property(property: 'initialBalanceAmount', type: 'integer', example: 250000,
-                    description: 'Opening balance in cents (same as SetInitialBalance).'),
-                new OA\Property(property: 'initialBalanceDate', type: 'string', format: 'date', example: '2026-01-05',
-                    description: 'Effective date of the opening balance (Y-m-d).'),
+                new OA\Property(
+                    property: 'initialBalanceAmount',
+                    type: 'integer',
+                    example: 250000,
+                    description: 'Opening balance in cents (same as SetInitialBalance).',
+                ),
+                new OA\Property(
+                    property: 'initialBalanceDate',
+                    type: 'string',
+                    format: 'date',
+                    example: '2026-01-05',
+                    description: 'Effective date of the opening balance (Y-m-d).',
+                ),
             ],
         ),
     ),

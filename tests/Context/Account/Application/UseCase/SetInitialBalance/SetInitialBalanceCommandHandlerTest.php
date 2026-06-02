@@ -29,12 +29,14 @@ class SetInitialBalanceCommandHandlerTest extends TestCase
         $this->eventStore = $this->createMock(EventStore::class); // Changed from EventBus
         $this->handler = new SetInitialBalanceCommandHandler(
             $this->accountRepository,
-            $this->eventStore // Changed from eventBus
+            $this->eventStore, // Changed from eventBus
         );
     }
 
-    /** @test */
-    public function test_it_should_set_initial_balance_and_append_event(): void // Renamed test method
+    /**
+     * @test
+     */
+    public function testItShouldSetInitialBalanceAndAppendEvent(): void // Renamed test method
     {
         // Arrange
         $accountId = AccountIdMother::create();
@@ -44,7 +46,7 @@ class SetInitialBalanceCommandHandlerTest extends TestCase
         $command = new SetInitialBalanceCommand(
             $accountId->value(),
             $amount,
-            $date
+            $date,
         );
 
         $account = AccountMother::create($accountId);

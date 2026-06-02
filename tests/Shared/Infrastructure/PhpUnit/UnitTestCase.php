@@ -9,9 +9,11 @@ use App\Shared\Domain\Bus\Event\EventBus;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 
+use function count;
+
 abstract class UnitTestCase extends TestCase
 {
-    protected EventBus|MockObject|null $eventBus = null;
+    protected null|EventBus|MockObject $eventBus = null;
 
     protected function eventBus(): EventBus|MockObject
     {

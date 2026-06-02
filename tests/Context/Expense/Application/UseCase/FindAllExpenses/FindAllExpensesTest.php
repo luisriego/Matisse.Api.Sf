@@ -17,7 +17,7 @@ class FindAllExpensesTest extends TestCase
 {
     private FindAllExpensesQueryHandler $handler;
     private ExpenseRepository|MockInterface $repository;
-    private SerializerInterface|MockInterface $serializer;
+    private MockInterface|SerializerInterface $serializer;
 
     protected function setUp(): void
     {
@@ -31,7 +31,7 @@ class FindAllExpensesTest extends TestCase
         Mockery::close();
     }
 
-    public function test_it_should_find_all_expenses(): void
+    public function testItShouldFindAllExpenses(): void
     {
         $expense1 = ExpenseMother::create();
         $expense2 = ExpenseMother::create();
@@ -61,7 +61,7 @@ class FindAllExpensesTest extends TestCase
         $this->assertEquals($expensesArray, $result['expenses']);
     }
 
-    public function test_it_should_return_empty_array_if_no_expenses_found(): void
+    public function testItShouldReturnEmptyArrayIfNoExpensesFound(): void
     {
         $this->repository->shouldReceive('findAll')
             ->once()
@@ -82,7 +82,7 @@ class FindAllExpensesTest extends TestCase
         $this->assertSame(0, $result['qtd']);
     }
 
-    public function test_it_should_find_a_single_expense(): void
+    public function testItShouldFindASingleExpense(): void
     {
         $expense = ExpenseMother::create();
         $expenses = [$expense];

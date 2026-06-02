@@ -57,6 +57,7 @@ final class SlipGenerationPostController extends ApiController
 
         $dueYear = $request->year;
         $dueMonth = $request->month + 1;
+
         if ($dueMonth > 12) {
             $dueYear++;
             $dueMonth = 1;
@@ -65,6 +66,7 @@ final class SlipGenerationPostController extends ApiController
         $slips = $this->slipRepository->findByMonthYear($dueYear, $dueMonth);
 
         $payload = [];
+
         foreach ($slips as $slip) {
             $ru = $slip->residentUnit();
             $payload[] = [

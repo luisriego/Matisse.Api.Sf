@@ -13,6 +13,9 @@ use App\Tests\Context\Account\Domain\AccountMother;
 use App\Tests\Shared\Infrastructure\PhpUnit\ApiTestCase;
 use Symfony\Component\HttpFoundation\Response;
 
+use function json_decode;
+use function json_encode;
+
 final class SetInitialBalanceControllerTest extends ApiTestCase
 {
     private ?StoredEventRepository $storedEventRepository;
@@ -24,7 +27,13 @@ final class SetInitialBalanceControllerTest extends ApiTestCase
         $this->storedEventRepository = $this->getContainer()->get(StoredEventRepository::class);
     }
 
-    public function test_it_should_set_initial_balance_and_store_event(): void
+    protected function tearDown(): void
+    {
+        $this->storedEventRepository = null;
+        parent::tearDown();
+    }
+
+    public function testItShouldSetInitialBalanceAndStoreEvent(): void
     {
         // 1. Create an account
         $account = AccountMother::create();
@@ -44,7 +53,7 @@ final class SetInitialBalanceControllerTest extends ApiTestCase
             [],
             [],
             ['CONTENT_TYPE' => 'application/json'],
-            json_encode($payload)
+            json_encode($payload),
         );
 
         // 4. Assert the response
@@ -63,7 +72,7 @@ final class SetInitialBalanceControllerTest extends ApiTestCase
         $this->assertEquals($payload['date'], $eventBody['date']);
     }
 
-    public function test_it_should_return_bad_request_if_amount_is_missing(): void
+    public function testItShouldReturnBadRequestIfAmountIsMissing(): void
     {
         $account = AccountMother::create();
         $this->entityManager->persist($account);
@@ -77,7 +86,7 @@ final class SetInitialBalanceControllerTest extends ApiTestCase
             [],
             [],
             ['CONTENT_TYPE' => 'application/json'],
-            json_encode($payload)
+            json_encode($payload),
         );
 
         $this->assertResponseStatusCodeSame(Response::HTTP_BAD_REQUEST);
@@ -85,7 +94,7 @@ final class SetInitialBalanceControllerTest extends ApiTestCase
         $this->assertEquals('The fields "amount" and "date" are required.', $responseContent['message']);
     }
 
-    public function test_it_should_return_bad_request_if_date_is_missing(): void
+    public function testItShouldReturnBadRequestIfDateIsMissing(): void
     {
         $account = AccountMother::create();
         $this->entityManager->persist($account);
@@ -99,7 +108,7 @@ final class SetInitialBalanceControllerTest extends ApiTestCase
             [],
             [],
             ['CONTENT_TYPE' => 'application/json'],
-            json_encode($payload)
+            json_encode($payload),
         );
 
         $this->assertResponseStatusCodeSame(Response::HTTP_BAD_REQUEST);
@@ -107,7 +116,7 @@ final class SetInitialBalanceControllerTest extends ApiTestCase
         $this->assertEquals('The fields "amount" and "date" are required.', $responseContent['message']);
     }
 
-    public function test_it_maps_exceptions_correctly(): void
+    public function testItMapsExceptionsCorrectly(): void
     {
         $controller = $this->getContainer()->get(SetInitialBalanceController::class);
         $exceptions = $controller->exceptions();
@@ -117,11 +126,5 @@ final class SetInitialBalanceControllerTest extends ApiTestCase
 
         $this->assertArrayHasKey(InvalidDataException::class, $exceptions);
         $this->assertEquals(Response::HTTP_BAD_REQUEST, $exceptions[InvalidDataException::class]);
-    }
-
-    protected function tearDown(): void
-    {
-        $this->storedEventRepository = null;
-        parent::tearDown();
     }
 }

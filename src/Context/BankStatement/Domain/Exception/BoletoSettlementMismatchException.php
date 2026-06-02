@@ -6,6 +6,8 @@ namespace App\Context\BankStatement\Domain\Exception;
 
 use RuntimeException;
 
+use function sprintf;
+
 /**
  * Thrown when the sum of OFX "boleto_settlement" CREDIT lines does NOT match
  * the expected total, and that expected total is positive (sum of Slip amounts in the month).
@@ -17,10 +19,10 @@ use RuntimeException;
 final class BoletoSettlementMismatchException extends RuntimeException
 {
     public function __construct(
-        public readonly int    $expectedCents,
-        public readonly int    $receivedCents,
-        public readonly int    $settlementYear,
-        public readonly int    $settlementMonth,
+        public readonly int $expectedCents,
+        public readonly int $receivedCents,
+        public readonly int $settlementYear,
+        public readonly int $settlementMonth,
     ) {
         parent::__construct(sprintf(
             'Boleto settlement mismatch for %04d-%02d: expected %d cents, received %d cents (diff %+d).',

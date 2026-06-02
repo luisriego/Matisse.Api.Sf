@@ -1,0 +1,385 @@
+parameters:
+	ignoreErrors:
+		-
+			message: '#^Call to an undefined method Symfony\\Component\\Serializer\\SerializerInterface\:\:normalize\(\)\.$#'
+			identifier: method.notFound
+			count: 1
+			path: src/Context/Account/Application/UseCase/FindAccount/FindAccountQueryHandler.php
+
+		-
+			message: '#^Call to an undefined method Symfony\\Component\\Serializer\\SerializerInterface\:\:normalize\(\)\.$#'
+			identifier: method.notFound
+			count: 1
+			path: src/Context/Account/Application/UseCase/FindAllAccounts/FindAllAccountsQueryHandler.php
+
+		-
+			message: '#^Strict comparison using \!\=\= between DateTimeImmutable and null will always evaluate to true\.$#'
+			identifier: notIdentical.alwaysTrue
+			count: 1
+			path: src/Context/Account/Application/UseCase/GetAccountBalance/GetAccountBalanceQueryHandler.php
+
+		-
+			message: '#^Property App\\Context\\Account\\Domain\\Account\:\:\$isActive \(bool\|null\) is never assigned null so it can be removed from the property type\.$#'
+			identifier: property.unusedType
+			count: 1
+			path: src/Context/Account/Domain/Account.php
+
+		-
+			message: '#^Offset ''base''\|''extra''\|''gas''\|''reserve''\|''syndic'' on array\{base\: int, syndic\: int, extra\: int, reserve\: int, gas\: int\} on left side of \?\? always exists and is not nullable\.$#'
+			identifier: nullCoalesce.offset
+			count: 1
+			path: src/Context/BankStatement/Application/UseCase/ConfirmBankOfxLines/ConfirmBankOfxLinesCommandHandler.php
+
+		-
+			message: '#^Parameter \#1 \$array \(list\<App\\Context\\BankStatement\\Domain\\BankTransaction\>\) to function array_filter does not contain falsy values, the array will always stay the same\.$#'
+			identifier: arrayFilter.same
+			count: 1
+			path: src/Context/BankStatement/Infrastructure/Ofx/OfxParser.php
+
+		-
+			message: '#^PHPDoc tag @var with type App\\Shared\\Domain\\Event\\DomainEvent is not subtype of native type class\-string\.$#'
+			identifier: varTag.nativeType
+			count: 1
+			path: src/Context/EventStore/Domain/StoredEvent.php
+
+		-
+			message: '#^Using nullsafe property access "\?\-\>recurringExpenseId" on left side of \?\? is unnecessary\. Use \-\> instead\.$#'
+			identifier: nullsafe.neverNull
+			count: 1
+			path: src/Context/Expense/Application/Service/ExpectedExpenseFromOfxService.php
+
+		-
+			message: '#^Expression on left side of \?\? is not nullable\.$#'
+			identifier: nullCoalesce.expr
+			count: 1
+			path: src/Context/Expense/Application/UseCase/EnterExpense/CreateRecurringExpenseCommandHandler.php
+
+		-
+			message: '#^Property App\\Context\\Expense\\Application\\UseCase\\EnterExpense\\EnterExpenseCommandHandler\:\:\$bus is never read, only written\.$#'
+			identifier: property.onlyWritten
+			count: 1
+			path: src/Context/Expense/Application/UseCase/EnterExpense/EnterExpenseCommandHandler.php
+
+		-
+			message: '#^Property App\\Context\\Expense\\Application\\UseCase\\EnterExpense\\EnterMonthlyRecurringExpenseCommandHandler\:\:\$eventBus is never read, only written\.$#'
+			identifier: property.onlyWritten
+			count: 1
+			path: src/Context/Expense/Application/UseCase/EnterExpense/EnterMonthlyRecurringExpenseCommandHandler.php
+
+		-
+			message: '#^Call to an undefined method Symfony\\Component\\Serializer\\SerializerInterface\:\:normalize\(\)\.$#'
+			identifier: method.notFound
+			count: 1
+			path: src/Context/Expense/Application/UseCase/FindActiveExpensesByDateRange/FindActiveExpensesByDateRangeQueryHandler.php
+
+		-
+			message: '#^Call to an undefined method Symfony\\Component\\Serializer\\SerializerInterface\:\:normalize\(\)\.$#'
+			identifier: method.notFound
+			count: 1
+			path: src/Context/Expense/Application/UseCase/FindAllExpenses/FindAllExpensesQueryHandler.php
+
+		-
+			message: '#^Call to an undefined method Symfony\\Component\\Serializer\\SerializerInterface\:\:normalize\(\)\.$#'
+			identifier: method.notFound
+			count: 1
+			path: src/Context/Expense/Application/UseCase/FindExpense/FindExpenseQueryHandler.php
+
+		-
+			message: '#^Call to an undefined method Symfony\\Component\\Serializer\\SerializerInterface\:\:normalize\(\)\.$#'
+			identifier: method.notFound
+			count: 1
+			path: src/Context/Expense/Application/UseCase/FindInactiveExpensesByDateRange/FindInactiveExpensesByDateRangeQueryHandler.php
+
+		-
+			message: '#^Call to an undefined method Symfony\\Component\\Serializer\\SerializerInterface\:\:normalize\(\)\.$#'
+			identifier: method.notFound
+			count: 1
+			path: src/Context/Expense/Application/UseCase/FindTypes/FindTypesQueryHandler.php
+
+		-
+			message: '#^Property App\\Context\\Expense\\Domain\\ExpenseType\:\:\$distributionMethod \(string\|null\) is never assigned null so it can be removed from the property type\.$#'
+			identifier: property.unusedType
+			count: 1
+			path: src/Context/Expense/Domain/ExpenseType.php
+
+		-
+			message: '#^Property App\\Context\\Expense\\Domain\\ExpenseType\:\:\$expenses is never written, only read\.$#'
+			identifier: property.onlyRead
+			count: 1
+			path: src/Context/Expense/Domain/ExpenseType.php
+
+		-
+			message: '#^Property App\\Context\\Expense\\Domain\\ExpenseType\:\:\$recurringExpenses is unused\.$#'
+			identifier: property.unused
+			count: 1
+			path: src/Context/Expense/Domain/ExpenseType.php
+
+		-
+			message: '#^Using nullsafe method call on non\-nullable type DateTime\. Use \-\> instead\.$#'
+			identifier: nullsafe.neverNull
+			count: 1
+			path: src/Context/Expense/Domain/RecurringExpense.php
+
+		-
+			message: '#^Call to an undefined method Symfony\\Component\\Serializer\\SerializerInterface\:\:normalize\(\)\.$#'
+			identifier: method.notFound
+			count: 2
+			path: src/Context/Expense/Infrastructure/Symfony/Normalizer/ExpenseNormalizer.php
+
+		-
+			message: '#^Property App\\Context\\Income\\Application\\UseCase\\EnterIncome\\EnterIncomeCommandHandler\:\:\$bus is never read, only written\.$#'
+			identifier: property.onlyWritten
+			count: 1
+			path: src/Context/Income/Application/UseCase/EnterIncome/EnterIncomeCommandHandler.php
+
+		-
+			message: '#^Class App\\Context\\Income\\Domain\\IncomeType constructor invoked with 5 parameters, 2\-4 required\.$#'
+			identifier: arguments.count
+			count: 1
+			path: src/Context/Income/Domain/IncomeType.php
+
+		-
+			message: '#^Call to an undefined method Symfony\\Component\\Serializer\\SerializerInterface\:\:normalize\(\)\.$#'
+			identifier: method.notFound
+			count: 1
+			path: src/Context/Ledger/Application/UseCase/FindLedgerMovements/FindLedgerMovementsQueryHandler.php
+
+		-
+			message: '#^Parameter \#1 \$array of function usort contains unresolvable type\.$#'
+			identifier: argument.unresolvableType
+			count: 1
+			path: src/Context/Ledger/Application/UseCase/FindLedgerMovements/FindLedgerMovementsQueryHandler.php
+
+		-
+			message: '#^Parameter \#2 \$callback of function usort contains unresolvable type\.$#'
+			identifier: argument.unresolvableType
+			count: 1
+			path: src/Context/Ledger/Application/UseCase/FindLedgerMovements/FindLedgerMovementsQueryHandler.php
+
+		-
+			message: '#^Property App\\Context\\ResidentUnit\\Domain\\ResidentUnit\:\:\$incomes is never read, only written\.$#'
+			identifier: property.onlyWritten
+			count: 1
+			path: src/Context/ResidentUnit/Domain/ResidentUnit.php
+
+		-
+			message: '#^Property App\\Context\\ResidentUnit\\Domain\\ResidentUnit\:\:\$slips is never read, only written\.$#'
+			identifier: property.onlyWritten
+			count: 1
+			path: src/Context/ResidentUnit/Domain/ResidentUnit.php
+
+		-
+			message: '#^Class App\\Context\\ResidentUnit\\Application\\UseCase\\CreateUnit\\CreateResidentUnitCommand constructor invoked with 4 parameters, 3 required\.$#'
+			identifier: arguments.count
+			count: 1
+			path: src/Context/ResidentUnit/Infrastructure/Http/Controller/ResidentUnitCreateController.php
+
+		-
+			message: '#^Strict comparison using \!\=\= between mixed and null will always evaluate to true\.$#'
+			identifier: notIdentical.alwaysTrue
+			count: 1
+			path: src/Context/Setup/Domain/Event/OpeningReferenceMonthWasRecorded.php
+
+		-
+			message: '#^Method App\\Context\\Slip\\Application\\UseCase\\CheckSlipTotalAnomaly\\CheckSlipTotalAnomalyCommandHandler\:\:__invoke\(\) should return string\|null but returns stdClass\|null\.$#'
+			identifier: return.type
+			count: 1
+			path: src/Context/Slip/Application/UseCase/CheckSlipTotalAnomaly/CheckSlipTotalAnomalyCommandHandler.php
+
+		-
+			message: '#^Property App\\Context\\Slip\\Domain\\Slip\:\:\$paidAt is never read, only written\.$#'
+			identifier: property.onlyWritten
+			count: 1
+			path: src/Context/Slip/Domain/Slip.php
+
+		-
+			message: '#^Call to function method_exists\(\) with App\\Context\\Slip\\Domain\\Slip and ''markAsSubmitted'' will always evaluate to true\.$#'
+			identifier: function.alreadyNarrowedType
+			count: 1
+			path: src/Context/Slip/Infrastructure/Workflow/SlipWorkflowCompletedSubscriber.php
+
+		-
+			message: '#^Property App\\Context\\Slip\\Infrastructure\\Workflow\\SlipWorkflowCompletedSubscriber\:\:\$eventBus is never read, only written\.$#'
+			identifier: property.onlyWritten
+			count: 1
+			path: src/Context/Slip/Infrastructure/Workflow/SlipWorkflowCompletedSubscriber.php
+
+		-
+			message: '#^Class App\\Context\\User\\Application\\UseCase\\Activation\\User not found\.$#'
+			identifier: class.notFound
+			count: 1
+			path: src/Context/User/Application/UseCase/Activation/ActivateUserCommandHandler.php
+
+		-
+			message: '#^Strict comparison using \=\=\= between null and App\\Context\\User\\Domain\\User will always evaluate to false\.$#'
+			identifier: identical.alwaysFalse
+			count: 1
+			path: src/Context/User/Application/UseCase/Activation/ActivateUserCommandHandler.php
+
+		-
+			message: '#^Call to an undefined method App\\Context\\User\\Domain\\UserRepository\:\:findAll\(\)\.$#'
+			identifier: method.notFound
+			count: 1
+			path: src/Context/User/Application/UseCase/FindUsers/FindUsersQueryHandler.php
+
+		-
+			message: '#^Property App\\Context\\User\\Application\\UseCase\\Registration\\RegisterUserCommandHandler\:\:\$eventBus is never read, only written\.$#'
+			identifier: property.onlyWritten
+			count: 1
+			path: src/Context/User/Application/UseCase/Registration/RegisterUserCommandHandler.php
+
+		-
+			message: '#^Property App\\Context\\User\\Domain\\User\:\:\$email \(string\|null\) is never assigned null so it can be removed from the property type\.$#'
+			identifier: property.unusedType
+			count: 1
+			path: src/Context/User/Domain/User.php
+
+		-
+			message: '#^Property App\\Context\\User\\Domain\\User\:\:\$isActive \(bool\|null\) is never assigned null so it can be removed from the property type\.$#'
+			identifier: property.unusedType
+			count: 1
+			path: src/Context/User/Domain/User.php
+
+		-
+			message: '#^Property App\\Context\\User\\Domain\\User\:\:\$name \(string\|null\) is never assigned null so it can be removed from the property type\.$#'
+			identifier: property.unusedType
+			count: 1
+			path: src/Context/User/Domain/User.php
+
+		-
+			message: '#^Property App\\Context\\User\\Domain\\User\:\:\$password \(string\|null\) is never assigned null so it can be removed from the property type\.$#'
+			identifier: property.unusedType
+			count: 1
+			path: src/Context/User/Domain/User.php
+
+		-
+			message: '#^Parameter \#2 \$previous of class Symfony\\Component\\HttpKernel\\Exception\\BadRequestHttpException constructor expects Throwable\|null, int given\.$#'
+			identifier: argument.type
+			count: 1
+			path: src/Context/User/Infrastructure/Http/Dto/ChangePasswordRequestDto.php
+
+		-
+			message: '#^Parameter \#3 \$code of class Symfony\\Component\\HttpKernel\\Exception\\BadRequestHttpException constructor expects int, JsonException given\.$#'
+			identifier: argument.type
+			count: 1
+			path: src/Context/User/Infrastructure/Http/Dto/ChangePasswordRequestDto.php
+
+		-
+			message: '#^Parameter \#2 \$previous of class Symfony\\Component\\HttpKernel\\Exception\\BadRequestHttpException constructor expects Throwable\|null, int given\.$#'
+			identifier: argument.type
+			count: 1
+			path: src/Context/User/Infrastructure/Http/Dto/CreateUserRequestDto.php
+
+		-
+			message: '#^Parameter \#3 \$code of class Symfony\\Component\\HttpKernel\\Exception\\BadRequestHttpException constructor expects int, JsonException given\.$#'
+			identifier: argument.type
+			count: 1
+			path: src/Context/User/Infrastructure/Http/Dto/CreateUserRequestDto.php
+
+		-
+			message: '#^Parameter \#2 \$previous of class Symfony\\Component\\HttpKernel\\Exception\\BadRequestHttpException constructor expects Throwable\|null, int given\.$#'
+			identifier: argument.type
+			count: 1
+			path: src/Context/User/Infrastructure/Http/Dto/PasswordResetRequestDto.php
+
+		-
+			message: '#^Parameter \#3 \$code of class Symfony\\Component\\HttpKernel\\Exception\\BadRequestHttpException constructor expects int, JsonException given\.$#'
+			identifier: argument.type
+			count: 1
+			path: src/Context/User/Infrastructure/Http/Dto/PasswordResetRequestDto.php
+
+		-
+			message: '#^Parameter \#2 \$previous of class Symfony\\Component\\HttpKernel\\Exception\\BadRequestHttpException constructor expects Throwable\|null, int given\.$#'
+			identifier: argument.type
+			count: 1
+			path: src/Context/User/Infrastructure/Http/Dto/RegisterUserRequestDto.php
+
+		-
+			message: '#^Parameter \#3 \$code of class Symfony\\Component\\HttpKernel\\Exception\\BadRequestHttpException constructor expects int, JsonException given\.$#'
+			identifier: argument.type
+			count: 1
+			path: src/Context/User/Infrastructure/Http/Dto/RegisterUserRequestDto.php
+
+		-
+			message: '#^Parameter \#2 \$previous of class Symfony\\Component\\HttpKernel\\Exception\\BadRequestHttpException constructor expects Throwable\|null, int given\.$#'
+			identifier: argument.type
+			count: 1
+			path: src/Context/User/Infrastructure/Http/Dto/ResetPasswordRequestDto.php
+
+		-
+			message: '#^Parameter \#3 \$code of class Symfony\\Component\\HttpKernel\\Exception\\BadRequestHttpException constructor expects int, JsonException given\.$#'
+			identifier: argument.type
+			count: 1
+			path: src/Context/User/Infrastructure/Http/Dto/ResetPasswordRequestDto.php
+
+		-
+			message: '#^Call to an undefined method Symfony\\Component\\Serializer\\SerializerInterface\:\:normalize\(\)\.$#'
+			identifier: method.notFound
+			count: 1
+			path: src/Context/User/Infrastructure/Symfony/Normalizer/UserNormalizer.php
+
+		-
+			message: '#^Method App\\Context\\Expense\\Domain\\ExpenseTypeRepository\:\:save\(\) invoked with 2 parameters, 1 required\.$#'
+			identifier: arguments.count
+			count: 1
+			path: src/Shared/Command/SeedExpenseTypesCommand.php
+
+		-
+			message: '#^PHPDoc tag @param for parameter \$event with type App\\Shared\\Domain\\Event\\ConcreteEvent is not subtype of native type App\\Shared\\Domain\\Event\\DomainEvent\.$#'
+			identifier: parameter.phpDocType
+			count: 1
+			path: src/Shared/Domain/Event/EventSubscriber.php
+
+		-
+			message: '#^Parameter \$event of method App\\Shared\\Domain\\Event\\EventSubscriber\:\:__invoke\(\) has invalid type App\\Shared\\Domain\\Event\\ConcreteEvent\.$#'
+			identifier: class.notFound
+			count: 1
+			path: src/Shared/Domain/Event/EventSubscriber.php
+
+		-
+			message: '#^Unsafe usage of new static\(\)\.$#'
+			identifier: new.static
+			count: 6
+			path: src/Shared/Domain/Exception/InvalidArgumentException.php
+
+		-
+			message: '#^Unsafe usage of new static\(\)\.$#'
+			identifier: new.static
+			count: 1
+			path: src/Shared/Domain/Exception/InvalidDataException.php
+
+		-
+			message: '#^Unsafe usage of new static\(\)\.$#'
+			identifier: new.static
+			count: 5
+			path: src/Shared/Domain/Exception/ResourceNotFoundException.php
+
+		-
+			message: '#^Unsafe usage of new static\(\)\.$#'
+			identifier: new.static
+			count: 2
+			path: src/Shared/Domain/ValueObject/Uuid.php
+
+		-
+			message: '#^Call to an undefined method ReflectionType\:\:getName\(\)\.$#'
+			identifier: method.notFound
+			count: 1
+			path: src/Shared/Infrastructure/CallableFirstParameterExtractor.php
+
+		-
+			message: '#^Call to an undefined method ReflectionType\:\:isBuiltin\(\)\.$#'
+			identifier: method.notFound
+			count: 1
+			path: src/Shared/Infrastructure/CallableFirstParameterExtractor.php
+
+		-
+			message: '#^Using nullsafe method call on non\-nullable type Psr\\Log\\LoggerInterface\. Use \-\> instead\.$#'
+			identifier: nullsafe.neverNull
+			count: 2
+			path: src/Shared/Infrastructure/Ollama/OllamaTextGenerator.php
+
+		-
+			message: '#^Call to an undefined method Symfony\\Component\\HttpKernel\\Event\\ExceptionEvent\:\:getController\(\)\.$#'
+			identifier: method.notFound
+			count: 1
+			path: src/Shared/Infrastructure/Symfony/ApiControllerExceptionListener.php

@@ -23,7 +23,7 @@ final class UpdateUserCommandHandlerTest extends TestCase
         $this->handler = new UpdateUserCommandHandler($this->userRepository);
     }
 
-    public function test_it_should_update_user_successfully(): void
+    public function testItShouldUpdateUserSuccessfully(): void
     {
         $user = UserMother::createRandom();
         $command = new UpdateUserCommand(
@@ -31,7 +31,7 @@ final class UpdateUserCommandHandlerTest extends TestCase
             'Updated Name',
             'Updated LastName',
             'M',
-            '+351912345678'
+            '+351912345678',
         );
 
         $this->userRepository
@@ -48,7 +48,7 @@ final class UpdateUserCommandHandlerTest extends TestCase
         ($this->handler)($command);
     }
 
-    public function test_it_should_throw_when_user_not_found(): void
+    public function testItShouldThrowWhenUserNotFound(): void
     {
         $this->expectException(UserNotFoundException::class);
 
@@ -57,7 +57,7 @@ final class UpdateUserCommandHandlerTest extends TestCase
             'Name',
             'LastName',
             'F',
-            '123456789'
+            '123456789',
         );
 
         $this->userRepository

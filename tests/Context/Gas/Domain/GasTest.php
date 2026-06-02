@@ -7,15 +7,7 @@ namespace App\Tests\Context\Gas\Domain;
 use App\Context\Gas\Domain\Event\GasPriceWasDefined;
 use App\Context\Gas\Domain\Event\GasReadingWasRecorded;
 use App\Context\Gas\Domain\Gas;
-use App\Context\Gas\Domain\ValueObject\BufferPercentage;
-use App\Context\Gas\Domain\ValueObject\CylinderCapacity;
-use App\Context\Gas\Domain\ValueObject\GasAmount;
-use App\Context\Gas\Domain\ValueObject\GasId;
-use App\Context\Gas\Domain\ValueObject\ReadingInM3;
-use App\Context\ResidentUnit\Domain\ResidentUnitId;
 use App\Shared\Domain\Exception\InvalidArgumentException;
-use App\Shared\Domain\ValueObject\Month;
-use App\Shared\Domain\ValueObject\Year;
 use App\Tests\Context\Gas\Domain\ValueObject\BufferPercentageMother;
 use App\Tests\Context\Gas\Domain\ValueObject\CylinderCapacityMother;
 use App\Tests\Context\Gas\Domain\ValueObject\GasAmountMother;
@@ -27,12 +19,14 @@ use App\Tests\Shared\Domain\ValueObject\YearMother;
 use DateMalformedStringException;
 use PHPUnit\Framework\TestCase;
 
+use function round;
+
 class GasTest extends TestCase
 {
     /**
      * @throws DateMalformedStringException
      */
-    public function test_it_should_record_a_gas_reading(): void
+    public function testItShouldRecordAGasReading(): void
     {
         $id = GasIdMother::create();
         $residentUnitId = ResidentUnitIdMother::create();
@@ -45,7 +39,7 @@ class GasTest extends TestCase
             $residentUnitId,
             $year,
             $month,
-            $reading
+            $reading,
         );
 
         $this->assertInstanceOf(Gas::class, $gas);
@@ -64,7 +58,7 @@ class GasTest extends TestCase
     /**
      * @throws DateMalformedStringException
      */
-    public function test_it_should_define_gas_price(): void
+    public function testItShouldDefineGasPrice(): void
     {
         $amount = GasAmountMother::create(); // Default 10000 (int)
         $capacity = CylinderCapacityMother::create(); // Default 100 (int)
@@ -73,7 +67,7 @@ class GasTest extends TestCase
         $gas = Gas::definePrice(
             $amount,
             $capacity,
-            $buffer
+            $buffer,
         );
 
         $this->assertInstanceOf(Gas::class, $gas);
@@ -97,7 +91,7 @@ class GasTest extends TestCase
     /**
      * @throws DateMalformedStringException
      */
-    public function test_it_should_set_direct_gas_price(): void
+    public function testItShouldSetDirectGasPrice(): void
     {
         $pricePerM3InCents = 2600;
 
@@ -112,37 +106,37 @@ class GasTest extends TestCase
         $this->assertSame($pricePerM3InCents, $events[0]->pricePerM3InCents);
     }
 
-    public function test_it_should_throw_exception_for_invalid_reading_in_record_reading(): void
+    public function testItShouldThrowExceptionForInvalidReadingInRecordReading(): void
     {
         $this->expectException(InvalidArgumentException::class);
         GasMother::createForRecordReading(reading: ReadingInM3Mother::create(-100.0));
     }
 
-    public function test_it_should_throw_exception_for_invalid_month_in_record_reading(): void
+    public function testItShouldThrowExceptionForInvalidMonthInRecordReading(): void
     {
         $this->expectException(InvalidArgumentException::class);
         GasMother::createForRecordReading(month: MonthMother::create(13));
     }
 
-    public function test_it_should_throw_exception_for_invalid_year_in_record_reading(): void
+    public function testItShouldThrowExceptionForInvalidYearInRecordReading(): void
     {
         $this->expectException(InvalidArgumentException::class);
         GasMother::createForRecordReading(year: YearMother::create(1900));
     }
 
-    public function test_it_should_throw_exception_for_invalid_amount_in_define_price(): void
+    public function testItShouldThrowExceptionForInvalidAmountInDefinePrice(): void
     {
         $this->expectException(InvalidArgumentException::class);
         GasMother::createForDefinePrice(amount: GasAmountMother::create(-10)); // Changed from -10.0 to -10
     }
 
-    public function test_it_should_throw_exception_for_invalid_capacity_in_define_price(): void
+    public function testItShouldThrowExceptionForInvalidCapacityInDefinePrice(): void
     {
         $this->expectException(InvalidArgumentException::class);
         GasMother::createForDefinePrice(capacity: CylinderCapacityMother::create(-10)); // Changed from -10.0 to -10
     }
 
-    public function test_it_should_throw_exception_for_invalid_buffer_in_define_price(): void
+    public function testItShouldThrowExceptionForInvalidBufferInDefinePrice(): void
     {
         $this->expectException(InvalidArgumentException::class);
         GasMother::createForDefinePrice(buffer: BufferPercentageMother::create(-1)); // Changed from -0.1 to -1

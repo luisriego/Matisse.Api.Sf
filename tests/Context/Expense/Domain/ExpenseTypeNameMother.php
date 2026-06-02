@@ -6,6 +6,8 @@ namespace App\Tests\Context\Expense\Domain;
 
 use App\Context\Expense\Domain\ValueObject\ExpenseTypeName;
 
+use function array_rand;
+
 final class ExpenseTypeNameMother
 {
     private const NAMES = [
@@ -25,6 +27,7 @@ final class ExpenseTypeNameMother
     public static function create(?string $name = null): ExpenseTypeName
     {
         $value = $name ?? self::randomName();
+
         return new ExpenseTypeName($value);
     }
 

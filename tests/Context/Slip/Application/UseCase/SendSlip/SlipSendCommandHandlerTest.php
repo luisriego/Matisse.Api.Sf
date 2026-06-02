@@ -10,6 +10,7 @@ use App\Context\Slip\Domain\Exception\SlipNotFoundException;
 use App\Context\Slip\Domain\SlipRepository;
 use App\Tests\Context\Slip\Domain\SlipMother;
 use App\Tests\Context\Slip\SlipModuleUnitTestCase;
+use DateMalformedStringException;
 use PHPUnit\Framework\MockObject\MockObject;
 use Symfony\Component\Workflow\Exception\LogicException;
 use Symfony\Component\Workflow\WorkflowInterface;
@@ -17,9 +18,8 @@ use Symfony\Component\Workflow\WorkflowInterface;
 final class SlipSendCommandHandlerTest extends SlipModuleUnitTestCase
 {
     private SlipSendCommandHandler $handler;
-    private SlipRepository|MockObject $repository;
-    private WorkflowInterface|MockObject $slipStateMachine;
-
+    private MockObject|SlipRepository $repository;
+    private MockObject|WorkflowInterface $slipStateMachine;
 
     protected function setUp(): void
     {
@@ -30,14 +30,14 @@ final class SlipSendCommandHandlerTest extends SlipModuleUnitTestCase
 
         $this->handler = new SlipSendCommandHandler(
             $this->repository,
-            $this->slipStateMachine
+            $this->slipStateMachine,
         );
     }
 
     /** @test
-     * @throws \DateMalformedStringException
+     * @throws DateMalformedStringException
      */
-    public function test_it_should_apply_send_transition_to_slip(): void
+    public function testItShouldApplySendTransitionToSlip(): void
     {
         $slip = SlipMother::create();
         $command = new SlipSendCommand($slip->id());
@@ -52,9 +52,9 @@ final class SlipSendCommandHandlerTest extends SlipModuleUnitTestCase
     }
 
     /** @test
-     * @throws \DateMalformedStringException
+     * @throws DateMalformedStringException
      */
-    public function test_it_should_throw_an_exception_when_slip_not_found(): void
+    public function testItShouldThrowAnExceptionWhenSlipNotFound(): void
     {
         $this->expectException(SlipNotFoundException::class);
 
@@ -71,9 +71,9 @@ final class SlipSendCommandHandlerTest extends SlipModuleUnitTestCase
     }
 
     /** @test
-     * @throws \DateMalformedStringException
+     * @throws DateMalformedStringException
      */
-    public function test_it_should_throw_an_exception_when_transition_is_not_valid(): void
+    public function testItShouldThrowAnExceptionWhenTransitionIsNotValid(): void
     {
         $this->expectException(LogicException::class);
 

@@ -36,7 +36,7 @@ class UpdateIncomeCommandHandlerTest extends TestCase
      * @throws DateMalformedStringException
      * @throws Exception
      */
-    public function test_it_updates_income_with_all_fields(): void
+    public function testItUpdatesIncomeWithAllFields(): void
     {
         $incomeId = IncomeIdMother::create();
         $dueDate = (new DateTime('+30 days'))->format('Y-m-d');
@@ -45,7 +45,7 @@ class UpdateIncomeCommandHandlerTest extends TestCase
         $command = new UpdateIncomeCommand(
             $incomeId->value(),
             $dueDate,
-            $description
+            $description,
         );
 
         $incomeMock = $this->createMock(Income::class);
@@ -59,7 +59,7 @@ class UpdateIncomeCommandHandlerTest extends TestCase
         $incomeMock
             ->expects(self::once())
             ->method('changeDueDate')
-            ->with(self::callback(fn($dt) => $dt instanceof DateTime && $dt->format('Y-m-d') === $dueDate));
+            ->with(self::callback(fn ($dt) => $dt instanceof DateTime && $dt->format('Y-m-d') === $dueDate));
 
         $incomeMock
             ->expects(self::once())
@@ -78,7 +78,7 @@ class UpdateIncomeCommandHandlerTest extends TestCase
      * @throws DateMalformedStringException
      * @throws Exception
      */
-    public function test_it_updates_only_due_date_when_description_is_null(): void
+    public function testItUpdatesOnlyDueDateWhenDescriptionIsNull(): void
     {
         $incomeId = IncomeIdMother::create();
         $dueDate = (new DateTime('+15 days'))->format('Y-m-d');
@@ -86,7 +86,7 @@ class UpdateIncomeCommandHandlerTest extends TestCase
         $command = new UpdateIncomeCommand(
             $incomeId->value(),
             $dueDate,
-            null
+            null,
         );
 
         $incomeMock = $this->createMock(Income::class);
@@ -100,7 +100,7 @@ class UpdateIncomeCommandHandlerTest extends TestCase
         $incomeMock
             ->expects(self::once())
             ->method('changeDueDate')
-            ->with(self::callback(fn($dt) => $dt instanceof DateTime && $dt->format('Y-m-d') === $dueDate));
+            ->with(self::callback(fn ($dt) => $dt instanceof DateTime && $dt->format('Y-m-d') === $dueDate));
 
         $incomeMock
             ->expects(self::never())
@@ -118,7 +118,7 @@ class UpdateIncomeCommandHandlerTest extends TestCase
      * @throws DateMalformedStringException
      * @throws Exception
      */
-    public function test_it_updates_only_description_when_due_date_is_null(): void
+    public function testItUpdatesOnlyDescriptionWhenDueDateIsNull(): void
     {
         $incomeId = IncomeIdMother::create();
         $description = 'Updated description only';
@@ -126,7 +126,7 @@ class UpdateIncomeCommandHandlerTest extends TestCase
         $command = new UpdateIncomeCommand(
             $incomeId->value(),
             null,
-            $description
+            $description,
         );
 
         $incomeMock = $this->createMock(Income::class);
@@ -158,14 +158,14 @@ class UpdateIncomeCommandHandlerTest extends TestCase
      * @throws DateMalformedStringException
      * @throws Exception
      */
-    public function test_it_updates_nothing_when_all_fields_are_null(): void
+    public function testItUpdatesNothingWhenAllFieldsAreNull(): void
     {
         $incomeId = IncomeIdMother::create();
 
         $command = new UpdateIncomeCommand(
             $incomeId->value(),
             null,
-            null
+            null,
         );
 
         $incomeMock = $this->createMock(Income::class);
@@ -192,15 +192,17 @@ class UpdateIncomeCommandHandlerTest extends TestCase
         ($this->handler)($command);
     }
 
-    /** @test */
-    public function test_it_propagates_exception_when_income_not_found(): void
+    /**
+     * @test
+     */
+    public function testItPropagatesExceptionWhenIncomeNotFound(): void
     {
         $incomeId = IncomeIdMother::create();
 
         $command = new UpdateIncomeCommand(
             $incomeId->value(),
             (new DateTime('+30 days'))->format('Y-m-d'),
-            'description'
+            'description',
         );
 
         $this->incomeRepository
@@ -218,14 +220,14 @@ class UpdateIncomeCommandHandlerTest extends TestCase
     /** @test
      * @throws Exception
      */
-    public function test_it_propagates_date_malformed_exception(): void
+    public function testItPropagatesDateMalformedException(): void
     {
         $incomeId = IncomeIdMother::create();
 
         $command = new UpdateIncomeCommand(
             $incomeId->value(),
             'invalid-date',
-            'description'
+            'description',
         );
 
         $incomeMock = $this->createMock(Income::class);
@@ -244,7 +246,7 @@ class UpdateIncomeCommandHandlerTest extends TestCase
     /** @test
      * @throws Exception
      */
-    public function test_it_propagates_due_date_must_be_in_future_exception(): void
+    public function testItPropagatesDueDateMustBeInFutureException(): void
     {
         $incomeId = IncomeIdMother::create();
         $pastDate = (new DateTime('-1 day'))->format('Y-m-d');
@@ -252,7 +254,7 @@ class UpdateIncomeCommandHandlerTest extends TestCase
         $command = new UpdateIncomeCommand(
             $incomeId->value(),
             $pastDate,
-            'description'
+            'description',
         );
 
         $incomeMock = $this->createMock(Income::class);

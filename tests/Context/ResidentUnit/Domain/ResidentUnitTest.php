@@ -11,9 +11,11 @@ use App\Context\ResidentUnit\Domain\ResidentUnit;
 use App\Context\ResidentUnit\Domain\ResidentUnitIdealFraction;
 use App\Tests\Shared\Infrastructure\PhpUnit\UnitTestCase;
 
+use function sleep;
+
 final class ResidentUnitTest extends UnitTestCase
 {
-    public function test_it_should_create_a_resident_unit(): void
+    public function testItShouldCreateAResidentUnit(): void
     {
         $residentUnit = ResidentUnitMother::create();
 
@@ -27,7 +29,7 @@ final class ResidentUnitTest extends UnitTestCase
         self::assertEmpty($residentUnit->notificationRecipients());
     }
 
-    public function test_it_should_create_a_resident_unit_with_recipients(): void
+    public function testItShouldCreateAResidentUnitWithRecipients(): void
     {
         $recipients = [
             ['name' => 'John Doe', 'email' => 'john.doe@example.com'],
@@ -46,7 +48,7 @@ final class ResidentUnitTest extends UnitTestCase
         self::assertSame($recipients, $residentUnit->notificationRecipients());
     }
 
-    public function test_it_should_update_the_updated_at_timestamp_when_appending_a_recipient(): void
+    public function testItShouldUpdateTheUpdatedAtTimestampWhenAppendingARecipient(): void
     {
         // Arrange
         $residentUnit = ResidentUnitMother::create();
@@ -61,7 +63,7 @@ final class ResidentUnitTest extends UnitTestCase
         self::assertGreaterThan(
             $initialTimestamp,
             $newTimestamp,
-            'The updatedAt timestamp should be more recent after appending a recipient.'
+            'The updatedAt timestamp should be more recent after appending a recipient.',
         );
 
         $events = $residentUnit->pullDomainEvents();
@@ -72,7 +74,7 @@ final class ResidentUnitTest extends UnitTestCase
     }
 
     // NUEVO: Test para 'replaceRecipients'
-    public function test_it_should_replace_all_recipients_and_update_timestamp(): void
+    public function testItShouldReplaceAllRecipientsAndUpdateTimestamp(): void
     {
         // Arrange
         $residentUnit = ResidentUnitMother::create();
@@ -103,7 +105,7 @@ final class ResidentUnitTest extends UnitTestCase
         self::assertSame($newRecipients, $events[1]->recipients);
     }
 
-    public function test_it_should_add_multiple_recipients_sequentially(): void
+    public function testItShouldAddMultipleRecipientsSequentially(): void
     {
         // Arrange
         $residentUnit = ResidentUnitMother::create();
@@ -118,7 +120,7 @@ final class ResidentUnitTest extends UnitTestCase
         self::assertSame('segundo@example.com', $recipients[1]['email']);
     }
 
-    public function test_it_should_allow_adding_recipients_with_duplicate_emails(): void
+    public function testItShouldAllowAddingRecipientsWithDuplicateEmails(): void
     {
         // Arrange
         $residentUnit = ResidentUnitMother::create();
@@ -135,7 +137,7 @@ final class ResidentUnitTest extends UnitTestCase
         self::assertSame($duplicateEmail, $recipients[1]['email']);
     }
 
-    public function test_ideal_fraction_must_not_be_more_than_1(): void
+    public function testIdealFractionMustNotBeMoreThan1(): void
     {
         $residentUnit = ResidentUnitMother::create();
 
@@ -144,7 +146,7 @@ final class ResidentUnitTest extends UnitTestCase
         self::assertFalse($residentUnit->idealFractionMustNotBeMoreThan1(0.5, 0.6));
     }
 
-    public function test_it_should_change_ideal_fraction_and_record_event(): void
+    public function testItShouldChangeIdealFractionAndRecordEvent(): void
     {
         $residentUnit = ResidentUnitMother::create();
         $residentUnit->pullDomainEvents(); // clear previous events

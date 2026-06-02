@@ -9,6 +9,9 @@ use App\Tests\Shared\Domain\UuidMother;
 use App\Tests\Shared\Infrastructure\PhpUnit\ApiTestCase;
 use Symfony\Component\HttpFoundation\Response;
 
+use function array_column;
+use function json_decode;
+
 final class GetExpenseTypesControllerTest extends ApiTestCase
 {
     protected function setUp(): void
@@ -17,7 +20,7 @@ final class GetExpenseTypesControllerTest extends ApiTestCase
         $this->createAuthenticatedClient();
     }
 
-    public function test_it_should_return_all_expense_types(): void
+    public function testItShouldReturnAllExpenseTypes(): void
     {
         // 1. Create a couple of expense types to ensure the list is not empty
         $type1 = ExpenseTypeMother::create(id: UuidMother::create());

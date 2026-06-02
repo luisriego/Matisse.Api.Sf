@@ -19,10 +19,12 @@ use App\Context\Slip\Domain\ValueObject\SlipDueDate;
 use App\Shared\Domain\ValueObject\DateRange;
 use DateMalformedStringException;
 use DateTimeImmutable;
+use InvalidArgumentException;
 
 use function array_map;
 use function count;
 use function mb_strtoupper;
+use function preg_match;
 use function sprintf;
 
 /**
@@ -55,6 +57,7 @@ final readonly class ForecastBuilder
         $reconciliationMonth ??= $this->previousMonthString($targetMonth);
 
         $residentUnits = $this->residentUnitRepository->findAllActive();
+
         if ($residentUnits === []) {
             return [
                 'targetMonth' => $targetMonth,
@@ -99,6 +102,7 @@ final readonly class ForecastBuilder
         );
 
         $gasByUnitCents = [];
+
         foreach ($gasBreakdown['byUnit'] as $unitId => $gasDetail) {
             $gasByUnitCents[$unitId] = (int) ($gasDetail['gasCents'] ?? 0);
         }
@@ -117,6 +121,7 @@ final readonly class ForecastBuilder
         $dueDate = SlipDueDate::selectDueDate($targetYear, $targetMonthNum);
 
         $unitsOut = [];
+
         foreach ($computed['units'] as $unit) {
             $uid = (string) $unit['residentUnitId'];
             $gasDetail = $gasBreakdown['byUnit'][$uid] ?? null;
@@ -135,9 +140,11 @@ final readonly class ForecastBuilder
         }
 
         $gasReadings = [];
+
         foreach ($residentUnits as $residentUnit) {
             $uid = $residentUnit->id();
             $detail = $gasBreakdown['byUnit'][$uid] ?? null;
+
             if ($detail === null) {
                 continue;
             }
@@ -267,7 +274,7 @@ final readonly class ForecastBuilder
     private function parseYearMonth(string $ym): array
     {
         if (1 !== preg_match('/^(\d{4})-(\d{2})$/', $ym, $matches)) {
-            throw new \InvalidArgumentException('Invalid targetMonth. Expected YYYY-MM.');
+            throw new InvalidArgumentException('Invalid targetMonth. Expected YYYY-MM.');
         }
 
         return [(int) $matches[1], (int) $matches[2]];
@@ -276,6 +283,7 @@ final readonly class ForecastBuilder
     private function previousMonthString(string $ym): string
     {
         [$year, $month] = $this->parseYearMonth($ym);
+
         if ($month === 1) {
             return sprintf('%04d-12', $year - 1);
         }

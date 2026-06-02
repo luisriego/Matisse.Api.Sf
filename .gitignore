@@ -23,3 +23,7 @@ docker-compose.yml
 ###< lexik/jwt-authentication-bundle ###
 
 gcloud-key.json
+
+###> phpstan/phpstan ###
+phpstan.neon
+###< phpstan/phpstan ###

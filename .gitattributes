@@ -1,0 +1,5 @@
+# Symfony bin scripts must use LF so shebangs work inside Linux containers.
+bin/* text eol=lf
+docker/*.sh text eol=lf
+Makefile text eol=lf
+tools/**/vendor/bin/* text eol=lf

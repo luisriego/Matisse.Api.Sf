@@ -11,6 +11,7 @@ use App\Tests\Context\Expense\Domain\ExpenseDueDateMother;
 use App\Tests\Context\Expense\Domain\ExpenseIdMother;
 use App\Tests\Context\Expense\Domain\ExpenseMother;
 use App\Tests\Context\Expense\ExpenseModuleUnitTestCase;
+use DateMalformedStringException;
 
 final class UpdateExpenseCommandHandlerTest extends ExpenseModuleUnitTestCase
 {
@@ -22,14 +23,14 @@ final class UpdateExpenseCommandHandlerTest extends ExpenseModuleUnitTestCase
 
         $this->handler = new UpdateExpenseCommandHandler(
             $this->repository(),
-            $this->eventBus()
+            $this->eventBus(),
         );
     }
 
     /** @test
-     * @throws \DateMalformedStringException
+     * @throws DateMalformedStringException
      */
-    public function test_it_should_update_expense_with_all_fields(): void
+    public function testItShouldUpdateExpenseWithAllFields(): void
     {
         // Arrange
         $id = ExpenseIdMother::create(); // Use the mother object to create valid UUID
@@ -42,7 +43,7 @@ final class UpdateExpenseCommandHandlerTest extends ExpenseModuleUnitTestCase
         $command = new UpdateExpenseCommand(
             $id->value(),
             $newDueDate,
-            $newDescription
+            $newDescription,
         );
 
         $this->shouldFindOneByIdOrFail($id->value(), $expense);
@@ -53,8 +54,10 @@ final class UpdateExpenseCommandHandlerTest extends ExpenseModuleUnitTestCase
         $this->handler->__invoke($command);
     }
 
-    /** @test */
-    public function test_it_should_update_only_provided_fields(): void
+    /**
+     * @test
+     */
+    public function testItShouldUpdateOnlyProvidedFields(): void
     {
         // Arrange
         $id = ExpenseIdMother::create(); // Use the mother object to create valid UUID
@@ -64,7 +67,7 @@ final class UpdateExpenseCommandHandlerTest extends ExpenseModuleUnitTestCase
             $id->value(),
             null,  // Don't update amount
             '2023-12-31', // Update due date
-            null   // Don't update description
+            null,   // Don't update description
         );
 
         $this->shouldFindOneByIdOrFail($id->value(), $expense);

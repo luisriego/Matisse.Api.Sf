@@ -4,10 +4,12 @@ declare(strict_types=1);
 
 namespace App\Tests\Context\ResidentUnit\Infrastructure\Http\Controller;
 
-use App\Context\ResidentUnit\Domain\ResidentUnit;
 use App\Tests\Context\ResidentUnit\Domain\ResidentUnitMother;
 use App\Tests\Shared\Infrastructure\PhpUnit\ApiTestCase;
 use Symfony\Component\HttpFoundation\Response;
+
+use function json_encode;
+use function sprintf;
 
 final class ResidentUnitAppendRecipientsControllerTest extends ApiTestCase
 {
@@ -18,7 +20,7 @@ final class ResidentUnitAppendRecipientsControllerTest extends ApiTestCase
         $this->entityManager = $this->client->getContainer()->get('doctrine.orm.entity_manager');
     }
 
-    public function test_it_should_append_recipient_and_return_ok(): void
+    public function testItShouldAppendRecipientAndReturnOk(): void
     {
         $residentUnit = ResidentUnitMother::create();
         $this->entityManager->persist($residentUnit);
@@ -35,7 +37,7 @@ final class ResidentUnitAppendRecipientsControllerTest extends ApiTestCase
             [],
             [],
             ['CONTENT_TYPE' => 'application/json'],
-            json_encode($payload)
+            json_encode($payload),
         );
 
         $this->assertResponseStatusCodeSame(Response::HTTP_OK);

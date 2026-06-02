@@ -18,10 +18,7 @@ use Symfony\Component\HttpFoundation\Response;
         required: true,
         content: new OA\JsonContent(
             required: ['name', 'email'],
-            properties: [
-                new OA\Property(property: 'name', type: 'string'),
-                new OA\Property(property: 'email', type: 'string', format: 'email'),
-            ],
+            ref: '#/components/schemas/ResidentUnitNotificationRecipient',
         ),
     ),
     tags: ['Resident Units'],
@@ -30,7 +27,7 @@ use Symfony\Component\HttpFoundation\Response;
         new OA\Parameter(name: 'id', in: 'path', required: true, schema: new OA\Schema(type: 'string', format: 'uuid')),
     ],
     responses: [
-        new OA\Response(response: 200, description: 'Recipient appended.'),
+        new OA\Response(response: 200, description: 'Recipient appended. Empty response body.'),
         new OA\Response(response: 404, description: 'Resident unit not found.'),
         new OA\Response(response: 401, description: 'Unauthorized'),
     ],
