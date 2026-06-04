@@ -26,8 +26,8 @@ until $COMPOSE exec -T matisse-db pg_isready -U app -q; do sleep 1; done
 echo "Ensuring pgvector extension..."
 $COMPOSE exec -T matisse-db psql -U app -d app -c "CREATE EXTENSION IF NOT EXISTS vector;"
 
-echo "Running migrations..."
-$COMPOSE exec -T matisse-app php bin/console doctrine:migrations:migrate --no-interaction
+echo "Updating database schema..."
+$COMPOSE exec -T matisse-app php bin/console doctrine:schema:update --force
 
 echo "Clearing Symfony cache..."
 $COMPOSE exec -T matisse-app php bin/console cache:clear --no-warmup
