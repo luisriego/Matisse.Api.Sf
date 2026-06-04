@@ -4,6 +4,7 @@ set -e
 cd /var/www/html
 
 mkdir -p var/log var/cache
+chown -R appuser:appuser var/
 
 if command -v dos2unix >/dev/null; then
     dos2unix bin/console bin/phpunit 2>/dev/null || true
@@ -22,5 +23,6 @@ if [ -f composer.json ]; then
 fi
 
 chown -R appuser:appuser var/
+chmod -R 777 var/
 
 exec "$@"
