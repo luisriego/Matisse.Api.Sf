@@ -6,7 +6,8 @@
 #   - API: docker compose -f docker-compose.server.yml with ports 127.0.0.1:8080:80
 #   - Frontend build in /opt/matisse-web (index.html at root)
 
-:80 {
+# Produccion: dominio con HTTPS automatico (Let's Encrypt).
+matisse.luisriego.dev {
     handle /api/* {
         reverse_proxy 127.0.0.1:8080
     }
@@ -18,8 +19,8 @@
     }
 }
 
-# With a domain (automatic HTTPS):
-# matisse.example.com {
+# Alternativa sin dominio (solo HTTP por IP):
+# :80 {
 #     handle /api/* {
 #         reverse_proxy 127.0.0.1:8080
 #     }
