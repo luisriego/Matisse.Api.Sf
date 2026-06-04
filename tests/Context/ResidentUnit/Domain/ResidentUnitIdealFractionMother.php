@@ -6,6 +6,7 @@ namespace App\Tests\Context\ResidentUnit\Domain;
 
 use App\Context\ResidentUnit\Domain\ResidentUnitIdealFraction;
 
+use function mt_rand;
 use function round;
 
 final class ResidentUnitIdealFractionMother

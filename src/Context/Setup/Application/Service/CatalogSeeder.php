@@ -65,7 +65,7 @@ final readonly class CatalogSeeder
 
         foreach (IncomeTypeCatalog::TYPES as $code => $data) {
             $incomeType = IncomeType::create(
-                IncomeId::random(),
+                new IncomeId((string) Uuid::random()),
                 new IncomeTypeName($data['name']),
                 new IncomeTypeCode($code),
                 $data['description'],

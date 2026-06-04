@@ -6,10 +6,10 @@ namespace App\Context\ResidentUnit\Application\UseCase\CreateUnit;
 
 use App\Context\ResidentUnit\Domain\Exception\IdealFractionSumExceedsLimitException;
 use App\Context\ResidentUnit\Domain\Exception\ResidentUnitAlreadyExistsException;
+use App\Context\ResidentUnit\Domain\IdealFractionSumPolicy;
 use App\Context\ResidentUnit\Domain\ResidentUnit;
 use App\Context\ResidentUnit\Domain\ResidentUnitId;
 use App\Context\ResidentUnit\Domain\ResidentUnitIdealFraction;
-use App\Context\ResidentUnit\Domain\IdealFractionSumPolicy;
 use App\Context\ResidentUnit\Domain\ResidentUnitRepository;
 use App\Context\ResidentUnit\Domain\ResidentUnitVO; // Corrected this line
 use App\Shared\Application\CommandHandler;

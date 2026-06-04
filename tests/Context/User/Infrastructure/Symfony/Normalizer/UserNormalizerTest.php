@@ -15,7 +15,7 @@ use PHPUnit\Framework\TestCase;
 use stdClass;
 use Symfony\Component\Serializer\Serializer;
 
- // Import the concrete Serializer class
+// Import the concrete Serializer class
 
 final class UserNormalizerTest extends TestCase
 {

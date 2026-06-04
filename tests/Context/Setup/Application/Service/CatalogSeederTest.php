@@ -17,7 +17,7 @@ final class CatalogSeederTest extends ApiTestCase
 {
     public function testItSeedsCatalogsWhenEmptyAndIsIdempotent(): void
     {
-        $container   = static::getContainer();
+        $container   = self::getContainer();
         $seeder      = $container->get(CatalogSeeder::class);
         $expenseRepo = $container->get(ExpenseTypeRepository::class);
         $incomeRepo  = $container->get(IncomeTypeRepository::class);

@@ -6,8 +6,8 @@ namespace App\Context\ResidentUnit\Application\UseCase\CreateUnitWithRecipients;
 
 use App\Context\ResidentUnit\Application\Message\WelcomeResidentNotification;
 use App\Context\ResidentUnit\Domain\Exception\IdealFractionSumExceedsLimitException; // Added this import
-use App\Context\ResidentUnit\Domain\IdealFractionSumPolicy;
 use App\Context\ResidentUnit\Domain\Exception\ResidentUnitAlreadyExistsException;
+use App\Context\ResidentUnit\Domain\IdealFractionSumPolicy;
 use App\Context\ResidentUnit\Domain\ResidentUnit;
 use App\Context\ResidentUnit\Domain\ResidentUnitId;
 use App\Context\ResidentUnit\Domain\ResidentUnitIdealFraction;

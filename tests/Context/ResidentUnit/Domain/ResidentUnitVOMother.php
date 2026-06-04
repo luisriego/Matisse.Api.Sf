@@ -6,6 +6,8 @@ namespace App\Tests\Context\ResidentUnit\Domain;
 
 use App\Context\ResidentUnit\Domain\ResidentUnitVO;
 
+use function mt_rand;
+
 final class ResidentUnitVOMother
 {
     public static function create(?string $value = null): ResidentUnitVO

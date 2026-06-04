@@ -16,6 +16,7 @@ use ReflectionException;
 use ReflectionProperty;
 use Symfony\Component\HttpFoundation\Response;
 
+use function array_column;
 use function json_decode;
 use function json_encode;
 

@@ -16,9 +16,13 @@ interface ResidentUnitRepository
 
     public function calculateTotalIdealFraction(?string $excludeId = null): float;
 
-    /** @return list<ResidentUnit> */
+    /**
+     * @return list<ResidentUnit>
+     */
     public function findAll(): array;
 
-    /** @return list<ResidentUnit> */
+    /**
+     * @return list<ResidentUnit>
+     */
     public function findAllActive(): array;
 }
