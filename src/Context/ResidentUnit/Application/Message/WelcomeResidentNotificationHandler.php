@@ -14,7 +14,10 @@ use function sprintf;
 #[AsMessageHandler]
 final readonly class WelcomeResidentNotificationHandler
 {
-    public function __construct(private MailerInterface $mailer) {}
+    public function __construct(
+        private MailerInterface $mailer,
+        private string $mailerFrom,
+    ) {}
 
     /**
      * @throws TransportExceptionInterface
@@ -22,7 +25,7 @@ final readonly class WelcomeResidentNotificationHandler
     public function __invoke(WelcomeResidentNotification $message): void
     {
         $email = (new Email())
-            ->from('no-reply@expresate.com')
+            ->from($this->mailerFrom)
             ->to($message->email)
             ->subject(sprintf('Boas-vindas ao seu novo lar, %s!', $message->name))
             ->text(sprintf(

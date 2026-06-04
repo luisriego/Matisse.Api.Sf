@@ -16,7 +16,10 @@ use function sprintf;
 
 final readonly class SlipMailer implements SlipMailerInterface
 {
-    public function __construct(private MailerInterface $mailer) {}
+    public function __construct(
+        private MailerInterface $mailer,
+        private string $mailerFrom,
+    ) {}
 
     /**
      * @throws TransportExceptionInterface
@@ -63,7 +66,7 @@ final readonly class SlipMailer implements SlipMailerInterface
             );
 
             $email = (new Email())
-                ->from('noreply@expresate.com')
+                ->from($this->mailerFrom)
                 ->to($recipientEmail)
                 ->subject($subject)
                 ->text($body);

@@ -26,6 +26,8 @@ services:
             $passwordResetTokenLifetime: '%password_reset_token_lifetime%'
             # Change this line to remove 'string' type prefix
             $uploadsPath: '%expense_uploads_path%'  # Default binding without type prefix
+            $mailerFrom: '%env(MAILER_FROM)%'
+            $appBaseUrl: '%env(APP_BASE_URL)%'
 
     App\Context\User\Infrastructure\Http\Controller\:
         public: true
@@ -91,7 +93,8 @@ services:
 
     App\Context\Slip\Infrastructure\Mailer\SlipMailer:
         arguments:
-            - '@Symfony\Component\Mailer\MailerInterface'
+            $mailer: '@Symfony\Component\Mailer\MailerInterface'
+            $mailerFrom: '%env(MAILER_FROM)%'
 
     # Explicitly define Command Handlers to ensure Messenger tags are applied
     App\Context\User\Application\UseCase\Registration\RegisterUserCommandHandler:

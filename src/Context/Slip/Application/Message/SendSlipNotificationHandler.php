@@ -13,7 +13,10 @@ use function sprintf;
 #[AsMessageHandler]
 final readonly class SendSlipNotificationHandler
 {
-    public function __construct(private MailerInterface $mailer) {}
+    public function __construct(
+        private MailerInterface $mailer,
+        private string $mailerFrom,
+    ) {}
 
     public function __invoke(SendSlipNotification $message): void
     {
@@ -22,7 +25,7 @@ final readonly class SendSlipNotificationHandler
         $recipientEmail = 'test@example.com';
 
         $email = (new Email())
-            ->from('no-reply@example.com')
+            ->from($this->mailerFrom)
             ->to($recipientEmail)
             ->subject('Nuevo recibo de pago generado')
             ->text(sprintf(
