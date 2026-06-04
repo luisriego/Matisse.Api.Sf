@@ -17,13 +17,15 @@ use function sprintf;
 
 class WelcomeResidentNotificationHandlerTest extends TestCase
 {
+    private const string MAILER_FROM = 'no-reply@matisse.test';
+
     private MailerInterface $mailer;
     private WelcomeResidentNotificationHandler $handler;
 
     protected function setUp(): void
     {
         $this->mailer = $this->createMock(MailerInterface::class);
-        $this->handler = new WelcomeResidentNotificationHandler($this->mailer);
+        $this->handler = new WelcomeResidentNotificationHandler($this->mailer, self::MAILER_FROM);
     }
 
     public function testItShouldSendWelcomeEmail(): void
@@ -37,7 +39,7 @@ class WelcomeResidentNotificationHandlerTest extends TestCase
         $this->mailer->expects($this->once())
             ->method('send')
             ->with(self::callback(function (Email $sentEmail) use ($name, $email) {
-                $this->assertSame('no-reply@expresate.com', $sentEmail->getFrom()[0]->getAddress());
+                $this->assertSame(self::MAILER_FROM, $sentEmail->getFrom()[0]->getAddress());
                 $this->assertSame($email, $sentEmail->getTo()[0]->getAddress());
                 $this->assertSame(sprintf('Boas-vindas ao seu novo lar, %s!', $name), $sentEmail->getSubject());
                 $this->assertStringContainsString(sprintf('Oi %s,\n\nSeja bem-vindo(a) ao Condomínio Matisse.', $name), $sentEmail->getTextBody());

@@ -13,4 +13,11 @@ interface UserRepository
     public function findOneById(string $id): ?User;
 
     public function findByEmail(string $email): ?User;
+
+    public function hasSyndic(): bool;
+
+    /**
+     * @return User[]
+     */
+    public function findSyndics(): array;
 }

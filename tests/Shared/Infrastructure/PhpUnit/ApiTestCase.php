@@ -94,8 +94,11 @@ abstract class ApiTestCase extends WebTestCase
         static::ensureKernelShutdown();
     }
 
-    protected function createAuthenticatedClient(?string $email = null, string $password = 'password'): KernelBrowser
-    {
+    protected function createAuthenticatedClient(
+        ?string $email = null,
+        string $password = 'password',
+        bool $asSyndic = true,
+    ): KernelBrowser {
         $container = static::getContainer();
 
         $passwordHasher = $container->get(UserPasswordHasherInterface::class);
@@ -109,6 +112,10 @@ abstract class ApiTestCase extends WebTestCase
             $passwordHasher,
         );
         $user->activate();
+
+        if ($asSyndic) {
+            $user->promoteToSyndic();
+        }
 
         $this->entityManager->persist($user);
         $this->entityManager->flush();

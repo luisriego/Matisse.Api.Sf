@@ -44,4 +44,28 @@ class DoctrineUserRepository extends ServiceEntityRepository implements UserRepo
     {
         return $this->findOneBy(['email' => $email]);
     }
+
+    public function hasSyndic(): bool
+    {
+        $result = $this->getEntityManager()->getConnection()->fetchOne(
+            'SELECT 1 FROM users WHERE CAST(roles AS TEXT) LIKE :role LIMIT 1',
+            ['role' => '%"' . User::ROLE_SYNDIC . '"%'],
+        );
+
+        return false !== $result;
+    }
+
+    public function findSyndics(): array
+    {
+        $ids = $this->getEntityManager()->getConnection()->fetchFirstColumn(
+            'SELECT id FROM users WHERE CAST(roles AS TEXT) LIKE :role',
+            ['role' => '%"' . User::ROLE_SYNDIC . '"%'],
+        );
+
+        if ([] === $ids) {
+            return [];
+        }
+
+        return $this->findBy(['id' => $ids]);
+    }
 }

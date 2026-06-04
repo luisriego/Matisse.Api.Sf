@@ -17,8 +17,11 @@ use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
 use Symfony\Component\Security\Core\User\UserInterface; // Importar ResidentUnit
 
+use function array_filter;
 use function array_unique;
+use function array_values;
 use function bin2hex;
+use function in_array;
 use function random_bytes;
 
 class User extends AggregateRoot implements UserInterface, PasswordAuthenticatedUserInterface
@@ -28,6 +31,7 @@ class User extends AggregateRoot implements UserInterface, PasswordAuthenticated
     public const int MIN_PASSWORD_LENGTH = 6;
     public const int MAX_PASSWORD_LENGTH = 55;
     public const int ID_LENGTH = 36;
+    public const string ROLE_SYNDIC = 'ROLE_SYNDIC';
 
     private string $id;
     private ?string $name;
@@ -215,6 +219,34 @@ class User extends AggregateRoot implements UserInterface, PasswordAuthenticated
         $this->roles = $roles;
 
         return $this;
+    }
+
+    public function isSyndic(): bool
+    {
+        return in_array(self::ROLE_SYNDIC, $this->roles, true);
+    }
+
+    public function promoteToSyndic(): void
+    {
+        if ($this->isSyndic()) {
+            return;
+        }
+
+        $this->roles[] = self::ROLE_SYNDIC;
+        $this->roles = array_values(array_unique($this->roles));
+        $this->markAsUpdated();
+    }
+
+    public function demoteToResident(): void
+    {
+        if (!$this->isSyndic()) {
+            return;
+        }
+
+        $this->roles = array_values(
+            array_filter($this->roles, static fn (string $role): bool => self::ROLE_SYNDIC !== $role),
+        );
+        $this->markAsUpdated();
     }
 
     public function getPassword(): string

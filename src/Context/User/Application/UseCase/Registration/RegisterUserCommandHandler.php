@@ -59,6 +59,11 @@ final class RegisterUserCommandHandler implements CommandHandler
             $residentUnit, // Pasar la ResidentUnit (o null)
         );
 
+        // Bootstrap: el primer usuario del condominio se convierte en sindico.
+        if (!$this->userRepository->hasSyndic()) {
+            $user->promoteToSyndic();
+        }
+
         $this->userRepository->save($user, true);
         // $user->publishDomainEvents($this->eventBus); // Handled automatically by DomainEventCollectorSubscriber
     }

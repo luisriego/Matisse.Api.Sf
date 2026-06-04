@@ -23,6 +23,7 @@ security:
             jwt: ~
 
     role_hierarchy:
+        ROLE_SYNDIC: ROLE_USER
         ROLE_ADMIN: ROLE_USER
         ROLE_SUPER_ADMIN: [ ROLE_ADMIN, ROLE_ALLOWED_TO_SWITCH ]
 
@@ -34,7 +35,10 @@ security:
         - { path: ^/api/v1/users/activate,                  roles: PUBLIC_ACCESS }
         - { path: ^/api/v1/users/password-reset-request,    roles: PUBLIC_ACCESS }
         - { path: ^/api/v1/users/.*/password-reset,         roles: PUBLIC_ACCESS }
-        - { path: ^/api,                                    roles: '%env(API_ACCESS_ROLE)%' }
+        # Escrituras: solo el sindico puede crear/modificar/eliminar.
+        - { path: ^/api, methods: [POST, PUT, PATCH, DELETE], roles: ROLE_SYNDIC }
+        # Lecturas: cualquier usuario autenticado (residente) puede ver.
+        - { path: ^/api,                                    roles: ROLE_USER }
 
 when@test:
     security:
