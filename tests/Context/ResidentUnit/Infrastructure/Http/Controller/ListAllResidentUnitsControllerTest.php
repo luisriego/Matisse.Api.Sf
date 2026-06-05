@@ -88,6 +88,7 @@ final class ListAllResidentUnitsControllerTest extends ApiTestCase
                 'id' => $newUnitId,
                 'unit' => 'Apto 101',
                 'idealFraction' => 0.1813176,
+                'email' => 'residente.apto101@example.com',
             ]),
         );
 

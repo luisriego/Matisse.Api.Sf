@@ -42,7 +42,7 @@ class User extends AggregateRoot implements UserInterface, PasswordAuthenticated
     private $roles = [];
     private ?string $confirmationToken;
     private ?string $passwordResetToken = null;
-    private ?DateTime $passwordResetRequestedAt = null;
+    private ?DateTimeImmutable $passwordResetRequestedAt = null;
     private ?string $password;
     private ?bool $isActive = false;
     private ?DateTimeImmutable $createdAt = null;
@@ -153,7 +153,7 @@ class User extends AggregateRoot implements UserInterface, PasswordAuthenticated
         return $this->passwordResetToken;
     }
 
-    public function getPasswordResetRequestedAt(): ?DateTime
+    public function getPasswordResetRequestedAt(): ?DateTimeImmutable
     {
         return $this->passwordResetRequestedAt;
     }
@@ -168,7 +168,7 @@ class User extends AggregateRoot implements UserInterface, PasswordAuthenticated
     public function requestPasswordReset(): void
     {
         $this->passwordResetToken = bin2hex(random_bytes(32));
-        $this->passwordResetRequestedAt = new DateTime();
+        $this->passwordResetRequestedAt = new DateTimeImmutable();
         $this->markAsUpdated();
     }
 
