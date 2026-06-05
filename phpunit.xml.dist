@@ -23,6 +23,9 @@
         <server name="SHELL_VERBOSITY" value="-1" />
         <env name="SYMFONY_DEPRECATIONS_HELPER" value="disabled" />
         <env name="KERNEL_CLASS" value="App\Kernel"/>
+        <env name="APP_BASE_URL" value="http://localhost:1000"/>
+        <env name="APP_FRONT_SIGNIN_PATH" value="/signin"/>
+        <env name="APP_FRONT_SET_PASSWORD_PATH" value="/set-password"/>
 <!--        <env name="DATABASE_URL" value="sqlite:///%kernel.project_dir%/var/data_test.db" />-->
     </php>
 

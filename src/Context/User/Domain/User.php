@@ -88,6 +88,36 @@ class User extends AggregateRoot implements UserInterface, PasswordAuthenticated
         return $user;
     }
 
+    /**
+     * Invited resident: inactive, no password until they confirm email and set one.
+     */
+    public static function invite(
+        UserId $id,
+        UserName $name,
+        Email $email,
+        ResidentUnit $residentUnit,
+    ): self {
+        $user = new self($id, $name, $email);
+        $user->password = null;
+        $user->setResidentUnit($residentUnit);
+
+        $user->record(
+            new UserWasRegistered(
+                $user->id,
+                $user->name,
+                $user->email,
+                $user->confirmationToken,
+            ),
+        );
+
+        return $user;
+    }
+
+    public function needsPasswordSetup(): bool
+    {
+        return null === $this->password;
+    }
+
     public function update(
         string $name,
         string $lastName,
@@ -251,7 +281,7 @@ class User extends AggregateRoot implements UserInterface, PasswordAuthenticated
 
     public function getPassword(): string
     {
-        return $this->password;
+        return $this->password ?? '';
     }
 
     public function hashPassword(string $plainPassword, UserPasswordHasherInterface $hasher): self

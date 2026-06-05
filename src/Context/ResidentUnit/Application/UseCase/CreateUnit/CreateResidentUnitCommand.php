@@ -12,6 +12,8 @@ final readonly class CreateResidentUnitCommand implements Command
         private string $id,
         private string $unit,
         private float $idealFraction,
+        private string $email,
+        private ?string $name = null,
     ) {}
 
     public function id(): string
@@ -27,5 +29,15 @@ final readonly class CreateResidentUnitCommand implements Command
     public function idealFraction(): float
     {
         return $this->idealFraction;
+    }
+
+    public function email(): string
+    {
+        return $this->email;
+    }
+
+    public function name(): ?string
+    {
+        return $this->name;
     }
 }

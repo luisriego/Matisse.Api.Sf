@@ -11,12 +11,17 @@ use App\Context\ResidentUnit\Domain\ResidentUnit;
 use App\Context\ResidentUnit\Domain\ResidentUnitId;
 use App\Context\ResidentUnit\Domain\ResidentUnitIdealFraction;
 use App\Context\ResidentUnit\Domain\ResidentUnitRepository;
-use App\Context\ResidentUnit\Domain\ResidentUnitVO; // Corrected this line
+use App\Context\ResidentUnit\Domain\ResidentUnitVO;
+use App\Context\User\Application\UseCase\InviteResident\InviteResidentFromUnitCommand;
 use App\Shared\Application\CommandHandler;
+use Symfony\Component\Messenger\MessageBusInterface;
 
 final readonly class CreateResidentUnitCommandHandler implements CommandHandler
 {
-    public function __construct(private ResidentUnitRepository $repository) {}
+    public function __construct(
+        private ResidentUnitRepository $repository,
+        private MessageBusInterface $commandBus,
+    ) {}
 
     /**
      * @throws IdealFractionSumExceedsLimitException
@@ -24,7 +29,6 @@ final readonly class CreateResidentUnitCommandHandler implements CommandHandler
      */
     public function __invoke(CreateResidentUnitCommand $command): void
     {
-        // Check if a resident unit with this ID already exists
         if ($this->repository->exists(new ResidentUnitId($command->id()))) {
             throw ResidentUnitAlreadyExistsException::create($command->id());
         }
@@ -43,5 +47,11 @@ final readonly class CreateResidentUnitCommandHandler implements CommandHandler
         $residentUnit = ResidentUnit::create($id, $unit, $idealFraction);
 
         $this->repository->save($residentUnit, true);
+
+        $this->commandBus->dispatch(new InviteResidentFromUnitCommand(
+            $command->id(),
+            $command->email(),
+            $command->name(),
+        ));
     }
 }

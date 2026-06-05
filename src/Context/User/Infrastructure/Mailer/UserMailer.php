@@ -9,6 +9,7 @@ use Symfony\Component\Mailer\Exception\TransportExceptionInterface;
 use Symfony\Component\Mailer\MailerInterface;
 use Symfony\Component\Mime\Email;
 
+use function rtrim;
 use function sprintf;
 
 final class UserMailer implements UserMailerInterface
@@ -17,6 +18,7 @@ final class UserMailer implements UserMailerInterface
         private readonly MailerInterface $mailer,
         private readonly string $mailerFrom,
         private readonly string $appBaseUrl,
+        private readonly string $frontSetPasswordPath,
     ) {}
 
     /**
@@ -44,7 +46,13 @@ final class UserMailer implements UserMailerInterface
      */
     public function sendPasswordResetEmail(string $userEmail, string $userName, string $userId, string $passwordResetToken): void
     {
-        $resetUrl = sprintf('%s/api/v1/users/reset-password/%s/%s', $this->appBaseUrl, $userId, $passwordResetToken);
+        $resetUrl = sprintf(
+            '%s/%s/%s/%s',
+            rtrim($this->appBaseUrl, '/'),
+            trim($this->frontSetPasswordPath, '/'),
+            $userId,
+            $passwordResetToken,
+        );
 
         $email = (new Email())
             ->from($this->mailerFrom)

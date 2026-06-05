@@ -10,7 +10,9 @@ use App\Context\ResidentUnit\Domain\Exception\IdealFractionSumExceedsLimitExcept
 use App\Context\ResidentUnit\Domain\ResidentUnit;
 use App\Context\ResidentUnit\Domain\ResidentUnitId;
 use App\Context\ResidentUnit\Domain\ResidentUnitRepository;
+use App\Context\User\Application\UseCase\InviteResident\InviteResidentFromUnitCommand;
 use App\Shared\Domain\Exception\InvalidArgumentException;
+use App\Tests\Context\ResidentUnit\Application\UseCase\CreateUnitWithRecipients\TestMessageBus;
 use App\Tests\Context\ResidentUnit\Domain\ResidentUnitIdealFractionMother;
 use App\Tests\Context\ResidentUnit\Domain\ResidentUnitIdMother;
 use App\Tests\Context\ResidentUnit\Domain\ResidentUnitVOMother;
@@ -22,6 +24,7 @@ use function sprintf;
 class CreateResidentUnitCommandHandlerTest extends TestCase
 {
     private ResidentUnitRepository $repository;
+    private TestMessageBus $commandBus;
     private CreateResidentUnitCommandHandler $handler;
 
     /**
@@ -30,7 +33,8 @@ class CreateResidentUnitCommandHandlerTest extends TestCase
     protected function setUp(): void
     {
         $this->repository = $this->createMock(ResidentUnitRepository::class);
-        $this->handler = new CreateResidentUnitCommandHandler($this->repository);
+        $this->commandBus = new TestMessageBus();
+        $this->handler = new CreateResidentUnitCommandHandler($this->repository, $this->commandBus);
     }
 
     public function testItShouldCreateAResidentUnitSuccessfully(): void
@@ -43,6 +47,8 @@ class CreateResidentUnitCommandHandlerTest extends TestCase
             $id->value(),
             $unit->value(),
             $idealFraction->value(),
+            'resident@example.com',
+            'João',
         );
 
         $this->repository->expects($this->once())
@@ -59,7 +65,10 @@ class CreateResidentUnitCommandHandlerTest extends TestCase
             ->method('save')
             ->with(self::isInstanceOf(ResidentUnit::class), true);
 
+        $this->commandBus->dispatchCallCount = 0;
         ($this->handler)($command);
+        $this->assertSame(1, $this->commandBus->dispatchCallCount);
+        $this->assertInstanceOf(InviteResidentFromUnitCommand::class, $this->commandBus->dispatchedMessages[0]);
     }
 
     public function testItAcceptsTotalJustAboveOneWithinFloatingPointTolerance(): void
@@ -83,9 +92,12 @@ class CreateResidentUnitCommandHandlerTest extends TestCase
             $id->value(),
             'Unit Name',
             0.0000001,
+            'resident@example.com',
         );
 
+        $this->commandBus->dispatchCallCount = 0;
         ($this->handler)($command);
+        $this->assertSame(1, $this->commandBus->dispatchCallCount);
     }
 
     public function testItThrowsExceptionWhenIdealFractionExceedsOne(): void
@@ -107,6 +119,7 @@ class CreateResidentUnitCommandHandlerTest extends TestCase
             $id->value(), // Use a valid ID
             'Unit Name',
             0.2, // New fraction that exceeds the limit
+            'resident@example.com',
         );
 
         $this->expectException(IdealFractionSumExceedsLimitException::class);
@@ -125,6 +138,7 @@ class CreateResidentUnitCommandHandlerTest extends TestCase
             $invalidId,
             $unit->value(),
             $idealFraction->value(),
+            'resident@example.com',
         );
 
         // The exists method will NOT be called because ResidentUnitId constructor will throw an exception first
@@ -148,6 +162,7 @@ class CreateResidentUnitCommandHandlerTest extends TestCase
             $id->value(),
             $unit->value(),
             $invalidIdealFraction,
+            'resident@example.com',
         );
 
         // Mock the exists method to return false, indicating the unit does not exist

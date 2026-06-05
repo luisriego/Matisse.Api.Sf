@@ -12,13 +12,16 @@ readonly class CreateResidentUnitRequestDto implements RequestDto
     public string $id;
     public string $unit;
     public float $idealFraction;
-    public array $notificationRecipients;
+    public string $email;
+    public ?string $name;
 
     public function __construct(Request $request)
     {
-        $this->id = $request->get('id');
-        $this->unit = $request->get('unit');
-        $this->idealFraction = $request->get('idealFraction');
-        $this->notificationRecipients = $request->get('notificationRecipients', []);
+        $data = $request->toArray();
+        $this->id = $data['id'];
+        $this->unit = $data['unit'];
+        $this->idealFraction = $data['idealFraction'];
+        $this->email = $data['email'];
+        $this->name = $data['name'] ?? null;
     }
 }

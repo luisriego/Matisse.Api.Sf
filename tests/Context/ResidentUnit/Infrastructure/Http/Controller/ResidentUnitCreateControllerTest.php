@@ -35,7 +35,8 @@ final class ResidentUnitCreateControllerTest extends ApiTestCase
             'id' => $residentUnitId,
             'unit' => 'A101',
             'idealFraction' => 0.05,
-            // 'notificationRecipients' is not part of this controller's DTO
+            'email' => 'residente@example.com',
+            'name' => 'João Silva',
         ];
 
         // 2. Send the PUT request
@@ -69,7 +70,7 @@ final class ResidentUnitCreateControllerTest extends ApiTestCase
             'id' => $residentUnitId,
             'unit' => 'A102',
             'idealFraction' => 1.5, // Invalid ideal fraction
-            // 'notificationRecipients' is not part of this controller's DTO
+            'email' => 'residente@example.com',
         ];
 
         $this->client->request(
@@ -98,7 +99,7 @@ final class ResidentUnitCreateControllerTest extends ApiTestCase
             'id' => $existingResidentUnit->id(),
             'unit' => 'C301',
             'idealFraction' => 0.20,
-            // 'notificationRecipients' is not part of this controller's DTO
+            'email' => 'otro@example.com',
         ];
 
         $this->client->request(

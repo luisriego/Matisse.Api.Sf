@@ -28,6 +28,8 @@ services:
             $uploadsPath: '%expense_uploads_path%'  # Default binding without type prefix
             $mailerFrom: '%env(MAILER_FROM)%'
             $appBaseUrl: '%env(APP_BASE_URL)%'
+            $frontSignInPath: '%env(APP_FRONT_SIGNIN_PATH)%'
+            $frontSetPasswordPath: '%env(APP_FRONT_SET_PASSWORD_PATH)%'
 
     App\Context\User\Infrastructure\Http\Controller\:
         public: true

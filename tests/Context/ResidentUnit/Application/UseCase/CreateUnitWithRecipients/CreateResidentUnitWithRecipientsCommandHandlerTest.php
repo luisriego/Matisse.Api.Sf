@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\Tests\Context\ResidentUnit\Application\UseCase\CreateUnitWithRecipients;
 
-use App\Context\ResidentUnit\Application\Message\WelcomeResidentNotification;
+use App\Context\User\Application\UseCase\InviteResident\InviteResidentFromUnitCommand;
 use App\Context\ResidentUnit\Application\UseCase\CreateUnitWithRecipients\CreateResidentUnitWithRecipientsCommand;
 use App\Context\ResidentUnit\Application\UseCase\CreateUnitWithRecipients\CreateResidentUnitWithRecipientsCommandHandler;
 use App\Context\ResidentUnit\Domain\Exception\IdealFractionSumExceedsLimitException; // Added this import
@@ -73,7 +73,7 @@ class CreateResidentUnitWithRecipientsCommandHandlerTest extends TestCase
         $this->assertSame(count($recipients), $this->messageBus->dispatchCallCount);
 
         foreach ($this->messageBus->dispatchedMessages as $dispatchedMessage) {
-            $this->assertInstanceOf(WelcomeResidentNotification::class, $dispatchedMessage);
+            $this->assertInstanceOf(InviteResidentFromUnitCommand::class, $dispatchedMessage);
         }
     }
 
