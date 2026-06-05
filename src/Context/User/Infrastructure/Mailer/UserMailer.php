@@ -11,6 +11,7 @@ use Symfony\Component\Mime\Email;
 
 use function rtrim;
 use function sprintf;
+use function trim;
 
 final class UserMailer implements UserMailerInterface
 {

@@ -4,13 +4,13 @@ declare(strict_types=1);
 
 namespace App\Context\User\Application\UseCase\Activation;
 
-use App\Context\User\Domain\User;
 use App\Context\User\Domain\UserRepository;
 use App\Shared\Application\CommandHandler;
 use App\Shared\Domain\Exception\InvalidArgumentException;
 use App\Shared\Domain\Exception\ResourceNotFoundException;
 
 use function rtrim;
+use function trim;
 
 final readonly class ActivateUserCommandHandler implements CommandHandler
 {
@@ -28,10 +28,6 @@ final readonly class ActivateUserCommandHandler implements CommandHandler
     public function __invoke(ActivateUserCommand $command): ActivateUserResult
     {
         $user = $this->userRepository->findOneByIdOrFail($command->userId());
-
-        if (null === $user) {
-            throw ResourceNotFoundException::createFromClassAndId(User::class, $command->userId());
-        }
 
         if ($user->getConfirmationToken() !== $command->token()) {
             throw new InvalidArgumentException('Invalid confirmation token.');

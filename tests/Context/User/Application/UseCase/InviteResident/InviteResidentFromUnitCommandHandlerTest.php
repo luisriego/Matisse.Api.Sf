@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace App\Tests\Context\User\Application\UseCase\InviteResident;
 
-use App\Context\ResidentUnit\Domain\ResidentUnit;
 use App\Context\ResidentUnit\Domain\ResidentUnitRepository;
 use App\Context\User\Application\UseCase\InviteResident\InviteResidentFromUnitCommand;
 use App\Context\User\Application\UseCase\InviteResident\InviteResidentFromUnitCommandHandler;

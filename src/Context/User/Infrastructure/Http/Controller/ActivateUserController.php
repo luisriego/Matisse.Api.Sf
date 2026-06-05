@@ -15,6 +15,7 @@ use Throwable;
 
 use function rtrim;
 use function sprintf;
+use function trim;
 
 #[OA\Get(
     path: '/api/v1/users/activate/{userId}/{token}',
@@ -48,7 +49,7 @@ final readonly class ActivateUserController
             $result = ($this->commandHandler)(new ActivateUserCommand($userId, $token));
 
             return new RedirectResponse($result->redirectUrl);
-        } catch (ResourceNotFoundException|InvalidArgumentException) {
+        } catch (InvalidArgumentException|ResourceNotFoundException) {
             return new RedirectResponse($this->signInUrlWithError('activation_failed'));
         }
     }

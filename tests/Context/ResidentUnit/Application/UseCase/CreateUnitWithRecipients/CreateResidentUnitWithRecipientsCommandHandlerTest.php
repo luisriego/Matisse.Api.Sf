@@ -4,13 +4,13 @@ declare(strict_types=1);
 
 namespace App\Tests\Context\ResidentUnit\Application\UseCase\CreateUnitWithRecipients;
 
-use App\Context\User\Application\UseCase\InviteResident\InviteResidentFromUnitCommand;
 use App\Context\ResidentUnit\Application\UseCase\CreateUnitWithRecipients\CreateResidentUnitWithRecipientsCommand;
 use App\Context\ResidentUnit\Application\UseCase\CreateUnitWithRecipients\CreateResidentUnitWithRecipientsCommandHandler;
-use App\Context\ResidentUnit\Domain\Exception\IdealFractionSumExceedsLimitException; // Added this import
-use App\Context\ResidentUnit\Domain\ResidentUnit;
+use App\Context\ResidentUnit\Domain\Exception\IdealFractionSumExceedsLimitException;
+use App\Context\ResidentUnit\Domain\ResidentUnit; // Added this import
 use App\Context\ResidentUnit\Domain\ResidentUnitId;
 use App\Context\ResidentUnit\Domain\ResidentUnitRepository;
+use App\Context\User\Application\UseCase\InviteResident\InviteResidentFromUnitCommand;
 use App\Shared\Domain\Exception\InvalidArgumentException;
 use App\Tests\Context\ResidentUnit\Domain\ResidentUnitIdealFractionMother;
 use App\Tests\Context\ResidentUnit\Domain\ResidentUnitIdMother;

@@ -15,7 +15,10 @@ use App\Shared\Domain\Exception\ResourceAlreadyExistException;
 use App\Shared\Domain\Exception\ResourceNotFoundException;
 use App\Shared\Domain\ValueObject\Uuid;
 
+use function explode;
 use function sprintf;
+use function str_replace;
+use function trim;
 
 final readonly class InviteResidentFromUnitCommandHandler implements CommandHandler
 {

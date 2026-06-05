@@ -4,6 +4,10 @@ declare(strict_types=1);
 
 namespace App\Tests\Context\User\Infrastructure\Http\Controller;
 
+use App\Context\ResidentUnit\Domain\ResidentUnit;
+use App\Context\ResidentUnit\Domain\ResidentUnitId;
+use App\Context\ResidentUnit\Domain\ResidentUnitIdealFraction;
+use App\Context\ResidentUnit\Domain\ResidentUnitVO;
 use App\Context\User\Domain\User;
 use App\Context\User\Domain\ValueObject\Email;
 use App\Context\User\Domain\ValueObject\UserId;
@@ -12,6 +16,7 @@ use App\Shared\Domain\ValueObject\Uuid;
 use App\Tests\Context\User\Domain\UserMother;
 use App\Tests\Shared\Infrastructure\PhpUnit\ApiTestCase;
 use Doctrine\ORM\EntityManagerInterface;
+
 use function sprintf;
 
 final class ActivateUserControllerTest extends ApiTestCase
@@ -96,12 +101,12 @@ final class ActivateUserControllerTest extends ApiTestCase
         $this->assertStringContainsString('/signin?error=activation_failed', $this->client->getResponse()->headers->get('Location'));
     }
 
-    private function createResidentUnitForInvite(): \App\Context\ResidentUnit\Domain\ResidentUnit
+    private function createResidentUnitForInvite(): ResidentUnit
     {
-        $unit = \App\Context\ResidentUnit\Domain\ResidentUnit::create(
-            new \App\Context\ResidentUnit\Domain\ResidentUnitId((string) Uuid::random()),
-            new \App\Context\ResidentUnit\Domain\ResidentUnitVO('101'),
-            new \App\Context\ResidentUnit\Domain\ResidentUnitIdealFraction(0.1),
+        $unit = ResidentUnit::create(
+            new ResidentUnitId((string) Uuid::random()),
+            new ResidentUnitVO('101'),
+            new ResidentUnitIdealFraction(0.1),
         );
         $this->entityManager->persist($unit);
         $this->entityManager->flush();

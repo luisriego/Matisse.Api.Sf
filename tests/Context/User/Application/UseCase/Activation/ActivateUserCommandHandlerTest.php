@@ -4,12 +4,12 @@ declare(strict_types=1);
 
 namespace App\Tests\Context\User\Application\UseCase\Activation;
 
+use App\Context\ResidentUnit\Domain\ResidentUnit;
 use App\Context\User\Application\UseCase\Activation\ActivateUserCommand;
 use App\Context\User\Application\UseCase\Activation\ActivateUserCommandHandler;
 use App\Context\User\Domain\User;
 use App\Context\User\Domain\UserRepository;
 use App\Context\User\Domain\ValueObject\Email;
-use App\Context\User\Domain\ValueObject\UserId;
 use App\Context\User\Domain\ValueObject\UserName;
 use App\Shared\Domain\Exception\InvalidArgumentException;
 use App\Shared\Domain\Exception\ResourceNotFoundException;
@@ -68,7 +68,7 @@ final class ActivateUserCommandHandlerTest extends TestCase
             $userId,
             UserName::fromString('João'),
             Email::fromString('joao@example.com'),
-            $this->createMock(\App\Context\ResidentUnit\Domain\ResidentUnit::class),
+            $this->createMock(ResidentUnit::class),
         );
 
         $command = new ActivateUserCommand((string) $userId->value(), $user->getConfirmationToken());
