@@ -13,8 +13,8 @@ fi
 
 fix_permissions() {
   if [[ -d config/jwt ]]; then
-    chmod 644 config/jwt/public.pem 2>/dev/null || true
-    chmod 640 config/jwt/private.pem 2>/dev/null || true
+    # Apache (www-data) must read private.pem inside the container volume mount.
+    chmod 644 config/jwt/public.pem config/jwt/private.pem 2>/dev/null || true
     chown -R 1000:1000 config/jwt/ 2>/dev/null || true
   fi
 }

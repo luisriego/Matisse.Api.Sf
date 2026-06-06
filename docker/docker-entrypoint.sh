@@ -27,6 +27,10 @@ if [ ! -f config/jwt/private.pem ] || [ ! -f config/jwt/public.pem ]; then
     mkdir -p config/jwt
     su -s /bin/bash appuser -c "php bin/console lexik:jwt:generate-keypair --skip-if-exists"
 fi
+if [ -d config/jwt ]; then
+    chown -R appuser:appuser config/jwt
+    chmod 644 config/jwt/public.pem config/jwt/private.pem 2>/dev/null || true
+fi
 
 chown -R appuser:appuser var/
 chmod -R 777 var/

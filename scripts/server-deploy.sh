@@ -13,14 +13,26 @@ if [[ ! -f .env.local ]]; then
   exit 1
 fi
 
-bash "$ROOT/scripts/ensure-jwt-keys.sh"
-
 echo "Pulling latest code..."
 git fetch origin
 git reset --hard "origin/${DEPLOY_BRANCH:-main}"
 
+bash "$ROOT/scripts/ensure-jwt-keys.sh"
+
 echo "Rebuilding containers..."
 $COMPOSE up -d --build
+
+echo "Ensuring JWT keys inside app container..."
+$COMPOSE exec -T -u root matisse-app bash -c '
+  set -e
+  mkdir -p config/jwt
+  if [ ! -f config/jwt/private.pem ] || [ ! -f config/jwt/public.pem ]; then
+    su -s /bin/bash appuser -c "php bin/console lexik:jwt:generate-keypair --skip-if-exists"
+  fi
+  chown -R appuser:appuser config/jwt
+  chmod 644 config/jwt/public.pem config/jwt/private.pem
+  test -r config/jwt/private.pem
+'
 
 echo "Waiting for PostgreSQL..."
 until $COMPOSE exec -T matisse-db pg_isready -U app -q; do sleep 1; done
