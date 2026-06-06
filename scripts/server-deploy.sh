@@ -31,7 +31,7 @@ $COMPOSE exec -T -u root matisse-app bash -c '
   fi
   chown -R appuser:appuser config/jwt
   chmod 644 config/jwt/public.pem config/jwt/private.pem
-  test -r config/jwt/private.pem
+  su -s /bin/bash www-data -c "test -r config/jwt/private.pem"
 '
 
 echo "Waiting for PostgreSQL..."
