@@ -5,8 +5,8 @@ declare(strict_types=1);
 namespace App\Tests\Context\ResidentUnit\Infrastructure\Http\Controller;
 
 use App\Context\ResidentUnit\Domain\ResidentUnit;
-use App\Context\User\Domain\User;
 use App\Context\ResidentUnit\Infrastructure\Http\Controller\ResidentUnitCreateController;
+use App\Context\User\Domain\User;
 use App\Shared\Domain\Exception\InvalidArgumentException;
 use App\Tests\Context\ResidentUnit\Domain\ResidentUnitMother;
 use App\Tests\Shared\Domain\UuidMother;
@@ -134,6 +134,5 @@ final class ResidentUnitCreateControllerTest extends ApiTestCase
 
         $this->assertArrayHasKey(InvalidArgumentException::class, $exceptions);
         self::assertEquals(Response::HTTP_BAD_REQUEST, $exceptions[InvalidArgumentException::class]);
-
     }
 }

@@ -131,6 +131,5 @@ final class ResidentUnitCreateWithRecipientsControllerTest extends ApiTestCase
 
         $this->assertArrayHasKey(InvalidArgumentException::class, $exceptions);
         self::assertEquals(Response::HTTP_BAD_REQUEST, $exceptions[InvalidArgumentException::class]);
-
     }
 }

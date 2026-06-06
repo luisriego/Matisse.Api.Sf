@@ -9,8 +9,8 @@ use App\Context\ResidentUnit\Application\UseCase\CreateUnit\CreateResidentUnitCo
 use App\Context\ResidentUnit\Domain\Exception\IdealFractionSumExceedsLimitException;
 use App\Context\ResidentUnit\Domain\ResidentUnit;
 use App\Context\ResidentUnit\Domain\ResidentUnitId;
-use App\Context\ResidentUnit\Domain\ResidentUnitVO;
 use App\Context\ResidentUnit\Domain\ResidentUnitRepository;
+use App\Context\ResidentUnit\Domain\ResidentUnitVO;
 use App\Context\User\Application\UseCase\InviteResident\InviteResidentFromUnitCommand;
 use App\Shared\Domain\Exception\InvalidArgumentException;
 use App\Tests\Context\ResidentUnit\Application\UseCase\CreateUnitWithRecipients\TestMessageBus;
