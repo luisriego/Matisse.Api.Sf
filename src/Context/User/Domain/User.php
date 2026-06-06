@@ -148,6 +148,16 @@ class User extends AggregateRoot implements UserInterface, PasswordAuthenticated
         return $this->confirmationToken;
     }
 
+    public function refreshConfirmationToken(): void
+    {
+        if (true === $this->isActive) {
+            return;
+        }
+
+        $this->confirmationToken = bin2hex(random_bytes(32));
+        $this->markAsUpdated();
+    }
+
     public function getPasswordResetToken(): ?string
     {
         return $this->passwordResetToken;

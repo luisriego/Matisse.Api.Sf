@@ -33,6 +33,7 @@ security:
         - { path: ^/api/v1/login_check,                     roles: PUBLIC_ACCESS }
         - { path: ^/api/v1/users/register,                  roles: PUBLIC_ACCESS }
         - { path: ^/api/v1/users/activate,                  roles: PUBLIC_ACCESS }
+        - { path: ^/api/v1/users/confirmation-resend,      roles: PUBLIC_ACCESS }
         - { path: ^/api/v1/users/password-reset-request,    roles: PUBLIC_ACCESS }
         - { path: ^/api/v1/users/.*/password-reset,         roles: PUBLIC_ACCESS }
         # Escrituras: solo el sindico puede crear/modificar/eliminar.

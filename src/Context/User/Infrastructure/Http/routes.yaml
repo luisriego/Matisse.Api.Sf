@@ -18,6 +18,11 @@ user_activate:
     controller: App\Context\User\Infrastructure\Http\Controller\ActivateUserController
     methods: ['GET']
 
+user_confirmation_resend:
+    path: /api/v1/users/confirmation-resend
+    controller: App\Context\User\Infrastructure\Http\Controller\ResendConfirmationEmailController
+    methods: ['POST']
+
 user_change_password:
     path: /api/v1/users/change-password
     controller: App\Context\User\Infrastructure\Http\Controller\ChangePasswordController

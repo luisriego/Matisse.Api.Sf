@@ -24,6 +24,7 @@ final class SetupRequiredListener
         '/api/v1/doc',
         '/api/v1/users/register',
         '/api/v1/users/activate',
+        '/api/v1/users/confirmation-resend',
         '/api/v1/users/password-reset',
         '/api/v1/login_check',
         '/api/v1/accounts',
