@@ -23,8 +23,22 @@ final readonly class ResendConfirmationEmailCommandHandler implements CommandHan
     {
         $user = $this->userRepository->findByEmail($command->email());
 
-        // No revelar si el email existe o si la cuenta ya está activa (evitar enumeración).
-        if (null === $user || true === $user->isActive()) {
+        // No revelar si el email existe (evitar enumeración).
+        if (null === $user) {
+            return;
+        }
+
+        if (true === $user->isActive()) {
+            $user->requestPasswordReset();
+            $this->userRepository->save($user, true);
+
+            $this->userMailer->sendPasswordResetEmail(
+                $user->getEmail(),
+                $user->getName(),
+                $user->getId(),
+                $user->getPasswordResetToken(),
+            );
+
             return;
         }
 
