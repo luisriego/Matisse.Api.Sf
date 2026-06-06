@@ -27,7 +27,7 @@ final class RegisterUserRequestDto implements RequestDto
         try {
             $data = json_decode($request->getContent() ?: '{}', true, 512, JSON_THROW_ON_ERROR);
         } catch (JsonException $e) {
-            throw new BadRequestHttpException('Malformed JSON body.', 0, $e);
+            throw new BadRequestHttpException('Malformed JSON body.', $e);
         }
 
         if (!isset($data['id']) || !is_string($data['id'])) {

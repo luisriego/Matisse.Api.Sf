@@ -56,6 +56,12 @@ fix: ## Apply PHP-CS-Fixer (src + tests)
 phpstan: ## Run PHPStan static analysis
 	U_ID=${UID} docker exec --user ${UID} ${DOCKER_BE} composer analyze:phpstan
 
+.PHONY: ci
+ci: ## Mirror GitHub Actions CI (standards + phpstan + tests)
+	$(MAKE) analyze
+	$(MAKE) phpstan
+	$(MAKE) tests
+
 ssh: ## bash into the be container
 	U_ID=${UID} docker exec -it --user ${UID} ${DOCKER_BE} bash
 
