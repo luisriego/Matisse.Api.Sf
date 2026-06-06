@@ -32,9 +32,9 @@ final class UserMailer implements UserMailerInterface
         $email = (new Email())
             ->from($this->mailerFrom)
             ->to($userEmail)
-            ->subject('Confirma tu cuenta')
+            ->subject('Confirme a sua conta no Matisse')
             ->html(sprintf(
-                '<p>Hola %s,</p><p>Gracias por registrarte. Por favor, confirma tu cuenta haciendo clic en el siguiente enlace:</p><p><a href="%s">Confirmar cuenta</a></p>',
+                '<p>Olá %s,</p><p>Confirme o seu e-mail para ativar a conta no Matisse. Clique no link abaixo:</p><p><a href="%s">Ativar conta</a></p><p>Se não solicitou este registo, ignore este e-mail.</p>',
                 $userName,
                 $activationUrl,
             ));

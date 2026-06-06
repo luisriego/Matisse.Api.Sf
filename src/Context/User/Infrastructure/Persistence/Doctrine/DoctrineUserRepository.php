@@ -10,6 +10,9 @@ use App\Shared\Domain\Exception\ResourceNotFoundException;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
 
+use function strtolower;
+use function trim;
+
 class DoctrineUserRepository extends ServiceEntityRepository implements UserRepository
 {
     public function __construct(ManagerRegistry $registry)
@@ -42,7 +45,14 @@ class DoctrineUserRepository extends ServiceEntityRepository implements UserRepo
 
     public function findByEmail(string $email): ?User // Changed return type to ?User
     {
-        return $this->findOneBy(['email' => $email]);
+        $normalized = strtolower(trim($email));
+
+        return $this->createQueryBuilder('u')
+            ->where('LOWER(u.email) = :email')
+            ->setParameter('email', $normalized)
+            ->setMaxResults(1)
+            ->getQuery()
+            ->getOneOrNullResult();
     }
 
     public function hasSyndic(): bool

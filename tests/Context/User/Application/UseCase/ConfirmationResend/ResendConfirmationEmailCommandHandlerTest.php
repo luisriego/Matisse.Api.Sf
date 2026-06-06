@@ -75,7 +75,7 @@ final class ResendConfirmationEmailCommandHandlerTest extends TestCase
         ($this->handler)($command);
     }
 
-    public function testItShouldSendPasswordResetEmailWhenUserIsAlreadyActive(): void
+    public function testItShouldDoNothingWhenUserIsAlreadyActive(): void
     {
         $user = UserMother::createRandom();
         $user->activate();
@@ -86,21 +86,9 @@ final class ResendConfirmationEmailCommandHandlerTest extends TestCase
             ->method('findByEmail')
             ->willReturn($user);
 
-        $this->userRepository
-            ->expects($this->once())
-            ->method('save')
-            ->with($user, true);
-
+        $this->userRepository->expects($this->never())->method('save');
         $this->userMailer->expects($this->never())->method('sendConfirmationEmail');
-        $this->userMailer
-            ->expects($this->once())
-            ->method('sendPasswordResetEmail')
-            ->with(
-                $user->getEmail(),
-                $user->getName(),
-                $user->getId(),
-                $this->callback(fn (mixed $v): bool => is_string($v) && '' !== $v),
-            );
+        $this->userMailer->expects($this->never())->method('sendPasswordResetEmail');
 
         ($this->handler)($command);
     }

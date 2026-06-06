@@ -11,6 +11,7 @@ use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Event\RequestEvent;
 
+use function str_contains;
 use function str_starts_with;
 
 final class SetupRequiredListener
@@ -64,6 +65,11 @@ final class SetupRequiredListener
             if (str_starts_with($path, $prefix)) {
                 return;
             }
+        }
+
+        // POST /api/v1/users/{userId}/password-reset/{token} (convite: definir senha após ativação)
+        if (str_contains($path, '/password-reset/')) {
+            return;
         }
 
         // One-time: after core steps are satisfied, record setup.was.completed (legacy DBs + first OFX request).

@@ -11,6 +11,8 @@ use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
 
 use function is_string;
 use function json_decode;
+use function strtolower;
+use function trim;
 
 use const JSON_THROW_ON_ERROR;
 
@@ -30,7 +32,7 @@ final class ResendConfirmationEmailRequestDto implements RequestDto
             throw new BadRequestHttpException('Missing or invalid "email" field. Must be a string.');
         }
 
-        $this->email = $data['email'];
+        $this->email = strtolower(trim($data['email']));
     }
 
     public function email(): string

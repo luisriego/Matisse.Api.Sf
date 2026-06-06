@@ -9,6 +9,8 @@ use App\Shared\Domain\ValueObject\StringValueObject;
 
 use function filter_var;
 use function sprintf;
+use function strtolower;
+use function trim;
 
 use const FILTER_VALIDATE_EMAIL;
 
@@ -22,7 +24,7 @@ final readonly class Email extends StringValueObject
 
     public static function fromString(string $email): self
     {
-        return new self($email);
+        return new self(strtolower(trim($email)));
     }
 
     private function ensureIsValidEmail(string $email): void
