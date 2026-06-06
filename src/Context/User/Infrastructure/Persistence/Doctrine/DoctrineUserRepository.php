@@ -10,7 +10,7 @@ use App\Shared\Domain\Exception\ResourceNotFoundException;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
 
-use function strtolower;
+use function mb_strtolower;
 use function trim;
 
 class DoctrineUserRepository extends ServiceEntityRepository implements UserRepository
@@ -45,7 +45,7 @@ class DoctrineUserRepository extends ServiceEntityRepository implements UserRepo
 
     public function findByEmail(string $email): ?User // Changed return type to ?User
     {
-        $normalized = strtolower(trim($email));
+        $normalized = mb_strtolower(trim($email));
 
         return $this->createQueryBuilder('u')
             ->where('LOWER(u.email) = :email')
