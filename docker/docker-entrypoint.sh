@@ -22,6 +22,12 @@ if [ -f composer.json ]; then
     fi
 fi
 
+if [ ! -f config/jwt/private.pem ] || [ ! -f config/jwt/public.pem ]; then
+    echo "Generating JWT keypair (missing config/jwt/*.pem)..."
+    mkdir -p config/jwt
+    su -s /bin/bash appuser -c "php bin/console lexik:jwt:generate-keypair --skip-if-exists"
+fi
+
 chown -R appuser:appuser var/
 chmod -R 777 var/
 

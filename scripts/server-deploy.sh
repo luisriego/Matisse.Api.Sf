@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 # Incremental deploy on the server (safe to run on every push).
-# Requires .env.local and JWT keys already present (see server-bootstrap.sh once).
+# Requires .env.local (see server-bootstrap.sh once on a fresh server).
 set -euo pipefail
 
 ROOT="$(cd "$(dirname "$0")/.." && pwd)"
@@ -12,6 +12,8 @@ if [[ ! -f .env.local ]]; then
   echo "ERROR: .env.local missing. Run scripts/server-bootstrap.sh once on this server."
   exit 1
 fi
+
+bash "$ROOT/scripts/ensure-jwt-keys.sh"
 
 echo "Pulling latest code..."
 git fetch origin
