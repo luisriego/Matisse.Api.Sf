@@ -9,8 +9,11 @@ use App\Context\User\Application\UseCase\InviteResident\InviteResidentFromUnitCo
 use App\Context\User\Application\UseCase\InviteResident\InviteResidentFromUnitCommandHandler;
 use App\Context\User\Domain\User;
 use App\Context\User\Domain\UserRepository;
-use App\Shared\Domain\Exception\ResourceAlreadyExistException;
+use App\Context\User\Domain\ValueObject\Email;
+use App\Context\User\Domain\ValueObject\UserId;
+use App\Context\User\Domain\ValueObject\UserName;
 use App\Shared\Domain\Exception\ResourceNotFoundException;
+use App\Shared\Domain\ValueObject\Uuid;
 use App\Tests\Context\ResidentUnit\Domain\ResidentUnitMother;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
@@ -71,11 +74,15 @@ final class InviteResidentFromUnitCommandHandlerTest extends TestCase
         ($this->handler)(new InviteResidentFromUnitCommand('missing-id', 'a@b.com'));
     }
 
-    public function testItShouldThrowWhenEmailAlreadyExists(): void
+    public function testItShouldSyncExistingUserToUnitAndUpdateName(): void
     {
-        $this->expectException(ResourceAlreadyExistException::class);
-
         $unit = ResidentUnitMother::create();
+        $existingUser = User::invite(
+            UserId::fromString((string) Uuid::random()),
+            UserName::fromString('Old Name'),
+            Email::fromString('existing@example.com'),
+            $unit,
+        );
 
         $this->residentUnitRepository
             ->method('findOneById')
@@ -83,8 +90,15 @@ final class InviteResidentFromUnitCommandHandlerTest extends TestCase
 
         $this->userRepository
             ->method('findByEmail')
-            ->willReturn($this->createMock(User::class));
+            ->willReturn($existingUser);
 
-        ($this->handler)(new InviteResidentFromUnitCommand($unit->id(), 'existing@example.com'));
+        $this->userRepository
+            ->expects($this->once())
+            ->method('save')
+            ->with($existingUser, true);
+
+        ($this->handler)(new InviteResidentFromUnitCommand($unit->id(), 'existing@example.com', 'Luis'));
+
+        self::assertSame('Luis', $existingUser->getName());
     }
 }

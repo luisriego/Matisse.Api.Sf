@@ -9,12 +9,14 @@ use App\Context\ResidentUnit\Application\UseCase\CreateUnit\CreateResidentUnitCo
 use App\Context\ResidentUnit\Domain\Exception\IdealFractionSumExceedsLimitException;
 use App\Context\ResidentUnit\Domain\ResidentUnit;
 use App\Context\ResidentUnit\Domain\ResidentUnitId;
+use App\Context\ResidentUnit\Domain\ResidentUnitVO;
 use App\Context\ResidentUnit\Domain\ResidentUnitRepository;
 use App\Context\User\Application\UseCase\InviteResident\InviteResidentFromUnitCommand;
 use App\Shared\Domain\Exception\InvalidArgumentException;
 use App\Tests\Context\ResidentUnit\Application\UseCase\CreateUnitWithRecipients\TestMessageBus;
 use App\Tests\Context\ResidentUnit\Domain\ResidentUnitIdealFractionMother;
 use App\Tests\Context\ResidentUnit\Domain\ResidentUnitIdMother;
+use App\Tests\Context\ResidentUnit\Domain\ResidentUnitMother;
 use App\Tests\Context\ResidentUnit\Domain\ResidentUnitVOMother;
 use PHPUnit\Framework\MockObject\Exception;
 use PHPUnit\Framework\TestCase;
@@ -69,6 +71,56 @@ class CreateResidentUnitCommandHandlerTest extends TestCase
         ($this->handler)($command);
         $this->assertSame(1, $this->commandBus->dispatchCallCount);
         $this->assertInstanceOf(InviteResidentFromUnitCommand::class, $this->commandBus->dispatchedMessages[0]);
+    }
+
+    public function testItShouldUpdateResidentUnitWhenItAlreadyExists(): void
+    {
+        $id = ResidentUnitIdMother::create();
+        $unit = ResidentUnitVOMother::create();
+        $idealFraction = ResidentUnitIdealFractionMother::create(0.2);
+        $existingUnit = ResidentUnitMother::create(
+            $id,
+            new ResidentUnitVO('Old Unit'),
+            ResidentUnitIdealFractionMother::create(0.1),
+        );
+
+        $command = new CreateResidentUnitCommand(
+            $id->value(),
+            $unit->value(),
+            $idealFraction->value(),
+            'resident@example.com',
+            'Luis',
+        );
+
+        $this->repository
+            ->expects($this->once())
+            ->method('exists')
+            ->with(self::isInstanceOf(ResidentUnitId::class))
+            ->willReturn(true);
+
+        $this->repository
+            ->expects($this->once())
+            ->method('findOneByIdOrFail')
+            ->with($id->value())
+            ->willReturn($existingUnit);
+
+        $this->repository
+            ->expects($this->once())
+            ->method('calculateTotalIdealFraction')
+            ->with($id->value())
+            ->willReturn(0.5);
+
+        $this->repository
+            ->expects($this->once())
+            ->method('save')
+            ->with($existingUnit, true);
+
+        $this->commandBus->dispatchCallCount = 0;
+        ($this->handler)($command);
+
+        self::assertSame($unit->value(), $existingUnit->unit());
+        self::assertSame($idealFraction->value(), $existingUnit->idealFraction());
+        $this->assertSame(1, $this->commandBus->dispatchCallCount);
     }
 
     public function testItAcceptsTotalJustAboveOneWithinFloatingPointTolerance(): void
@@ -165,16 +217,8 @@ class CreateResidentUnitCommandHandlerTest extends TestCase
             'resident@example.com',
         );
 
-        // Mock the exists method to return false, indicating the unit does not exist
-        $this->repository->expects($this->once())
-            ->method('exists')
-            ->with(self::isInstanceOf(ResidentUnitId::class))
-            ->willReturn(false);
-
-        // Expect calculateTotalIdealFraction to NOT be called, as the validation happens before this
-        $this->repository->expects($this->never())
-            ->method('calculateTotalIdealFraction');
-
+        $this->repository->expects($this->never())->method('exists');
+        $this->repository->expects($this->never())->method('calculateTotalIdealFraction');
         $this->repository->expects($this->never())->method('save');
 
         $this->expectException(InvalidArgumentException::class);

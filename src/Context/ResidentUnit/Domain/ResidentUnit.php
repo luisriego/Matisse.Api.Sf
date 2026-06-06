@@ -178,4 +178,12 @@ class ResidentUnit extends AggregateRoot
         $this->markAsUpdated();
         $this->record(new ResidentUnitIdealFractionWasChanged($this->id, $this->idealFraction));
     }
+
+    public function updateFromSetup(ResidentUnitVO $unit, ResidentUnitIdealFraction $idealFraction): void
+    {
+        $this->unit = $unit->value();
+        $this->idealFraction = $idealFraction->value();
+        $this->isActive = true;
+        $this->markAsUpdated();
+    }
 }

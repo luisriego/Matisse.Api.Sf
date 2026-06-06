@@ -187,17 +187,8 @@ class CreateResidentUnitWithRecipientsCommandHandlerTest extends TestCase
             $recipients,
         );
 
-        // Mock the exists method to return false, indicating the unit does not exist
-        $this->repository->expects($this->once())
-            ->method('exists')
-            ->with(self::isInstanceOf(ResidentUnitId::class))
-            ->willReturn(false);
-
-        // Expect calculateTotalIdealFraction to NOT be called, as the validation happens before this
-        $this->repository->expects($this->never())
-            ->method('calculateTotalIdealFraction');
-
-        // Ensure save and dispatch are not called
+        $this->repository->expects($this->never())->method('exists');
+        $this->repository->expects($this->never())->method('calculateTotalIdealFraction');
         $this->repository->expects($this->never())->method('save');
         $this->messageBus->dispatchCallCount = 0; // Reset for this test
 

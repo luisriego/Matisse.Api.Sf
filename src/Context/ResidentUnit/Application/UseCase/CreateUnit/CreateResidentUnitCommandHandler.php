@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace App\Context\ResidentUnit\Application\UseCase\CreateUnit;
 
 use App\Context\ResidentUnit\Domain\Exception\IdealFractionSumExceedsLimitException;
-use App\Context\ResidentUnit\Domain\Exception\ResidentUnitAlreadyExistsException;
 use App\Context\ResidentUnit\Domain\IdealFractionSumPolicy;
 use App\Context\ResidentUnit\Domain\ResidentUnit;
 use App\Context\ResidentUnit\Domain\ResidentUnitId;
@@ -25,29 +24,67 @@ final readonly class CreateResidentUnitCommandHandler implements CommandHandler
 
     /**
      * @throws IdealFractionSumExceedsLimitException
-     * @throws ResidentUnitAlreadyExistsException
      */
     public function __invoke(CreateResidentUnitCommand $command): void
     {
-        if ($this->repository->exists(new ResidentUnitId($command->id()))) {
-            throw ResidentUnitAlreadyExistsException::create($command->id());
-        }
-
-        $idealFraction = new ResidentUnitIdealFraction($command->idealFraction());
-        $currentActiveTotal = $this->repository->calculateTotalIdealFraction();
-        $idealFractionTotal = $currentActiveTotal + $idealFraction->value();
-
-        if (IdealFractionSumPolicy::exceedsMaximum($idealFractionTotal)) {
-            throw IdealFractionSumExceedsLimitException::fromTotals($currentActiveTotal, $idealFraction->value());
-        }
-
         $id = new ResidentUnitId($command->id());
         $unit = new ResidentUnitVO($command->unit());
+        $idealFraction = new ResidentUnitIdealFraction($command->idealFraction());
+
+        if ($this->repository->exists($id)) {
+            $this->updateExisting($command->id(), $unit, $idealFraction, $command);
+
+            return;
+        }
+
+        $this->assertIdealFractionWithinLimit(
+            $this->repository->calculateTotalIdealFraction(),
+            $idealFraction->value(),
+        );
 
         $residentUnit = ResidentUnit::create($id, $unit, $idealFraction);
 
         $this->repository->save($residentUnit, true);
 
+        $this->dispatchInvite($command);
+    }
+
+    /**
+     * @throws IdealFractionSumExceedsLimitException
+     */
+    private function updateExisting(
+        string $id,
+        ResidentUnitVO $unit,
+        ResidentUnitIdealFraction $idealFraction,
+        CreateResidentUnitCommand $command,
+    ): void {
+        $residentUnit = $this->repository->findOneByIdOrFail($id);
+
+        $this->assertIdealFractionWithinLimit(
+            $this->repository->calculateTotalIdealFraction($id),
+            $idealFraction->value(),
+        );
+
+        $residentUnit->updateFromSetup($unit, $idealFraction);
+        $this->repository->save($residentUnit, true);
+
+        $this->dispatchInvite($command);
+    }
+
+    /**
+     * @throws IdealFractionSumExceedsLimitException
+     */
+    private function assertIdealFractionWithinLimit(float $currentTotal, float $newFraction): void
+    {
+        $idealFractionTotal = $currentTotal + $newFraction;
+
+        if (IdealFractionSumPolicy::exceedsMaximum($idealFractionTotal)) {
+            throw IdealFractionSumExceedsLimitException::fromTotals($currentTotal, $newFraction);
+        }
+    }
+
+    private function dispatchInvite(CreateResidentUnitCommand $command): void
+    {
         $this->commandBus->dispatch(new InviteResidentFromUnitCommand(
             $command->id(),
             $command->email(),

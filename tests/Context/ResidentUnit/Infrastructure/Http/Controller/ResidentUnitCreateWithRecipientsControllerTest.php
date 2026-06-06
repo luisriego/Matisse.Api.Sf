@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace App\Tests\Context\ResidentUnit\Infrastructure\Http\Controller;
 
-use App\Context\ResidentUnit\Domain\Exception\ResidentUnitAlreadyExistsException;
 use App\Context\ResidentUnit\Domain\ResidentUnit;
 use App\Context\ResidentUnit\Infrastructure\Http\Controller\ResidentUnitCreateWithRecipientsController;
 use App\Shared\Domain\Exception\InvalidArgumentException;
@@ -89,19 +88,19 @@ final class ResidentUnitCreateWithRecipientsControllerTest extends ApiTestCase
         $this->assertStringContainsString('A fração ideal deve ser maior ou igual a zero e menor ou igual a um.', $responseContent['message']);
     }
 
-    public function testItShouldReturnConflictIfResidentUnitAlreadyExists(): void
+    public function testItShouldUpdateResidentUnitWhenAlreadyExists(): void
     {
-        // 1. Create a resident unit first
         $existingResidentUnit = ResidentUnitMother::create();
         $this->entityManager->persist($existingResidentUnit);
         $this->entityManager->flush();
 
-        // 2. Try to create another one with the same ID
         $payload = [
             'id' => $existingResidentUnit->id(),
-            'unit' => 'C301',
+            'unit' => 'Apto. 401',
             'idealFraction' => 0.20,
-            'notificationRecipients' => [],
+            'notificationRecipients' => [
+                ['name' => 'Luis', 'email' => 'residente-updated@example.com'],
+            ],
         ];
 
         $this->client->request(
@@ -113,10 +112,16 @@ final class ResidentUnitCreateWithRecipientsControllerTest extends ApiTestCase
             json_encode($payload),
         );
 
-        $this->assertResponseStatusCodeSame(Response::HTTP_CONFLICT);
-        $responseContent = json_decode($this->client->getResponse()->getContent(), true);
-        $this->assertStringContainsString('Resident unit with ID', $responseContent['message']);
-        $this->assertStringContainsString('already exists', $responseContent['message']);
+        $this->assertResponseStatusCodeSame(Response::HTTP_CREATED);
+
+        $this->entityManager->clear();
+        /** @var ResidentUnit|null $updatedResidentUnit */
+        $updatedResidentUnit = $this->entityManager->find(ResidentUnit::class, $existingResidentUnit->id());
+
+        $this->assertNotNull($updatedResidentUnit);
+        self::assertEquals($payload['unit'], $updatedResidentUnit->unit());
+        self::assertEquals($payload['idealFraction'], $updatedResidentUnit->idealFraction());
+        self::assertEquals($payload['notificationRecipients'], $updatedResidentUnit->notificationRecipients());
     }
 
     public function testItMapsExceptionsCorrectly(): void
@@ -127,7 +132,5 @@ final class ResidentUnitCreateWithRecipientsControllerTest extends ApiTestCase
         $this->assertArrayHasKey(InvalidArgumentException::class, $exceptions);
         self::assertEquals(Response::HTTP_BAD_REQUEST, $exceptions[InvalidArgumentException::class]);
 
-        $this->assertArrayHasKey(ResidentUnitAlreadyExistsException::class, $exceptions);
-        self::assertEquals(Response::HTTP_CONFLICT, $exceptions[ResidentUnitAlreadyExistsException::class]);
     }
 }

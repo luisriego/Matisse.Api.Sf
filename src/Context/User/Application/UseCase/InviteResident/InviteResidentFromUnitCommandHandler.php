@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Context\User\Application\UseCase\InviteResident;
 
+use App\Context\ResidentUnit\Domain\ResidentUnit;
 use App\Context\ResidentUnit\Domain\ResidentUnitRepository;
 use App\Context\User\Domain\User;
 use App\Context\User\Domain\UserRepository;
@@ -11,7 +12,6 @@ use App\Context\User\Domain\ValueObject\Email;
 use App\Context\User\Domain\ValueObject\UserId;
 use App\Context\User\Domain\ValueObject\UserName;
 use App\Shared\Application\CommandHandler;
-use App\Shared\Domain\Exception\ResourceAlreadyExistException;
 use App\Shared\Domain\Exception\ResourceNotFoundException;
 use App\Shared\Domain\ValueObject\Uuid;
 
@@ -29,7 +29,6 @@ final readonly class InviteResidentFromUnitCommandHandler implements CommandHand
 
     /**
      * @throws ResourceNotFoundException
-     * @throws ResourceAlreadyExistException
      */
     public function __invoke(InviteResidentFromUnitCommand $command): void
     {
@@ -42,11 +41,12 @@ final readonly class InviteResidentFromUnitCommandHandler implements CommandHand
         }
 
         $email = Email::fromString($command->email());
+        $existingUser = $this->userRepository->findByEmail($email->value());
 
-        if (null !== $this->userRepository->findByEmail($email->value())) {
-            throw new ResourceAlreadyExistException(
-                sprintf('User with email <%s> already exists.', $email->value()),
-            );
+        if (null !== $existingUser) {
+            $this->syncExistingResident($existingUser, $residentUnit, $command);
+
+            return;
         }
 
         $name = null !== $command->name() && '' !== trim($command->name())
@@ -59,6 +59,22 @@ final readonly class InviteResidentFromUnitCommandHandler implements CommandHand
             $email,
             $residentUnit,
         );
+
+        $this->userRepository->save($user, true);
+    }
+
+    private function syncExistingResident(
+        User $user,
+        ResidentUnit $residentUnit,
+        InviteResidentFromUnitCommand $command,
+    ): void {
+        if ($user->getResidentUnit()?->id() !== $residentUnit->id()) {
+            $user->setResidentUnit($residentUnit);
+        }
+
+        if (null !== $command->name() && '' !== trim($command->name())) {
+            $user->updateName(trim($command->name()));
+        }
 
         $this->userRepository->save($user, true);
     }
