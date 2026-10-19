@@ -204,9 +204,9 @@ final class SlipComponentBreakdownServiceTest extends TestCase
         $this->assertSame(0, $result['components']['syndicTotalCents']);
     }
 
+    /** @phpstan-ignore-next-line */
     private function unit(string $id, string $unit, float $idealFraction): ResidentUnit
     {
-        /** @var ResidentUnit&PHPUnit\Framework\MockObject\MockObject $mock */
         $mock = $this->createConfiguredMock(ResidentUnit::class, [
             'id' => $id,
             'unit' => $unit,
