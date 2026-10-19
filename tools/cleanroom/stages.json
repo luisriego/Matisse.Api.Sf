@@ -1,0 +1,615 @@
+{
+  "project": "Matisse.Api.Sf",
+  "version": "2.0.0",
+  "stages": [
+    {
+      "id": "stage-01",
+      "name": "SPEC-INF: Informar el valor de cada unidad (Desglose, Picos y Ventana de Generacion)",
+      "spec": "SPEC-INF",
+      "atoms": [
+        {
+          "id": "atom-01-inf-01-equal-pool-exact-division",
+          "spec_atom": "INF-01",
+          "name": "INF-01: Pool igualitario con division exacta (100 centimos entre 5 unidades = 20 c/u)",
+          "level": "unit",
+          "mode": "characterization",
+          "card": "docs/stages/stage-01-atom-01.md",
+          "covers": "src/Context/Slip/Domain/Service/SlipComponentBreakdownService.php",
+          "test_file": "tests/Context/Slip/Domain/Service/SlipComponentBreakdownServiceTest.php",
+          "allowlist": [
+            "src/Context/Slip/Domain/Service/SlipComponentBreakdownService.php",
+            "tests/Context/Slip/Domain/Service/SlipComponentBreakdownServiceTest.php"
+          ],
+          "given": "5 unidades activas (101, 201, 301, 401, 501) y un pool igualitario (baseEqualPoolCents) de 100 centimos con el resto de pools en 0",
+          "when": "se calcula el desglose con SlipComponentBreakdownService::build",
+          "then": "cada unidad paga exactamente 20 centimos y la suma total del pool es 100 centimos sin diferencia"
+        },
+        {
+          "id": "atom-02-inf-02-equal-pool-pico-raises-all-units",
+          "spec_atom": "INF-02",
+          "name": "INF-02: Pool igualitario con pico sube +1 centimo a todas las unidades (103 entre 5 = 21 c/u, suma 105)",
+          "level": "unit",
+          "mode": "characterization",
+          "card": "docs/stages/stage-01-atom-02.md",
+          "covers": "src/Context/Slip/Domain/Service/SlipComponentBreakdownService.php",
+          "test_file": "tests/Context/Slip/Domain/Service/SlipComponentBreakdownServiceTest.php",
+          "allowlist": [
+            "src/Context/Slip/Domain/Service/SlipComponentBreakdownService.php",
+            "tests/Context/Slip/Domain/Service/SlipComponentBreakdownServiceTest.php"
+          ],
+          "given": "5 unidades activas y un pool igualitario (baseEqualPoolCents) de 103 centimos (parte entera 20, resto 3 > 0)",
+          "when": "se calcula el desglose con SlipComponentBreakdownService::build",
+          "then": "cada una de las 5 unidades paga 21 centimos, la suma del pool es 105 centimos (+2 sobre 103) y differenceCents es 0"
+        },
+        {
+          "id": "atom-03-inf-03-fraction-pool-pico-raises-all-units",
+          "spec_atom": "INF-03",
+          "name": "INF-03: Pool por fraccion ideal con pico sube +1 centimo a todas las unidades por igual",
+          "level": "unit",
+          "mode": "characterization",
+          "card": "docs/stages/stage-01-atom-03.md",
+          "covers": "src/Context/Slip/Domain/Service/SlipComponentBreakdownService.php",
+          "test_file": "tests/Context/Slip/Domain/Service/SlipComponentBreakdownServiceTest.php",
+          "allowlist": [
+            "src/Context/Slip/Domain/Service/SlipComponentBreakdownService.php",
+            "tests/Context/Slip/Domain/Service/SlipComponentBreakdownServiceTest.php"
+          ],
+          "given": "5 unidades con fracciones ideales cuyo reparto de fractionPoolCents deja resto > 0 tras truncar la parte entera",
+          "when": "se calcula el desglose con SlipComponentBreakdownService::build",
+          "then": "se suma +1 centimo a todas las unidades por igual y nunca solo a las de mayor fraccion ideal"
+        },
+        {
+          "id": "atom-04-inf-04-first-generation-before-day-25-rejected",
+          "spec_atom": "INF-04",
+          "name": "INF-04: Primera generacion antes del dia 25 del mes de gasto sin force es rechazada",
+          "level": "unit",
+          "mode": "characterization",
+          "card": "docs/stages/stage-01-atom-04.md",
+          "covers": "src/Context/Slip/Domain/Service/SlipGenerationPolicy.php",
+          "test_file": "tests/Context/Slip/Domain/Service/SlipGenerationPolicyTest.php",
+          "allowlist": [
+            "src/Context/Slip/Domain/Service/SlipGenerationPolicy.php",
+            "tests/Context/Slip/Domain/Service/SlipGenerationPolicyTest.php"
+          ],
+          "given": "no existen cuotas previas para el mes de vencimiento N+1, isForced es false y la fecha actual es anterior al dia 25 del mes N",
+          "when": "se evalua SlipGenerationPolicy::check(year, month, false)",
+          "then": "lanza GenerationNotAllowedYetException"
+        },
+        {
+          "id": "atom-05-inf-05-recreation-after-day-5-rejected",
+          "spec_atom": "INF-05",
+          "name": "INF-05: Recreacion despues del dia 5 del mes de vencimiento sin force es rechazada",
+          "level": "unit",
+          "mode": "characterization",
+          "card": "docs/stages/stage-01-atom-05.md",
+          "covers": "src/Context/Slip/Domain/Service/SlipGenerationPolicy.php",
+          "test_file": "tests/Context/Slip/Domain/Service/SlipGenerationPolicyTest.php",
+          "allowlist": [
+            "src/Context/Slip/Domain/Service/SlipGenerationPolicy.php",
+            "tests/Context/Slip/Domain/Service/SlipGenerationPolicyTest.php"
+          ],
+          "given": "ya existen cuotas para el mes de vencimiento N+1, isForced es false y la fecha actual es posterior al dia 5 del mes N+1",
+          "when": "se evalua SlipGenerationPolicy::check(year, month, false)",
+          "then": "lanza RecreationExpiredException"
+        },
+        {
+          "id": "atom-06-inf-06-force-bypasses-calendar-window",
+          "spec_atom": "INF-06",
+          "name": "INF-06: El flag force salta las restricciones de calendario de generacion y recreacion",
+          "level": "unit",
+          "mode": "characterization",
+          "card": "docs/stages/stage-01-atom-06.md",
+          "covers": "src/Context/Slip/Domain/Service/SlipGenerationPolicy.php",
+          "test_file": "tests/Context/Slip/Domain/Service/SlipGenerationPolicyTest.php",
+          "allowlist": [
+            "src/Context/Slip/Domain/Service/SlipGenerationPolicy.php",
+            "tests/Context/Slip/Domain/Service/SlipGenerationPolicyTest.php"
+          ],
+          "given": "cualquier fecha fuera de la ventana ordinaria (antes del dia 25 o despues del dia 5) con isForced = true",
+          "when": "se evalua SlipGenerationPolicy::check(year, month, true)",
+          "then": "no lanza excepcion y permite la operacion"
+        },
+        {
+          "id": "atom-07-inf-07-explain-matches-generated-slips-sum",
+          "spec_atom": "INF-07",
+          "name": "INF-07: El desglose de explain coincide exactamente con los importes y la suma de las cuotas generadas",
+          "level": "acceptance",
+          "mode": "tdd",
+          "card": "docs/stages/stage-01-atom-07.md",
+          "covers": "src/Context/Slip/Infrastructure/Http/Controller/ExplainSlipGenerationGetController.php",
+          "test_file": "tests/Acceptance/Slip/ExplainMatchesGeneratedSlipsAcceptanceTest.php",
+          "allowlist": [
+            "phpunit.xml.dist",
+            "tests/Acceptance/Slip/ExplainMatchesGeneratedSlipsAcceptanceTest.php",
+            "src/Context/Slip/Infrastructure/Http/Controller/ExplainSlipGenerationGetController.php",
+            "src/Context/Slip/Infrastructure/Http/Controller/SlipGenerationPostController.php"
+          ],
+          "given": "un condominio con unidades activas, gastos del mes N (EQUAL, FRACTION, INDIVIDUAL) y parametros de generacion",
+          "when": "se consulta GET /api/v1/slips/generation/explain y se ejecuta POST /api/v1/slips/generate para el mismo mes y parametros",
+          "then": "los importes por unidad y la suma total de explain coinciden exactamente con las cuotas persistidas devueltas por GET /api/v1/slips/{dueYear}/{dueMonth}"
+        }
+      ]
+    },
+    {
+      "id": "stage-02",
+      "name": "SPEC-TEN: Un condominio y un sindico",
+      "spec": "SPEC-TEN",
+      "atoms": [
+        {
+          "id": "atom-08-ten-01-promote-syndic-single-role",
+          "spec_atom": "TEN-01",
+          "name": "TEN-01: Promocion a sindico mantiene ROLE_SYNDIC unico sin duplicados y degradacion lo retira",
+          "level": "unit",
+          "mode": "characterization",
+          "card": "docs/stages/stage-02-atom-08.md",
+          "covers": "src/Context/User/Domain/User.php",
+          "test_file": "tests/Context/User/Domain/UserTest.php",
+          "allowlist": [
+            "src/Context/User/Domain/User.php",
+            "tests/Context/User/Domain/UserTest.php"
+          ],
+          "given": "un agregado User con rol residente",
+          "when": "se invoca promoteToSyndic repetidas veces y posteriormente demoteToResident",
+          "then": "promoteToSyndic garantiza un unico ROLE_SYNDIC en getRoles y demoteToResident lo elimina dejando ROLE_USER"
+        },
+        {
+          "id": "atom-09-ten-02-set-syndic-demotes-previous",
+          "spec_atom": "TEN-02",
+          "name": "TEN-02: Nombrar un nuevo sindico por consola degrada automaticamente al sindico anterior",
+          "level": "integration",
+          "mode": "tdd",
+          "card": "docs/stages/stage-02-atom-09.md",
+          "covers": "src/Context/User/Infrastructure/Console/SetSyndicCommand.php",
+          "test_file": "tests/Context/User/Infrastructure/Console/SetSyndicCommandTest.php",
+          "allowlist": [
+            "src/Context/User/Infrastructure/Console/SetSyndicCommand.php",
+            "tests/Context/User/Infrastructure/Console/SetSyndicCommandTest.php"
+          ],
+          "given": "dos usuarios persistidos donde el usuario A tiene ROLE_SYNDIC y el usuario B es residente",
+          "when": "se ejecuta el comando app:syndic:set con el email del usuario B",
+          "then": "el usuario B adquiere ROLE_SYNDIC, el usuario A es degradado a residente y solo queda un sindico en base de datos"
+        },
+        {
+          "id": "atom-10-ten-03-finalize-setup-idempotent",
+          "spec_atom": "TEN-03",
+          "name": "TEN-03: Finalizar el setup inicial es idempotente y el estado permanece finalizado",
+          "level": "acceptance",
+          "mode": "characterization",
+          "card": "docs/stages/stage-02-atom-10.md",
+          "covers": "src/Context/Setup/Infrastructure/Http/Controller/SetupFinalizePostController.php",
+          "test_file": "tests/Context/Setup/Infrastructure/Http/Controller/SetupFinalizePostControllerTest.php",
+          "allowlist": [
+            "src/Context/Setup/Infrastructure/Http/Controller/SetupFinalizePostController.php",
+            "src/Context/Setup/Application/Service/SetupFinalizationService.php",
+            "tests/Context/Setup/Infrastructure/Http/Controller/SetupFinalizePostControllerTest.php"
+          ],
+          "given": "un condominio cuyo setup inicial ya ha sido finalizado mediante POST /api/v1/setup/finalize",
+          "when": "se vuelve a invocar POST /api/v1/setup/finalize y se consulta GET /api/v1/setup/status",
+          "then": "responde 200 OK con alreadyFinalized=true sin duplicar eventos y status mantiene isFinalized=true"
+        }
+      ]
+    },
+    {
+      "id": "stage-03",
+      "name": "SPEC-UNI: Unidades y fraccion ideal",
+      "spec": "SPEC-UNI",
+      "atoms": [
+        {
+          "id": "atom-11-uni-01-fraction-sum-within-tolerance-accepted",
+          "spec_atom": "UNI-01",
+          "name": "UNI-01: Suma de fracciones ideales en 1.00000005 (dentro de tolerancia 1e-5) se acepta",
+          "level": "unit",
+          "mode": "characterization",
+          "card": "docs/stages/stage-03-atom-11.md",
+          "covers": "src/Context/ResidentUnit/Domain/IdealFractionSumPolicy.php",
+          "test_file": "tests/Context/ResidentUnit/Domain/IdealFractionSumPolicyTest.php",
+          "allowlist": [
+            "src/Context/ResidentUnit/Domain/IdealFractionSumPolicy.php",
+            "tests/Context/ResidentUnit/Domain/IdealFractionSumPolicyTest.php"
+          ],
+          "given": "una suma de fracciones ideales acumulada de 1.00000005 (menor o igual a 1.0 + 1e-5)",
+          "when": "se evalua IdealFractionSumPolicy::exceedsMaximum(1.00000005)",
+          "then": "devuelve false (isWithinMaximum devuelve true) y permite la operacion"
+        },
+        {
+          "id": "atom-12-uni-02-fraction-sum-above-tolerance-rejected",
+          "spec_atom": "UNI-02",
+          "name": "UNI-02: Suma de fracciones ideales por encima de 1.0 + 1e-5 se rechaza",
+          "level": "unit",
+          "mode": "characterization",
+          "card": "docs/stages/stage-03-atom-12.md",
+          "covers": "src/Context/ResidentUnit/Domain/IdealFractionSumPolicy.php",
+          "test_file": "tests/Context/ResidentUnit/Domain/IdealFractionSumPolicyTest.php",
+          "allowlist": [
+            "src/Context/ResidentUnit/Domain/IdealFractionSumPolicy.php",
+            "tests/Context/ResidentUnit/Domain/IdealFractionSumPolicyTest.php",
+            "tests/Context/ResidentUnit/Application/UseCase/PatchIdealFraction/PatchIdealFractionCommandHandlerTest.php"
+          ],
+          "given": "una suma de fracciones ideales de 1.00002 (superior a 1.0 + 1e-5)",
+          "when": "se evalua IdealFractionSumPolicy::exceedsMaximum o PatchIdealFractionCommandHandler",
+          "then": "se rechaza la operacion por superar el 100% permitido"
+        },
+        {
+          "id": "atom-13-uni-03-create-and-patch-unit-fraction-persists",
+          "spec_atom": "UNI-03",
+          "name": "UNI-03: Crear unidad y actualizar su fraccion ideal por PATCH persiste el nuevo valor",
+          "level": "integration",
+          "mode": "characterization",
+          "card": "docs/stages/stage-03-atom-13.md",
+          "covers": "src/Context/ResidentUnit/Infrastructure/Http/Controller/ResidentUnitIdealFractionPatchController.php",
+          "test_file": "tests/Context/ResidentUnit/Infrastructure/Http/Controller/ResidentUnitIdealFractionPatchControllerTest.php",
+          "allowlist": [
+            "src/Context/ResidentUnit/Infrastructure/Http/Controller/ResidentUnitIdealFractionPatchController.php",
+            "tests/Context/ResidentUnit/Infrastructure/Http/Controller/ResidentUnitIdealFractionPatchControllerTest.php"
+          ],
+          "given": "una unidad residencial creada en base de datos",
+          "when": "el sindico envia PATCH /api/v1/resident-unit/{id}/ideal-fraction y luego consulta la unidad",
+          "then": "la nueva fraccion ideal queda persistida y se devuelve en la lectura"
+        }
+      ]
+    },
+    {
+      "id": "stage-04",
+      "name": "SPEC-MOV: Cuentas, gastos e ingresos",
+      "spec": "SPEC-MOV",
+      "atoms": [
+        {
+          "id": "atom-14-mov-01-expense-type-distribution-method-validation",
+          "spec_atom": "MOV-01",
+          "name": "MOV-01: Tipo de gasto con metodo de distribucion fuera de EQUAL, FRACTION o INDIVIDUAL falla en dominio",
+          "level": "unit",
+          "mode": "characterization",
+          "card": "docs/stages/stage-04-atom-14.md",
+          "covers": "src/Context/Expense/Domain/ValueObject/ExpenseTypeDistributionMethod.php",
+          "test_file": "tests/Context/Expense/Domain/ExpenseTypeAccountRelationTest.php",
+          "allowlist": [
+            "src/Context/Expense/Domain/ValueObject/ExpenseTypeDistributionMethod.php",
+            "tests/Context/Expense/Domain/ExpenseTypeAccountRelationTest.php"
+          ],
+          "given": "un metodo de distribucion invalido distinto de EQUAL, FRACTION o INDIVIDUAL",
+          "when": "se instancia ExpenseTypeDistributionMethod",
+          "then": "lanza InvalidArgumentException"
+        },
+        {
+          "id": "atom-15-mov-02-individual-expense-excluded-from-common-pool",
+          "spec_atom": "MOV-02",
+          "name": "MOV-02: Un gasto INDIVIDUAL no entra en el pool comun (equal ni fraction) del mes",
+          "level": "unit",
+          "mode": "characterization",
+          "card": "docs/stages/stage-04-atom-15.md",
+          "covers": "src/Context/Slip/Domain/Service/MonthlyExpenseAggregatorService.php",
+          "test_file": "tests/Context/Slip/Domain/Service/MonthlyExpenseAggregatorServiceTest.php",
+          "allowlist": [
+            "src/Context/Slip/Domain/Service/MonthlyExpenseAggregatorService.php",
+            "tests/Context/Slip/Domain/Service/MonthlyExpenseAggregatorServiceTest.php"
+          ],
+          "given": "un conjunto de gastos del mes que incluye gastos INDIVIDUAL junto con gastos EQUAL y FRACTION",
+          "when": "se agrega con MonthlyExpenseAggregatorService::aggregateTotals",
+          "then": "los gastos INDIVIDUAL solo suman en individual/individualByUnit y nunca en equal ni fraction"
+        },
+        {
+          "id": "atom-16-mov-03-put-expenses-enter-returns-201-with-body",
+          "spec_atom": "MOV-03",
+          "name": "MOV-03: PUT /api/v1/expenses/enter devuelve 201 Created con el gasto creado en el cuerpo",
+          "level": "integration",
+          "mode": "characterization",
+          "card": "docs/stages/stage-04-atom-16.md",
+          "covers": "src/Context/Expense/Infrastructure/Http/Controller/ExpenseEnterPutController.php",
+          "test_file": "tests/Context/Expense/Infrastructure/Http/Controller/ExpenseEnterPutControllerTest.php",
+          "allowlist": [
+            "src/Context/Expense/Infrastructure/Http/Controller/ExpenseEnterPutController.php",
+            "tests/Context/Expense/Infrastructure/Http/Controller/ExpenseEnterPutControllerTest.php"
+          ],
+          "given": "una cuenta activa y un tipo de gasto validos",
+          "when": "se envia PUT /api/v1/expenses/enter con un gasto nuevo",
+          "then": "responde 201 Created con los datos del gasto en el cuerpo JSON"
+        },
+        {
+          "id": "atom-17-mov-04-enter-income-listed-in-month-query",
+          "spec_atom": "MOV-04",
+          "name": "MOV-04: Registrar un ingreso y listar por mes devuelve el ingreso registrado",
+          "level": "integration",
+          "mode": "characterization",
+          "card": "docs/stages/stage-04-atom-17.md",
+          "covers": "src/Context/Income/Infrastructure/Http/Controller/GetIncomesByMonthController.php",
+          "test_file": "tests/Context/Income/Infrastructure/Http/Controller/GetIncomesByMonthControllerTest.php",
+          "allowlist": [
+            "src/Context/Income/Infrastructure/Http/Controller/IncomeEnterPutController.php",
+            "src/Context/Income/Infrastructure/Http/Controller/GetIncomesByMonthController.php",
+            "tests/Context/Income/Infrastructure/Http/Controller/GetIncomesByMonthControllerTest.php"
+          ],
+          "given": "una unidad residencial, una cuenta y un tipo de ingreso validos",
+          "when": "se registra un ingreso para el mes (Y, M) y se consulta GET /api/v1/incomes/date-range/{Y}/{M}",
+          "then": "el listado del mes incluye el ingreso registrado con su importe en centimos"
+        },
+        {
+          "id": "atom-18-mov-05-monthly-recurring-expense-idempotent-once-per-month",
+          "spec_atom": "MOV-05",
+          "name": "MOV-05: Un gasto recurrente activo aplicable al mes se computa una sola vez sin duplicarse",
+          "level": "unit",
+          "mode": "characterization",
+          "card": "docs/stages/stage-04-atom-18.md",
+          "covers": "src/Context/Slip/Domain/Service/RecurringExpenseSlipContributionService.php",
+          "test_file": "tests/Context/Slip/Domain/Service/RecurringExpenseSlipContributionServiceDedupTest.php",
+          "allowlist": [
+            "src/Context/Slip/Domain/Service/RecurringExpenseSlipContributionService.php",
+            "tests/Context/Slip/Domain/Service/RecurringExpenseSlipContributionServiceDedupTest.php"
+          ],
+          "given": "un gasto recurrente activo que ya tiene un gasto materializado para el mismo mes",
+          "when": "se calcula la contribucion de recurrentes con RecurringExpenseSlipContributionService",
+          "then": "no duplica el importe del gasto recurrente en el pool del mes"
+        }
+      ]
+    },
+    {
+      "id": "stage-05",
+      "name": "SPEC-GLM: Gas y politica del mes",
+      "spec": "SPEC-GLM",
+      "atoms": [
+        {
+          "id": "atom-19-glm-01-gas-price-formula-from-bill-kg-buffer",
+          "spec_atom": "GLM-01",
+          "name": "GLM-01: El precio por m3 de gas se calcula con round((2 * factura * (100 + buffer)) / (kg * 100))",
+          "level": "unit",
+          "mode": "characterization",
+          "card": "docs/stages/stage-05-atom-19.md",
+          "covers": "src/Context/Gas/Domain/Gas.php",
+          "test_file": "tests/Context/Gas/Domain/GasTest.php",
+          "allowlist": [
+            "src/Context/Gas/Domain/Gas.php",
+            "tests/Context/Gas/Domain/GasTest.php"
+          ],
+          "given": "una factura de gas en centimos, capacidad de cilindro en kg y porcentaje de margen (buffer)",
+          "when": "se invoca Gas::definePrice(amount, capacity, buffer)",
+          "then": "calcula el precio por m3 segun la formula oficial redondeada al centimo y emite GasPriceWasDefined"
+        },
+        {
+          "id": "atom-20-glm-02-policy-snapshot-overrides-generation-command-params",
+          "spec_atom": "GLM-02",
+          "name": "GLM-02: Si existe snapshot de politica del mes, la generacion usa sus valores e ignora los del comando",
+          "level": "unit",
+          "mode": "characterization",
+          "card": "docs/stages/stage-05-atom-20.md",
+          "covers": "src/Context/Slip/Application/UseCase/SlipGeneration/SlipGenerationCommandHandler.php",
+          "test_file": "tests/Context/Slip/Application/UseCase/SlipGeneration/SlipGenerationCommandHandlerTest.php",
+          "allowlist": [
+            "src/Context/Slip/Application/UseCase/SlipGeneration/SlipGenerationCommandHandler.php",
+            "tests/Context/Slip/Application/UseCase/SlipGeneration/SlipGenerationCommandHandlerTest.php"
+          ],
+          "given": "un mes con snapshot de politica mensual registrado y un comando de generacion con parametros distintos",
+          "when": "se ejecuta SlipGenerationCommandHandler",
+          "then": "la generacion aplica extraFeePerUnitCents y reserveFundPerUnitCents del snapshot de politica"
+        },
+        {
+          "id": "atom-21-glm-03-pf1se-splits-60000-syndic-and-remainder-to-unit-401",
+          "spec_atom": "GLM-03",
+          "name": "GLM-03: PF1SE de 67000 centimos reparte 60000 al pool de sindico y 7000 a la unidad 401",
+          "level": "unit",
+          "mode": "characterization",
+          "card": "docs/stages/stage-05-atom-21.md",
+          "covers": "src/Context/Slip/Domain/Service/SyndicFeeSlipPoolAdjustmentService.php",
+          "test_file": "tests/Context/Slip/Domain/Service/SyndicFeeSlipPoolAdjustmentServiceTest.php",
+          "allowlist": [
+            "src/Context/Slip/Domain/Service/SyndicFeeSlipPoolAdjustmentService.php",
+            "tests/Context/Slip/Domain/Service/SyndicFeeSlipPoolAdjustmentServiceTest.php"
+          ],
+          "given": "un gasto PF1SE de 67000 centimos y unidades activas incluyendo la unidad 401",
+          "when": "se ejecuta SyndicFeeSlipPoolAdjustmentService::adjust",
+          "then": "asigna 60000 al pool igual de sindico y 7000 como gasto individual de la unidad 401"
+        },
+        {
+          "id": "atom-22-glm-04-record-and-resolve-billing-policy-month-integration",
+          "spec_atom": "GLM-04",
+          "name": "GLM-04: Guardar politica de un mes por PUT y resolverla por GET devuelve los mismos importes",
+          "level": "integration",
+          "mode": "tdd",
+          "card": "docs/stages/stage-05-atom-22.md",
+          "covers": "src/Context/BillingPolicy/Infrastructure/Http/Controller/BillingPolicyMonthPutController.php",
+          "test_file": "tests/Context/BillingPolicy/Infrastructure/Http/Controller/BillingPolicyControllersTest.php",
+          "allowlist": [
+            "src/Context/BillingPolicy/Infrastructure/Http/Controller/BillingPolicyMonthPutController.php",
+            "src/Context/BillingPolicy/Infrastructure/Http/Controller/BillingPolicyResolveGetController.php",
+            "tests/Context/BillingPolicy/Infrastructure/Http/Controller/BillingPolicyControllersTest.php"
+          ],
+          "given": "un sindico autenticado",
+          "when": "guarda los parametros del mes con PUT /api/v1/billing-policy/{yearMonth} y los resuelve con GET /api/v1/billing-policy/resolve?targetMonth={yearMonth}",
+          "then": "la respuesta de resolve contiene hasPolicy=true y exactamente los mismos importes en centimos"
+        }
+      ]
+    },
+    {
+      "id": "stage-06",
+      "name": "SPEC-CIE: Cierre de periodo",
+      "spec": "SPEC-CIE",
+      "atoms": [
+        {
+          "id": "atom-23-cie-01-close-month-without-slips-throws",
+          "spec_atom": "CIE-01",
+          "name": "CIE-01: Cerrar un mes sin cuotas generadas falla con NoSlipsToCloseException",
+          "level": "unit",
+          "mode": "characterization",
+          "card": "docs/stages/stage-06-atom-23.md",
+          "covers": "src/Context/Slip/Application/UseCase/ClosePeriod/ClosePeriodCommandHandler.php",
+          "test_file": "tests/Context/Slip/Application/UseCase/ClosePeriod/ClosePeriodCommandHandlerTest.php",
+          "allowlist": [
+            "src/Context/Slip/Application/UseCase/ClosePeriod/ClosePeriodCommandHandler.php",
+            "tests/Context/Slip/Application/UseCase/ClosePeriod/ClosePeriodCommandHandlerTest.php"
+          ],
+          "given": "un mes de gasto abierto sin cuotas generadas en el mes de vencimiento N+1",
+          "when": "se invoca ClosePeriodCommandHandler",
+          "then": "lanza NoSlipsToCloseException"
+        },
+        {
+          "id": "atom-24-cie-02-close-already-closed-month-throws",
+          "spec_atom": "CIE-02",
+          "name": "CIE-02: Cerrar un mes ya cerrado falla con PeriodAlreadyClosedException",
+          "level": "unit",
+          "mode": "characterization",
+          "card": "docs/stages/stage-06-atom-24.md",
+          "covers": "src/Context/Slip/Domain/Service/PeriodClosureGuard.php",
+          "test_file": "tests/Context/Slip/Domain/Service/PeriodClosureGuardTest.php",
+          "allowlist": [
+            "src/Context/Slip/Domain/Service/PeriodClosureGuard.php",
+            "tests/Context/Slip/Domain/Service/PeriodClosureGuardTest.php",
+            "tests/Context/Slip/Application/UseCase/ClosePeriod/ClosePeriodCommandHandlerTest.php"
+          ],
+          "given": "un mes de gasto que ya figura como cerrado en PeriodClosureRepository",
+          "when": "se evalua PeriodClosureGuard::assertNotClosed o ClosePeriodCommandHandler",
+          "then": "lanza PeriodAlreadyClosedException"
+        },
+        {
+          "id": "atom-25-cie-03-generate-slips-after-period-closed-fails-integration",
+          "spec_atom": "CIE-03",
+          "name": "CIE-03: Generar o recrear cuotas de un mes cerrado es rechazado en la API",
+          "level": "integration",
+          "mode": "tdd",
+          "card": "docs/stages/stage-06-atom-25.md",
+          "covers": "src/Context/Slip/Infrastructure/Http/Controller/ClosePeriodPostController.php",
+          "test_file": "tests/Context/Slip/Infrastructure/Http/Controller/ClosePeriodAndGenerationGuardControllerTest.php",
+          "allowlist": [
+            "src/Context/Slip/Infrastructure/Http/Controller/ClosePeriodPostController.php",
+            "src/Context/Slip/Infrastructure/Http/Controller/SlipGenerationPostController.php",
+            "tests/Context/Slip/Infrastructure/Http/Controller/ClosePeriodAndGenerationGuardControllerTest.php"
+          ],
+          "given": "un mes con cuotas generadas que ha sido cerrado mediante POST /api/v1/slips/close-period",
+          "when": "se intenta regenerar cuotas para ese mismo mes mediante POST /api/v1/slips/generate",
+          "then": "la API rechaza la operacion porque el periodo ya esta cerrado y las cuotas quedan intactas"
+        }
+      ]
+    },
+    {
+      "id": "stage-07",
+      "name": "SPEC-BAN y SPEC-LEC: Extracto OFX, Prevision y Libro",
+      "spec": "SPEC-BAN, SPEC-LEC",
+      "atoms": [
+        {
+          "id": "atom-26-ban-01-bank-import-line-xor-expense-income",
+          "spec_atom": "BAN-01",
+          "name": "BAN-01: BankTransactionImport exige exactamente uno entre expenseId e incomeId (XOR estricto)",
+          "level": "unit",
+          "mode": "tdd",
+          "card": "docs/stages/stage-07-atom-26.md",
+          "covers": "src/Context/BankStatement/Domain/BankTransactionImport.php",
+          "test_file": "tests/Context/BankStatement/Domain/BankTransactionImportTest.php",
+          "allowlist": [
+            "src/Context/BankStatement/Domain/BankTransactionImport.php",
+            "tests/Context/BankStatement/Domain/BankTransactionImportTest.php"
+          ],
+          "given": "parametros para construir una entidad BankTransactionImport",
+          "when": "se intenta construir con ambos nulos (null, null) o ambos informados (expenseId, incomeId)",
+          "then": "lanza InvalidArgumentException garantizando la invariante XOR"
+        },
+        {
+          "id": "atom-27-ban-02-ofx-confirm-idempotency-key",
+          "spec_atom": "BAN-02",
+          "name": "BAN-02: Confirmar dos veces la misma linea OFX no duplica el movimiento importado",
+          "level": "integration",
+          "mode": "characterization",
+          "card": "docs/stages/stage-07-atom-27.md",
+          "covers": "src/Context/BankStatement/Infrastructure/Http/Controller/OfxConfirmPostController.php",
+          "test_file": "tests/Context/BankStatement/Infrastructure/Http/Controller/OfxConfirmPostControllerTest.php",
+          "allowlist": [
+            "src/Context/BankStatement/Infrastructure/Http/Controller/OfxConfirmPostController.php",
+            "tests/Context/BankStatement/Infrastructure/Http/Controller/OfxConfirmPostControllerTest.php"
+          ],
+          "given": "un extracto OFX con una clave de linea ya confirmada",
+          "when": "se reenvia la confirmacion para la misma linea en OfxConfirmPostController",
+          "then": "no duplica el movimiento ni la importacion en la base de datos"
+        },
+        {
+          "id": "atom-28-lec-01-ledger-empty-month-returns-empty-list",
+          "spec_atom": "LEC-01",
+          "name": "LEC-01: Consultar el libro (ledger) de un mes sin movimientos devuelve 200 y lista vacia",
+          "level": "integration",
+          "mode": "tdd",
+          "card": "docs/stages/stage-07-atom-28.md",
+          "covers": "src/Context/Ledger/Infrastructure/Http/Controller/LedgerMovementsGetController.php",
+          "test_file": "tests/Context/Ledger/Infrastructure/Http/Controller/LedgerMovementsGetControllerTest.php",
+          "allowlist": [
+            "src/Context/Ledger/Infrastructure/Http/Controller/LedgerMovementsGetController.php",
+            "tests/Context/Ledger/Infrastructure/Http/Controller/LedgerMovementsGetControllerTest.php"
+          ],
+          "given": "un mes sin gastos ni ingresos registrados",
+          "when": "se consulta GET /api/v1/ledger/movements?year={Y}&month={M}",
+          "then": "responde 200 OK con month=YYYY-MM y movements=[]"
+        },
+        {
+          "id": "atom-29-lec-02-forecast-returns-target-month",
+          "spec_atom": "LEC-02",
+          "name": "LEC-02: Consultar forecast para un targetMonth devuelve 200 con ese targetMonth",
+          "level": "integration",
+          "mode": "characterization",
+          "card": "docs/stages/stage-07-atom-29.md",
+          "covers": "src/Context/Forecast/Infrastructure/Http/Controller/ForecastGetController.php",
+          "test_file": "tests/Context/Forecast/Infrastructure/Http/Controller/ForecastGetControllerTest.php",
+          "allowlist": [
+            "src/Context/Forecast/Infrastructure/Http/Controller/ForecastGetController.php",
+            "tests/Context/Forecast/Infrastructure/Http/Controller/ForecastGetControllerTest.php"
+          ],
+          "given": "unidades residenciales activas en el condominio",
+          "when": "se consulta GET /api/v1/forecast?targetMonth=2026-01",
+          "then": "responde 200 OK con targetMonth=2026-01 y el desglose tecnico"
+        }
+      ]
+    },
+    {
+      "id": "stage-08",
+      "name": "TESTING-STANDARD-INDUSTRIA: Higiene de Suites, Arquitectura Hexagonal y Contratos OpenAPI",
+      "spec": "TESTING-STANDARD-INDUSTRIA",
+      "atoms": [
+        {
+          "id": "atom-30-ind-01-suite-isolation-and-phpunit-tiers",
+          "spec_atom": "IND-01",
+          "name": "IND-01: Aislamiento 100% sin DB en testsuite=unit y registro de suites architecture y acceptance",
+          "level": "unit",
+          "mode": "tdd",
+          "card": "docs/stages/stage-08-atom-30.md",
+          "covers": "phpunit.xml.dist",
+          "test_file": "tests/Context/Setup/Application/Service/CatalogSeederTest.php",
+          "allowlist": [
+            "phpunit.xml.dist",
+            "tests/Context/Setup/Application/Service/CatalogSeederTest.php",
+            "tests/Context/Setup/Infrastructure/Persistence/CatalogSeederIntegrationTest.php"
+          ],
+          "given": "CatalogSeederTest ubicado bajo Application/ extendiendo ApiTestCase y phpunit.xml.dist sin suites architecture ni acceptance",
+          "when": "se convierte CatalogSeederTest en unitario puro (y se mueve la prueba DB a Infrastructure) y se actualizan las suites en phpunit.xml.dist",
+          "then": "phpunit --testsuite=unit ejecuta el 100% de los tests sin necesitar conexion a PostgreSQL"
+        },
+        {
+          "id": "atom-31-ind-02-hexagonal-architecture-fitness-tests",
+          "spec_atom": "IND-02",
+          "name": "IND-02: Fitness test de Arquitectura Hexagonal (Domain y Application libres de fugas de Infrastructure)",
+          "level": "architecture",
+          "mode": "tdd",
+          "card": "docs/stages/stage-08-atom-31.md",
+          "covers": "src/Shared/Domain/Aggregate/AggregateRoot.php",
+          "test_file": "tests/Architecture/HexagonalArchitectureTest.php",
+          "allowlist": [
+            "phpunit.xml.dist",
+            "tests/Architecture/HexagonalArchitectureTest.php"
+          ],
+          "given": "todos los archivos PHP bajo src/Context/*/Domain y src/Context/*/Application",
+          "when": "se ejecuta tests/Architecture/HexagonalArchitectureTest.php",
+          "then": "verifica que Domain no importa Application/Infrastructure/Doctrine/HttpFoundation, Application no importa Infrastructure y los eventos de dominio son readonly"
+        },
+        {
+          "id": "atom-32-ind-03-openapi-and-security-boundary-contracts",
+          "spec_atom": "IND-03",
+          "name": "IND-03: Test de contrato OpenAPI 3.0 (/api/v1/doc.json) y fronteras de seguridad",
+          "level": "integration",
+          "mode": "tdd",
+          "card": "docs/stages/stage-08-atom-32.md",
+          "covers": "src/Shared/Infrastructure/OpenApi/BoundedContextRouteDescriber.php",
+          "test_file": "tests/Shared/Infrastructure/OpenApiContractTest.php",
+          "allowlist": [
+            "src/Shared/Infrastructure/OpenApi/BoundedContextRouteDescriber.php",
+            "tests/Shared/Infrastructure/OpenApiContractTest.php"
+          ],
+          "given": "el kernel de Symfony con NelmioApiDocBundle y los 13 Bounded Contexts registrados",
+          "when": "se solicita GET /api/v1/doc.json en OpenApiContractTest",
+          "then": "responde 200 OK con un documento OpenAPI 3.0.x valido y todas las rutas /api/v1/* documentadas y etiquetadas"
+        }
+      ]
+    }
+  ]
+}

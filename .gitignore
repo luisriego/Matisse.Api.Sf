@@ -27,3 +27,7 @@ gcloud-key.json
 ###> phpstan/phpstan ###
 phpstan.neon
 ###< phpstan/phpstan ###
+
+###> cleanroom ###
+/tools/cleanroom/.state/
+###< cleanroom ###

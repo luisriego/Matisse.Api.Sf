@@ -7,10 +7,8 @@ namespace App\Context\Slip\Domain\Service;
 use App\Context\ResidentUnit\Domain\ResidentUnit;
 
 use function array_fill;
-use function array_map;
 use function count;
 use function floor;
-use function usort;
 
 readonly class SlipComponentBreakdownService
 {
@@ -144,21 +142,16 @@ readonly class SlipComponentBreakdownService
         }
 
         $base = (int) floor($poolCents / $count);
-        $allocated = array_fill(0, $count, $base);
         $remainder = $poolCents - ($base * $count);
 
-        foreach ($this->sortedIndexesForRemainder($residentUnits) as $idx) {
-            if ($remainder <= 0) {
-                break;
-            }
-            $allocated[$idx]++;
-            $remainder--;
+        if ($remainder > 0) {
+            ++$base;
         }
 
         $out = [];
 
-        foreach ($residentUnits as $idx => $unit) {
-            $out[$unit->id()] = $allocated[$idx];
+        foreach ($residentUnits as $unit) {
+            $out[$unit->id()] = $base;
         }
 
         return $out;
@@ -178,7 +171,6 @@ readonly class SlipComponentBreakdownService
         }
 
         $allocated = array_fill(0, $count, 0);
-        $rawShares = [];
         $allocatedTotal = 0;
         $idealSum = 0.0;
 
@@ -191,7 +183,6 @@ readonly class SlipComponentBreakdownService
 
         foreach ($residentUnits as $idx => $unit) {
             $raw = $poolCents * ($unit->idealFraction() / $normalizer);
-            $rawShares[$idx] = $raw;
             $floored = (int) floor($raw);
             $allocated[$idx] = $floored;
             $allocatedTotal += $floored;
@@ -200,15 +191,8 @@ readonly class SlipComponentBreakdownService
         $remainder = $poolCents - $allocatedTotal;
 
         if ($remainder > 0) {
-            $sortedIndexes = $this->sortedIndexesForRemainder($residentUnits, $rawShares);
-            $bucketCount = count($sortedIndexes);
-            $cursor = 0;
-
-            while ($remainder > 0 && $bucketCount > 0) {
-                $idx = $sortedIndexes[$cursor % $bucketCount];
-                $allocated[$idx]++;
-                $cursor++;
-                $remainder--;
+            foreach ($allocated as $idx => $cents) {
+                $allocated[$idx] = $cents + 1;
             }
         }
 
@@ -219,50 +203,5 @@ readonly class SlipComponentBreakdownService
         }
 
         return $out;
-    }
-
-    /**
-     * Orden determinístico:
-     * 1) mayor fracción ideal
-     * 2) mayor parte decimal calculada (si existe)
-     * 3) menor unitId
-     *
-     * @param array<int, ResidentUnit> $residentUnits
-     * @param array<int, float>|null   $rawShares
-     *
-     * @return array<int, int>
-     */
-    private function sortedIndexesForRemainder(array $residentUnits, ?array $rawShares = null): array
-    {
-        $indexes = [];
-
-        foreach ($residentUnits as $idx => $unit) {
-            $fractionalPart = 0.0;
-
-            if ($rawShares !== null) {
-                $fractionalPart = $rawShares[$idx] - floor($rawShares[$idx]);
-            }
-
-            $indexes[] = [
-                'idx' => $idx,
-                'idealFraction' => $unit->idealFraction(),
-                'fractionalPart' => $fractionalPart,
-                'unitId' => $unit->id(),
-            ];
-        }
-
-        usort($indexes, static function (array $a, array $b): int {
-            if ($a['idealFraction'] !== $b['idealFraction']) {
-                return $a['idealFraction'] < $b['idealFraction'] ? 1 : -1;
-            }
-
-            if ($a['fractionalPart'] !== $b['fractionalPart']) {
-                return $a['fractionalPart'] < $b['fractionalPart'] ? 1 : -1;
-            }
-
-            return $a['unitId'] <=> $b['unitId'];
-        });
-
-        return array_map(static fn (array $x): int => $x['idx'], $indexes);
     }
 }

@@ -97,9 +97,58 @@ final class SlipComponentBreakdownServiceTest extends TestCase
             $result['units'],
         );
 
-        $this->assertSame([63717, 63717, 63717, 64881, 69004], $despesasPrevistas);
-        $this->assertSame(325036, array_sum($despesasPrevistas));
+        $this->assertSame([63718, 63718, 63718, 64882, 69004], $despesasPrevistas);
+        $this->assertSame(325040, array_sum($despesasPrevistas));
         $this->assertSame($result['components']['baseTotalCents'], $result['components']['despesasPrevistasTotalCents']);
+    }
+
+    public function testPicoIsRaisedToOneCentForEveryUnit(): void
+    {
+        $units = [
+            $this->unit('u-101', '101', 0.10),
+            $this->unit('u-201', '201', 0.10),
+            $this->unit('u-301', '301', 0.10),
+            $this->unit('u-401', '401', 0.10),
+            $this->unit('u-501', '501', 0.20),
+        ];
+
+        $equal = $this->service->build($units, 103, 0, 0, [], [], 0, 0);
+        $equalShares = array_map(
+            static fn (array $unit): int => $unit['baseEqualShareCents'],
+            $equal['units'],
+        );
+
+        $this->assertSame([21, 21, 21, 21, 21], $equalShares);
+        $this->assertSame(105, $equal['components']['baseTotalCents']);
+
+        $fraction = $this->service->build($units, 0, 0, 10, [], [], 0, 0);
+        $fractionShares = array_map(
+            static fn (array $unit): int => $unit['fractionShareCents'],
+            $fraction['units'],
+        );
+
+        $this->assertSame([2, 2, 2, 2, 4], $fractionShares);
+        $this->assertSame(12, $fraction['components']['baseTotalCents']);
+    }
+
+    public function testExactDivisionDoesNotAddACent(): void
+    {
+        $units = [
+            $this->unit('u-101', '101', 0.20),
+            $this->unit('u-201', '201', 0.20),
+            $this->unit('u-301', '301', 0.20),
+            $this->unit('u-401', '401', 0.20),
+            $this->unit('u-501', '501', 0.20),
+        ];
+
+        $result = $this->service->build($units, 100, 0, 0, [], [], 0, 0);
+        $shares = array_map(
+            static fn (array $unit): int => $unit['baseEqualShareCents'],
+            $result['units'],
+        );
+
+        $this->assertSame([20, 20, 20, 20, 20], $shares);
+        $this->assertSame(100, $result['components']['baseTotalCents']);
     }
 
     public function testLegacyDespesasPrevistasDoesNotIncludeSyndicPool(): void
