@@ -148,7 +148,10 @@ echo -e "\n${YELLOW}[Gate 3/5] Running Static Analysis (PHPStan + PHP-CS-Fixer).
 if ! "${EXEC_PHP}" vendor/bin/phpstan analyse "${COVERS_FILE}" "${TEST_FILE}" --memory-limit=512M --no-progress; then
     record_oracle_failure "PHPStan failed on ${COVERS_FILE} or ${TEST_FILE}"
 fi
-if ! "${EXEC_PHP}" vendor/bin/php-cs-fixer fix "${COVERS_FILE}" "${TEST_FILE}" --dry-run --diff; then
+if ! "${EXEC_PHP}" tools/php-cs-fixer/vendor/bin/php-cs-fixer fix "${COVERS_FILE}" --dry-run --diff --path-mode=intersection; then
+    record_oracle_failure "PHP-CS-Fixer coding standard check failed"
+fi
+if ! "${EXEC_PHP}" tools/php-cs-fixer/vendor/bin/php-cs-fixer fix "${TEST_FILE}" --dry-run --diff --path-mode=intersection; then
     record_oracle_failure "PHP-CS-Fixer coding standard check failed"
 fi
 echo -e "${GREEN}  OK: Static analysis and code style passed.${NC}"
