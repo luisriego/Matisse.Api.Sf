@@ -30,6 +30,28 @@ final class RecurringExpenseSlipContributionServiceDedupTest extends TestCase
         $this->service = new RecurringExpenseSlipContributionService();
     }
 
+    public function testRecurringExpenseComputesOnceWhenMaterializedExpenseExistsForSameMonth(): void
+    {
+        // MOV-05: Un gasto recurrente activo que ya tiene un gasto materializado
+        // para el mismo mes se computa una sola vez sin duplicarse.
+        $type = $this->equalType('PF1SE');
+        $recurring = $this->fixedRecurring($type, 67_000);
+
+        // El gasto materializado (real) del mismo tipo y mismo mes
+        $materializedExpense = ExpenseMother::create(
+            amount: 67_000,
+            type: $type,
+            dueDate: new DateTime('2026-01-15'),
+        );
+
+        // contributionForMonth debe computar el recurrente una sola vez
+        // (en realidad no lo computa porque el gasto real prevalece)
+        $slice = $this->service->contributionForMonth([$recurring], 2026, 1, [$materializedExpense]);
+
+        self::assertSame(0, $slice['equal']);
+        self::assertSame(0, $slice['fraction']);
+    }
+
     public function testFixedRecurringContributesWhenNoReconciledExpense(): void
     {
         $type = $this->equalType('UTIL1');
