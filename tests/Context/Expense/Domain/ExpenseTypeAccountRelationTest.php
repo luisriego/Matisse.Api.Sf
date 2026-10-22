@@ -18,6 +18,13 @@ use Ramsey\Uuid\Uuid;
 
 final class ExpenseTypeAccountRelationTest extends TestCase
 {
+    public function testInvalidDistributionMethodThrowsException(): void
+    {
+        $this->expectException(\App\Shared\Domain\Exception\InvalidArgumentException::class);
+
+        new ExpenseTypeDistributionMethod('INVALID');
+    }
+
     public function testExpenseTypeCanBeCreatedWithoutAccount(): void
     {
         $id = new ExpenseTypeId((string) Uuid::uuid4());
