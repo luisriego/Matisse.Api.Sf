@@ -21,3 +21,4 @@
 | 2026-10-22T13:32:03Z | stage-03 | atom-11-uni-01-fraction-sum-within-tolerance-accepted | SEALED | 9c9a02c |
 | 2026-10-22T14:52:36Z | stage-03 | atom-12-uni-02-fraction-sum-above-tolerance-rejected | SEALED | a5440c9 |
 | 2026-10-22T14:57:58Z | stage-03 | atom-13-uni-03-create-and-patch-unit-fraction-persists | SEALED | 570f540 |
+| 2026-10-22T15:07:32Z | stage-04 | atom-14-mov-01-expense-type-distribution-method-validation | SEALED | 409ca97 |
