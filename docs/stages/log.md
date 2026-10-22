@@ -13,3 +13,5 @@
 | 2026-10-21T20:39:41Z | stage-01 | atom-04-inf-04-first-generation-before-day-25-rejected | SEALED | d1b9809 |
 | 2026-10-21T20:43:03Z | stage-01 | atom-05-inf-05-recreation-after-day-5-rejected | SEALED | fd7bae6 |
 | 2026-10-21T21:21:43Z | stage-01 | atom-06-inf-06-force-bypasses-calendar-window | SEALED | c488e3d |
+| 2026-10-22T08:00:05Z | stage-01 | atom-07-inf-07-explain-matches-generated-slips-sum | BLOCKED | 3 consecutive oracle failures (Atom test file failed: tests/Acceptance/Slip/ExplainMatchesGeneratedSlipsAcceptanceTest.php) |
+| 2026-10-22T08:15:14Z | stage-01 | atom-07-inf-07-explain-matches-generated-slips-sum | SEALED | 3d07f6c |
