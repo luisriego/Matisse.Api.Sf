@@ -27,3 +27,5 @@
 | 2026-10-22T16:06:38Z | stage-04 | atom-17-mov-04-enter-income-listed-in-month-query | SEALED | 0599fc0 |
 | 2026-10-22T16:33:34Z | stage-04 | atom-18-mov-05-monthly-recurring-expense-idempotent-once-per-month | SEALED | ae660a9 |
 | 2026-10-22T17:34:43Z | stage-05 | atom-19-glm-01-gas-price-formula-from-bill-kg-buffer | SEALED | d2c47e3 |
+| 2026-10-22T18:15:00Z | stage-05 | atom-20-glm-02-policy-snapshot-overrides-generation-command-params | SEALED | 999166e |
+| 2026-10-22T19:41:08Z | stage-05 | atom-21-glm-03-pf1se-splits-60000-syndic-and-remainder-to-unit-401 | SEALED | 999166e |
