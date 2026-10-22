@@ -78,16 +78,26 @@ class SlipGenerationCommandHandler implements CommandHandler
 
         // 6. Use the factory to create the slip aggregates.
         $targetMonth = sprintf('%04d-%02d', $expenseYear, $expenseMonth);
-        $policy = $this->billingPolicyResolverService->resolve($targetMonth);
-        $extraFeePerUnitCents = $policy->hasPolicy()
-            ? $policy->extraFeePerUnitCents()
-            : $command->extraFeePerUnitCents();
-        $reserveFundPerUnitCents = $policy->hasPolicy()
-            ? $policy->reserveFundPerUnitCents()
-            : $command->reserveFundPerUnitCents();
-        $syndicShareTotalCents = $policy->hasPolicy()
-            ? $policy->syndicShareTotalCents()
-            : null;
+
+        // Check for policy snapshot first — if present, its values override everything
+        $snapshot = $this->slipGenerationParameterSnapshotRepository->findByExpenseMonth($expenseYear, $expenseMonth);
+
+        if ($snapshot !== null) {
+            $extraFeePerUnitCents       = $snapshot->extraFeePerUnitCents();
+            $reserveFundPerUnitCents    = $snapshot->reserveFundPerUnitCents();
+            $syndicShareTotalCents      = null;
+        } else {
+            $policy = $this->billingPolicyResolverService->resolve($targetMonth);
+            $extraFeePerUnitCents       = $policy->hasPolicy()
+                ? $policy->extraFeePerUnitCents()
+                : $command->extraFeePerUnitCents();
+            $reserveFundPerUnitCents    = $policy->hasPolicy()
+                ? $policy->reserveFundPerUnitCents()
+                : $command->reserveFundPerUnitCents();
+            $syndicShareTotalCents      = $policy->hasPolicy()
+                ? $policy->syndicShareTotalCents()
+                : null;
+        }
 
         $slips = $this->slipFactory->createFromExpensesAndUnits(
             $expenses,

@@ -23,6 +23,7 @@ use App\Context\Slip\Domain\Service\SlipComponentBreakdownService;
 use App\Context\Slip\Domain\Service\SlipFactory;
 use App\Context\Slip\Domain\Service\SlipGenerationPolicy;
 use App\Context\Slip\Domain\Service\SyndicFeeSlipPoolAdjustmentService;
+use App\Context\Slip\Domain\SlipGenerationParameterSnapshot;
 use App\Context\Slip\Domain\SlipGenerationParameterSnapshotRepository;
 use App\Context\Slip\Domain\SlipRepository;
 use PHPUnit\Framework\MockObject\MockObject;
@@ -147,6 +148,56 @@ class SlipGenerationCommandHandlerTest extends TestCase
 
         // Act & Assert
         $this->expectException(RuntimeException::class);
+        ($this->handler)($command);
+    }
+
+    public function testInvokeUsesSnapshotOverridesWhenPresent(): void
+    {
+        // Arrange: snapshot with non-zero values for the expense month
+        $snapshotExtraFee = 500;
+        $snapshotReserveFund = 300;
+
+        $this->generationPolicy->expects($this->once())->method('check');
+        $this->slipRepository->expects($this->once())->method('deleteByDateRange');
+
+        // Snapshot exists with overrides
+        $mockSnapshot = $this->createMock(SlipGenerationParameterSnapshot::class);
+        $mockSnapshot->method('extraFeePerUnitCents')->willReturn($snapshotExtraFee);
+        $mockSnapshot->method('reserveFundPerUnitCents')->willReturn($snapshotReserveFund);
+        $this->snapshotRepository
+            ->method('findByExpenseMonth')
+            ->with(2024, 5)
+            ->willReturn($mockSnapshot);
+
+        $typeEqual = $this->createConfiguredMock(ExpenseType::class, ['distributionMethod' => 'EQUAL']);
+        $expenses = [$this->createConfiguredMock(Expense::class, ['amount' => 10000, 'type' => $typeEqual])];
+        $this->expenseRepository->method('findActiveByDateRange')->willReturn($expenses);
+        $this->recurringExpenseRepository->method('findActiveForDateRange')->willReturn([]);
+
+        $resident = $this->createConfiguredMock(ResidentUnit::class, ['id' => 'resident-1', 'idealFraction' => 0.0]);
+        $this->residentUnitRepository->method('findAllActive')->willReturn([$resident]);
+
+        $this->monthlyExpenseAggregatorService->method('aggregateTotals')->willReturn([
+            'equal' => 10000,
+            'fraction' => 0,
+            'individual' => 0,
+            'individualByUnit' => [],
+        ]);
+
+        // Billing policy returns empty (no policy for this month)
+        $this->billingPolicyResolverService
+            ->method('resolve')
+            ->willReturnCallback(static fn (string $targetMonth) => ResolvedBillingPolicy::empty($targetMonth));
+
+        // Snapshot exists with overrides — verify the handler passes snapshot values to upsert
+        $this->snapshotRepository
+            ->expects($this->once())
+            ->method('upsertForExpenseMonth')
+            ->with(2024, 5, $snapshotExtraFee, $snapshotReserveFund);
+
+        // Act: command with different values than snapshot
+        $command = new SlipGenerationCommand(2024, 5, extraFeePerUnitCents: 999, reserveFundPerUnitCents: 888);
+
         ($this->handler)($command);
     }
 
