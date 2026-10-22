@@ -24,3 +24,4 @@
 | 2026-10-22T15:07:32Z | stage-04 | atom-14-mov-01-expense-type-distribution-method-validation | SEALED | 409ca97 |
 | 2026-10-22T15:32:00Z | stage-04 | atom-15-mov-02-individual-expense-excluded-from-common-pool | SEALED | 6149b7c |
 | 2026-10-22T15:39:30Z | stage-04 | atom-16-mov-03-put-expenses-enter-returns-201-with-body | SEALED | 02af54e |
+| 2026-10-22T16:06:38Z | stage-04 | atom-17-mov-04-enter-income-listed-in-month-query | SEALED | 0599fc0 |
