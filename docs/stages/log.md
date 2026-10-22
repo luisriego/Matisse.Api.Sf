@@ -19,3 +19,4 @@
 | 2026-10-22T09:27:33Z | stage-02 | atom-09-ten-02-set-syndic-demotes-previous | SEALED | 2514de9 |
 | 2026-10-22T12:14:31Z | stage-02 | atom-10-ten-03-finalize-setup-idempotent | SEALED | 837a5d6 |
 | 2026-10-22T13:32:03Z | stage-03 | atom-11-uni-01-fraction-sum-within-tolerance-accepted | SEALED | 9c9a02c |
+| 2026-10-22T14:52:36Z | stage-03 | atom-12-uni-02-fraction-sum-above-tolerance-rejected | SEALED | a5440c9 |
