@@ -7,6 +7,10 @@ namespace App\Tests\Context\Gas\Domain;
 use App\Context\Gas\Domain\Event\GasPriceWasDefined;
 use App\Context\Gas\Domain\Event\GasReadingWasRecorded;
 use App\Context\Gas\Domain\Gas;
+use App\Context\Gas\Domain\ValueObject\BufferPercentage;
+use App\Context\Gas\Domain\ValueObject\CylinderCapacity;
+use App\Context\Gas\Domain\ValueObject\GasAmount;
+use App\Context\Gas\Domain\ValueObject\GasId;
 use App\Shared\Domain\Exception\InvalidArgumentException;
 use App\Tests\Context\Gas\Domain\ValueObject\BufferPercentageMother;
 use App\Tests\Context\Gas\Domain\ValueObject\CylinderCapacityMother;
@@ -58,6 +62,33 @@ class GasTest extends TestCase
     /**
      * @throws DateMalformedStringException
      */
+    public function testDefinePriceAppliesOfficialFormulaRoundTwoTimesBillHundredPlusBufferDividedKgHundred(): void
+    {
+        // GLM-01: round((2 * factura * (100 + buffer)) / (kg * 100))
+        $billCents = 25_000;   // 250.00 € en centimos
+        $capacityKg = 13;       // cilindro de 13 kg
+        $bufferPct = 15;        // 15% margen
+
+        $gas = Gas::definePrice(
+            new GasAmount($billCents),
+            new CylinderCapacity($capacityKg),
+            new BufferPercentage($bufferPct),
+        );
+
+        $expectedPricePerM3InCents = (int) round((2 * $billCents * (100 + $bufferPct)) / ($capacityKg * 100));
+
+        $this->assertSame($expectedPricePerM3InCents, $gas->pricePerM3InCents());
+
+        $events = $gas->pullDomainEvents();
+        $this->assertCount(1, $events);
+        $this->assertInstanceOf(GasPriceWasDefined::class, $events[0]);
+        $this->assertSame($gas->id()->value(), $events[0]->aggregateId());
+        $this->assertSame($expectedPricePerM3InCents, $events[0]->pricePerM3InCents);
+    }
+
+    /**
+     * @throws DateMalformedStringException
+     */
     public function testItShouldDefineGasPrice(): void
     {
         $amount = GasAmountMother::create(); // Default 10000 (int)
@@ -71,7 +102,7 @@ class GasTest extends TestCase
         );
 
         $this->assertInstanceOf(Gas::class, $gas);
-        $this->assertNotNull($gas->id());
+        $this->assertInstanceOf(GasId::class, $gas->id());
         $this->assertIsInt($gas->pricePerM3InCents());
 
         $billCents = $amount->value();
