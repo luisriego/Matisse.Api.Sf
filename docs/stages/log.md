@@ -25,3 +25,4 @@
 | 2026-10-22T15:32:00Z | stage-04 | atom-15-mov-02-individual-expense-excluded-from-common-pool | SEALED | 6149b7c |
 | 2026-10-22T15:39:30Z | stage-04 | atom-16-mov-03-put-expenses-enter-returns-201-with-body | SEALED | 02af54e |
 | 2026-10-22T16:06:38Z | stage-04 | atom-17-mov-04-enter-income-listed-in-month-query | SEALED | 0599fc0 |
+| 2026-10-22T16:33:34Z | stage-04 | atom-18-mov-05-monthly-recurring-expense-idempotent-once-per-month | SEALED | ae660a9 |
