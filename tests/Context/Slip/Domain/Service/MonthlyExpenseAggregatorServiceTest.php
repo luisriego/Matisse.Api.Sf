@@ -7,13 +7,14 @@ namespace App\Tests\Context\Slip\Domain\Service;
 use App\Context\Expense\Domain\Expense;
 use App\Context\Expense\Domain\ExpenseType;
 use App\Context\Slip\Domain\Service\MonthlyExpenseAggregatorService;
+use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 use Psr\Log\LoggerInterface;
 
 class MonthlyExpenseAggregatorServiceTest extends TestCase
 {
     private MonthlyExpenseAggregatorService $aggregator;
-    private LoggerInterface $logger;
+    private LoggerInterface|MockObject $logger;
 
     protected function setUp(): void
     {
@@ -41,18 +42,18 @@ class MonthlyExpenseAggregatorServiceTest extends TestCase
                 'id' => 'e3',
                 'residentUnitId' => 'unit-a',
             ]),
-            $this->createConfiguredMock(Expense::class, ['amount' => 1500, 'type' => $typeEqual, 'id' => 'e4']), // Another equal expense
+            $this->createConfiguredMock(Expense::class, ['amount' => 1500, 'type' => $typeEqual, 'id' => 'e4']),
         ];
 
         // Act
         $totals = $this->aggregator->aggregateTotals($expenses);
 
-        // Assert
-        $this->assertEquals(5500, $totals['equal']);       // 1000 + 3000 + 1500
-        $this->assertEquals(2000, $totals['fraction']);    // 2000
-        $this->assertEquals(0, $totals['individual']);
-        $this->assertEquals([], $totals['individualByUnit']);
-        $this->assertEquals(7500, $totals['grandTotal']);  // 1000 + 2000 + 3000 + 1500
+        // Assert — INDIVIDUAL no entra en equal ni fraction
+        $this->assertEquals(2500, $totals['equal']);          // 1000 + 1500
+        $this->assertEquals(2000, $totals['fraction']);       // 2000 (SP2AG)
+        $this->assertEquals(3000, $totals['individual']);     // 3000
+        $this->assertEquals(['unit-a' => 3000], $totals['individualByUnit']);
+        $this->assertEquals(7500, $totals['grandTotal']);     // 1000 + 2000 + 3000 + 1500
     }
 
     public function testAggregateTotalsWithEmptyList(): void

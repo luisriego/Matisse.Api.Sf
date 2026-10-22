@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Context\Slip\Domain\Service;
 
 use App\Context\Expense\Domain\Expense;
+use App\Context\Expense\Domain\ExpenseType;
 use Psr\Log\LoggerInterface;
 
 use function get_debug_type;
@@ -141,6 +142,24 @@ readonly class MonthlyExpenseAggregatorService
                 'included' => true,
                 'bucket' => 'FRACTION',
                 'reason' => 'water_by_fraction_rule',
+            ];
+        }
+
+        $method = $expenseType->distributionMethod();
+
+        if ($method === ExpenseType::INDIVIDUAL) {
+            return [
+                'included' => true,
+                'bucket' => 'INDIVIDUAL',
+                'reason' => 'individual_distribution_method',
+            ];
+        }
+
+        if ($method === ExpenseType::FRACTION) {
+            return [
+                'included' => true,
+                'bucket' => 'FRACTION',
+                'reason' => 'fraction_distribution_method',
             ];
         }
 
