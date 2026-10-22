@@ -26,3 +26,4 @@
 | 2026-10-22T15:39:30Z | stage-04 | atom-16-mov-03-put-expenses-enter-returns-201-with-body | SEALED | 02af54e |
 | 2026-10-22T16:06:38Z | stage-04 | atom-17-mov-04-enter-income-listed-in-month-query | SEALED | 0599fc0 |
 | 2026-10-22T16:33:34Z | stage-04 | atom-18-mov-05-monthly-recurring-expense-idempotent-once-per-month | SEALED | ae660a9 |
+| 2026-10-22T17:34:43Z | stage-05 | atom-19-glm-01-gas-price-formula-from-bill-kg-buffer | SEALED | d2c47e3 |
