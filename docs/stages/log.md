@@ -36,3 +36,4 @@
 | 2026-10-23T11:09:08Z | stage-07 | atom-26-ban-01-bank-import-line-xor-expense-income | SEALED | 51b34fd |
 | 2026-10-23T16:14:27Z | stage-07 | atom-27-ban-02-ofx-confirm-idempotency-key | SEALED | 24cbc3b |
 | 2026-10-23T17:00:38Z | stage-07 | atom-28-lec-01-ledger-empty-month-returns-empty-list | SEALED | 9e9cbdb |
+| 2026-10-23T17:08:59Z | stage-07 | atom-29-lec-02-forecast-returns-target-month | SEALED | db5e519 |
