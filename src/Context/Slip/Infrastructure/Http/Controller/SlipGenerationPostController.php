@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Context\Slip\Infrastructure\Http\Controller;
 
+use App\Context\Slip\Domain\Exception\PeriodAlreadyClosedException;
 use App\Context\Slip\Domain\SlipRepository;
 use App\Context\Slip\Infrastructure\Http\Dto\SlipGenerationRequestDto;
 use App\Shared\Domain\Exception\InvalidArgumentException;
@@ -52,36 +53,47 @@ final class SlipGenerationPostController extends ApiController
 
     public function __invoke(SlipGenerationRequestDto $request): JsonResponse
     {
-        $command = $request->toCommand();
-        $this->dispatch($command);
+        try {
+            $command = $request->toCommand();
+            $this->dispatch($command);
 
-        $dueYear = $request->year;
-        $dueMonth = $request->month + 1;
+            $dueYear = $request->year;
+            $dueMonth = $request->month + 1;
 
-        if ($dueMonth > 12) {
-            $dueYear++;
-            $dueMonth = 1;
-        }
+            if ($dueMonth > 12) {
+                $dueYear++;
+                $dueMonth = 1;
+            }
 
-        $slips = $this->slipRepository->findByMonthYear($dueYear, $dueMonth);
+            $slips = $this->slipRepository->findByMonthYear($dueYear, $dueMonth);
 
-        $payload = [];
+            $payload = [];
 
-        foreach ($slips as $slip) {
-            $ru = $slip->residentUnit();
-            $payload[] = [
-                'id' => $slip->id(),
-                'amount' => $slip->amount(),
-                'status' => $slip->getStatus(),
-                'dueDate' => $slip->dueDate()->format('Y-m-d'),
-                'residentUnit' => [
-                    'id' => $ru->id(),
-                    'unit' => $ru->unit(),
+            foreach ($slips as $slip) {
+                $ru = $slip->residentUnit();
+                $payload[] = [
+                    'id' => $slip->id(),
+                    'amount' => $slip->amount(),
+                    'status' => $slip->getStatus(),
+                    'dueDate' => $slip->dueDate()->format('Y-m-d'),
+                    'residentUnit' => [
+                        'id' => $ru->id(),
+                        'unit' => $ru->unit(),
+                    ],
+                ];
+            }
+
+            return new JsonResponse(['slips' => $payload], Response::HTTP_CREATED);
+        } catch (PeriodAlreadyClosedException $e) {
+            return new JsonResponse(
+                [
+                    'class' => PeriodAlreadyClosedException::class,
+                    'code' => Response::HTTP_CONFLICT,
+                    'message' => $e->getMessage(),
                 ],
-            ];
+                Response::HTTP_CONFLICT,
+            );
         }
-
-        return new JsonResponse(['slips' => $payload], Response::HTTP_CREATED);
     }
 
     public function exceptions(): array
@@ -90,6 +102,7 @@ final class SlipGenerationPostController extends ApiController
             InvalidArgumentException::class => Response::HTTP_BAD_REQUEST,
             BadRequestHttpException::class => Response::HTTP_BAD_REQUEST,
             \InvalidArgumentException::class => Response::HTTP_BAD_REQUEST,
+            PeriodAlreadyClosedException::class => Response::HTTP_CONFLICT,
         ];
     }
 }
