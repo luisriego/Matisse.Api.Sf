@@ -49,7 +49,12 @@ final class BillingPolicyResolveGetController extends ApiController
         /** @var ResolvedBillingPolicy $resolved */
         $resolved = $this->ask(new ResolveBillingPolicyQuery($targetMonth));
 
-        return new JsonResponse(['data' => $resolved->toArray()]);
+        return new JsonResponse([
+            'data' => [
+                'hasPolicy' => $resolved->hasPolicy(),
+                ...$resolved->toArray(),
+            ],
+        ]);
     }
 
     public function exceptions(): array
