@@ -29,3 +29,4 @@
 | 2026-10-22T17:34:43Z | stage-05 | atom-19-glm-01-gas-price-formula-from-bill-kg-buffer | SEALED | d2c47e3 |
 | 2026-10-22T18:15:00Z | stage-05 | atom-20-glm-02-policy-snapshot-overrides-generation-command-params | SEALED | 999166e |
 | 2026-10-22T19:41:08Z | stage-05 | atom-21-glm-03-pf1se-splits-60000-syndic-and-remainder-to-unit-401 | SEALED | 999166e |
+| 2026-10-23T07:48:44Z | stage-05 | atom-22-glm-04-record-and-resolve-billing-policy-month-integration | SEALED | 48fe69e |
