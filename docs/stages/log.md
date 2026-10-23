@@ -34,3 +34,4 @@
 | 2026-10-23T08:31:16Z | stage-06 | atom-24-cie-02-close-already-closed-month-throws | SEALED | dde6eaa |
 | 2026-10-23T09:41:07Z | stage-06 | atom-25-cie-03-generate-slips-after-period-closed-fails-integration | SEALED | 1069373 |
 | 2026-10-23T11:09:08Z | stage-07 | atom-26-ban-01-bank-import-line-xor-expense-income | SEALED | 51b34fd |
+| 2026-10-23T16:14:27Z | stage-07 | atom-27-ban-02-ofx-confirm-idempotency-key | SEALED | 24cbc3b |
