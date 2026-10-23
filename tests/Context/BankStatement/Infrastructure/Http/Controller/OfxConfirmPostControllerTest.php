@@ -49,7 +49,6 @@ final class OfxConfirmPostControllerTest extends ApiTestCase
 {
     private const BANK_ACCOUNT_ID = '3033132774';
     private const LINE_KEY_A        = 'FIT-TEST-001';
-    private const LINE_KEY_B        = 'FIT-TEST-002';
 
     protected function setUp(): void
     {
@@ -804,5 +803,48 @@ final class OfxConfirmPostControllerTest extends ApiTestCase
         $this->entityManager->persist($slip);
 
         return $slip;
+    }
+
+    public function testRepeatedConfirmOfSameLineDoesNotDuplicateImportedMovement(): void
+    {
+        $account     = AccountMother::create();
+        $expenseType = ExpenseTypeMother::create();
+        $this->entityManager->persist($account);
+        $this->entityManager->persist($expenseType);
+        $this->entityManager->flush();
+
+        $payload = $this->buildPayload($expenseType->id(), $account->id(), [self::LINE_KEY_A]);
+
+        // First confirm
+        $this->client->request(
+            'POST',
+            '/api/v1/bank/ofx-confirm',
+            [],
+            [],
+            ['CONTENT_TYPE' => 'application/json'],
+            json_encode($payload, JSON_THROW_ON_ERROR),
+        );
+
+        $this->assertResponseStatusCodeSame(Response::HTTP_CREATED);
+        $dataFirst = json_decode($this->client->getResponse()->getContent(), true);
+        $this->assertSame(1, $dataFirst['imported']);
+
+        // Second confirm with same line key
+        $this->client->request(
+            'POST',
+            '/api/v1/bank/ofx-confirm',
+            [],
+            [],
+            ['CONTENT_TYPE' => 'application/json'],
+            json_encode($payload, JSON_THROW_ON_ERROR),
+        );
+
+        $this->assertResponseStatusCodeSame(Response::HTTP_CREATED);
+        $dataSecond = json_decode($this->client->getResponse()->getContent(), true);
+        $this->assertSame(0, $dataSecond['imported'], 'Repeated confirm must not import new movements.');
+
+        $expenseRepository = self::getContainer()->get(ExpenseRepository::class);
+        $expenses          = $expenseRepository->findAll();
+        $this->assertCount(1, $expenses, 'Only one expense must exist despite two confirm calls.');
     }
 }
