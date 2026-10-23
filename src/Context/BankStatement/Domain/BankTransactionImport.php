@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace App\Context\BankStatement\Domain;
 
+use App\Shared\Domain\Exception\InvalidArgumentException;
 use DateTimeImmutable;
-use InvalidArgumentException;
 
 /**
  * Records that a bank transaction line (stable import line key, e.g. OFX FITID) was successfully
