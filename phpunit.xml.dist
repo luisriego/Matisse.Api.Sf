@@ -43,6 +43,18 @@
         <testsuite name="authenticated_integration">
             <directory>tests/Context/*/Infrastructure</directory>
         </testsuite>
+
+        <!-- Suite for architecture-level tests (kernel boot, DI container, but no DB) -->
+        <testsuite name="architecture">
+            <directory>tests/Context/*/Application</directory>
+            <exclude>tests/Context/Setup/Application/Service/CatalogSeederTest.php</exclude>
+        </testsuite>
+
+        <!-- Suite for acceptance tests (full HTTP integration with DB) -->
+        <testsuite name="acceptance">
+            <directory>tests/Context/*/Infrastructure/Http/Controller</directory>
+            <directory>tests/Context/Setup/Infrastructure/Persistence</directory>
+        </testsuite>
     </testsuites>
 
     <source>
