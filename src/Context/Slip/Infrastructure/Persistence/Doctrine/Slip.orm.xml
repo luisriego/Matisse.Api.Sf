@@ -14,8 +14,12 @@
         <field name="paidAt" column="paid_at" type="datetime_immutable" nullable="true" />
         <field name="origin" column="origin" length="20" enum-type="App\Context\Slip\Domain\ValueObject\SlipOrigin" />
 
-        <many-to-one field="residentUnit" target-entity="App\Context\ResidentUnit\Domain\ResidentUnit" inversed-by="slips">
+        <many-to-one field="residentUnit" target-entity="App\Context\ResidentUnit\Domain\ResidentUnit">
                 <join-column name="resident_unit_id" referenced-column-name="id" nullable="true" />
         </many-to-one>
+
+        <indexes>
+            <index name="idx_slip_due_status" columns="due_date,status" />
+        </indexes>
     </entity>
 </doctrine-mapping>
