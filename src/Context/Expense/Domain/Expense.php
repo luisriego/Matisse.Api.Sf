@@ -11,7 +11,7 @@ use App\Context\Expense\Domain\ValueObject\ExpenseAmount;
 use App\Context\Expense\Domain\ValueObject\ExpenseDescription;
 use App\Context\Expense\Domain\ValueObject\ExpenseDueDate;
 use App\Context\Expense\Domain\ValueObject\ExpenseId;
-use App\Shared\Domain\AggregateRoot;
+use App\Shared\Domain\Aggregate\AggregateRoot;
 use DateMalformedStringException;
 use DateTime;
 use DateTimeImmutable;

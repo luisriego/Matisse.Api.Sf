@@ -8,7 +8,7 @@ use App\Context\ResidentUnit\Domain\Event\ResidentUnitIdealFractionWasChanged;
 use App\Context\ResidentUnit\Domain\Event\ResidentUnitRecipientsWereReplaced;
 use App\Context\ResidentUnit\Domain\Event\ResidentUnitRecipientWasAppended;
 use App\Context\User\Domain\User;
-use App\Shared\Domain\AggregateRoot;
+use App\Shared\Domain\Aggregate\AggregateRoot;
 use DateMalformedStringException;
 use DateTime;
 use DateTimeImmutable;

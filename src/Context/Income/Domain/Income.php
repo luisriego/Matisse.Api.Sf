@@ -13,7 +13,7 @@ use App\Context\Income\Domain\ValueObject\IncomeAmount;
 use App\Context\Income\Domain\ValueObject\IncomeDueDate;
 use App\Context\Income\Domain\ValueObject\IncomeId;
 use App\Context\ResidentUnit\Domain\ResidentUnit;
-use App\Shared\Domain\AggregateRoot;
+use App\Shared\Domain\Aggregate\AggregateRoot;
 use DateMalformedStringException;
 use DateTime;
 use DateTimeImmutable;

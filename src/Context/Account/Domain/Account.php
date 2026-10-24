@@ -9,7 +9,7 @@ use App\Context\Account\Domain\Event\AccountWasDisabled;
 use App\Context\Account\Domain\Event\AccountWasEnabled;
 use App\Context\Expense\Domain\Expense;
 use App\Context\Expense\Domain\ExpenseType;
-use App\Shared\Domain\AggregateRoot;
+use App\Shared\Domain\Aggregate\AggregateRoot;
 use DateMalformedStringException;
 use DateTime;
 use DateTimeImmutable;

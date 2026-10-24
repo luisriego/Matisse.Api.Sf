@@ -12,7 +12,7 @@ use App\Context\Gas\Domain\ValueObject\GasAmount;
 use App\Context\Gas\Domain\ValueObject\GasId;
 use App\Context\Gas\Domain\ValueObject\ReadingInM3;
 use App\Context\ResidentUnit\Domain\ResidentUnitId;
-use App\Shared\Domain\AggregateRoot;
+use App\Shared\Domain\Aggregate\AggregateRoot;
 use App\Shared\Domain\ValueObject\Month;
 use App\Shared\Domain\ValueObject\Year;
 use DateMalformedStringException;

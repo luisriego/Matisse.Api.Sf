@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace App\Context\Slip\Domain;
 
 use App\Context\Slip\Domain\Event\PeriodWasClosed;
-use App\Shared\Domain\AggregateRoot;
+use App\Shared\Domain\Aggregate\AggregateRoot;
 use DateTimeImmutable;
 
 class PeriodClosure extends AggregateRoot

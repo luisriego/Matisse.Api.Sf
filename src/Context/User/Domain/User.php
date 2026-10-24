@@ -10,7 +10,7 @@ use App\Context\User\Domain\ValueObject\Email;
 use App\Context\User\Domain\ValueObject\Password;
 use App\Context\User\Domain\ValueObject\UserId;
 use App\Context\User\Domain\ValueObject\UserName;
-use App\Shared\Domain\AggregateRoot;
+use App\Shared\Domain\Aggregate\AggregateRoot;
 use DateTime;
 use DateTimeImmutable;
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;

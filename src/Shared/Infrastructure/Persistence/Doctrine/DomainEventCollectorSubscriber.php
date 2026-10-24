@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace App\Shared\Infrastructure\Persistence\Doctrine;
 
 use App\Context\EventStore\Domain\StoredEvent;
-use App\Shared\Domain\AggregateRoot;
+use App\Shared\Domain\Aggregate\AggregateRoot;
 use App\Shared\Domain\Event\EventBus;
 use Doctrine\Bundle\DoctrineBundle\Attribute\AsDoctrineListener;
 use Doctrine\ORM\Event\PostFlushEventArgs;

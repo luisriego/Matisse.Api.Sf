@@ -14,7 +14,7 @@ use App\Context\Slip\Domain\ValueObject\SlipAmount;
 use App\Context\Slip\Domain\ValueObject\SlipDueDate;
 use App\Context\Slip\Domain\ValueObject\SlipId;
 use App\Context\Slip\Domain\ValueObject\SlipOrigin;
-use App\Shared\Domain\AggregateRoot;
+use App\Shared\Domain\Aggregate\AggregateRoot;
 use DateMalformedStringException;
 use DateTimeImmutable;
 

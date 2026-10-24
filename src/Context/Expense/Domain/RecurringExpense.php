@@ -10,7 +10,7 @@ use App\Context\Expense\Domain\ValueObject\ExpenseDueDay;
 use App\Context\Expense\Domain\ValueObject\ExpenseEndDate;
 use App\Context\Expense\Domain\ValueObject\ExpenseId;
 use App\Context\Expense\Domain\ValueObject\ExpenseStartDate;
-use App\Shared\Domain\AggregateRoot;
+use App\Shared\Domain\Aggregate\AggregateRoot;
 use DateMalformedStringException;
 use DateTimeImmutable;
 use DateTimeInterface;
