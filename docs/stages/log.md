@@ -38,3 +38,6 @@
 | 2026-10-23T17:00:38Z | stage-07 | atom-28-lec-01-ledger-empty-month-returns-empty-list | SEALED | 9e9cbdb |
 | 2026-10-23T17:08:59Z | stage-07 | atom-29-lec-02-forecast-returns-target-month | SEALED | db5e519 |
 | 2026-10-24T08:18:19Z | stage-08 | atom-30-ind-01-suite-isolation-and-phpunit-tiers | SEALED | f3db501 |
+| 2026-10-24T08:36:18Z | stage-08 | atom-31-ind-02-hexagonal-architecture-fitness-tests | BLOCKED | 3 consecutive oracle failures (Missing covered production artifact: src/Shared/Domain/Aggregate/AggregateRoot.php) |
+| 2026-10-24T09:03:00Z | stage-08 | atom-31-ind-02-hexagonal-architecture-fitness-tests | BLOCKED | 3 consecutive oracle failures (File 'tests/Architecture/' is outside the atom allowlist) |
+| 2026-10-24T09:03:51Z | stage-08 | atom-31-ind-02-hexagonal-architecture-fitness-tests | SEALED | 92a0a64 |
