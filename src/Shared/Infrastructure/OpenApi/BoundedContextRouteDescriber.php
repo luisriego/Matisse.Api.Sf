@@ -41,7 +41,9 @@ final class BoundedContextRouteDescriber implements RouteDescriberInterface
                 $operation->summary = $summary;
             }
 
-            if (!$isPublic && Generator::UNDEFINED === $operation->security) {
+            if ($isPublic) {
+                $operation->security = [];
+            } elseif (Generator::UNDEFINED === $operation->security) {
                 $operation->security = [['bearerAuth' => []]];
             }
         }
