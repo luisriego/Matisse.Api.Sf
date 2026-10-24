@@ -108,7 +108,9 @@ for file in ${CHANGED_FILES}; do
     fi
     allowed=false
     while IFS= read -r pattern; do
-        if [[ "${file}" == "${pattern}" ]]; then
+        # Support glob patterns (e.g. "migrations/*") by unquoting the pattern
+        unquoted_pattern="${pattern//\"/}"
+        if [[ "${file}" == ${unquoted_pattern} ]] || [[ "${file}" == "${unquoted_pattern}" ]]; then
             allowed=true
             break
         fi

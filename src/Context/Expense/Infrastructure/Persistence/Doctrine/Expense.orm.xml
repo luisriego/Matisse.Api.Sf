@@ -29,6 +29,10 @@
         <many-to-one field="recurringExpense" target-entity="App\Context\Expense\Domain\RecurringExpense" inversed-by="expenses">
             <join-column name="recurring_expense_id" referenced-column-name="id" nullable="true" />
         </many-to-one>
+
+        <indexes>
+            <index name="idx_expense_due_active" columns="due_date,is_active" />
+        </indexes>
     </entity>
 
 </doctrine-mapping>

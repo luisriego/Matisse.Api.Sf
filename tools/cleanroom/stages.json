@@ -610,6 +610,107 @@
           "then": "responde 200 OK con un documento OpenAPI 3.0.x valido y todas las rutas /api/v1/* documentadas y etiquetadas"
         }
       ]
+    },
+    {
+      "id": "stage-09",
+      "name": "SPEC-OPT: Optimización de Integridad, Mapeo Relacional y Resiliencia Backend",
+      "spec": "SPEC-OPT",
+      "atoms": [
+        {
+          "id": "atom-33-opt-01-doctrine-schema-validation-and-unidirectional-mappings",
+          "spec_atom": "OPT-01",
+          "name": "OPT-01: Corrección de asociaciones Doctrine bidireccionales inválidas y validación de esquema",
+          "level": "integration",
+          "mode": "tdd",
+          "card": "docs/stages/stage-09-atom-33.md",
+          "covers": "src/Context/Slip/Infrastructure/Persistence/Doctrine/Slip.orm.xml",
+          "test_file": "tests/Shared/Infrastructure/Persistence/Doctrine/DoctrineSchemaValidationIntegrationTest.php",
+          "allowlist": [
+            "src/Context/Expense/Infrastructure/Persistence/Doctrine/RecurringExpense.orm.xml",
+            "src/Context/Income/Infrastructure/Persistence/Doctrine/Income.orm.xml",
+            "src/Context/Slip/Infrastructure/Persistence/Doctrine/Slip.orm.xml",
+            "tests/Shared/Infrastructure/Persistence/Doctrine/DoctrineSchemaValidationIntegrationTest.php"
+          ],
+          "given": "RecurringExpense, Income y Slip con atributos inversed-by inválidos entre Bounded Contexts",
+          "when": "se convierten las asociaciones foráneas en unidireccionales eliminando inversed-by",
+          "then": "doctrine:schema:validate finaliza con código 0 sin errores de mapeo"
+        },
+        {
+          "id": "atom-34-opt-02-composite-indexes-for-period-queries",
+          "spec_atom": "OPT-02",
+          "name": "OPT-02: Índices compuestos en PostgreSQL para consultas temporales en Slip, Expense e Income",
+          "level": "integration",
+          "mode": "tdd",
+          "card": "docs/stages/stage-09-atom-34.md",
+          "covers": "src/Context/Expense/Infrastructure/Persistence/Doctrine/Expense.orm.xml",
+          "test_file": "tests/Context/Slip/Infrastructure/Persistence/Doctrine/SlipQueryIndexIntegrationTest.php",
+          "allowlist": [
+            "src/Context/Expense/Infrastructure/Persistence/Doctrine/Expense.orm.xml",
+            "src/Context/Income/Infrastructure/Persistence/Doctrine/Income.orm.xml",
+            "src/Context/Slip/Infrastructure/Persistence/Doctrine/Slip.orm.xml",
+            "migrations/*",
+            "tests/Context/Slip/Infrastructure/Persistence/Doctrine/SlipQueryIndexIntegrationTest.php"
+          ],
+          "given": "consultas por rango de fechas y estado en tablas expense, income y slip",
+          "when": "se declaran índices compuestos en los mapeos ORM XML y se aplica la migración",
+          "then": "el catálogo de PostgreSQL registra los índices B-Tree optimizados"
+        },
+        {
+          "id": "atom-35-opt-03-outbox-event-lifecycle-standardization",
+          "spec_atom": "OPT-03",
+          "name": "OPT-03: Estandarización del ciclo de vida de Eventos de Dominio y persistencia atómica en Outbox",
+          "level": "integration",
+          "mode": "characterization",
+          "card": "docs/stages/stage-09-atom-35.md",
+          "covers": "src/Context/Expense/Application/UseCase/EnterExpense/CreateRecurringExpenseCommandHandler.php",
+          "test_file": "tests/Context/Expense/Application/UseCase/EnterExpense/CreateRecurringExpenseCommandHandlerTest.php",
+          "allowlist": [
+            "src/Context/Expense/Application/UseCase/EnterExpense/CreateRecurringExpenseCommandHandler.php",
+            "tests/Context/Expense/Application/UseCase/EnterExpense/CreateRecurringExpenseCommandHandlerTest.php"
+          ],
+          "given": "CreateRecurringExpenseCommandHandler extrayendo eventos antes de flush()",
+          "when": "se delega la extracción al suscriptor UnitOfWork de Doctrine",
+          "then": "todos los eventos del agregado y sus hijos se persisten en event_store y se publican tras el flush"
+        },
+        {
+          "id": "atom-36-opt-04-doctrine-messenger-async-queue",
+          "spec_atom": "OPT-04",
+          "name": "OPT-04: Enrutamiento asíncrono con cola Doctrine Messenger para tareas en segundo plano",
+          "level": "integration",
+          "mode": "characterization",
+          "card": "docs/stages/stage-09-atom-36.md",
+          "covers": "config/packages/messenger.yaml",
+          "test_file": "tests/Shared/Infrastructure/Messaging/AsyncDoctrineQueueIntegrationTest.php",
+          "allowlist": [
+            "config/packages/messenger.yaml",
+            "tests/Shared/Infrastructure/Messaging/AsyncDoctrineQueueIntegrationTest.php"
+          ],
+          "given": "config/packages/messenger.yaml con transporte async forzado a sync://",
+          "when": "se configura el transporte doctrine://default?queue_name=async",
+          "then": "los mensajes asíncronos se insertan en la tabla messenger_messages sin bloquear el ciclo HTTP"
+        },
+        {
+          "id": "atom-37-opt-05-phpstan-level-8-baseline-elimination",
+          "spec_atom": "OPT-05",
+          "name": "OPT-05: Elevación a PHPStan Nivel 8 y eliminación total de phpstan-baseline.neon",
+          "level": "architecture",
+          "mode": "tdd",
+          "card": "docs/stages/stage-09-atom-37.md",
+          "covers": "phpstan.neon.dist",
+          "test_file": "tests/Architecture/HexagonalArchitectureTest.php",
+          "allowlist": [
+            "phpstan.neon.dist",
+            "phpstan-baseline.neon",
+            "src/Context/Account/Application/UseCase/FindAccount/FindAccountQueryHandler.php",
+            "src/Context/Account/Application/UseCase/FindAllAccounts/FindAllAccountsQueryHandler.php",
+            "src/Context/Account/Application/UseCase/GetAccountBalance/GetAccountBalanceQueryHandler.php",
+            "src/Context/Account/Domain/Account.php"
+          ],
+          "given": "phpstan.neon.dist configurado en nivel 5 con 50 errores silenciados en phpstan-baseline.neon",
+          "when": "se corrigen los errores de tipado de consultas y entidades, se eleva a nivel 8 y se elimina el baseline",
+          "then": "phpstan analyse finaliza con 0 errores sin archivo de baseline"
+        }
+      ]
     }
   ]
 }
