@@ -15,12 +15,14 @@
         <field name="createdAt" column="created_at" type="datetime_immutable" />
         <field name="description" column="description" type="text" nullable="true" />
 
-        <many-to-one field="residentUnit" target-entity="App\Context\ResidentUnit\Domain\ResidentUnit" inversed-by="incomes">
+        <many-to-one field="residentUnit"
+                      target-entity="App\Context\ResidentUnit\Domain\ResidentUnit">
             <join-column name="resident_unit_id" referenced-column-name="id" nullable="true" />
         </many-to-one>
 
-        <many-to-one field="incomeType" target-entity="App\Context\Income\Domain\IncomeType" inversed-by="incomes">
-                <join-column name="type_id" referenced-column-name="id" nullable="true" on-delete="RESTRICT" />
+        <many-to-one field="incomeType"
+                      target-entity="App\Context\Income\Domain\IncomeType">
+            <join-column name="type_id" referenced-column-name="id" nullable="true" on-delete="RESTRICT" />
         </many-to-one>
 
         <field name="accountId" column="account_id" type="uuid" nullable="true" />
