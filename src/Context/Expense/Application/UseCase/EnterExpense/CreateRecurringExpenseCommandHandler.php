@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace App\Context\Expense\Application\UseCase\EnterExpense;
 
-use App\Context\Account\Domain\AccountRepository;
 use App\Context\Expense\Domain\Expense;
 use App\Context\Expense\Domain\ExpenseRepository;
 use App\Context\Expense\Domain\ExpenseTypeRepository;
@@ -30,7 +29,6 @@ final readonly class CreateRecurringExpenseCommandHandler implements CommandHand
     public function __construct(
         private RecurringExpenseRepository $recurringExpenseRepository,
         private ExpenseTypeRepository $typeRepo,
-        protected AccountRepository $accountRepository,
         protected ExpenseRepository $expenseRepository,
         private EventBus $eventBus,
     ) {}
@@ -92,7 +90,7 @@ final readonly class CreateRecurringExpenseCommandHandler implements CommandHand
      */
     private function createIndividualExpenses(RecurringExpense $recurringExpense, CreateRecurringExpenseCommand $command): array
     {
-        $account = $this->accountRepository->findOneByIdOrFail($command->accountId());
+        $accountId = $command->accountId();
         $expenseType = $this->typeRepo->findOneByIdOrFail($command->type());
 
         $startDate = new DateTime($command->startDate());
@@ -113,7 +111,7 @@ final readonly class CreateRecurringExpenseCommandHandler implements CommandHand
                 new ExpenseId(Uuid::random()->value()),
                 new ExpenseAmount($command->amount()),
                 $expenseType,
-                $account,
+                null,
                 new ExpenseDueDate($dueDate),
                 true,
                 new ExpenseDescription(sprintf('%s (%s)', $command->description() ?? 'Recurring expense', $dueDate->format('F'))),

@@ -4,8 +4,6 @@ declare(strict_types=1);
 
 namespace App\Tests\Context\Expense\Application\UseCase\CreateRecurringExpense;
 
-use App\Context\Account\Domain\Account;
-use App\Context\Account\Domain\AccountRepository;
 use App\Context\Expense\Application\UseCase\EnterExpense\CreateRecurringExpenseCommand;
 use App\Context\Expense\Application\UseCase\EnterExpense\CreateRecurringExpenseCommandHandler;
 use App\Context\Expense\Domain\ExpenseRepository;
@@ -28,7 +26,6 @@ class CreateRecurringExpenseCommandHandlerTest extends TestCase
 {
     private MockObject&RecurringExpenseRepository $recurringExpenseRepo;
     private ExpenseTypeRepository&MockObject $typeRepo;
-    private AccountRepository&MockObject $accountRepo;
     private ExpenseRepository&MockObject $expenseRepo;
     private EventBus&MockObject $eventBus;
     private CreateRecurringExpenseCommandHandler $handler;
@@ -42,14 +39,12 @@ class CreateRecurringExpenseCommandHandlerTest extends TestCase
 
         $this->recurringExpenseRepo = $this->createMock(RecurringExpenseRepository::class);
         $this->typeRepo = $this->createMock(ExpenseTypeRepository::class);
-        $this->accountRepo = $this->createMock(AccountRepository::class);
         $this->expenseRepo = $this->createMock(ExpenseRepository::class);
         $this->eventBus = $this->createMock(EventBus::class);
 
         $this->handler = new CreateRecurringExpenseCommandHandler(
             $this->recurringExpenseRepo,
             $this->typeRepo,
-            $this->accountRepo,
             $this->expenseRepo,
             $this->eventBus,
         );
@@ -64,7 +59,6 @@ class CreateRecurringExpenseCommandHandlerTest extends TestCase
         $idMother = ExpenseIdMother::create();
         $amountMother = ExpenseAmountMother::create();
         $typeMother = ExpenseTypeMother::create();
-        $accountMother = $this->createMock(Account::class);
         $dueDayMother = 15;
 
         $monthsOfYear = [1, 6, 12];
@@ -96,12 +90,6 @@ class CreateRecurringExpenseCommandHandlerTest extends TestCase
             ->method('findOneByIdOrFail')
             ->with($typeMother->id())
             ->willReturn($typeMother);
-
-        $this->accountRepo
-            ->expects(self::atLeastOnce())
-            ->method('findOneByIdOrFail')
-            ->with($accountId)
-            ->willReturn($accountMother);
 
         $this->recurringExpenseRepo
             ->expects(self::once())
@@ -165,11 +153,6 @@ class CreateRecurringExpenseCommandHandlerTest extends TestCase
             ->with($typeMother->id())
             ->willReturn($typeMother);
 
-        // We should NOT try to find an account if no individual expenses are created
-        $this->accountRepo
-            ->expects(self::never())
-            ->method('findOneByIdOrFail');
-
         $this->recurringExpenseRepo
             ->expects(self::once())
             ->method('save')
@@ -229,47 +212,6 @@ class CreateRecurringExpenseCommandHandlerTest extends TestCase
         // Assert
         $this->expectException(ResourceNotFoundException::class);
         $this->expectExceptionMessage('ExpenseType not found');
-
-        // Act
-        $this->handler->__invoke($command);
-    }
-
-    /**
-     * @test
-     */
-    public function testItShouldThrowExceptionWhenAccountNotFound(): void
-    {
-        // Arrange
-        $typeMother = ExpenseTypeMother::create();
-        $command = new CreateRecurringExpenseCommand(
-            ExpenseIdMother::create()->value(),
-            100,
-            $typeMother->id(),
-            'non-existent-account-id',
-            15,
-            [1, 6, 12],
-            (new DateTime())->format('Y-m-d'),
-            (new DateTime())->modify('+1 year')->format('Y-m-d'),
-            'description',
-            'notes',
-            true,
-        );
-
-        $this->typeRepo
-            ->expects(self::atLeastOnce())
-            ->method('findOneByIdOrFail')
-            ->with($typeMother->id())
-            ->willReturn($typeMother);
-
-        $this->accountRepo
-            ->expects(self::once())
-            ->method('findOneByIdOrFail')
-            ->with('non-existent-account-id')
-            ->willThrowException(new ResourceNotFoundException('Account not found'));
-
-        // Assert
-        $this->expectException(ResourceNotFoundException::class);
-        $this->expectExceptionMessage('Account not found');
 
         // Act
         $this->handler->__invoke($command);
