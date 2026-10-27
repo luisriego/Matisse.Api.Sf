@@ -45,3 +45,4 @@
 | 2026-10-24T14:35:00Z | stage-09 | atom-34-opt-02-composite-indexes-for-period-queries | SEALED | 7d36d55 |
 | 2026-10-26T19:12:31Z | stage-09 | atom-33-opt-01-doctrine-schema-validation-and-unidirectional-mappings | SEALED | d24bca6 |
 | 2026-10-26T22:25:00Z | stage-09 | atom-35-opt-03-outbox-event-lifecycle-standardization | SEALED | 436c637 |
+| 2026-10-27T17:22:00Z | stage-09 | atom-36-opt-04-retry-mechanism-for-external-service-calls | SEALED | 2cf9c50 |
