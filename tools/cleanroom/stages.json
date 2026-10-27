@@ -613,12 +613,12 @@
     },
     {
       "id": "stage-09",
-      "title": "SPEC-OPT: Optimizaci\u00f3n de Integridad, Mapeo Relacional y Resiliencia Backend",
+      "title": "SPEC-OPT: Optimización de Integridad, Mapeo Relacional y Resiliencia Backend",
       "atoms": [
         {
           "id": "atom-33-opt-01-doctrine-schema-validation-and-unidirectional-mappings",
           "spec_atom": "OPT-01",
-          "name": "OPT-01: Correcci\u00f3n de asociaciones Doctrine bidireccionales inv\u00e1lidas y validaci\u00f3n de esquema",
+          "name": "OPT-01: Corrección de asociaciones Doctrine bidireccionales inválidas y validación de esquema",
           "level": "integration",
           "mode": "tdd",
           "card": "docs/stages/stage-09-atom-33.md",
@@ -628,14 +628,14 @@
             "src/Context/Slip/Infrastructure/Persistence/Doctrine/Slip.orm.xml",
             "tests/Shared/Infrastructure/Persistence/Doctrine/DoctrineSchemaValidationIntegrationTest.php"
           ],
-          "given": "asociaciones Doctrine bidireccionales cruzadas entre bounded contexts (Expense\u2194Income, Expense\u2194Account, etc.)",
+          "given": "asociaciones Doctrine bidireccionales cruzadas entre bounded contexts (Expense↔Income, Expense↔Account, etc.)",
           "when": "se eliminan los inverse sides de las asociaciones cruzadas y se valida el esquema con DoctrineSchemaValidator",
           "then": "no hay errores de mapeo y no existen asociaciones bidireccionales entre contextos"
         },
         {
           "id": "atom-34-opt-02-composite-indexes-for-period-queries",
           "spec_atom": "OPT-02",
-          "name": "OPT-02: \u00cdndices compuestos en PostgreSQL para consultas temporales en Slip, Expense e Income",
+          "name": "OPT-02: Índices compuestos en PostgreSQL para consultas temporales en Slip, Expense e Income",
           "level": "integration",
           "mode": "tdd",
           "card": "docs/stages/stage-09-atom-34.md",
@@ -649,13 +649,13 @@
             "tests/Context/Slip/Infrastructure/Persistence/Doctrine/SlipQueryIndexIntegrationTest.php"
           ],
           "given": "consultas por rango de fechas y estado en tablas expense, income y slip",
-          "when": "se declaran \u00edndices compuestos en los mapeos ORM XML y se aplica la migraci\u00f3n",
-          "then": "el cat\u00e1logo de PostgreSQL registra los \u00edndices B-Tree optimizados"
+          "when": "se declaran índices compuestos en los mapeos ORM XML y se aplica la migración",
+          "then": "el catálogo de PostgreSQL registra los índices B-Tree optimizados"
         },
         {
           "id": "atom-35-opt-03-outbox-event-lifecycle-standardization",
           "spec_atom": "OPT-03",
-          "name": "OPT-03: Estandarizaci\u00f3n del ciclo de vida de Eventos de Dominio y persistencia at\u00f3mica en Outbox",
+          "name": "OPT-03: Estandarización del ciclo de vida de Eventos de Dominio y persistencia atómica en Outbox",
           "level": "integration",
           "mode": "characterization",
           "card": "docs/stages/stage-09-atom-35.md",
@@ -665,14 +665,14 @@
             "src/Context/Expense/Application/UseCase/EnterExpense/CreateRecurringExpenseCommandHandler.php",
             "tests/Context/Expense/Application/UseCase/CreateRecurringExpense/CreateRecurringExpenseCommandHandlerTest.php"
           ],
-          "given": "eventos de dominio generados en m\u00faltiples casos de uso del bounded context Expense",
-          "when": "se estandariza el ciclo de vida de eventos y se persisten at\u00f3micamente en la tabla outbox",
-          "then": "los tests de caracterizaci\u00f3n pasan y el outbox registra todos los eventos con secuencia consistente"
+          "given": "eventos de dominio generados en múltiples casos de uso del bounded context Expense",
+          "when": "se estandariza el ciclo de vida de eventos y se persisten atómicamente en la tabla outbox",
+          "then": "los tests de caracterización pasan y el outbox registra todos los eventos con secuencia consistente"
         },
         {
           "id": "atom-36-opt-04-retry-mechanism-for-external-service-calls",
           "spec_atom": "OPT-04",
-          "name": "OPT-04: Mecanismo de reintento para llamadas a servicios externos en importaci\u00f3n bancaria",
+          "name": "OPT-04: Mecanismo de reintento para llamadas a servicios externos en importación bancaria",
           "level": "integration",
           "mode": "tdd",
           "card": "docs/stages/stage-09-atom-36.md",
@@ -680,11 +680,14 @@
           "test_file": "tests/Context/BankStatement/Application/UseCase/ConfirmBankOfxLines/ConfirmBankOfxLinesCommandHandlerTest.php",
           "allowlist": [
             "src/Context/BankStatement/Application/UseCase/ConfirmBankOfxLines/ConfirmBankOfxLinesCommandHandler.php",
-            "tests/Context/BankStatement/Application/UseCase/ConfirmBankOfxLines/ConfirmBankOfxLinesCommandHandlerTest.php"
+            "tests/Context/BankStatement/Application/UseCase/ConfirmBankOfxLines/ConfirmBankOfxLinesCommandHandlerTest.php",
+            "src/Shared/Application/RetryMechanism.php",
+            "src/Shared/Domain/Exception/TransientException.php",
+            "tests/Context/BankStatement/Application/UseCase/ConfirmBankOfxLines/"
           ],
           "given": "llamadas a servicios externos (OFX, APIs bancarias) que pueden fallar intermitentemente",
-          "when": "se implementa un mecanismo de reintento con backoff exponencial y l\u00edmite de intentos",
-          "then": "los tests verifican que se reintenta correctamente y se propaga la excepci\u00f3n tras agotar los intentos"
+          "when": "se implementa un mecanismo de reintento con backoff exponencial y límite de intentos",
+          "then": "los tests verifican que se reintenta correctamente y se propaga la excepción tras agotar los intentos"
         },
         {
           "id": "atom-37-opt-05-health-check-and-setup-required-endpoint",
@@ -697,9 +700,13 @@
           "test_file": "tests/Shared/Infrastructure/Symfony/Controller/HealthCheckControllerTest.php",
           "allowlist": [
             "src/Shared/Infrastructure/Symfony/Controller/HealthCheckController.php",
-            "tests/Shared/Infrastructure/Symfony/Controller/HealthCheckControllerTest.php"
+            "tests/Shared/Infrastructure/Symfony/Controller/HealthCheckControllerTest.php",
+            "config/routes.yaml",
+            "src/Shared/Infrastructure/Symfony/routes.yaml",
+            "config/services.yaml",
+            "config/packages/security.yaml"
           ],
-          "given": "la plataforma Matisse Api con m\u00faltiples dependencias (Doctrine, Redis, etc.)",
+          "given": "la plataforma Matisse Api con múltiples dependencias (Doctrine, Redis, etc.)",
           "when": "se implementa un endpoint GET /api/health que verifica el estado de cada dependencia",
           "then": "responde 200 OK con detalle de cada servicio o 503 Service Unavailable si alguna dependencia falla"
         }

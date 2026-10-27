@@ -2,3 +2,7 @@
 context_routes:
     resource: '../src/Context/*/Infrastructure/Http/routes.yaml'
     type: glob
+
+# Shared routes (controllers in Infrastructure/Symfony)
+shared_routes:
+    resource: '../src/Shared/Infrastructure/Symfony/routes.yaml'
