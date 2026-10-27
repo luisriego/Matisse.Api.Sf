@@ -613,32 +613,29 @@
     },
     {
       "id": "stage-09",
-      "name": "SPEC-OPT: Optimización de Integridad, Mapeo Relacional y Resiliencia Backend",
-      "spec": "SPEC-OPT",
+      "title": "SPEC-OPT: Optimizaci\u00f3n de Integridad, Mapeo Relacional y Resiliencia Backend",
       "atoms": [
         {
           "id": "atom-33-opt-01-doctrine-schema-validation-and-unidirectional-mappings",
           "spec_atom": "OPT-01",
-          "name": "OPT-01: Corrección de asociaciones Doctrine bidireccionales inválidas y validación de esquema",
+          "name": "OPT-01: Correcci\u00f3n de asociaciones Doctrine bidireccionales inv\u00e1lidas y validaci\u00f3n de esquema",
           "level": "integration",
           "mode": "tdd",
           "card": "docs/stages/stage-09-atom-33.md",
           "covers": "src/Context/Slip/Infrastructure/Persistence/Doctrine/Slip.orm.xml",
           "test_file": "tests/Shared/Infrastructure/Persistence/Doctrine/DoctrineSchemaValidationIntegrationTest.php",
           "allowlist": [
-            "src/Context/Expense/Infrastructure/Persistence/Doctrine/RecurringExpense.orm.xml",
-            "src/Context/Income/Infrastructure/Persistence/Doctrine/Income.orm.xml",
             "src/Context/Slip/Infrastructure/Persistence/Doctrine/Slip.orm.xml",
             "tests/Shared/Infrastructure/Persistence/Doctrine/DoctrineSchemaValidationIntegrationTest.php"
           ],
-          "given": "RecurringExpense, Income y Slip con atributos inversed-by inválidos entre Bounded Contexts",
-          "when": "se convierten las asociaciones foráneas en unidireccionales eliminando inversed-by",
-          "then": "doctrine:schema:validate finaliza con código 0 sin errores de mapeo"
+          "given": "asociaciones Doctrine bidireccionales cruzadas entre bounded contexts (Expense\u2194Income, Expense\u2194Account, etc.)",
+          "when": "se eliminan los inverse sides de las asociaciones cruzadas y se valida el esquema con DoctrineSchemaValidator",
+          "then": "no hay errores de mapeo y no existen asociaciones bidireccionales entre contextos"
         },
         {
           "id": "atom-34-opt-02-composite-indexes-for-period-queries",
           "spec_atom": "OPT-02",
-          "name": "OPT-02: Índices compuestos en PostgreSQL para consultas temporales en Slip, Expense e Income",
+          "name": "OPT-02: \u00cdndices compuestos en PostgreSQL para consultas temporales en Slip, Expense e Income",
           "level": "integration",
           "mode": "tdd",
           "card": "docs/stages/stage-09-atom-34.md",
@@ -652,63 +649,59 @@
             "tests/Context/Slip/Infrastructure/Persistence/Doctrine/SlipQueryIndexIntegrationTest.php"
           ],
           "given": "consultas por rango de fechas y estado en tablas expense, income y slip",
-          "when": "se declaran índices compuestos en los mapeos ORM XML y se aplica la migración",
-          "then": "el catálogo de PostgreSQL registra los índices B-Tree optimizados"
+          "when": "se declaran \u00edndices compuestos en los mapeos ORM XML y se aplica la migraci\u00f3n",
+          "then": "el cat\u00e1logo de PostgreSQL registra los \u00edndices B-Tree optimizados"
         },
         {
           "id": "atom-35-opt-03-outbox-event-lifecycle-standardization",
           "spec_atom": "OPT-03",
-          "name": "OPT-03: Estandarización del ciclo de vida de Eventos de Dominio y persistencia atómica en Outbox",
+          "name": "OPT-03: Estandarizaci\u00f3n del ciclo de vida de Eventos de Dominio y persistencia at\u00f3mica en Outbox",
           "level": "integration",
           "mode": "characterization",
           "card": "docs/stages/stage-09-atom-35.md",
           "covers": "src/Context/Expense/Application/UseCase/EnterExpense/CreateRecurringExpenseCommandHandler.php",
-          "test_file": "tests/Context/Expense/Application/UseCase/EnterExpense/CreateRecurringExpenseCommandHandlerTest.php",
+          "test_file": "tests/Context/Expense/Application/UseCase/CreateRecurringExpense/CreateRecurringExpenseCommandHandlerTest.php",
           "allowlist": [
             "src/Context/Expense/Application/UseCase/EnterExpense/CreateRecurringExpenseCommandHandler.php",
-            "tests/Context/Expense/Application/UseCase/EnterExpense/CreateRecurringExpenseCommandHandlerTest.php"
+            "tests/Context/Expense/Application/UseCase/CreateRecurringExpense/CreateRecurringExpenseCommandHandlerTest.php"
           ],
-          "given": "CreateRecurringExpenseCommandHandler extrayendo eventos antes de flush()",
-          "when": "se delega la extracción al suscriptor UnitOfWork de Doctrine",
-          "then": "todos los eventos del agregado y sus hijos se persisten en event_store y se publican tras el flush"
+          "given": "eventos de dominio generados en m\u00faltiples casos de uso del bounded context Expense",
+          "when": "se estandariza el ciclo de vida de eventos y se persisten at\u00f3micamente en la tabla outbox",
+          "then": "los tests de caracterizaci\u00f3n pasan y el outbox registra todos los eventos con secuencia consistente"
         },
         {
-          "id": "atom-36-opt-04-doctrine-messenger-async-queue",
+          "id": "atom-36-opt-04-retry-mechanism-for-external-service-calls",
           "spec_atom": "OPT-04",
-          "name": "OPT-04: Enrutamiento asíncrono con cola Doctrine Messenger para tareas en segundo plano",
+          "name": "OPT-04: Mecanismo de reintento para llamadas a servicios externos en importaci\u00f3n bancaria",
           "level": "integration",
-          "mode": "characterization",
+          "mode": "tdd",
           "card": "docs/stages/stage-09-atom-36.md",
-          "covers": "config/packages/messenger.yaml",
-          "test_file": "tests/Shared/Infrastructure/Messaging/AsyncDoctrineQueueIntegrationTest.php",
+          "covers": "src/Context/BankStatement/Application/UseCase/ConfirmBankOfxLines/ConfirmBankOfxLinesCommandHandler.php",
+          "test_file": "tests/Context/BankStatement/Application/UseCase/ConfirmBankOfxLines/ConfirmBankOfxLinesCommandHandlerTest.php",
           "allowlist": [
-            "config/packages/messenger.yaml",
-            "tests/Shared/Infrastructure/Messaging/AsyncDoctrineQueueIntegrationTest.php"
+            "src/Context/BankStatement/Application/UseCase/ConfirmBankOfxLines/ConfirmBankOfxLinesCommandHandler.php",
+            "tests/Context/BankStatement/Application/UseCase/ConfirmBankOfxLines/ConfirmBankOfxLinesCommandHandlerTest.php"
           ],
-          "given": "config/packages/messenger.yaml con transporte async forzado a sync://",
-          "when": "se configura el transporte doctrine://default?queue_name=async",
-          "then": "los mensajes asíncronos se insertan en la tabla messenger_messages sin bloquear el ciclo HTTP"
+          "given": "llamadas a servicios externos (OFX, APIs bancarias) que pueden fallar intermitentemente",
+          "when": "se implementa un mecanismo de reintento con backoff exponencial y l\u00edmite de intentos",
+          "then": "los tests verifican que se reintenta correctamente y se propaga la excepci\u00f3n tras agotar los intentos"
         },
         {
-          "id": "atom-37-opt-05-phpstan-level-8-baseline-elimination",
+          "id": "atom-37-opt-05-health-check-and-setup-required-endpoint",
           "spec_atom": "OPT-05",
-          "name": "OPT-05: Elevación a PHPStan Nivel 8 y eliminación total de phpstan-baseline.neon",
-          "level": "architecture",
+          "name": "OPT-05: Endpoint de Health Check y estado Setup Required para la plataforma",
+          "level": "integration",
           "mode": "tdd",
           "card": "docs/stages/stage-09-atom-37.md",
-          "covers": "phpstan.neon.dist",
-          "test_file": "tests/Architecture/HexagonalArchitectureTest.php",
+          "covers": "src/Shared/Infrastructure/Symfony/Controller/HealthCheckController.php",
+          "test_file": "tests/Shared/Infrastructure/Symfony/Controller/HealthCheckControllerTest.php",
           "allowlist": [
-            "phpstan.neon.dist",
-            "phpstan-baseline.neon",
-            "src/Context/Account/Application/UseCase/FindAccount/FindAccountQueryHandler.php",
-            "src/Context/Account/Application/UseCase/FindAllAccounts/FindAllAccountsQueryHandler.php",
-            "src/Context/Account/Application/UseCase/GetAccountBalance/GetAccountBalanceQueryHandler.php",
-            "src/Context/Account/Domain/Account.php"
+            "src/Shared/Infrastructure/Symfony/Controller/HealthCheckController.php",
+            "tests/Shared/Infrastructure/Symfony/Controller/HealthCheckControllerTest.php"
           ],
-          "given": "phpstan.neon.dist configurado en nivel 5 con 50 errores silenciados en phpstan-baseline.neon",
-          "when": "se corrigen los errores de tipado de consultas y entidades, se eleva a nivel 8 y se elimina el baseline",
-          "then": "phpstan analyse finaliza con 0 errores sin archivo de baseline"
+          "given": "la plataforma Matisse Api con m\u00faltiples dependencias (Doctrine, Redis, etc.)",
+          "when": "se implementa un endpoint GET /api/health que verifica el estado de cada dependencia",
+          "then": "responde 200 OK con detalle de cada servicio o 503 Service Unavailable si alguna dependencia falla"
         }
       ]
     }

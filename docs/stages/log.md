@@ -42,4 +42,6 @@
 | 2026-10-24T09:03:00Z | stage-08 | atom-31-ind-02-hexagonal-architecture-fitness-tests | BLOCKED | 3 consecutive oracle failures (File 'tests/Architecture/' is outside the atom allowlist) |
 | 2026-10-24T09:03:51Z | stage-08 | atom-31-ind-02-hexagonal-architecture-fitness-tests | SEALED | 92a0a64 |
 | 2026-10-24T09:53:42Z | stage-08 | atom-32-ind-03-openapi-and-security-boundary-contracts | SEALED | 75175e9 |
-| 2026-10-26T22:49:21Z | stage-09 | atom-35-opt-03-outbox-event-lifecycle-standardization | SEALED | 436c637 |
+| 2026-10-24T14:35:00Z | stage-09 | atom-34-opt-02-composite-indexes-for-period-queries | SEALED | 7d36d55 |
+| 2026-10-26T19:12:31Z | stage-09 | atom-33-opt-01-doctrine-schema-validation-and-unidirectional-mappings | SEALED | d24bca6 |
+| 2026-10-26T22:25:00Z | stage-09 | atom-35-opt-03-outbox-event-lifecycle-standardization | SEALED | 436c637 |

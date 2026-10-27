@@ -22,6 +22,7 @@ use App\Context\Slip\Domain\Service\SlipGenerationBreakdownBuilder;
 use App\Context\Slip\Domain\SlipGenerationParameterSnapshotRepository;
 use App\Context\Slip\Domain\SlipRepository;
 use App\Shared\Application\CommandHandler;
+use App\Shared\Application\RetryMechanism;
 use App\Shared\Domain\Exception\ResourceNotFoundException;
 use App\Shared\Domain\ValueObject\DateRange;
 use DateMalformedStringException;
@@ -66,6 +67,7 @@ final class ConfirmBankOfxLinesCommandHandler implements CommandHandler
         private readonly SetupStatusChecker $setupStatusChecker,
         private readonly AccountRepository $accountRepository,
         private readonly ExpectedExpenseFromOfxService $expectedExpenseFromOfx,
+        private readonly RetryMechanism $retryMechanism,
         /**
          * Default income type id used for bank CREDIT lines when the client did not send one.
          * Set via environment variable DEFAULT_BANK_CREDIT_INCOME_TYPE_ID.
@@ -144,6 +146,20 @@ final class ConfirmBankOfxLinesCommandHandler implements CommandHandler
     }
 
     // ---------------------------------------------------------------------
+    // Retry wrapper for command bus dispatches
+    // ---------------------------------------------------------------------
+
+    /**
+     * Dispatches a command with exponential backoff retry for transient failures.
+     */
+    private function dispatchWithRetry(object $command): void
+    {
+        $this->retryMechanism->execute(
+            fn () => $this->commandBus->dispatch($command),
+        );
+    }
+
+    // ---------------------------------------------------------------------
     // Expense
     // ---------------------------------------------------------------------
 
@@ -165,7 +181,7 @@ final class ConfirmBankOfxLinesCommandHandler implements CommandHandler
         $expenseId = Uuid::v4()->toRfc4122();
 
         if (!$line->isExpectedExpense) {
-            $this->commandBus->dispatch(new EnterExpenseCommand(
+            $this->dispatchWithRetry(new EnterExpenseCommand(
                 id: $expenseId,
                 amount: $line->amountInCents,
                 type: $line->expenseTypeId,
@@ -207,7 +223,7 @@ final class ConfirmBankOfxLinesCommandHandler implements CommandHandler
             description: $line->description,
         );
 
-        $this->commandBus->dispatch(new EnterMonthlyRecurringExpenseCommand(
+        $this->dispatchWithRetry(new EnterMonthlyRecurringExpenseCommand(
             $expenseId,
             $outcome['recurringExpenseId'],
             $accountId,
@@ -238,7 +254,7 @@ final class ConfirmBankOfxLinesCommandHandler implements CommandHandler
         $postedAt = $line->postedAt !== '' ? $line->postedAt : $line->dueDate;
         $accountId = $this->resolveLedgerAccountId($line->accountId, $importBankAccountId);
 
-        $this->commandBus->dispatch(new EnterIncomeCommand(
+        $this->dispatchWithRetry(new EnterIncomeCommand(
             id: $incomeId,
             amount: $line->amountInCents,
             residentUnitId: $line->residentUnitId,
@@ -468,7 +484,7 @@ final class ConfirmBankOfxLinesCommandHandler implements CommandHandler
             $primaryIncomeId = Uuid::v4()->toRfc4122();
             $descriptionText = sprintf('Compensação de boletos — %s', $periodLabel);
 
-            $this->commandBus->dispatch(new EnterIncomeCommand(
+            $this->dispatchWithRetry(new EnterIncomeCommand(
                 id: $primaryIncomeId,
                 amount: $receivedCents,
                 residentUnitId: null,
@@ -573,7 +589,7 @@ final class ConfirmBankOfxLinesCommandHandler implements CommandHandler
             $label      = $this->componentLabelPtBr($componentKey);
             $description = sprintf('Liquidação de boletos — %s (%s)', $periodLabel, $label);
 
-            $this->commandBus->dispatch(new EnterIncomeCommand(
+            $this->dispatchWithRetry(new EnterIncomeCommand(
                 id: $incomeId,
                 amount: $amount,
                 residentUnitId: null,
