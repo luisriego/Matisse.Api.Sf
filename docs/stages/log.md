@@ -46,3 +46,13 @@
 | 2026-10-26T19:12:31Z | stage-09 | atom-33-opt-01-doctrine-schema-validation-and-unidirectional-mappings | SEALED | d24bca6 |
 | 2026-10-26T22:25:00Z | stage-09 | atom-35-opt-03-outbox-event-lifecycle-standardization | SEALED | 436c637 |
 | 2026-10-27T17:22:00Z | stage-09 | atom-36-opt-04-retry-mechanism-for-external-service-calls | SEALED | 2cf9c50 |
+| 2026-10-27T18:07:15Z | stage-09 | atom-37-opt-05-health-check-and-setup-required-endpoint | BLOCKED | 3 consecutive oracle failures (File 'src/Shared/Infrastructure/Symfony/Controller/' is outside the atom allowlist) |
+| 2026-10-27T18:09:21Z | stage-09 | atom-37-opt-05-health-check-and-setup-required-endpoint | BLOCKED | 3 consecutive oracle failures (Atom test file failed: tests/Shared/Infrastructure/Symfony/Controller/HealthCheckControllerTest.php) |
+| 2026-10-27T18:11:27Z | stage-09 | atom-37-opt-05-health-check-and-setup-required-endpoint | BLOCKED | 3 consecutive oracle failures (Atom test file failed: tests/Shared/Infrastructure/Symfony/Controller/HealthCheckControllerTest.php) |
+| 2026-10-27T18:24:40Z | stage-09 | atom-37-opt-05-health-check-and-setup-required-endpoint | BLOCKED | 3 consecutive oracle failures (File 'config/routes.yaml' is outside the atom allowlist) |
+| 2026-10-27T18:28:33Z | stage-09 | atom-37-opt-05-health-check-and-setup-required-endpoint | BLOCKED | 3 consecutive oracle failures (File 'config/services.yaml' is outside the atom allowlist) |
+| 2026-10-27T18:29:31Z | stage-09 | atom-37-opt-05-health-check-and-setup-required-endpoint | BLOCKED | 3 consecutive oracle failures (Atom test file failed: tests/Shared/Infrastructure/Symfony/Controller/HealthCheckControllerTest.php) |
+| 2026-10-27T18:32:07Z | stage-09 | atom-37-opt-05-health-check-and-setup-required-endpoint | BLOCKED | 3 consecutive oracle failures (Atom test file failed: tests/Shared/Infrastructure/Symfony/Controller/HealthCheckControllerTest.php) |
+| 2026-10-27T18:35:57Z | stage-09 | atom-37-opt-05-health-check-and-setup-required-endpoint | BLOCKED | 3 consecutive oracle failures (PHP-CS-Fixer coding standard check failed) |
+| 2026-10-27T18:37:47Z | stage-09 | atom-37-opt-05-health-check-and-setup-required-endpoint | BLOCKED | 3 consecutive oracle failures (PHP-CS-Fixer coding standard check failed) |
+| 2026-10-27T18:42:06Z | stage-09 | atom-37-opt-05-health-check-and-setup-required-endpoint | SEALED | 88fecfa |
