@@ -17,22 +17,25 @@ final class ApiControllerExceptionListener implements EventSubscriberInterface
     public static function getSubscribedEvents(): array
     {
         return [
-            KernelEvents::EXCEPTION => ['onKernelException', 0],
+            KernelEvents::EXCEPTION => ['onKernelException', 150],
         ];
     }
 
     public function onKernelException(ExceptionEvent $event): void
     {
         $exception = $event->getThrowable();
-        $controller = $event->getController();
+        $controller = $event->getRequest()->attributes->get('_controller');
 
-        // Ensure the controller is an array like [controller_instance, method_name]
-        if (!is_array($controller) || !$controller[0] instanceof ApiController) {
+        // Resolve the ApiController instance from the controller attribute.
+        // Supports both invokable objects and array tuples [controller, method].
+        if ($controller instanceof ApiController) {
+            $apiController = $controller;
+        } elseif (is_array($controller) && ($controller[0] ?? null) instanceof ApiController) {
+            $apiController = $controller[0];
+        } else {
             return;
         }
 
-        /** @var ApiController $apiController */
-        $apiController = $controller[0];
         $exceptionsMap = $apiController->exceptions();
         $exceptionClass = $exception::class;
 

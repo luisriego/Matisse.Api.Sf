@@ -51,6 +51,11 @@ services:
             - '../src/Shared/Infrastructure/Persistence/Entity/'
             - '../src/Shared/Infrastructure/OpenApi/'
 
+    App\Shared\Infrastructure\Symfony\Controller\:
+        public: true
+        resource: '../src/Shared/Infrastructure/Symfony/Controller/'
+        tags: ['controller.service_arguments']
+
     App\Shared\Infrastructure\OpenApi\BoundedContextRouteDescriber:
         tags:
             - { name: nelmio_api_doc.route_describer, priority: -300 }

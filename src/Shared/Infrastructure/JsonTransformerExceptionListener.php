@@ -10,6 +10,7 @@ use App\Context\ResidentUnit\Domain\Exception\IdealFractionSumExceedsLimitExcept
 use App\Context\ResidentUnit\Domain\Exception\ResidentUnitAlreadyExistsException;
 use App\Shared\Domain\Exception\AccessDeniedException;
 use App\Shared\Domain\Exception\InvalidArgumentException;
+use App\Shared\Domain\Exception\InvalidDataException;
 use App\Shared\Domain\Exception\ResourceAlreadyExistException;
 use App\Shared\Domain\Exception\ResourceNotFoundException;
 use JsonException;
@@ -43,7 +44,9 @@ class JsonTransformerExceptionListener
             $data['code'] = Response::HTTP_NOT_FOUND;
         }
 
-        if ($e instanceof InvalidArgumentException || $e instanceof JsonException) {
+        if ($e instanceof InvalidDataException) {
+            $data['code'] = Response::HTTP_UNPROCESSABLE_ENTITY;
+        } elseif ($e instanceof InvalidArgumentException || $e instanceof JsonException) {
             $data['code'] = Response::HTTP_BAD_REQUEST;
         }
 
