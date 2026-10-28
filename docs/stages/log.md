@@ -59,3 +59,10 @@
 | 2026-10-28T13:35:09Z | stage-10 | atom-38-fix-api-controller-exception-listener | SEALED | aefbb59 |
 | 2026-10-28T14:11:14Z | stage-10 | atom-39-complete-domain-event-registry-map | SEALED | 3695888 |
 | 2026-10-28T15:02:38Z | stage-10 | atom-40-fix-slip-anomaly-handler-and-notification-bugs | SEALED | 1e0c7cc |
+| 2026-10-28T22:36:20Z | stage-10 | atom-41-fix-income-routes-and-slip-workflow-service | BLOCKED | 3 consecutive oracle failures (PHPStan failed on src/Context/Slip/Application/Service/SlipWorkflowService.php or tests/Context/Slip/Application/Service/SlipWorkflowServiceTest.php) |
+| 2026-10-28T22:42:34Z | stage-10 | atom-41-fix-income-routes-and-slip-workflow-service | BLOCKED | 3 consecutive oracle failures (File 'phpstan-baseline.neon' is outside the atom allowlist) |
+| 2026-10-28T22:55:40Z | stage-10 | atom-41-fix-income-routes-and-slip-workflow-service | BLOCKED | 3 consecutive oracle failures (File 'AGENTS.md' is outside the atom allowlist) |
+| 2026-10-28T23:05:54Z | stage-10 | atom-41-fix-income-routes-and-slip-workflow-service | BLOCKED | 3 consecutive oracle failures (PHPStan failed on src/Context/Slip/Application/Service/SlipWorkflowService.php or tests/Context/Slip/Application/Service/SlipWorkflowServiceTest.php) |
+| 2026-10-28T23:22:31Z | stage-10 | atom-41-fix-income-routes-and-slip-workflow-service | BLOCKED | 3 consecutive oracle failures (File 'phpstan-baseline.neon' is outside the atom allowlist) |
+| 2026-10-28T23:27:00Z | stage-10 | atom-41-fix-income-routes-and-slip-workflow-service | BLOCKED | 3 consecutive oracle failures (PHPStan failed on src/Context/Slip/Application/Service/SlipWorkflowService.php or tests/Context/Slip/Application/Service/SlipWorkflowServiceTest.php) |
+| 2026-10-28T23:33:47Z | stage-10 | atom-41-fix-income-routes-and-slip-workflow-service | SEALED | 3d67d89 |
