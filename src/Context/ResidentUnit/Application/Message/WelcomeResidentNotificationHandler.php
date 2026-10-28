@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Context\ResidentUnit\Application\Message;
 
+use Psr\Log\LoggerInterface;
 use Symfony\Component\Mailer\Exception\TransportExceptionInterface;
 use Symfony\Component\Mailer\MailerInterface;
 use Symfony\Component\Messenger\Attribute\AsMessageHandler;
@@ -17,6 +18,7 @@ final readonly class WelcomeResidentNotificationHandler
     public function __construct(
         private MailerInterface $mailer,
         private string $mailerFrom,
+        private ?LoggerInterface $logger = null,
     ) {}
 
     /**
@@ -39,11 +41,11 @@ final readonly class WelcomeResidentNotificationHandler
 
         $this->mailer->send($email);
 
-        echo sprintf(
-            "\n[OK] E-mail de boas-vindas para %s (%s) enviado para %s.\n",
+        $this->logger?->info(sprintf(
+            '[OK] E-mail de boas-vindas para %s (%s) enviado para %s.',
             $message->name,
             $message->unitName,
             $message->email,
-        );
+        ));
     }
 }

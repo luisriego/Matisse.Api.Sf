@@ -6,6 +6,7 @@ namespace App\Context\Slip\Application\UseCase\CheckSlipTotalAnomaly;
 
 use App\Context\Slip\Application\Service\SlipAlertService;
 use App\Shared\Application\CommandHandler;
+use stdClass;
 
 class CheckSlipTotalAnomalyCommandHandler implements CommandHandler
 {
@@ -13,7 +14,7 @@ class CheckSlipTotalAnomalyCommandHandler implements CommandHandler
         private readonly SlipAlertService $slipAlertService,
     ) {}
 
-    public function __invoke(CheckSlipTotalAnomalyCommand $command): ?string
+    public function __invoke(CheckSlipTotalAnomalyCommand $command): ?stdClass
     {
         return $this->slipAlertService->checkAndGenerateAnomalyAlert(
             $command->getAmount(),
