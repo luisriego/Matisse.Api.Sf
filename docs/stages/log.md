@@ -56,3 +56,5 @@
 | 2026-10-27T18:35:57Z | stage-09 | atom-37-opt-05-health-check-and-setup-required-endpoint | BLOCKED | 3 consecutive oracle failures (PHP-CS-Fixer coding standard check failed) |
 | 2026-10-27T18:37:47Z | stage-09 | atom-37-opt-05-health-check-and-setup-required-endpoint | BLOCKED | 3 consecutive oracle failures (PHP-CS-Fixer coding standard check failed) |
 | 2026-10-27T18:42:06Z | stage-09 | atom-37-opt-05-health-check-and-setup-required-endpoint | SEALED | 88fecfa |
+| 2026-10-28T13:35:09Z | stage-10 | atom-38-fix-api-controller-exception-listener | SEALED | aefbb59 |
+| 2026-10-28T14:11:14Z | stage-10 | atom-39-complete-domain-event-registry-map | SEALED | 3695888 |
