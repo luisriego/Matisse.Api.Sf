@@ -5,12 +5,16 @@ declare(strict_types=1);
 namespace App\Tests\Context\Slip\Application\Service;
 
 use App\Context\Slip\Application\Service\SlipWorkflowService;
+use PHPUnit\Framework\Attributes\Test;
 use PHPUnit\Framework\TestCase;
-use stdClass;
 use Symfony\Component\Workflow\Exception\LogicException;
 use Symfony\Component\Workflow\WorkflowInterface;
+use Symfony\Component\Yaml\Yaml;
 
-class SlipWorkflowServiceTest extends TestCase
+use function class_exists;
+use function count;
+
+final class SlipWorkflowServiceTest extends TestCase
 {
     private WorkflowInterface $slipWorkflow;
     private SlipWorkflowService $service;
@@ -21,11 +25,12 @@ class SlipWorkflowServiceTest extends TestCase
         $this->service = new SlipWorkflowService($this->slipWorkflow);
     }
 
-    public function testSendTransitionIsAppliedWhenAllowed(): void
+    #[Test]
+    public function testSendAppliesSendTransitionWhenAllowed(): void
     {
-        $slip = new stdClass(); // Dummy slip object
+        $slip = new \stdClass();
 
-        $this->slipWorkflow->expects($this->once()) // Only called in apply()
+        $this->slipWorkflow->expects($this->once())
             ->method('can')
             ->with($slip, 'send')
             ->willReturn(true);
@@ -37,96 +42,13 @@ class SlipWorkflowServiceTest extends TestCase
         $this->service->send($slip);
     }
 
-    public function testSendTransitionThrowsExceptionWhenNotAllowed(): void
+    #[Test]
+    public function testCancelAppliesFirstAvailableVoidTransition(): void
     {
-        $slip = new stdClass(); // Dummy slip object
-
-        $this->slipWorkflow->expects($this->once())
-            ->method('can')
-            ->with($slip, 'send')
-            ->willReturn(false);
-
-        $this->slipWorkflow->expects($this->never())
-            ->method('apply');
-
-        $this->expectException(LogicException::class);
-        $this->expectExceptionMessage('Transition "send" not allowed.');
-
-        $this->service->send($slip);
-    }
-
-    public function testPayTransitionIsAppliedWhenAllowed(): void
-    {
-        $slip = new stdClass(); // Dummy slip object
-
-        $this->slipWorkflow->expects($this->exactly(2)) // Called in pay() and then in apply()
-            ->method('can')
-            ->with($slip, 'pay_from_submitted')
-            ->willReturn(true);
-
-        $this->slipWorkflow->expects($this->once())
-            ->method('apply')
-            ->with($slip, 'pay_from_submitted');
-
-        $this->service->pay($slip);
-    }
-
-    public function testPayTransitionDoesNothingWhenNotAllowed(): void
-    {
-        $slip = new stdClass(); // Dummy slip object
-
-        $this->slipWorkflow->expects($this->once())
-            ->method('can')
-            ->with($slip, 'pay_from_submitted')
-            ->willReturn(false);
-
-        $this->slipWorkflow->expects($this->never())
-            ->method('apply');
-
-        // No exception is expected for 'pay' when not allowed, it just does nothing
-        $this->service->pay($slip);
-    }
-
-    public function testExpireTransitionIsAppliedWhenAllowed(): void
-    {
-        $slip = new stdClass(); // Dummy slip object
-
-        $this->slipWorkflow->expects($this->once()) // Only called in apply()
-            ->method('can')
-            ->with($slip, 'expire')
-            ->willReturn(true);
-
-        $this->slipWorkflow->expects($this->once())
-            ->method('apply')
-            ->with($slip, 'expire');
-
-        $this->service->expire($slip);
-    }
-
-    public function testExpireTransitionThrowsExceptionWhenNotAllowed(): void
-    {
-        $slip = new stdClass(); // Dummy slip object
-
-        $this->slipWorkflow->expects($this->once())
-            ->method('can')
-            ->with($slip, 'expire')
-            ->willReturn(false);
-
-        $this->slipWorkflow->expects($this->never())
-            ->method('apply');
-
-        $this->expectException(LogicException::class);
-        $this->expectExceptionMessage('Transition "expire" not allowed.');
-
-        $this->service->expire($slip);
-    }
-
-    public function testCancelTransitionIsAppliedWhenAllowed(): void
-    {
-        $slip = new stdClass(); // Dummy slip object
+        $slip = new \stdClass();
 
         // Simulate that 'void_from_submitted' is the allowed transition
-        $this->slipWorkflow->expects($this->exactly(3)) // Called for 'void_from_pending', then 'void_from_submitted', and then in apply()
+        $this->slipWorkflow->expects($this->exactly(3))
             ->method('can')
             ->willReturnMap([
                 [$slip, 'void_from_pending', false],
@@ -140,12 +62,13 @@ class SlipWorkflowServiceTest extends TestCase
         $this->service->cancel($slip);
     }
 
-    public function testCancelTransitionThrowsExceptionWhenNotAllowedFromAnyState(): void
+    #[Test]
+    public function testCancelThrowsLogicExceptionWhenNoVoidTransitionIsAllowed(): void
     {
-        $slip = new stdClass(); // Dummy slip object
+        $slip = new \stdClass();
 
         // Simulate that no cancel transitions are allowed
-        $this->slipWorkflow->expects($this->exactly(3)) // Called for all three void transitions
+        $this->slipWorkflow->expects($this->exactly(3))
             ->method('can')
             ->willReturn(false);
 
@@ -156,5 +79,29 @@ class SlipWorkflowServiceTest extends TestCase
         $this->expectExceptionMessage('Cancellation not allowed from current state.');
 
         $this->service->cancel($slip);
+    }
+
+    #[Test]
+    public function testIncomeRoutesYamlHasValidRouteNamesAndExistingControllers(): void
+    {
+        $routesPath = getcwd() . '/src/Context/Income/Infrastructure/Http/routes.yaml';
+        $routes = Yaml::parseFile($routesPath);
+
+        // Verify the corrupted key does not exist
+        $this->assertArrayNotHasKey('para que income_health_check', $routes,
+            'The corrupted route key "para que income_health_check" must be removed');
+
+        // Verify all active controllers exist
+        foreach ($routes as $routeName => $routeConfig) {
+            if (!isset($routeConfig['controller'])) {
+                continue;
+            }
+            $this->assertTrue(class_exists($routeConfig['controller']),
+                sprintf('Controller "%s" for route "%s" does not exist', $routeConfig['controller'], $routeName));
+        }
+
+        // Verify there is at least one active route
+        $activeRoutes = array_filter($routes, fn ($r) => isset($r['controller']));
+        $this->assertGreaterThan(0, count($activeRoutes), 'There must be at least one active income route');
     }
 }

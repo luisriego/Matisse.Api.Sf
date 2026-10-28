@@ -13,7 +13,7 @@ use function sprintf;
 final readonly class SlipWorkflowService
 {
     public function __construct(
-        #[Autowire(service: 'slip.state_machine')] // usa exactamente el id sugerido por el error
+        #[Autowire(service: 'state_machine.slip')] // usa exactamente el id sugerido por el error
         private WorkflowInterface $slipWorkflow,
     ) {}
 
@@ -26,6 +26,8 @@ final readonly class SlipWorkflowService
     {
         if ($this->slipWorkflow->can($slip, 'pay_from_submitted')) {
             $this->apply($slip, 'pay_from_submitted');
+        } elseif ($this->slipWorkflow->can($slip, 'pay_from_overdue')) {
+            $this->apply($slip, 'pay_from_overdue');
         }
     }
 
