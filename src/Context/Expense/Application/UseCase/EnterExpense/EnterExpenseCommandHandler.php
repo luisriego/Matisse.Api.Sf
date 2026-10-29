@@ -12,6 +12,7 @@ use App\Context\Expense\Domain\ValueObject\ExpenseAmount;
 use App\Context\Expense\Domain\ValueObject\ExpenseDescription;
 use App\Context\Expense\Domain\ValueObject\ExpenseDueDate;
 use App\Context\Expense\Domain\ValueObject\ExpenseId;
+use App\Context\Slip\Domain\Guard\PeriodClosureExpenseIncomeGuard;
 use App\Shared\Application\CommandHandler;
 use App\Shared\Domain\Event\EventBus;
 use DateMalformedStringException;
@@ -26,6 +27,7 @@ readonly class EnterExpenseCommandHandler implements CommandHandler
         private AccountRepository $accountRepo,
         private ExpenseTypeRepository $typeRepository,
         private EventBus $bus,
+        private PeriodClosureExpenseIncomeGuard $guard,
     ) {}
 
     /**
@@ -33,6 +35,8 @@ readonly class EnterExpenseCommandHandler implements CommandHandler
      */
     public function __invoke(EnterExpenseCommand $command): Expense
     {
+        $this->guard->__invoke($command);
+
         $id      = new ExpenseId($command->id());
         $amount  = new ExpenseAmount($command->amount());
         $type = $this->typeRepository->findOneByIdOrFail($command->type());
