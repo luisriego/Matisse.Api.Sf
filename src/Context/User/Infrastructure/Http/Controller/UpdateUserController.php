@@ -5,11 +5,14 @@ declare(strict_types=1);
 namespace App\Context\User\Infrastructure\Http\Controller;
 
 use App\Context\User\Application\UseCase\Update\UpdateUserCommand;
+use App\Context\User\Domain\User;
 use App\Shared\Domain\Exception\ResourceNotFoundException;
 use App\Shared\Infrastructure\Symfony\ApiController;
 use OpenApi\Attributes as OA;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\Security\Core\Exception\AccessDeniedException;
+use Symfony\Component\Security\Http\Attribute\CurrentUser;
 
 #[OA\Put(
     path: '/api/v1/users/{id}',
@@ -34,13 +37,16 @@ use Symfony\Component\HttpFoundation\Response;
     responses: [
         new OA\Response(response: 204, description: 'User updated.'),
         new OA\Response(response: 404, description: 'User not found.'),
+        new OA\Response(response: 403, description: 'Access denied.'),
         new OA\Response(response: 401, description: 'Unauthorized'),
     ],
 )]
 final class UpdateUserController extends ApiController
 {
-    public function __invoke(Request $request, string $id): Response
+    public function __invoke(Request $request, string $id, #[CurrentUser] ?User $user): Response
     {
+        $this->denyIfNotOwner($user, $id);
+
         $data = $request->toArray();
         $this->dispatch(new UpdateUserCommand(
             $id,
@@ -57,6 +63,14 @@ final class UpdateUserController extends ApiController
     {
         return [
             ResourceNotFoundException::class => Response::HTTP_NOT_FOUND,
+            AccessDeniedException::class   => Response::HTTP_FORBIDDEN,
         ];
+    }
+
+    private function denyIfNotOwner(?User $user, string $userId): void
+    {
+        if (null === $user || $user->id() !== $userId) {
+            throw new AccessDeniedException('Access Denied.');
+        }
     }
 }

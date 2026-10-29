@@ -77,3 +77,8 @@ user_password_reset:
     path: /api/v1/users/{userId}/password-reset/{token}
     controller: App\Context\User\Infrastructure\Http\Controller\ResetPasswordController
     methods: ['POST']
+
+me_user_get:
+    path: /api/v1/users/me
+    controller: App\Context\User\Infrastructure\Http\Controller\MeUserGetController
+    methods: ['GET']
