@@ -16,6 +16,7 @@ use DateMalformedStringException;
 use DateTimeImmutable;
 use Psr\Log\LoggerInterface;
 
+use function array_map;
 use function sprintf;
 
 readonly class SlipFactory
@@ -27,6 +28,7 @@ readonly class SlipFactory
         private SlipComponentBreakdownService $slipComponentBreakdownService,
         private GasExpenseByUnitResolver $gasExpenseByUnitResolver,
         private LoggerInterface $logger,
+        private ?GasConsumptionBreakdownResolver $gasConsumptionBreakdownResolver = null,
     ) {}
 
     /**
@@ -47,6 +49,7 @@ readonly class SlipFactory
         int $extraFeePerUnitCents = 0,
         int $reserveFundPerUnitCents = 0,
         ?int $syndicShareTotalCents = null,
+        ?int $gasPricePerM3CentsOverride = null,
     ): array {
         if (empty($residentUnits)) {
             return [];
@@ -97,10 +100,35 @@ readonly class SlipFactory
         $slips = [];
 
         $previousMonth = (new DateTimeImmutable(sprintf('%d-%d-01', $expenseYear, $expenseMonth)))->modify('-1 month');
-        $gasExpensesByUnit = $this->gasExpenseByUnitResolver->sumByResidentUnitForCalendarMonth(
-            (int) $previousMonth->format('Y'),
-            (int) $previousMonth->format('m'),
-        );
+        $gasYear = (int) $previousMonth->format('Y');
+        $gasMonth = (int) $previousMonth->format('m');
+
+        if ($this->gasConsumptionBreakdownResolver !== null) {
+            $gasBreakdown = $this->gasConsumptionBreakdownResolver->breakdownForMonth(
+                $gasYear,
+                $gasMonth,
+                array_map(static fn (ResidentUnit $u) => $u->id(), $residentUnits),
+                $gasPricePerM3CentsOverride,
+            );
+
+            if ($gasBreakdown['gasTotalCents'] > 0) {
+                $gasExpensesByUnit = [];
+
+                foreach ($gasBreakdown['byUnit'] as $unitId => $unitData) {
+                    $gasExpensesByUnit[$unitId] = $unitData['gasCents'];
+                }
+            } else {
+                $gasExpensesByUnit = $this->gasExpenseByUnitResolver->sumByResidentUnitForCalendarMonth(
+                    $gasYear,
+                    $gasMonth,
+                );
+            }
+        } else {
+            $gasExpensesByUnit = $this->gasExpenseByUnitResolver->sumByResidentUnitForCalendarMonth(
+                $gasYear,
+                $gasMonth,
+            );
+        }
 
         $breakdown = $this->slipComponentBreakdownService->build(
             $residentUnits,
