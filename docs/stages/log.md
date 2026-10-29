@@ -68,3 +68,4 @@
 | 2026-10-28T23:33:47Z | stage-10 | atom-41-fix-income-routes-and-slip-workflow-service | SEALED | 3d67d89 |
 | 2026-10-29T13:25:00Z | stage-11 | atom-42-unify-slip-factory-gas-with-explain | BLOCKED | 3 consecutive oracle failures (File 'test_breakdown.php' is outside the atom allowlist) |
 | 2026-10-29T13:26:44Z | stage-11 | atom-42-unify-slip-factory-gas-with-explain | SEALED | bdb6e70 |
+| 2026-10-29T14:07:53Z | stage-11 | atom-43-preserve-setup-opening-month-in-billing-policy | SEALED | d13851b |
