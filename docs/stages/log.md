@@ -70,3 +70,4 @@
 | 2026-10-29T13:26:44Z | stage-11 | atom-42-unify-slip-factory-gas-with-explain | SEALED | bdb6e70 |
 | 2026-10-29T14:07:53Z | stage-11 | atom-43-preserve-setup-opening-month-in-billing-policy | SEALED | d13851b |
 | 2026-10-29T14:50:19Z | stage-11 | atom-44-account-balance-include-compensated-expenses | SEALED | 9d63ac2 |
+| 2026-10-29T17:06:01Z | stage-12 | atom-45-wire-bank-transaction-import-idempotency | SEALED | cd96bda |
