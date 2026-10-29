@@ -50,27 +50,19 @@ final readonly class BillingPolicyResolverService implements BillingPolicyResolv
             $snapshots[$targetMonth] = BillingPolicySnapshot::fromEntity($entity);
         }
 
-        if ($snapshots !== []) {
-            return $snapshots;
-        }
-
         $opening = $this->latestOpeningReference();
 
-        if ($opening === null) {
-            return [];
+        if ($opening !== null) {
+            $referenceMonth = (string) ($opening->payload()['referenceMonth'] ?? '');
+
+            if ($referenceMonth !== '' && !isset($snapshots[$referenceMonth])) {
+                $snapshots[$referenceMonth] = BillingPolicySnapshot::fromOpeningReference(
+                    $opening->payload(),
+                    $opening->occurredAt(),
+                    $this->latestGlobalGasPricePerM3Cents(),
+                );
+            }
         }
-
-        $referenceMonth = (string) ($opening->payload()['referenceMonth'] ?? '');
-
-        if ($referenceMonth === '') {
-            return [];
-        }
-
-        $snapshots[$referenceMonth] = BillingPolicySnapshot::fromOpeningReference(
-            $opening->payload(),
-            $opening->occurredAt(),
-            $this->latestGlobalGasPricePerM3Cents(),
-        );
 
         return $snapshots;
     }
