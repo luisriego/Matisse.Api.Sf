@@ -175,12 +175,6 @@ parameters:
 			path: src/Context/Setup/Domain/Event/OpeningReferenceMonthWasRecorded.php
 
 		-
-			message: '#^Method App\\Context\\Slip\\Application\\UseCase\\CheckSlipTotalAnomaly\\CheckSlipTotalAnomalyCommandHandler\:\:__invoke\(\) should return string\|null but returns stdClass\|null\.$#'
-			identifier: return.type
-			count: 1
-			path: src/Context/Slip/Application/UseCase/CheckSlipTotalAnomaly/CheckSlipTotalAnomalyCommandHandler.php
-
-		-
 			message: '#^Property App\\Context\\Slip\\Domain\\Slip\:\:\$paidAt is never read, only written\.$#'
 			identifier: property.onlyWritten
 			count: 1

@@ -9,21 +9,12 @@ use App\Context\BankStatement\Application\UseCase\ConfirmBankOfxLines\ConfirmBan
 use App\Context\BankStatement\Application\UseCase\ConfirmBankOfxLines\ConfirmLineDto;
 use App\Context\BankStatement\Domain\Exception\BoletoSettlementMismatchException;
 use App\Context\BankStatement\Infrastructure\Http\Dto\ConfirmBankOfxLinesRequestDto;
-use App\Context\Expense\Domain\ExpenseRepository;
-use App\Context\Income\Domain\IncomeRepository;
 use OpenApi\Attributes as OA;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Response;
 
-use function array_filter;
 use function array_map;
-use function array_values;
-use function dechex;
-use function hash;
-use function hexdec;
-use function mb_substr;
-use function sprintf;
 
 #[OA\Post(
     path: '/api/v1/bank/ofx-confirm',
@@ -177,8 +168,6 @@ final class OfxConfirmPostController extends AbstractController
 {
     public function __construct(
         private readonly ConfirmBankOfxLinesCommandHandler $handler,
-        private readonly ExpenseRepository $expenseRepository,
-        private readonly IncomeRepository $incomeRepository,
     ) {}
 
     public function __invoke(ConfirmBankOfxLinesRequestDto $request): JsonResponse
@@ -204,51 +193,10 @@ final class OfxConfirmPostController extends AbstractController
             $request->lines,
         );
 
-        // Idempotency: generate deterministic IDs from importLineKey and filter already-imported lines.
-        $existingIds = [];
-
-        foreach ($lineDtos as $line) {
-            $deterministicId = self::deterministicIdFromLineKey($line->importLineKey, $request->bankAccountId);
-
-            if ($line->isIncome()) {
-                $existingIds[$line->importLineKey] = $this->incomeRepository->findOneById($deterministicId);
-            } else {
-                $existingIds[$line->importLineKey] = $this->expenseRepository->findOneById($deterministicId);
-            }
-        }
-
-        $filteredLines = array_values(array_filter(
-            $lineDtos,
-            static fn (ConfirmLineDto $l) => !isset($existingIds[$l->importLineKey]),
-        ));
-
-        // Attach deterministic IDs to filtered lines so the handler reuses them.
-        $filteredLines = array_map(
-            static fn (ConfirmLineDto $l) => new ConfirmLineDto(
-                importLineKey: $l->importLineKey,
-                amountInCents: $l->amountInCents,
-                postedAt: $l->postedAt,
-                memo: $l->memo,
-                accountId: $l->accountId,
-                dueDate: $l->dueDate,
-                lineType: $l->lineType,
-                expenseTypeId: $l->expenseTypeId,
-                incomeTypeId: $l->incomeTypeId,
-                description: $l->description,
-                recurringExpenseId: $l->recurringExpenseId,
-                residentUnitId: $l->residentUnitId,
-                creditKind: $l->creditKind,
-                isExpectedExpense: $l->isExpectedExpense,
-                expectedExpense: $l->expectedExpense,
-                deterministicId: self::deterministicIdFromLineKey($l->importLineKey, $request->bankAccountId),
-            ),
-            $filteredLines,
-        );
-
         try {
             $result = ($this->handler)(new ConfirmBankOfxLinesCommand(
                 bankAccountId: $request->bankAccountId,
-                lines: $filteredLines,
+                lines: $lineDtos,
                 settlementExtraFeePerUnitCents: $request->settlementExtraFeePerUnitCents,
                 settlementReserveFundPerUnitCents: $request->settlementReserveFundPerUnitCents,
             ));
@@ -271,24 +219,5 @@ final class OfxConfirmPostController extends AbstractController
             'settlementValidatedAgainstSlips'  => $result->settlementValidatedAgainstSlips,
             'settlementSplitIncomeIds'         => $result->settlementSplitIncomeIds,
         ], Response::HTTP_CREATED);
-    }
-
-    /**
-     * Generate a deterministic UUID v5-like ID from importLineKey + bankAccountId.
-     */
-    private static function deterministicIdFromLineKey(string $importLineKey, string $bankAccountId): string
-    {
-        $hash = hash('sha256', $importLineKey . '|' . $bankAccountId);
-        // Build a UUID v4-like string from the first 32 hex chars
-        $hex  = mb_substr($hash, 0, 32);
-
-        return sprintf(
-            '%s-%s-%s-%s-%s',
-            mb_substr($hex, 0, 8),
-            mb_substr($hex, 8, 4),
-            '4' . mb_substr($hex, 13, 3), // version 4
-            dechex((hexdec(mb_substr($hex, 16, 1)) & 0x3) | 0x8) . mb_substr($hex, 17, 3), // variant 10xx
-            mb_substr($hex, 20, 12),
-        );
     }
 }

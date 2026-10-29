@@ -7,12 +7,11 @@ namespace App\Tests\Context\ResidentUnit\Application\Message;
 use App\Context\ResidentUnit\Application\Message\WelcomeResidentNotification;
 use App\Context\ResidentUnit\Application\Message\WelcomeResidentNotificationHandler;
 use PHPUnit\Framework\TestCase;
+use Psr\Log\LoggerInterface;
 use Symfony\Component\Mailer\Exception\TransportExceptionInterface;
 use Symfony\Component\Mailer\MailerInterface;
 use Symfony\Component\Mime\Email;
 
-use function ob_get_clean;
-use function ob_start;
 use function sprintf;
 
 class WelcomeResidentNotificationHandlerTest extends TestCase
@@ -20,12 +19,14 @@ class WelcomeResidentNotificationHandlerTest extends TestCase
     private const string MAILER_FROM = 'no-reply@matisse.test';
 
     private MailerInterface $mailer;
+    private LoggerInterface $logger;
     private WelcomeResidentNotificationHandler $handler;
 
     protected function setUp(): void
     {
         $this->mailer = $this->createMock(MailerInterface::class);
-        $this->handler = new WelcomeResidentNotificationHandler($this->mailer, self::MAILER_FROM);
+        $this->logger = $this->createMock(LoggerInterface::class);
+        $this->handler = new WelcomeResidentNotificationHandler($this->mailer, self::MAILER_FROM, $this->logger);
     }
 
     public function testItShouldSendWelcomeEmail(): void
@@ -48,16 +49,11 @@ class WelcomeResidentNotificationHandlerTest extends TestCase
                 return true;
             }));
 
-        // Capture output to avoid it polluting test results
-        ob_start();
+        $this->logger->expects($this->once())
+            ->method('info')
+            ->with(sprintf('[OK] E-mail de boas-vindas para %s (%s) enviado para %s.', $name, $unitName, $email));
 
-        try {
-            ($this->handler)($message);
-        } finally {
-            $output = ob_get_clean();
-        }
-
-        $this->assertStringContainsString(sprintf("[OK] E-mail de boas-vindas para %s (%s) enviado para %s.\n", $name, $unitName, $email), $output);
+        ($this->handler)($message);
     }
 
     public function testItShouldPropagateTransportException(): void
@@ -74,15 +70,6 @@ class WelcomeResidentNotificationHandlerTest extends TestCase
 
         $this->expectException(TransportExceptionInterface::class);
 
-        // Capture output to ensure nothing is printed before the exception
-        ob_start();
-
-        try {
-            ($this->handler)($message);
-        } finally {
-            $output = ob_get_clean();
-        }
-
-        $this->assertEmpty($output); // No output should be printed
+        ($this->handler)($message);
     }
 }
