@@ -66,3 +66,5 @@
 | 2026-10-28T23:22:31Z | stage-10 | atom-41-fix-income-routes-and-slip-workflow-service | BLOCKED | 3 consecutive oracle failures (File 'phpstan-baseline.neon' is outside the atom allowlist) |
 | 2026-10-28T23:27:00Z | stage-10 | atom-41-fix-income-routes-and-slip-workflow-service | BLOCKED | 3 consecutive oracle failures (PHPStan failed on src/Context/Slip/Application/Service/SlipWorkflowService.php or tests/Context/Slip/Application/Service/SlipWorkflowServiceTest.php) |
 | 2026-10-28T23:33:47Z | stage-10 | atom-41-fix-income-routes-and-slip-workflow-service | SEALED | 3d67d89 |
+| 2026-10-29T13:25:00Z | stage-11 | atom-42-unify-slip-factory-gas-with-explain | BLOCKED | 3 consecutive oracle failures (File 'test_breakdown.php' is outside the atom allowlist) |
+| 2026-10-29T13:26:44Z | stage-11 | atom-42-unify-slip-factory-gas-with-explain | SEALED | bdb6e70 |
