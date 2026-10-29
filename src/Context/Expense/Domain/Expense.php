@@ -176,6 +176,18 @@ class Expense extends AggregateRoot
     {
         if (!$this->paidAt()) {
             $this->amount = $amount;
+
+            if ($this->account !== null && $amount > 0) {
+                $this->record(new ExpenseWasEntered(
+                    $this->id,
+                    $amount,
+                    $this->type?->id() ?? '',
+                    $this->account->id(),
+                    $this->dueDate->format('Y-m-d'),
+                    $this->description,
+                    $this->residentUnitId,
+                ));
+            }
         }
     }
 

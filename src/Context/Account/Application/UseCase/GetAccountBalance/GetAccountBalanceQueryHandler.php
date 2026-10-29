@@ -8,11 +8,13 @@ use App\Context\Account\Domain\Event\InitialBalanceSet;
 use App\Context\EventStore\Domain\DomainEventRegistry;
 use App\Context\EventStore\Domain\StoredEvent;
 use App\Context\EventStore\Domain\StoredEventRepository;
+use App\Context\Expense\Domain\Event\ExpenseWasCompensated;
 use App\Context\Expense\Domain\Event\ExpenseWasEntered;
 use App\Context\Income\Domain\Event\IncomeWasEntered;
 use App\Shared\Application\QueryHandler;
 use DateTimeImmutable;
 
+use function abs;
 use function end;
 
 readonly class GetAccountBalanceQueryHandler implements QueryHandler
@@ -48,10 +50,11 @@ readonly class GetAccountBalanceQueryHandler implements QueryHandler
             $eventsStartDate = new DateTimeImmutable($initialBalanceEvent->date());
         }
 
-        // 2. Fetch all transaction events (expenses and incomes) in the date range
+        // 2. Fetch all transaction events (expenses, incomes and compensations) in the date range
         $transactionEvents = $this->eventRepository->findByEventTypesAndOccurredBetween(
             [
                 ExpenseWasEntered::eventName(),
+                ExpenseWasCompensated::eventName(),
                 IncomeWasEntered::eventName(),
             ],
             $eventsStartDate,
@@ -77,6 +80,8 @@ readonly class GetAccountBalanceQueryHandler implements QueryHandler
 
             if ($domainEvent instanceof ExpenseWasEntered) {
                 $balance -= $primitives['amount'];
+            } elseif ($domainEvent instanceof ExpenseWasCompensated) {
+                $balance += abs($primitives['amount']);
             } elseif ($domainEvent instanceof IncomeWasEntered) {
                 $balance += $primitives['amount'];
             }
