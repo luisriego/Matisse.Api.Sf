@@ -69,3 +69,4 @@
 | 2026-10-29T13:25:00Z | stage-11 | atom-42-unify-slip-factory-gas-with-explain | BLOCKED | 3 consecutive oracle failures (File 'test_breakdown.php' is outside the atom allowlist) |
 | 2026-10-29T13:26:44Z | stage-11 | atom-42-unify-slip-factory-gas-with-explain | SEALED | bdb6e70 |
 | 2026-10-29T14:07:53Z | stage-11 | atom-43-preserve-setup-opening-month-in-billing-policy | SEALED | d13851b |
+| 2026-10-29T14:50:19Z | stage-11 | atom-44-account-balance-include-compensated-expenses | SEALED | 9d63ac2 |
