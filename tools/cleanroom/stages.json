@@ -711,6 +711,226 @@
           "then": "responde 200 OK con detalle de cada servicio o 503 Service Unavailable si alguna dependencia falla"
         }
       ]
+    },
+    {
+      "id": "stage-10",
+      "name": "SPEC-FIX-INFRA: Corrección de Infraestructura HTTP, Eventos de Dominio y Runtime Bugs",
+      "title": "SPEC-FIX-INFRA: Corrección de Infraestructura HTTP, Eventos de Dominio y Runtime Bugs",
+      "spec": "SPEC-FIX-INFRA",
+      "atoms": [
+        {
+          "id": "atom-38-fix-api-controller-exception-listener",
+          "spec_atom": "FIX-01",
+          "name": "FIX-01: Soporte de controladores invocables en ApiControllerExceptionListener, prioridad 150 y mapeo 422 InvalidDataException",
+          "level": "integration",
+          "mode": "tdd",
+          "card": "docs/stages/stage-10-atom-38.md",
+          "covers": "src/Shared/Infrastructure/Symfony/ApiControllerExceptionListener.php",
+          "test_file": "tests/Shared/Infrastructure/Symfony/ApiControllerExceptionListenerTest.php",
+          "allowlist": [
+            "src/Shared/Infrastructure/Symfony/ApiControllerExceptionListener.php",
+            "tests/Shared/Infrastructure/Symfony/ApiControllerExceptionListenerTest.php"
+          ],
+          "given": "controladores invocables (invokable controllers) y InvalidDataException con código 422",
+          "when": "se procesan excepciones en ApiControllerExceptionListener con prioridad 150",
+          "then": "los controladores invocables se manejan correctamente y InvalidDataException mapea a 422"
+        },
+        {
+          "id": "atom-39-complete-domain-event-registry-map",
+          "spec_atom": "FIX-02",
+          "name": "FIX-02: Registro completo de los 28 Eventos de Dominio en DomainEventRegistryMap para reconstrucción desde EventStore",
+          "level": "integration",
+          "mode": "tdd",
+          "card": "docs/stages/stage-10-atom-39.md",
+          "covers": "src/Context/EventStore/Infrastructure/DomainEventRegistryMap.php",
+          "test_file": "tests/Context/EventStore/Infrastructure/DomainEventRegistryMapTest.php",
+          "allowlist": [
+            "src/Context/EventStore/Infrastructure/DomainEventRegistryMap.php",
+            "tests/Context/EventStore/Infrastructure/DomainEventRegistryMapTest.php"
+          ],
+          "given": "los 28 eventos de dominio registrados en el sistema",
+          "when": "se consulta DomainEventRegistryMap::getMap()",
+          "then": "todos los eventos están registrados y mapeados a sus clases correspondientes"
+        },
+        {
+          "id": "atom-40-fix-slip-anomaly-handler-and-notification-bugs",
+          "spec_atom": "FIX-03",
+          "name": "FIX-03: Corrección de TypeError en CheckSlipTotalAnomalyCommandHandler, eliminación de email fantasma a test@example.com y uso de LoggerInterface en WelcomeResidentNotificationHandler",
+          "level": "integration",
+          "mode": "tdd",
+          "card": "docs/stages/stage-10-atom-40.md",
+          "covers": "src/Context/Slip/Application/UseCase/CheckSlipTotalAnomaly/CheckSlipTotalAnomalyCommandHandler.php",
+          "test_file": "tests/Context/Slip/Application/UseCase/CheckSlipTotalAnomaly/CheckSlipTotalAnomalyCommandHandlerTest.php",
+          "allowlist": [
+            "src/Context/Slip/Application/UseCase/CheckSlipTotalAnomaly/CheckSlipTotalAnomalyCommandHandler.php",
+            "tests/Context/Slip/Application/UseCase/CheckSlipTotalAnomaly/CheckSlipTotalAnomalyCommandHandlerTest.php",
+            "src/Context/Resident/Application/UseCase/SendWelcomeResidentNotification/SendWelcomeResidentNotificationCommandHandler.php",
+            "tests/Context/Resident/Application/UseCase/SendWelcomeResidentNotification/SendWelcomeResidentNotificationCommandHandlerTest.php"
+          ],
+          "given": "TypeError en CheckSlipTotalAnomalyCommandHandler, email fantasma a test@example.com y LoggerInterface no inyectado",
+          "when": "se ejecutan los handlers de anomalías y notificaciones",
+          "then": "no hay TypeErrors, no se envían emails a test@example.com y LoggerInterface se inyecta correctamente"
+        },
+        {
+          "id": "atom-41-fix-income-routes-and-slip-workflow-service",
+          "spec_atom": "FIX-04",
+          "name": "FIX-04: Saneamiento de routes.yaml en Income y corrección de SlipWorkflowService y SlipStateSync",
+          "level": "unit",
+          "mode": "tdd",
+          "card": "docs/stages/stage-10-atom-41.md",
+          "covers": "src/Context/Slip/Application/Service/SlipWorkflowService.php",
+          "test_file": "tests/Context/Slip/Application/Service/SlipWorkflowServiceTest.php",
+          "allowlist": [
+            "src/Context/Income/Infrastructure/Http/routes.yaml",
+            "src/Context/Slip/Application/Service/SlipWorkflowService.php",
+            "src/Context/Slip/Application/SlipStateSync.php",
+            "tests/Context/Slip/Application/Service/SlipWorkflowServiceTest.php",
+            "phpstan-baseline.neon"
+          ],
+          "given": "routes.yaml de Income con la clave corrupta para que income_health_check: y controladores inexistentes, SlipWorkflowService con #[Autowire(service: slip.state_machine)] y SlipStateSync invocando métodos inexistentes en Slip",
+          "when": "se corrige routes.yaml en Income, se actualiza SlipWorkflowService a state_machine.slip y se alinea SlipStateSync con Slip::getStatus()",
+          "then": "las rutas de Income usan nombres válidos y controladores existentes, SlipWorkflowService referencia state_machine.slip y SlipStateSync sincroniza o valida el estado sin errores"
+        }
+      ]
+    },
+    {
+      "id": "stage-11",
+      "name": "SPEC-FIX-FIN: Integridad Financiera en Generación de Cuotas, Política Mensual y Saldo de Cuentas",
+      "title": "SPEC-FIX-FIN: Integridad Financiera en Generación de Cuotas, Política Mensual y Saldo de Cuentas",
+      "spec": "SPEC-FIX-FIN",
+      "atoms": [
+        {
+          "id": "atom-42-unify-slip-factory-gas-with-explain",
+          "spec_atom": "FIX-05",
+          "name": "FIX-05: Unificación del cálculo de gas en SlipFactory y SlipGenerationCommandHandler con SlipGenerationBreakdownBuilder (explain === generate)",
+          "level": "unit",
+          "mode": "tdd",
+          "card": "docs/stages/stage-11-atom-42.md",
+          "covers": "src/Context/Slip/Domain/Service/SlipFactory.php",
+          "test_file": "tests/Context/Slip/Domain/Service/SlipFactoryGasParityTest.php",
+          "allowlist": [
+            "src/Context/Slip/Domain/Service/SlipFactory.php",
+            "src/Context/Slip/Application/UseCase/SlipGeneration/SlipGenerationCommandHandler.php",
+            "tests/Context/Slip/Domain/Service/SlipFactoryGasParityTest.php",
+            "tests/Context/Slip/Application/UseCase/SlipGeneration/SlipGenerationCommandHandlerTest.php",
+            "tests/Context/Slip/Domain/Service/SlipFactoryTest.php"
+          ],
+          "given": "lecturas de gas por m3 registradas en EventStore (GasConsumptionBreakdownResolver) o gastos individuales GAS en el mes anterior (GasExpenseByUnitResolver), y un precio de gas de política mensual",
+          "when": "se generan los recibos con SlipFactory::createFromExpensesAndUnits y se compara con SlipGenerationBreakdownBuilder::build",
+          "then": "SlipFactory usa GasConsumptionBreakdownResolver (con fallback a GasExpenseByUnitResolver si el total por lecturas es 0) y acepta gasPricePerM3CentsOverride produciendo exactamente los mismos importes por unidad que explain"
+        },
+        {
+          "id": "atom-43-preserve-setup-opening-month-in-billing-policy",
+          "spec_atom": "FIX-06",
+          "name": "FIX-06: Preservación del snapshot de apertura del Setup (OpeningReferenceMonthWasRecorded) al existir políticas mensuales posteriores",
+          "level": "unit",
+          "mode": "tdd",
+          "card": "docs/stages/stage-11-atom-43.md",
+          "covers": "src/Context/BillingPolicy/Application/Service/BillingPolicyResolverService.php",
+          "test_file": "tests/Context/BillingPolicy/Application/Service/BillingPolicyResolverServiceTest.php",
+          "allowlist": [
+            "src/Context/BillingPolicy/Application/Service/BillingPolicyResolverService.php",
+            "tests/Context/BillingPolicy/Application/Service/BillingPolicyResolverServiceTest.php"
+          ],
+          "given": "un evento OpeningReferenceMonthWasRecorded para 2026-01 en EventStore y un BillingPolicyMonthSnapshot explícito para 2026-06 en la tabla de políticas",
+          "when": "se invoca BillingPolicyResolverService::resolve(\"2026-03\") para un mes intermedio entre el setup (2026-01) y la política explícita (2026-06)",
+          "then": "hereda los valores del mes de apertura 2026-01 (hasPolicy=true, isInherited=true, sourceMonth=\"2026-01\") sin perder el baseline de apertura"
+        },
+        {
+          "id": "atom-44-account-balance-include-compensated-expenses",
+          "spec_atom": "FIX-07",
+          "name": "FIX-07: Inclusión de eventos ExpenseWasCompensated en GetAccountBalanceQueryHandler y re-registro en Expense::updateAmount",
+          "level": "unit",
+          "mode": "tdd",
+          "card": "docs/stages/stage-11-atom-44.md",
+          "covers": "src/Context/Account/Application/UseCase/GetAccountBalance/GetAccountBalanceQueryHandler.php",
+          "test_file": "tests/Context/Account/Application/UseCase/GetAccountBalance/GetAccountBalanceQueryHandlerTest.php",
+          "allowlist": [
+            "src/Context/Account/Application/UseCase/GetAccountBalance/GetAccountBalanceQueryHandler.php",
+            "src/Context/Expense/Domain/Expense.php",
+            "src/Context/Expense/Application/UseCase/CompensateExpense/CompensateExpenseCommandHandler.php",
+            "tests/Context/Account/Application/UseCase/GetAccountBalance/GetAccountBalanceQueryHandlerTest.php"
+          ],
+          "given": "una cuenta con saldo inicial 100000, un gasto ingresado de 30000 (ExpenseWasEntered) que luego es compensado (+30000 en ExpenseWasCompensated) y actualizado a 20000",
+          "when": "se ejecuta GetAccountBalanceQueryHandler para obtener el saldo de la cuenta",
+          "then": "suma los eventos ExpenseWasCompensated y resta el nuevo ExpenseWasEntered del importe corregido devolviendo el saldo exacto de 80000 centimos"
+        }
+      ]
+    },
+    {
+      "id": "stage-12",
+      "name": "SPEC-FIX-GUARD: Idempotencia OFX Real y Guardas Transversales de Cierre de Periodo",
+      "title": "SPEC-FIX-GUARD: Idempotencia OFX Real y Guardas Transversales de Cierre de Periodo",
+      "spec": "SPEC-FIX-GUARD",
+      "atoms": [
+        {
+          "id": "atom-45-wire-bank-transaction-import-idempotency",
+          "spec_atom": "FIX-08",
+          "name": "FIX-08: Persistencia y verificación de idempotencia por importLineKey en ConfirmBankOfxLinesCommandHandler mediante BankTransactionImportRepository",
+          "level": "unit",
+          "mode": "tdd",
+          "card": "docs/stages/stage-12-atom-45.md",
+          "covers": "src/Context/BankStatement/Application/UseCase/ConfirmBankOfxLines/ConfirmBankOfxLinesCommandHandler.php",
+          "test_file": "tests/Context/BankStatement/Application/UseCase/ConfirmBankOfxLines/ConfirmBankOfxLinesIdempotencyTest.php",
+          "allowlist": [
+            "src/Context/BankStatement/Application/UseCase/ConfirmBankOfxLines/ConfirmBankOfxLinesCommandHandler.php",
+            "tests/Context/BankStatement/Application/UseCase/ConfirmBankOfxLines/ConfirmBankOfxLinesIdempotencyTest.php"
+          ],
+          "given": "líneas OFX con importLineKey enviadas a ConfirmBankOfxLinesCommandHandler y un BankTransactionImportRepository",
+          "when": "se confirma una línea OFX por primera vez y posteriormente se reenvía la misma línea con el mismo importLineKey y bankAccountId",
+          "then": "en la primera confirmación persiste BankTransactionImport en el repositorio y en la segunda omite la línea ya importada sin volver a despachar EnterExpenseCommand ni EnterIncomeCommand"
+        },
+        {
+          "id": "atom-46-enforce-period-closure-guard-on-expenses-and-incomes",
+          "spec_atom": "FIX-09",
+          "name": "FIX-09: Inyección de PeriodClosureGuard en los CommandHandlers de mutación de Gastos e Ingresos para impedir escrituras en meses cerrados",
+          "level": "unit",
+          "mode": "tdd",
+          "card": "docs/stages/stage-12-atom-46.md",
+          "covers": "src/Context/Expense/Application/UseCase/EnterExpense/EnterExpenseCommandHandler.php",
+          "test_file": "tests/Context/Expense/Application/UseCase/EnterExpense/PeriodClosureExpenseIncomeGuardTest.php",
+          "allowlist": [
+            "src/Context/Expense/Application/UseCase/EnterExpense/EnterExpenseCommandHandler.php",
+            "src/Context/Expense/Application/UseCase/UpdateExpense/UpdateExpenseCommandHandler.php",
+            "src/Context/Expense/Application/UseCase/CompensateExpense/CompensateExpenseCommandHandler.php",
+            "src/Context/Income/Application/UseCase/EnterIncome/EnterIncomeCommandHandler.php",
+            "src/Context/Income/Application/UseCase/UpdateIncome/UpdateIncomeCommandHandler.php",
+            "tests/Context/Expense/Application/UseCase/EnterExpense/PeriodClosureExpenseIncomeGuardTest.php"
+          ],
+          "given": "un periodo contable (año, mes) que figura como cerrado en PeriodClosureGuard",
+          "when": "se intenta registrar o modificar un gasto o un ingreso cuya fecha de vencimiento pertenece a ese mes cerrado",
+          "then": "EnterExpenseCommandHandler, UpdateExpenseCommandHandler, CompensateExpenseCommandHandler, EnterIncomeCommandHandler y UpdateIncomeCommandHandler lanzan PeriodAlreadyClosedException antes de persistir cambios"
+        }
+      ]
+    },
+    {
+      "id": "stage-13",
+      "name": "SPEC-FIX-SEC: Superficie de Seguridad para Residentes, Anti-IDOR y Perfil Propio",
+      "title": "SPEC-FIX-SEC: Superficie de Seguridad para Residentes, Anti-IDOR y Perfil Propio",
+      "spec": "SPEC-FIX-SEC",
+      "atoms": [
+        {
+          "id": "atom-47-security-allow-resident-self-service-and-me",
+          "spec_atom": "FIX-10",
+          "name": "FIX-10: Soporte de self-service para residentes (ROLE_USER) en perfil, avatar y nuevo endpoint GET /api/v1/users/me con validación anti-IDOR",
+          "level": "integration",
+          "mode": "tdd",
+          "card": "docs/stages/stage-13-atom-47.md",
+          "covers": "src/Context/User/Infrastructure/Http/Controller/MeUserGetController.php",
+          "test_file": "tests/Context/User/Infrastructure/Http/Controller/ResidentSelfServiceAndMeControllerTest.php",
+          "allowlist": [
+            "config/packages/security.yaml",
+            "src/Context/User/Infrastructure/Http/routes.yaml",
+            "src/Context/User/Infrastructure/Http/Controller/MeUserGetController.php",
+            "src/Context/User/Infrastructure/Http/Controller/UpdateUserController.php",
+            "src/Context/User/Infrastructure/Http/Controller/UploadAvatarController.php",
+            "tests/Context/User/Infrastructure/Http/Controller/ResidentSelfServiceAndMeControllerTest.php"
+          ],
+          "given": "un residente autenticado con ROLE_USER en el sistema Matisse Api",
+          "when": "consulta GET /api/v1/users/me, actualiza su propio perfil PUT /api/v1/users/{su_id} o intenta modificar el perfil de otro usuario PUT /api/v1/users/{otro_id}",
+          "then": "GET /api/v1/users/me devuelve 200 OK con sus datos (id, email, name, roles, residentUnitId), PUT sobre su propio ID devuelve 204 y PUT sobre el ID de otro usuario sin ser síndico devuelve 403 Forbidden"
+        }
+      ]
     }
   ]
 }

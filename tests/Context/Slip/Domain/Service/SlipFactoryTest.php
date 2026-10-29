@@ -7,6 +7,7 @@ namespace App\Tests\Context\Slip\Domain\Service;
 use App\Context\Expense\Domain\Expense;
 use App\Context\Expense\Domain\ExpenseType;
 use App\Context\ResidentUnit\Domain\ResidentUnit;
+use App\Context\Slip\Domain\Service\GasConsumptionBreakdownResolver;
 use App\Context\Slip\Domain\Service\GasExpenseByUnitResolver;
 use App\Context\Slip\Domain\Service\MonthlyExpenseAggregatorService;
 use App\Context\Slip\Domain\Service\RecurringExpenseSlipContributionService;
@@ -26,6 +27,7 @@ class SlipFactoryTest extends TestCase
     private MockObject|MonthlyExpenseAggregatorService $monthlyExpenseAggregatorService; // Añadido
     private SlipComponentBreakdownService $slipComponentBreakdownService;
     private GasExpenseByUnitResolver|MockObject $gasExpenseByUnitResolver;
+    private GasConsumptionBreakdownResolver&MockObject $gasConsumptionBreakdownResolver;
     private LoggerInterface|MockObject $logger; // Añadido
 
     protected function setUp(): void
@@ -36,9 +38,14 @@ class SlipFactoryTest extends TestCase
         $this->monthlyExpenseAggregatorService = $this->createMock(MonthlyExpenseAggregatorService::class);
         $this->slipComponentBreakdownService = new SlipComponentBreakdownService();
         $this->gasExpenseByUnitResolver = $this->createMock(GasExpenseByUnitResolver::class);
+        $this->gasConsumptionBreakdownResolver = $this->createMock(GasConsumptionBreakdownResolver::class);
         $this->logger = $this->createMock(LoggerInterface::class);
 
         $this->gasExpenseByUnitResolver->method('sumByResidentUnitForCalendarMonth')->willReturn([]);
+        $this->gasConsumptionBreakdownResolver->method('breakdownForMonth')->willReturn([
+            'gasTotalCents' => 0,
+            'byUnit' => [],
+        ]);
 
         // Instancia SlipFactory con los mocks correctos
         $this->factory = new SlipFactory(
@@ -51,6 +58,7 @@ class SlipFactoryTest extends TestCase
             $this->slipComponentBreakdownService,
             $this->gasExpenseByUnitResolver,
             $this->logger,
+            $this->gasConsumptionBreakdownResolver,
         );
     }
 

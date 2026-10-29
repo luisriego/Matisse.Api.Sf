@@ -86,6 +86,7 @@ class SlipGenerationCommandHandler implements CommandHandler
             $extraFeePerUnitCents       = $snapshot->extraFeePerUnitCents();
             $reserveFundPerUnitCents    = $snapshot->reserveFundPerUnitCents();
             $syndicShareTotalCents      = null;
+            $gasPricePerM3CentsOverride = null;
         } else {
             $policy = $this->billingPolicyResolverService->resolve($targetMonth);
             $extraFeePerUnitCents       = $policy->hasPolicy()
@@ -96,6 +97,9 @@ class SlipGenerationCommandHandler implements CommandHandler
                 : $command->reserveFundPerUnitCents();
             $syndicShareTotalCents      = $policy->hasPolicy()
                 ? $policy->syndicShareTotalCents()
+                : null;
+            $gasPricePerM3CentsOverride = $policy->hasPolicy()
+                ? $policy->gasPricePerM3Cents()
                 : null;
         }
 
@@ -108,6 +112,7 @@ class SlipGenerationCommandHandler implements CommandHandler
             $extraFeePerUnitCents,
             $reserveFundPerUnitCents,
             $syndicShareTotalCents,
+            $gasPricePerM3CentsOverride,
         );
 
         // 7. Persist the new slips.
