@@ -9,6 +9,8 @@ use App\Context\Account\Domain\AccountRepository;
 use App\Context\BankStatement\Application\Dto\ExpectedExpenseCreateOrUpdateDto;
 use App\Context\BankStatement\Application\Dto\ExpectedExpenseSpecDto;
 use App\Context\BankStatement\Application\Service\SettlementAccountResolver;
+use App\Context\BankStatement\Domain\BankTransactionImport;
+use App\Context\BankStatement\Domain\BankTransactionImportRepository;
 use App\Context\BankStatement\Domain\Exception\BoletoSettlementMismatchException;
 use App\Context\Expense\Application\Service\ExpectedExpenseFromOfxService;
 use App\Context\Expense\Application\UseCase\EnterExpense\EnterExpenseCommand;
@@ -69,6 +71,10 @@ final class ConfirmBankOfxLinesCommandHandler implements CommandHandler
         private readonly ExpectedExpenseFromOfxService $expectedExpenseFromOfx,
         private readonly RetryMechanism $retryMechanism,
         /**
+         * Optional repository for tracking imported bank transactions (idempotency).
+         */
+        private readonly ?BankTransactionImportRepository $bankTransactionImportRepository = null,
+        /**
          * Default income type id used for bank CREDIT lines when the client did not send one.
          * Set via environment variable DEFAULT_BANK_CREDIT_INCOME_TYPE_ID.
          * Null = the client MUST send incomeTypeId for every income line (or it will fail).
@@ -101,22 +107,35 @@ final class ConfirmBankOfxLinesCommandHandler implements CommandHandler
         // Validate settlement FIRST (can throw 422 when slips define a non-zero expected total).
         // Greenfield: expected slip total 0 → accept bank sum as initial consolidated income (no 422).
         if (count($settlements) > 0) {
-            $settlementOutcome = $this->processSettlementBatch(
-                $settlements,
-                $command->bankAccountId,
-                $command->settlementExtraFeePerUnitCents,
-                $command->settlementReserveFundPerUnitCents,
-            );
-            $consolidatedIncomeId             = $settlementOutcome['incomeId'];
-            $settlementMonthStr               = $settlementOutcome['month'];
-            $settlementExpectedSlipTotalCents = $settlementOutcome['expectedSlipTotalCents'];
-            $settlementValidatedAgainstSlips = $settlementOutcome['validatedAgainstSlips'];
-            $settlementSplitIncomeIds        = $settlementOutcome['splitIncomeIds'];
-            $imported += count($settlements);
+            $filteredSettlements = array_values(array_filter($settlements, fn (ConfirmLineDto $l) => !$this->shouldSkipLine($l, $command->bankAccountId)));
+
+            if ($filteredSettlements !== []) {
+                $settlementOutcome = $this->processSettlementBatch(
+                    $filteredSettlements,
+                    $command->bankAccountId,
+                    $command->settlementExtraFeePerUnitCents,
+                    $command->settlementReserveFundPerUnitCents,
+                );
+                $consolidatedIncomeId             = $settlementOutcome['incomeId'];
+                $settlementMonthStr               = $settlementOutcome['month'];
+                $settlementExpectedSlipTotalCents = $settlementOutcome['expectedSlipTotalCents'];
+                $settlementValidatedAgainstSlips = $settlementOutcome['validatedAgainstSlips'];
+                $settlementSplitIncomeIds        = $settlementOutcome['splitIncomeIds'];
+                $imported += count($filteredSettlements);
+
+                foreach ($filteredSettlements as $line) {
+                    $this->persistImport($line, $command->bankAccountId, incomeId: null);
+                }
+            }
         }
 
         foreach ($expenses as $line) {
-            $outcome = $this->dispatchExpense($line, $command->bankAccountId);
+            if ($this->shouldSkipLine($line, $command->bankAccountId)) {
+                continue;
+            }
+
+            $expenseId = Uuid::v4()->toRfc4122();
+            $outcome = $this->dispatchExpense($line, $command->bankAccountId, $expenseId);
 
             if ($outcome['linked']) {
                 ++$expectedExpensesLinked;
@@ -125,11 +144,19 @@ final class ConfirmBankOfxLinesCommandHandler implements CommandHandler
             if ($outcome['created']) {
                 ++$expectedExpensesCreated;
             }
+
+            $this->persistImport($line, $command->bankAccountId, expenseId: $expenseId);
             ++$imported;
         }
 
         foreach ($otherCredits as $line) {
-            $this->dispatchIndividualIncome($line, $command->bankAccountId);
+            if ($this->shouldSkipLine($line, $command->bankAccountId)) {
+                continue;
+            }
+
+            $incomeId = Uuid::v4()->toRfc4122();
+            $this->dispatchIndividualIncome($line, $command->bankAccountId, $incomeId);
+            $this->persistImport($line, $command->bankAccountId, incomeId: $incomeId);
             ++$imported;
         }
 
@@ -160,6 +187,50 @@ final class ConfirmBankOfxLinesCommandHandler implements CommandHandler
     }
 
     // ---------------------------------------------------------------------
+    // Idempotency helpers
+    // ---------------------------------------------------------------------
+
+    /**
+     * Returns true when the line's importLineKey is already persisted for this bank account.
+     */
+    private function shouldSkipLine(ConfirmLineDto $line, string $bankAccountId): bool
+    {
+        if (null === $this->bankTransactionImportRepository) {
+            return false;
+        }
+
+        if ($line->importLineKey === '') {
+            return false;
+        }
+
+        return $this->bankTransactionImportRepository->existsByImportLineKey($line->importLineKey, $bankAccountId);
+    }
+
+    /**
+     * Persists a BankTransactionImport record after successful dispatch.
+     */
+    private function persistImport(ConfirmLineDto $line, string $bankAccountId, ?string $expenseId = null, ?string $incomeId = null): void
+    {
+        if (null === $this->bankTransactionImportRepository) {
+            return;
+        }
+
+        if ($line->importLineKey === '') {
+            return;
+        }
+
+        $import = new BankTransactionImport(
+            id: Uuid::v4()->toRfc4122(),
+            importLineKey: $line->importLineKey,
+            bankAccountId: $bankAccountId,
+            expenseId: $expenseId,
+            incomeId: $incomeId,
+        );
+
+        $this->bankTransactionImportRepository->save($import);
+    }
+
+    // ---------------------------------------------------------------------
     // Expense
     // ---------------------------------------------------------------------
 
@@ -168,7 +239,7 @@ final class ConfirmBankOfxLinesCommandHandler implements CommandHandler
      *
      * @throws DateMalformedStringException
      */
-    private function dispatchExpense(ConfirmLineDto $line, string $bankAccountId): array
+    private function dispatchExpense(ConfirmLineDto $line, string $bankAccountId, string $expenseId): array
     {
         if ($line->expenseTypeId === null || $line->expenseTypeId === '') {
             throw new InvalidArgumentException(
@@ -177,8 +248,6 @@ final class ConfirmBankOfxLinesCommandHandler implements CommandHandler
         }
 
         $accountId = $this->resolveLedgerAccountId($line->accountId, $bankAccountId);
-
-        $expenseId = Uuid::v4()->toRfc4122();
 
         if (!$line->isExpectedExpense) {
             $this->dispatchWithRetry(new EnterExpenseCommand(
@@ -241,15 +310,13 @@ final class ConfirmBankOfxLinesCommandHandler implements CommandHandler
     // "Other" credit: one income per line, no validation.
     // ---------------------------------------------------------------------
 
-    private function dispatchIndividualIncome(ConfirmLineDto $line, string $importBankAccountId): void
+    private function dispatchIndividualIncome(ConfirmLineDto $line, string $importBankAccountId, string $incomeId): void
     {
         if ($line->incomeTypeId === null || $line->incomeTypeId === '') {
             throw new InvalidArgumentException(
                 'Las líneas de crédito tipo «otro» requieren incomeTypeId.',
             );
         }
-
-        $incomeId = Uuid::v4()->toRfc4122();
 
         $postedAt = $line->postedAt !== '' ? $line->postedAt : $line->dueDate;
         $accountId = $this->resolveLedgerAccountId($line->accountId, $importBankAccountId);
