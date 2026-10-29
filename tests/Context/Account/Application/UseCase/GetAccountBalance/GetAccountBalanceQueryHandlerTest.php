@@ -161,18 +161,19 @@ class GetAccountBalanceQueryHandlerTest extends TestCase
             ->method('findByEventTypesAndOccurredBetweenAndAggregateId')
             ->willReturn([$initialBalanceEvent]);
 
+        // Compensation amount is negative by design (ExpenseWasCompensated stores -amount)
         $this->storedEventRepository
             ->expects($this->once())
             ->method('findByEventTypesAndOccurredBetween')
             ->willReturn([
                 $this->createStoredEvent(ExpenseWasEntered::class, $accountId, 30000, '2025-02-01'),
-                $this->createStoredEventCompensated($expenseId, $accountId, 30000, '2025-02-15'),
+                $this->createStoredEventCompensated($expenseId, $accountId, -30000, '2025-02-15'),
                 $this->createStoredEvent(ExpenseWasEntered::class, $accountId, 20000, '2025-02-20'),
             ]);
 
         $result = ($this->handler)($query);
 
-        // 100000 (initial) - 30000 (expense) + 30000 (compensation) - 20000 (new expense) = 80000
+        // 100000 (initial) - 30000 (expense) + 30000 (compensation reverses expense) - 20000 (new expense) = 80000
         $this->assertEquals(80000, $result);
     }
 

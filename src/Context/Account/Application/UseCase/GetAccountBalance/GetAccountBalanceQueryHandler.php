@@ -14,7 +14,6 @@ use App\Context\Income\Domain\Event\IncomeWasEntered;
 use App\Shared\Application\QueryHandler;
 use DateTimeImmutable;
 
-use function abs;
 use function end;
 
 readonly class GetAccountBalanceQueryHandler implements QueryHandler
@@ -81,7 +80,8 @@ readonly class GetAccountBalanceQueryHandler implements QueryHandler
             if ($domainEvent instanceof ExpenseWasEntered) {
                 $balance -= $primitives['amount'];
             } elseif ($domainEvent instanceof ExpenseWasCompensated) {
-                $balance += abs($primitives['amount']);
+                // Compensation amount is negative by design; negate to reverse the original deduction
+                $balance -= $primitives['amount'];
             } elseif ($domainEvent instanceof IncomeWasEntered) {
                 $balance += $primitives['amount'];
             }
