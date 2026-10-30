@@ -8,6 +8,7 @@ use App\Context\Expense\Domain\ExpenseRepository;
 use App\Context\Expense\Domain\ValueObject\ExpenseDescription;
 use App\Context\Expense\Domain\ValueObject\ExpenseDueDate;
 use App\Context\Expense\Domain\ValueObject\ExpenseId;
+use App\Context\Slip\Domain\Guard\PeriodClosureExpenseIncomeGuard;
 use App\Shared\Application\CommandHandler;
 use DateMalformedStringException;
 use DateTime;
@@ -16,6 +17,7 @@ readonly class UpdateExpenseCommandHandler implements CommandHandler
 {
     public function __construct(
         private ExpenseRepository $repository,
+        private ?PeriodClosureExpenseIncomeGuard $guard = null,
     ) {}
 
     /**
@@ -23,6 +25,8 @@ readonly class UpdateExpenseCommandHandler implements CommandHandler
      */
     public function __invoke(UpdateExpenseCommand $command): void
     {
+        $this->guard?->__invoke($command);
+
         $id = new ExpenseId($command->id());
         $expense = $this->repository->findOneByIdOrFail($id->value());
 

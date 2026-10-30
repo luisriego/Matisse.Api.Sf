@@ -23,7 +23,6 @@ final class UpdateExpenseCommandHandlerTest extends ExpenseModuleUnitTestCase
 
         $this->handler = new UpdateExpenseCommandHandler(
             $this->repository(),
-            $this->eventBus(),
         );
     }
 

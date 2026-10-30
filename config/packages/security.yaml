@@ -42,9 +42,9 @@ security:
         - { path: ^/api/v1/users/me$,                       roles: ROLE_USER }
         - { path: ^/api/v1/users/.*/resident-unit$,         roles: ROLE_USER }
         - { path: ^/api/v1/users/.+$, methods: [PUT],       roles: ROLE_USER }
+        - { path: ^/api/v1/users/.*/avatar$, methods: [POST], roles: ROLE_USER }
         # Escrituras sindico (create/update/delete users, avatars)
         - { path: ^/api/v1/users$,                          roles: ROLE_SYNDIC }
-        - { path: ^/api/v1/users/.*/avatar$,                roles: ROLE_SYNDIC }
         - { path: ^/api, methods: [POST, PUT, PATCH, DELETE], roles: ROLE_SYNDIC }
         # Lecturas: cualquier usuario autenticado (residente) puede ver.
         - { path: ^/api,                                    roles: ROLE_USER }

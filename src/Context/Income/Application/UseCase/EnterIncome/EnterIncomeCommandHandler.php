@@ -12,6 +12,7 @@ use App\Context\Income\Domain\ValueObject\IncomeAmount;
 use App\Context\Income\Domain\ValueObject\IncomeDueDate;
 use App\Context\Income\Domain\ValueObject\IncomeId;
 use App\Context\ResidentUnit\Domain\ResidentUnitRepository;
+use App\Context\Slip\Domain\Guard\PeriodClosureExpenseIncomeGuard;
 use App\Shared\Application\CommandHandler;
 use App\Shared\Domain\Event\EventBus;
 use DateMalformedStringException;
@@ -26,6 +27,7 @@ readonly class EnterIncomeCommandHandler implements CommandHandler
         private ResidentUnitRepository $residentUnitRepository,
         private AccountRepository $accountRepository,
         private EventBus $bus,
+        private ?PeriodClosureExpenseIncomeGuard $guard = null,
     ) {}
 
     /**
@@ -33,6 +35,8 @@ readonly class EnterIncomeCommandHandler implements CommandHandler
      */
     public function __invoke(EnterIncomeCommand $command): void
     {
+        $this->guard?->__invoke($command);
+
         $id = new IncomeId($command->id());
         $amount = new IncomeAmount($command->amount());
         $residentUnit = $command->residentUnitId() !== null

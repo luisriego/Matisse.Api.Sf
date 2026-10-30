@@ -27,7 +27,7 @@ readonly class EnterExpenseCommandHandler implements CommandHandler
         private AccountRepository $accountRepo,
         private ExpenseTypeRepository $typeRepository,
         private EventBus $bus,
-        private PeriodClosureExpenseIncomeGuard $guard,
+        private ?PeriodClosureExpenseIncomeGuard $guard = null,
     ) {}
 
     /**
@@ -35,7 +35,7 @@ readonly class EnterExpenseCommandHandler implements CommandHandler
      */
     public function __invoke(EnterExpenseCommand $command): Expense
     {
-        $this->guard->__invoke($command);
+        $this->guard?->__invoke($command);
 
         $id      = new ExpenseId($command->id());
         $amount  = new ExpenseAmount($command->amount());

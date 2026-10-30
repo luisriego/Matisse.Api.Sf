@@ -6,6 +6,7 @@ namespace App\Context\User\Infrastructure\Http\Controller;
 
 use App\Context\User\Application\UseCase\AddAvatar\AddAvatarCommand;
 use App\Context\User\Application\UseCase\AddAvatar\AddAvatarCommandHandler;
+use App\Context\User\Domain\User;
 use App\Shared\Domain\Exception\InvalidArgumentException;
 use App\Shared\Domain\Exception\ResourceNotFoundException;
 use OpenApi\Attributes as OA;
@@ -13,6 +14,7 @@ use Symfony\Component\HttpFoundation\File\UploadedFile;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\Security\Http\Attribute\CurrentUser;
 
 use function in_array;
 
@@ -56,8 +58,16 @@ final readonly class UploadAvatarController
         private AddAvatarCommandHandler $commandHandler,
     ) {}
 
-    public function __invoke(Request $request, string $id): JsonResponse
+    public function __invoke(Request $request, string $id, #[CurrentUser] ?User $user = null): JsonResponse
     {
+        if (null === $user) {
+            return new JsonResponse(['error' => 'Access Denied.'], Response::HTTP_FORBIDDEN);
+        }
+
+        if (!in_array('ROLE_SYNDIC', $user->getRoles(), true) && $user->id() !== $id) {
+            return new JsonResponse(['error' => 'Access Denied.'], Response::HTTP_FORBIDDEN);
+        }
+
         $avatar = $request->files->get('avatar');
 
         if (!$avatar instanceof UploadedFile) {

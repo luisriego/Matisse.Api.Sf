@@ -11,12 +11,17 @@ set -euo pipefail
 
 REPO_ROOT="$(cd "$(dirname "$0")/../.." && pwd)"
 CONTAINER_NAME="${MATISSE_CONTAINER:-matisse-app}"
-IMAGE_NAME="${MATISSE_IMAGE:-myapp-myapp-app:latest}"
 
 if command -v docker >/dev/null 2>&1; then
     if docker ps --format '{{.Names}}' 2>/dev/null | grep -qx "${CONTAINER_NAME}"; then
         exec docker exec -i "${CONTAINER_NAME}" "$@"
     fi
+
+    DEFAULT_IMAGE="matisseapisf-matisse-app:latest"
+    if ! docker image inspect "${DEFAULT_IMAGE}" >/dev/null 2>&1; then
+        DEFAULT_IMAGE="myapp-myapp-app:latest"
+    fi
+    IMAGE_NAME="${MATISSE_IMAGE:-${DEFAULT_IMAGE}}"
 
     if docker image inspect "${IMAGE_NAME}" >/dev/null 2>&1; then
         exec docker run --rm \

@@ -7,12 +7,14 @@ namespace App\Context\Expense\Application\UseCase\CompensateExpense;
 use App\Context\Expense\Domain\ExpenseRepository;
 use App\Context\Expense\Domain\ValueObject\ExpenseAmount;
 use App\Context\Expense\Domain\ValueObject\ExpenseId;
+use App\Context\Slip\Domain\Guard\PeriodClosureExpenseIncomeGuard;
 use App\Shared\Application\CommandHandler;
 
 readonly class CompensateExpenseCommandHandler implements CommandHandler
 {
     public function __construct(
         private ExpenseRepository $expenseRepo,
+        private ?PeriodClosureExpenseIncomeGuard $guard = null,
     ) {}
 
     public function __invoke(CompensateExpenseCommand $command): void
@@ -20,6 +22,8 @@ readonly class CompensateExpenseCommandHandler implements CommandHandler
         // 1) reconstitute the aggregate
         $expenseId = new ExpenseId($command->id());
         $expense = $this->expenseRepo->findOneByIdOrFail($expenseId->value());
+
+        $this->guard?->__invoke($expense);
 
         $initialAmount = $expense->amount();
 

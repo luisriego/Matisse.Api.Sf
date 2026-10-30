@@ -5,8 +5,6 @@ declare(strict_types=1);
 namespace App\Tests\Context\Account\Domain;
 
 use App\Context\Account\Domain\Account;
-use App\Context\Account\Domain\AccountDescription;
-use App\Tests\Shared\Domain\MotherCreator;
 use PHPUnit\Framework\TestCase;
 
 final class AccountTest extends TestCase
@@ -15,13 +13,11 @@ final class AccountTest extends TestCase
     {
         $id = AccountIdMother::create();
         $name = AccountNameMother::create();
-        // Use MotherCreator to generate a sentence, ensuring it's long enough.
-        $descriptionText = MotherCreator::random()->sentence(3);
-        $description = new AccountDescription($descriptionText);
+        $description = AccountDescriptionMother::create();
 
         $account = Account::createWithDescription($id, $name, $description);
 
-        self::assertEquals($descriptionText, $account->description());
+        self::assertEquals($description->value(), $account->description());
     }
 
     public function testItSetsCreatedAtOnCreation(): void
@@ -38,7 +34,7 @@ final class AccountTest extends TestCase
         self::assertNull($account->updatedAt());
 
         $newName = AccountNameMother::create();
-        $newDescription = new AccountDescription(MotherCreator::random()->sentence(3));
+        $newDescription = AccountDescriptionMother::create();
         $account->updateDetails($newName, $newDescription);
 
         self::assertNotNull($account->updatedAt());

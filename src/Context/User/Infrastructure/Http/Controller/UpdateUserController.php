@@ -14,6 +14,8 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Security\Core\Exception\AccessDeniedException;
 use Symfony\Component\Security\Http\Attribute\CurrentUser;
 
+use function in_array;
+
 #[OA\Put(
     path: '/api/v1/users/{id}',
     summary: 'Update user profile',
@@ -69,7 +71,15 @@ final class UpdateUserController extends ApiController
 
     private function denyIfNotOwner(?User $user, string $userId): void
     {
-        if (null === $user || $user->id() !== $userId) {
+        if (null === $user) {
+            throw new AccessDeniedException('Access Denied.');
+        }
+
+        if (in_array('ROLE_SYNDIC', $user->getRoles(), true)) {
+            return;
+        }
+
+        if ($user->id() !== $userId) {
             throw new AccessDeniedException('Access Denied.');
         }
     }
